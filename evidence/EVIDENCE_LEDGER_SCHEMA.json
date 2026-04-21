@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HawkinsOperations Evidence Ledger",
+  "type": "object",
+  "required": ["ledger_version", "repository", "generated_at", "entries"],
+  "properties": {
+    "ledger_version": { "type": "string" },
+    "repository": { "type": "string" },
+    "generated_at": { "type": "string" },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "timestamp", "type", "summary", "artifact_paths", "sha256"],
+        "properties": {
+          "id": { "type": "string" },
+          "timestamp": { "type": "string" },
+          "type": { "type": "string" },
+          "summary": { "type": "string" },
+          "artifact_paths": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "sha256": { "type": "string" },
+          "source_ref": { "type": "string" },
+          "notes": { "type": "string" }
+        }
+      }
+    }
+  }
+}
+

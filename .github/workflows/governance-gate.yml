@@ -1,0 +1,31 @@
+name: Governance Gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  required-files:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Required Governance Files
+        shell: pwsh
+        run: |
+          $required = @(
+            "README.md",
+            "SCOPE.md",
+            "GOVERNANCE.md",
+            "STATUS.md",
+            "evidence/EVIDENCE_LEDGER_SCHEMA.json",
+            "evidence/evidence-ledger.json"
+          )
+          $missing = @()
+          foreach ($f in $required) {
+            if (-not (Test-Path -LiteralPath $f)) { $missing += $f }
+          }
+          if ($missing.Count -gt 0) {
+            Write-Error ("Missing required files: " + ($missing -join ", "))
+            exit 1
+          }
