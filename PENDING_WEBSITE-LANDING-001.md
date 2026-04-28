@@ -15,12 +15,15 @@
   - Ran git diff --check.
   - Ran git status --short.
   - Rendered desktop and mobile static page views with Playwright.
-- Result: Static public landing page added with no dependencies or framework scaffold. Visual treatment updated to a dark successor style with restrained cyan accents and no metric, image, or proof overclaim surface.
+- Result: Static public landing page added with no dependencies or framework scaffold. Visual treatment updated to a dark successor style with restrained cyan accents and no metric, image, or proof overclaim surface. Follow-up credibility pass added reviewer shortcuts, proof-scope framing, lifecycle strip, public GitHub links, identity footer, canonical metadata, Open Graph metadata, and JSON-LD entity linkage.
+- Second-pass polish: CSS-only mobile density and scanability tuning for lifecycle wrapping, card padding, CTA hover/focus behavior, tap target consistency, and footer link rhythm.
+- Track F pass: clarified HawkinsOperations as the successor governance architecture, added reviewer routing for hawkinsops.com, rayleeops.com, and the HawkinsOperations GitHub org, and tightened HO-DET-001 wording to source/proof path in progress without validation, runtime, signal, evidence, or public-safe overclaiming.
 - Claims added:
   - HawkinsOperations is governed AI-assisted detection engineering.
   - The successor architecture separates source, runtime, signal, evidence, public proof, and legacy/reference truth.
   - Website content is public rendering and routing only.
-  - HOPS-DET-0001 status is limited to proof path in progress.
+  - HO-DET-001 status is limited to proof path in progress.
+  - Raylee Hawkins identity links and public project/entity links are exposed for reviewer navigation.
 - Claims avoided:
   - Production-ready status.
   - Fully rebuilt status.

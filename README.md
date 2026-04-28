@@ -1,39 +1,51 @@
 # HawkinsOperations Website
 
-Recruiter and stakeholder-facing narrative surface for HawkinsOps V2.
+Public website rendering layer for HawkinsOperations, the governed successor architecture for AI-assisted detection engineering.
+
+Owner identity: Raylee Hawkins, Detection Engineer | SOC Automation | Detection-as-Code | Security Automation.
+
+Official links: [Raylee Hawkins on LinkedIn](https://www.linkedin.com/in/raylee-hawkins) · [Raylee Hawkins on GitHub](https://github.com/raylee-hawkins) · [HawkinsOps detection engineering portfolio](https://hawkinsops.com) · [HawkinsOperations GitHub organization](https://github.com/HawkinsOperations) · [RayleeOps public operating journal](https://rayleeops.com)
 
 ## Purpose
 
-This repository presents the system story: what HawkinsOps V2 is, why it exists, how it is governed, and what proof it produces.
+This repository renders the public explanation for HawkinsOperations: governed detection engineering, truth boundaries, proof promotion, and public claim control.
+
+This repo is website rendering only. It is not the source of detection truth, runtime truth, signal truth, evidence truth, or public-safe authorization.
 
 ## Scope
 
 - Public-safe project narrative
+- Reviewer routing between public surfaces
 - Repository map and system overview
-- Links to sanitized evidence in `hawkinsoperations-proof`
+- Links to successor source and proof repositories
 
 ## Out of Scope
 
 - Host-level operational state
 - Internal cutover/control docs
 - Any non-public secrets or environment details
+- Detection implementation authority
+- Runtime, signal, evidence, or public-safe authorization authority
 
 ## Repository Contract
 
 - Keep language clear, technical, and evidence-backed.
 - Avoid internal plumbing details that do not help external readers.
-- Link claims to proof artifacts rather than undocumented assertions.
+- Link claims to source/proof artifacts rather than undocumented assertions.
+- Do not claim that website text proves runtime behavior, validation, signal observation, evidence linkage, or public-safe status.
 
-## Public-Safe Proof
+## Truth Boundary
 
-- Evidence summaries with traceable references
-- High-level validation outcomes
-- Clear boundaries for private vs public information
+- Website repo: public rendering and routing only
+- Detection truth: `hawkinsoperations-detections`
+- Validation truth: `hawkinsoperations-validation`
+- Platform/runtime truth: `hawkinsoperations-platform`
+- Proof and claim linkage: `hawkinsoperations-proof`
+- Organization-level successor governance: `https://github.com/HawkinsOperations`
 
 ## Related Repositories
 
-- Detections: `hawkinsoperations-detections`
-- Validation: `hawkinsoperations-validation`
-- Platform: `hawkinsoperations-platform`
-- Proof: `hawkinsoperations-proof`
-
+- Detections: `https://github.com/HawkinsOperations/hawkinsoperations-detections`
+- Validation: `https://github.com/HawkinsOperations/hawkinsoperations-validation`
+- Platform: `https://github.com/HawkinsOperations/hawkinsoperations-platform`
+- Proof: `https://github.com/HawkinsOperations/hawkinsoperations-proof`
