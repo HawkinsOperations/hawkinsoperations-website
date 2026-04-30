@@ -152,11 +152,12 @@
             <p><strong>Does not prove:</strong> runtime truth or evidence linkage.</p>
             <span class="open-link">Open</span>
           </a>
-          <a class="reviewer-card" href="https://github.com/HawkinsOperations/hawkinsoperations-proof/blob/main/docs/ID_BOUNDARY.md" target="_blank" rel="noopener noreferrer">
-            <span class="badge badge-source">SOURCE_EXISTS</span>
+          <a class="reviewer-card" href="https://github.com/HawkinsOperations/hawkinsoperations-proof/blob/main/proof/records/HO-DET-001.md" target="_blank" rel="noopener noreferrer">
+            <span class="badge badge-report">TEST_VALIDATED_SYNTHETIC_SCOPE</span>
             <h3>4. HO-DET-001 proof boundary</h3>
-            <p><strong>Answers:</strong> why HO-DET-001 is a successor ID, not inherited proof.</p>
-            <p><strong>Does not prove:</strong> validation, runtime activity, signal observation, evidence linkage, or public-safe status.</p>
+            <p><strong>Answers:</strong> why HO-DET-001 is a successor ID and what the public proof record currently supports.</p>
+            <p><strong>Supports:</strong> source, Splunk source, and synthetic validation against controlled process-creation fixtures.</p>
+            <p><strong>Does not prove:</strong> production deployment, fleet-wide coverage, Cribl/Wazuh routing, public runtime-active status, public signal-observed status, evidence-linked public proof, or public-safe status.</p>
             <span class="open-link">Open</span>
           </a>
           <a class="reviewer-card" href="https://hawkinsops.com" target="_blank" rel="noopener noreferrer">
@@ -193,8 +194,8 @@
           <article class="scope-card scope-card-no">
             <h3>What this does not prove</h3>
             <ul>
-              <li>It does not prove runtime-active detections.</li>
-              <li>It does not prove validation, signal observation, or evidence linkage.</li>
+              <li>It does not prove production deployment or fleet-wide coverage.</li>
+              <li>It does not make private runtime evidence public-safe.</li>
               <li>It does not make HO-DET-001 public-safe.</li>
             </ul>
           </article>
@@ -368,14 +369,15 @@
             <p><strong>Next gate:</strong> follow blocking or correction rules if triggered.</p>
             <span class="open-link">Open</span>
           </a>
-          <a class="control-card control-card-blocked" href="https://github.com/HawkinsOperations/hawkinsoperations-proof/blob/main/docs/ID_BOUNDARY.md" target="_blank" rel="noopener noreferrer">
-            <span class="badge badge-blocked">BLOCKED</span>
+          <a class="control-card" href="https://github.com/HawkinsOperations/hawkinsoperations-proof/blob/main/proof/records/HO-DET-001.md" target="_blank" rel="noopener noreferrer">
+            <span class="badge badge-report">TEST_VALIDATED_SYNTHETIC_SCOPE</span>
             <h3>HO-DET-001 successor detection path</h3>
             <p><strong>Owns:</strong> the successor detection ID boundary.</p>
-            <p><strong>Current status:</strong> SOURCE_EXISTS ceiling.</p>
-            <p><strong>Proves:</strong> the ID boundary is documented.</p>
-            <p><strong>Does not prove:</strong> HOD-001 validation carries forward.</p>
-            <p><strong>Next gate:</strong> static review plus validation plan.</p>
+            <p><strong>Current status:</strong> public repo proof level TEST_VALIDATED_SYNTHETIC_SCOPE.</p>
+            <p><strong>Proves:</strong> source, Splunk source, and synthetic validation against controlled positive and negative process-creation fixtures.</p>
+            <p><strong>Private lab note:</strong> a controlled lab runtime match has been captured locally, but it is not public-safe proof.</p>
+            <p><strong>Does not prove:</strong> production deployment, fleet-wide coverage, Cribl/Wazuh routing, public runtime-active status, public signal-observed status, evidence-linked public proof, or public-safe status.</p>
+            <p><strong>Next gate:</strong> reviewed wording, privacy review, stale review, evidence linkage review, and Raylee approval before any public-safe promotion.</p>
             <span class="open-link">Open</span>
           </a>
         </div>
@@ -417,11 +419,12 @@
           </article>
           <article class="status-summary-card">
             <p class="status-surface">HO-DET-001 source</p>
-            <p><strong>Current state:</strong> SOURCE_EXISTS</p>
-            <p><strong>Truth surface:</strong> detections repo.</p>
-            <p><strong>Proven:</strong> successor source candidate exists where committed.</p>
-            <p><strong>Not proven:</strong> validated, runtime-active, signal-observed, evidence-linked, or public-safe.</p>
-            <p><strong>Next action:</strong> static review plus validation plan.</p>
+            <p><strong>Current state:</strong> TEST_VALIDATED_SYNTHETIC_SCOPE</p>
+            <p><strong>Truth surface:</strong> detections, validation, and proof repos.</p>
+            <p><strong>Proven:</strong> HO-DET-001 source exists. HO-DET-001 Splunk source exists. HO-DET-001 passed synthetic validation against controlled positive and negative process-creation fixtures.</p>
+            <p><strong>Private lab note:</strong> a controlled lab runtime match has been captured locally, but it is not public-safe proof.</p>
+            <p><strong>Blocked:</strong> production, fleet-wide, Cribl-routed, Wazuh-routed, public runtime-active, public signal-observed, evidence-linked public proof, and public-safe claims.</p>
+            <p><strong>Next action:</strong> public-safe remains blocked pending review and approval.</p>
           </article>
           <article class="status-summary-card">
             <p class="status-surface">HOD-001 baseline proof</p>
@@ -454,22 +457,26 @@
         <p class="eyebrow">Promotion model</p>
         <h2 id="detection-title">HO-DET-001 is not promoted by HOD-001.</h2>
         <div class="boundary-callout">
-          <span class="badge badge-source">SOURCE_EXISTS</span>
+          <span class="badge badge-report">TEST_VALIDATED_SYNTHETIC_SCOPE</span>
           <ul>
             <li>HOD-001 = baseline/reference proof chain.</li>
             <li>HO-DET-001 = successor governed detection ID.</li>
             <li>HOD-001 may inform review.</li>
             <li>HOD-001 does not validate, promote, or make HO-DET-001 public-safe.</li>
-            <li>HO-DET-001 current ceiling: SOURCE_EXISTS.</li>
-            <li>Next gate: static review + validation plan.</li>
+            <li>HO-DET-001 has merged source, Splunk source, and synthetic validation artifacts.</li>
+            <li>The public proof record supports TEST_VALIDATED_SYNTHETIC_SCOPE.</li>
+            <li>A private controlled lab runtime match has been captured locally, but public-safe promotion remains blocked pending review.</li>
           </ul>
         </div>
         <div class="blocked-claims" aria-label="Blocked claims for HO-DET-001">
           <h3>Blocked claims</h3>
-          <span class="badge badge-blocked">validated</span>
+          <span class="badge badge-blocked">production-ready</span>
+          <span class="badge badge-blocked">fleet-wide</span>
+          <span class="badge badge-blocked">Cribl-routed</span>
+          <span class="badge badge-blocked">Wazuh-routed</span>
           <span class="badge badge-blocked">runtime-active</span>
           <span class="badge badge-blocked">signal-observed</span>
-          <span class="badge badge-blocked">evidence-linked</span>
+          <span class="badge badge-blocked">evidence-linked public proof</span>
           <span class="badge badge-blocked">public-safe</span>
         </div>
       </section>
