@@ -1,0 +1,20 @@
+# CODEOWNERS
+#
+# Purpose: review routing boundaries for public website and public-claim files.
+# Status: SOFT_ENFORCEMENT until GitHub branch protection or rulesets require CODEOWNERS review.
+#
+# TODO: Replace placeholder owner with verified org team slugs before enforcing branch rules.
+# Candidate teams:
+# @HawkinsOperations/proof-reviewers
+# @HawkinsOperations/detections-maintainers
+# @HawkinsOperations/validation-maintainers
+# @HawkinsOperations/website-maintainers
+# @HawkinsOperations/org-maintainers
+
+index.html @raylee-hawkins
+styles.css @raylee-hawkins
+robots.txt @raylee-hawkins
+sitemap.xml @raylee-hawkins
+README.md @raylee-hawkins
+SCOPE.md @raylee-hawkins
+STATUS.md @raylee-hawkins
