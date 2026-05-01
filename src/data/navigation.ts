@@ -10,7 +10,8 @@ export const primaryNavigation: NavItem[] = [
   { label: "Architecture", href: "/architecture/", description: "Truth model" },
   { label: "Repos", href: "/repos/", description: "Repository map" },
   { label: "Controls", href: "/controls/", description: "Claim firewall" },
-  { label: "Notes", href: "/field-notes/", description: "Field notes" },
+  { label: "Field Notes", href: "/field-notes/", description: "Field notes" },
+  { label: "About", href: "/about/", description: "Operator profile" },
 ];
 
 export const externalLinks = {
