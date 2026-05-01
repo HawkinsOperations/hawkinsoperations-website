@@ -10,11 +10,29 @@ Official links: [Raylee Hawkins on LinkedIn](https://www.linkedin.com/in/raylee-
 
 This repository renders the public explanation for HawkinsOperations: governed detection engineering, truth boundaries, proof promotion, and public claim control.
 
-This repo is website rendering only. It is not the source of detection truth, runtime truth, signal truth, evidence truth, or public-safe authorization.
+This repo is website rendering only. It is not the source of detection truth, runtime truth, signal truth, evidence truth, or external-use authorization.
+
+## HawkinsOperations Closed SOC Loop 001
+
+- GitHub Projects: pending access / attachment. Current org project route: https://github.com/orgs/HawkinsOperations/projects
+- Reviewer entry point: https://github.com/HawkinsOperations/.github/blob/main/profile/START_HERE.md
+- Repository authority map: https://github.com/HawkinsOperations/.github/blob/main/architecture/REPO_AUTHORITY_MAP.md
+- HO-DET-001 public proof route: https://github.com/HawkinsOperations/hawkinsoperations-proof/blob/main/proof/records/HO-DET-001.md
+- Current HO-DET-001 ceiling: TEST_VALIDATED_SYNTHETIC_SCOPE
+- HawkinsOperations is the governed successor system; HawkinsOps and older surfaces are legacy/reference unless revalidated.
+- Sprint thesis: speed with enforcement through deterministic validation, CI/CD gates, evidence records, proof contracts, and bounded public claims.
+- AI is labor. Governance is authority.
+- Build loud. Verify hard. Claim tight. Ship receipts.
+- Website/public pages route to proof records; they do not replace proof.
+- Next gates: case packet spine, deterministic verifier, claim-boundary scanner, CI proof-loop, proof card, website route.
+
+## Blocked Claims
+
+This repository does not claim: runtime-active, signal-observed, evidence-linked public proof, public-safe, live Splunk firing, production triage, analyst-approved disposition, HO-GPU-01 runtime-active, Cribl-routed, Wazuh-routed, AWS-live, autonomous SOC, production-ready SOC, fleet-wide deployment, or AI-approved disposition.
 
 ## Scope
 
-- Public-safe project narrative
+- External-use project narrative after review
 - Reviewer routing between public surfaces
 - Repository map and system overview
 - Links to successor source and proof repositories
@@ -25,14 +43,14 @@ This repo is website rendering only. It is not the source of detection truth, ru
 - Internal cutover/control docs
 - Any non-public secrets or environment details
 - Detection implementation authority
-- Runtime, signal, evidence, or public-safe authorization authority
+- Runtime, signal, evidence, or external-use authorization authority
 
 ## Repository Contract
 
 - Keep language clear, technical, and evidence-backed.
 - Avoid internal plumbing details that do not help external readers.
 - Link claims to source/proof artifacts rather than undocumented assertions.
-- Do not claim that website text proves runtime behavior, validation, signal observation, evidence linkage, or public-safe status.
+- Do not claim that website text proves runtime behavior, validation, signal observation, evidence linkage, or external-use approval.
 
 ## Truth Boundary
 
