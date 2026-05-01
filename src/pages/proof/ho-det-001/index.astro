@@ -1,0 +1,60 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import BoundaryNotice from "@components/BoundaryNotice.astro";
+import CaseFileHeader from "@components/CaseFileHeader.astro";
+import LinkCard from "@components/LinkCard.astro";
+import SectionHeader from "@components/SectionHeader.astro";
+import StatusCard from "@components/StatusCard.astro";
+import { externalLinks } from "@data/navigation";
+import { flagshipProofRecord as record } from "@data/proofRecords";
+---
+
+<BaseLayout title="HO-DET-001 Case File | HawkinsOperations">
+  <CaseFileHeader record={record} />
+  <section class="container section-tight">
+    <BoundaryNotice text="HO-DET-001 remains at TEST_VALIDATED_SYNTHETIC_SCOPE. Website rendering is not proof." />
+  </section>
+  <section class="container section">
+    <SectionHeader title="Current state" eyebrow="Case file" />
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <StatusCard label="Proof level" value={record.proofLevel} tone="warn" dataTarget="proof-ceiling" />
+      <StatusCard label="Validation" value={record.validationState} dataTarget="validation-status" />
+      <StatusCard label="Runtime" value={record.runtimeState} tone="block" />
+      <StatusCard label="Signal" value={record.signalState} tone="block" />
+    </div>
+  </section>
+  <section class="container section">
+    <div class="grid gap-6 lg:grid-cols-2">
+      <article class="card p-6">
+        <h2 class="text-2xl font-semibold text-slate-50">What exists</h2>
+        <ul class="mt-5 space-y-3 text-sm leading-6 text-slate-400">{record.exists.map((item) => <li>{item}</li>)}</ul>
+      </article>
+      <article class="card p-6">
+        <h2 class="text-2xl font-semibold text-slate-50">What passed</h2>
+        <ul class="mt-5 space-y-3 text-sm leading-6 text-slate-400">{record.passed.map((item) => <li>{item}</li>)}</ul>
+      </article>
+      <article class="card p-6">
+        <h2 class="text-2xl font-semibold text-slate-50">What is not claimed</h2>
+        <ul class="mt-5 space-y-3 text-sm leading-6 text-slate-400">{record.notClaimed.map((item) => <li>{item}</li>)}</ul>
+      </article>
+      <article class="card p-6">
+        <h2 class="text-2xl font-semibold text-slate-50">What remains blocked</h2>
+        <ul class="mt-5 space-y-3 text-sm leading-6 text-slate-400">{record.remainingBlocked.map((item) => <li>{item}</li>)}</ul>
+      </article>
+    </div>
+  </section>
+  <section class="container section">
+    <SectionHeader title="Promotion requirements" eyebrow="Before stronger public wording" />
+    <ul class="grid gap-3 md:grid-cols-2">
+      {record.promotionRequirements.map((item) => <li class="card p-4 text-sm leading-6 text-slate-300">{item}</li>)}
+    </ul>
+  </section>
+  <section class="container section">
+    <SectionHeader title="Related links" eyebrow="Evidence routes" />
+    <div class="grid gap-4 md:grid-cols-3">
+      <LinkCard href={externalLinks.proofRecord} title="Proof record" description="The canonical public proof record route for HO-DET-001." external />
+      <LinkCard href={externalLinks.detections} title="Source repo" description="Detection source candidates. Source presence does not prove runtime." external />
+      <LinkCard href="/controls/" title="Claim firewall" description="Blocked terms and promotion requirements." />
+    </div>
+  </section>
+</BaseLayout>

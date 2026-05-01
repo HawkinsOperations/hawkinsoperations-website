@@ -1,0 +1,15 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import FieldNoteCard from "@components/FieldNoteCard.astro";
+import PageHero from "@components/PageHero.astro";
+import { fieldNotes } from "@data/fieldNotes";
+---
+
+<BaseLayout title="Field Notes | HawkinsOperations">
+  <PageHero title="Field notes" subtitle="A technical archive for proof-boundary decisions." description="Short notes on source truth, runtime truth, synthetic validation, blocked claims, and governance authority." badges={[{ label: "TECHNICAL_ARCHIVE" }, { label: "CONTENT_FIRST" }]} />
+  <section class="container section">
+    <div class="surface rounded-lg px-6 md:px-10">
+      {fieldNotes.map((note) => <FieldNoteCard note={note} />)}
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,38 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import BoundaryNotice from "@components/BoundaryNotice.astro";
+import LinkCard from "@components/LinkCard.astro";
+import { fieldNotes } from "@data/fieldNotes";
+
+export function getStaticPaths() {
+  return fieldNotes.map((note) => ({
+    params: { slug: note.slug },
+    props: { note },
+  }));
+}
+
+const { note } = Astro.props;
+---
+
+<BaseLayout title={`${note.title} | HawkinsOperations Field Notes`} description={note.summary}>
+  <article class="container py-16">
+    <p class="mono text-xs uppercase text-emerald-200">{note.status}</p>
+    <h1 class="mt-5 max-w-4xl text-5xl font-semibold leading-tight text-slate-50">{note.title}</h1>
+    <p class="mt-5 max-w-3xl text-xl leading-8 text-slate-300">{note.summary}</p>
+    <div class="mt-6 flex flex-wrap gap-2">
+      {note.tags.map((tag) => <span class="mono border border-slate-700 px-2.5 py-1 text-[0.68rem] uppercase text-slate-400">{tag}</span>)}
+    </div>
+    <div class="mt-10">
+      <BoundaryNotice title="Proof boundary" text={note.proofBoundary} />
+    </div>
+    <div class="prose-codex mt-10 max-w-3xl">
+      {note.body.map((paragraph) => <p>{paragraph}</p>)}
+    </div>
+    <section class="mt-14">
+      <h2 class="text-2xl font-semibold text-slate-50">Related links</h2>
+      <div class="mt-5 grid gap-4 md:grid-cols-2">
+        {note.relatedLinks.map((link) => <LinkCard href={link.href} title={link.label} description="Continue through the public proof codex." />)}
+      </div>
+    </section>
+  </article>
+</BaseLayout>

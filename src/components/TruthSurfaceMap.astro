@@ -1,0 +1,8 @@
+---
+import TruthSurfaceCard from "./TruthSurfaceCard.astro";
+import { truthSurfaces } from "@data/truthSurfaces";
+---
+
+<div class="grid gap-4 lg:grid-cols-3">
+  {truthSurfaces.map((surface) => <TruthSurfaceCard surface={surface} />)}
+</div>

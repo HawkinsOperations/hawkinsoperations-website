@@ -1,0 +1,18 @@
+---
+export interface Props {
+  label: string;
+  tone?: "default" | "safe" | "warn" | "block";
+}
+
+const { label, tone = "default" } = Astro.props;
+const toneClass = {
+  default: "border-slate-500/30 bg-slate-900/70 text-slate-200",
+  safe: "border-emerald-300/30 bg-emerald-950/40 text-emerald-200",
+  warn: "border-yellow-300/35 bg-yellow-950/35 text-yellow-100",
+  block: "border-rose-300/35 bg-rose-950/35 text-rose-100",
+}[tone];
+---
+
+<span class={`mono inline-flex max-w-full items-center rounded-full border px-3 py-1 text-center text-[0.68rem] font-semibold uppercase leading-4 tracking-[0.14em] [overflow-wrap:anywhere] ${toneClass}`}>
+  {label}
+</span>

@@ -1,0 +1,41 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import BoundaryNotice from "@components/BoundaryNotice.astro";
+import LinkCard from "@components/LinkCard.astro";
+import PageHero from "@components/PageHero.astro";
+import ReviewerRouteCard from "@components/ReviewerRouteCard.astro";
+import SectionHeader from "@components/SectionHeader.astro";
+import { blockedClaims, proofCeiling } from "@data/claims";
+import { externalLinks } from "@data/navigation";
+---
+
+<BaseLayout title="Reviewer Route | HawkinsOperations">
+  <PageHero title="Reviewer route" subtitle="Three speeds through the public proof codex." description="Start with the proof ceiling, then follow the repository routes only as far as the evidence supports." badges={[{ label: proofCeiling, tone: "warn" }, { label: "RENDERING_ONLY" }]} />
+  <section class="container section">
+    <SectionHeader title="Choose the route that fits the review window" eyebrow="Inspection paths" />
+    <div class="grid gap-4 lg:grid-cols-3">
+      <ReviewerRouteCard duration="3 minutes" title="Ceiling and blocked claims" items={["Read the current proof ceiling.", "Open the HO-DET-001 proof card.", "Confirm the blocked claim list."]} />
+      <ReviewerRouteCard duration="10 minutes" title="Proof and repo context" items={["Read the proof ledger.", "Check the repository map.", "Confirm website rendering is not proof."]} />
+      <ReviewerRouteCard duration="Deep technical" title="Surface-by-surface inspection" items={["Trace source, validation, runtime, signal, evidence, and public proof.", "Inspect owner repositories.", "Review promotion requirements before accepting any stronger wording."]} />
+    </div>
+  </section>
+  <section class="container section-tight">
+    <BoundaryNotice text="Current proof ceiling: TEST_VALIDATED_SYNTHETIC_SCOPE. Website rendering is not proof." />
+  </section>
+  <section class="container section">
+    <SectionHeader title="External review links" eyebrow="Repository routes" />
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <LinkCard href={externalLinks.githubOrg} title="GitHub organization" description="Organization front door for HawkinsOperations." external />
+      <LinkCard href={externalLinks.proof} title="Proof repo" description="Proof records and promotion-state documentation." external />
+      <LinkCard href={externalLinks.detections} title="Detection repo" description="Detection source candidates. Source does not prove runtime." external />
+      <LinkCard href={externalLinks.controlMatrix} title="Control matrix" description="Current control routing when available." external />
+      <LinkCard href={externalLinks.repoAuthorityMap} title="Repository authority map" description="Repo plane separation and authority boundaries." external />
+    </div>
+  </section>
+  <section class="container section">
+    <SectionHeader title="Blocked claims summary" eyebrow="Do not infer" />
+    <div class="flex flex-wrap gap-2">
+      {blockedClaims.map((claim) => <span class="mono border border-rose-300/25 bg-rose-950/30 px-3 py-2 text-xs uppercase text-rose-100">{claim}</span>)}
+    </div>
+  </section>
+</BaseLayout>

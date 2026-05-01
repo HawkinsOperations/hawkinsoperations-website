@@ -7,6 +7,8 @@ Repository: `hawkinsoperations-website`
 - Public-safe project narrative and navigation
 - Repository map and system overview pages
 - Public-safe evidence summary links
+- Astro static routes for reviewer, proof, architecture, repository, claim firewall, field-note, operator, and legacy-boundary pages
+- Typed public rendering data under `src/data`
 
 ## Out of Scope
 
@@ -18,3 +20,4 @@ Repository: `hawkinsoperations-website`
 
 Website claims must map to proof records in `hawkinsoperations-proof`.
 
+Website rendering is not proof. The Astro site is a static public inspection layer and does not promote runtime, signal, evidence, or external-use claims by itself.

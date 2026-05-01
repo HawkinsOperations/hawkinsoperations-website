@@ -1,0 +1,13 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import PageHero from "@components/PageHero.astro";
+import TruthSurfaceMap from "@components/TruthSurfaceMap.astro";
+import { proofCeiling } from "@data/claims";
+---
+
+<BaseLayout title="Truth Surface Model | HawkinsOperations">
+  <PageHero title="Truth surface model" subtitle="Six surfaces, six proof meanings." description="Each surface says what it proves, what it does not prove, where it lives, what promotes it, and what blocks it." badges={[{ label: proofCeiling, tone: "warn" }, { label: "CLAIM_FIREWALL" }]} />
+  <section class="container section">
+    <TruthSurfaceMap />
+  </section>
+</BaseLayout>

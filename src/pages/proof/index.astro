@@ -1,0 +1,18 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import PageHero from "@components/PageHero.astro";
+import ProofLedgerCard from "@components/ProofLedgerCard.astro";
+import SectionHeader from "@components/SectionHeader.astro";
+import { proofCeiling } from "@data/claims";
+import { proofRecords } from "@data/proofRecords";
+---
+
+<BaseLayout title="Proof Ledger | HawkinsOperations">
+  <PageHero title="Proof ledger" subtitle="Public proof records with their claim ceilings visible." description="The ledger makes supported state and blocked promotions readable before reviewers follow source or evidence links." badges={[{ label: proofCeiling, tone: "warn" }, { label: "WEBSITE_RENDERING_IS_NOT_PROOF", tone: "block" }]} />
+  <section class="container section">
+    <SectionHeader title="Flagship proof record" eyebrow="HO-DET-001" />
+    <div class="grid gap-6">
+      {proofRecords.map((record) => <ProofLedgerCard record={record} />)}
+    </div>
+  </section>
+</BaseLayout>

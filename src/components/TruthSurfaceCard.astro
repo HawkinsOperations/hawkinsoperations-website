@@ -1,0 +1,32 @@
+---
+import type { TruthSurface } from "@data/truthSurfaces";
+
+export interface Props {
+  surface: TruthSurface;
+}
+
+const { surface } = Astro.props;
+---
+
+<article class="card p-5" data-truth-surface={surface.slug}>
+  <p class="mono text-xs uppercase text-emerald-200">{surface.location}</p>
+  <h3 class="mt-4 text-xl font-semibold text-slate-50">{surface.name}</h3>
+  <dl class="mt-5 space-y-4 text-sm leading-6">
+    <div>
+      <dt class="mono text-[0.68rem] uppercase text-slate-500">What it proves</dt>
+      <dd class="mt-1 text-slate-300">{surface.proves}</dd>
+    </div>
+    <div>
+      <dt class="mono text-[0.68rem] uppercase text-slate-500">What it does not prove</dt>
+      <dd class="mt-1 text-slate-400">{surface.doesNotProve}</dd>
+    </div>
+    <div>
+      <dt class="mono text-[0.68rem] uppercase text-slate-500">Promotes by</dt>
+      <dd class="mt-1 text-slate-400">{surface.promotesBy}</dd>
+    </div>
+    <div>
+      <dt class="mono text-[0.68rem] uppercase text-slate-500">Blocked by</dt>
+      <dd class="mt-1 text-slate-400">{surface.blockedBy}</dd>
+    </div>
+  </dl>
+</article>

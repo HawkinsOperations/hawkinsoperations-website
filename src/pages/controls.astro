@@ -1,0 +1,14 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import ClaimFirewall from "@components/ClaimFirewall.astro";
+import PageHero from "@components/PageHero.astro";
+import SectionHeader from "@components/SectionHeader.astro";
+---
+
+<BaseLayout title="Claim Firewall | HawkinsOperations">
+  <PageHero title="Claim firewall" subtitle="Allowed wording, blocked wording, and promotion gates in one public surface." description="The firewall keeps a bounded validation result from becoming an unsupported runtime, signal, or public proof claim." badges={[{ label: "PUBLIC_CLAIM_STANDARD" }, { label: "BLOCKED_TERMS_VISIBLE", tone: "block" }]} />
+  <section class="container section">
+    <SectionHeader title="Public claim standard" eyebrow="Controls" description="Supported claims must map to proof records. Blocked claims remain blocked unless a separate evidence-backed promotion changes their state." />
+    <ClaimFirewall />
+  </section>
+</BaseLayout>

@@ -1,0 +1,80 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import BoundaryNotice from "@components/BoundaryNotice.astro";
+import CodexIndex from "@components/CodexIndex.astro";
+import FieldNoteCard from "@components/FieldNoteCard.astro";
+import LinkCard from "@components/LinkCard.astro";
+import PageHero from "@components/PageHero.astro";
+import ProofLedgerCard from "@components/ProofLedgerCard.astro";
+import SectionHeader from "@components/SectionHeader.astro";
+import StatusCard from "@components/StatusCard.astro";
+import ClaimFirewall from "@components/ClaimFirewall.astro";
+import { mandatoryBoundary, proofCeiling } from "@data/claims";
+import { latestFieldNotes } from "@data/fieldNotes";
+import { externalLinks } from "@data/navigation";
+import { flagshipProofRecord } from "@data/proofRecords";
+---
+
+<BaseLayout title="HawkinsOperations | Public Proof Codex">
+  <PageHero
+    title="HawkinsOperations"
+    subtitle="Governed detection engineering and SOC automation proof system."
+    description="Built to separate source truth, runtime truth, signal truth, evidence truth, and public proof before claims are promoted."
+    badges={[
+      { label: "RENDERING_ONLY" },
+      { label: proofCeiling, tone: "warn" },
+      { label: "NOT_PUBLIC_SAFE", tone: "block" },
+    ]}
+  />
+
+  <section class="container section-tight">
+    <div class="grid gap-4 md:grid-cols-3">
+      <a class="mono border border-emerald-300/40 bg-emerald-300/10 px-4 py-3 text-center text-xs uppercase text-emerald-100" href="/start/">Start reviewer route</a>
+      <a class="mono border border-slate-600 px-4 py-3 text-center text-xs uppercase text-slate-200" href="/proof/">View proof ledger</a>
+      <a class="mono border border-slate-600 px-4 py-3 text-center text-xs uppercase text-slate-200" href={externalLinks.githubOrg} target="_blank" rel="noopener noreferrer">View GitHub organization</a>
+    </div>
+    <div class="mt-8">
+      <BoundaryNotice text={mandatoryBoundary} />
+    </div>
+  </section>
+
+  <section class="container section">
+    <SectionHeader title="Codex index" eyebrow="Public inspection" description="A routing layer for reviewers: proof ledger, truth surfaces, repository ownership, and the claim firewall." />
+    <CodexIndex />
+  </section>
+
+  <section class="container section">
+    <SectionHeader title="Proof ledger preview" eyebrow="Flagship record" description="The public proof ceiling is visible before any stronger claim can be inferred." />
+    <ProofLedgerCard record={flagshipProofRecord} />
+  </section>
+
+  <section class="container section">
+    <SectionHeader title="Truth surface preview" eyebrow="Claim promotion model" description="Each truth surface answers a different question. None inherits proof by presentation." />
+    <div class="grid gap-4 md:grid-cols-3">
+      <StatusCard label="Source" value="reviewable artifact" detail="Source presence does not prove runtime." />
+      <StatusCard label="Validation" value="synthetic scope" detail="Validation does not prove public signal." dataTarget="proof-ceiling" tone="warn" />
+      <StatusCard label="Public rendering" value="routing only" detail="Website pages do not replace proof records." tone="block" />
+    </div>
+  </section>
+
+  <section class="container section">
+    <SectionHeader title="Claim firewall preview" eyebrow="Blocked promotions" description="Blocked claims stay visible so the supported ceiling stays honest." />
+    <ClaimFirewall />
+  </section>
+
+  <section class="container section">
+    <SectionHeader title="Latest field notes" eyebrow="Technical archive" description="Short notes that explain the boundary model behind the public proof codex." />
+    <div>
+      {latestFieldNotes.map((note) => <FieldNoteCard note={note} />)}
+    </div>
+  </section>
+
+  <section class="container section">
+    <SectionHeader title="Reviewer route preview" eyebrow="Start here" description="Use the reviewer route when you need the fastest path from homepage to proof ceiling." />
+    <div class="grid gap-4 md:grid-cols-3">
+      <LinkCard href="/start/" title="3-minute path" description="Proof ceiling, blocked claims, and direct proof-record links." />
+      <LinkCard href="/repos/" title="Repo map" description="Which repo owns source, validation, runtime, proof, and rendering." />
+      <LinkCard href="/legacy/" title="Legacy boundary" description="Why HawkinsOps material is reference-only unless revalidated." />
+    </div>
+  </section>
+</BaseLayout>
