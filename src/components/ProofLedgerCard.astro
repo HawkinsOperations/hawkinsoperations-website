@@ -1,0 +1,43 @@
+---
+import ProofBadge from "./ProofBadge.astro";
+import type { ProofRecord } from "@data/proofRecords";
+
+export interface Props {
+  record: ProofRecord;
+}
+
+const { record } = Astro.props;
+---
+
+<article class="surface rounded-lg p-6" data-detection-id={record.detectionId} data-proof-ceiling={record.proofLevel} data-claim-state="rendering-only">
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <p class="mono text-xs uppercase text-slate-500">Detection ID</p>
+      <h3 class="mt-2 text-3xl font-semibold text-slate-50">{record.detectionId}</h3>
+      <p class="mt-2 text-slate-400">{record.title}</p>
+    </div>
+    <ProofBadge label={record.proofLevel} tone="warn" />
+  </div>
+  <dl class="mt-7 grid gap-3 md:grid-cols-2">
+    <div class="border border-slate-700/60 p-4">
+      <dt class="mono text-xs uppercase text-slate-500">Validation state</dt>
+      <dd class="mt-2 text-sm text-slate-200" data-ci-target="validation-status">{record.validationState}</dd>
+    </div>
+    <div class="border border-slate-700/60 p-4">
+      <dt class="mono text-xs uppercase text-slate-500">Runtime state</dt>
+      <dd class="mt-2 text-sm text-slate-200">{record.runtimeState}</dd>
+    </div>
+    <div class="border border-slate-700/60 p-4">
+      <dt class="mono text-xs uppercase text-slate-500">Signal state</dt>
+      <dd class="mt-2 text-sm text-slate-200">{record.signalState}</dd>
+    </div>
+    <div class="border border-slate-700/60 p-4">
+      <dt class="mono text-xs uppercase text-slate-500">Public-safe state</dt>
+      <dd class="mt-2 text-sm text-slate-200">{record.publicSafeState}</dd>
+    </div>
+  </dl>
+  <div class="mt-6 flex flex-wrap gap-3">
+    <a class="mono border border-blue-100/20 px-3 py-2 text-xs uppercase text-slate-200 hover:border-blue-100/45" href={record.sourceRepoLink} target="_blank" rel="noopener noreferrer">Source repo</a>
+    <a class="mono border border-blue-100/20 px-3 py-2 text-xs uppercase text-slate-200 hover:border-blue-100/45" href={record.proofRepoLink} target="_blank" rel="noopener noreferrer">Proof repo</a>
+  </div>
+</article>

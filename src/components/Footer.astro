@@ -1,0 +1,21 @@
+---
+import { externalLinks, primaryNavigation } from "@data/navigation";
+---
+
+<footer class="hairline">
+  <div class="container grid gap-8 py-10 md:grid-cols-[1.2fr_1fr]">
+    <div>
+      <p class="font-semibold text-slate-100">HawkinsOperations</p>
+      <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
+        Public rendering layer for governed detection engineering. Website rendering is not proof.
+      </p>
+    </div>
+    <div class="grid grid-cols-2 gap-3 text-sm text-slate-400">
+      {primaryNavigation.map((item) => <a href={item.href}>{item.label}</a>)}
+      <a href="/legacy/">Legacy</a>
+      <a href="/changelog/">System History</a>
+      <a href={externalLinks.rayleeGithub} target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href={externalLinks.rayleeLinkedIn} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    </div>
+  </div>
+</footer>

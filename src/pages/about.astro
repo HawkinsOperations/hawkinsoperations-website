@@ -1,0 +1,38 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import LinkCard from "@components/LinkCard.astro";
+import PageHero from "@components/PageHero.astro";
+import SectionHeader from "@components/SectionHeader.astro";
+import { externalLinks } from "@data/navigation";
+---
+
+<BaseLayout title="Operator Profile | HawkinsOperations" description="Operator profile for Raylee Hawkins and the HawkinsOperations governed proof system.">
+  <PageHero title="Operator profile" subtitle="Raylee Hawkins, system-first." description="Detection engineering, SOC automation, AI security operations, and manufacturing control background brought into a governed public proof system." badges={[{ label: "AI_IS_LABOR" }, { label: "GOVERNANCE_IS_AUTHORITY", tone: "safe" }]} />
+  <section class="container section">
+    <SectionHeader title="Profile boundary" eyebrow="Operator" description="This page supports reviewer context. The system remains the primary object; proof claims still route through proof records and promotion gates." />
+    <div class="grid gap-4 md:grid-cols-2">
+      <article class="card p-6">
+        <h2 class="text-2xl font-semibold text-slate-50">Work focus</h2>
+        <ul class="mt-5 space-y-3 text-sm leading-6 text-slate-400">
+          <li>Detection engineering</li>
+          <li>SOC automation</li>
+          <li>AI security operations</li>
+          <li>Manufacturing control and operational discipline</li>
+          <li>Proof boundaries for public security claims</li>
+        </ul>
+      </article>
+      <article class="card p-6">
+        <h2 class="text-2xl font-semibold text-slate-50">HawkinsOperations thesis</h2>
+        <p class="mt-5 text-sm leading-6 text-slate-400">AI is labor. Governance is authority. Build loud. Verify hard. Claim tight. Ship receipts.</p>
+      </article>
+    </div>
+  </section>
+  <section class="container section">
+    <SectionHeader title="Public links" eyebrow="Routes" />
+    <div class="grid gap-4 md:grid-cols-3">
+      <LinkCard href={externalLinks.rayleeGithub} title="GitHub" description="Public GitHub profile." external />
+      <LinkCard href={externalLinks.rayleeLinkedIn} title="LinkedIn" description="Professional profile." external />
+      <LinkCard href={externalLinks.githubOrg} title="HawkinsOperations" description="Current governed organization." external />
+    </div>
+  </section>
+</BaseLayout>

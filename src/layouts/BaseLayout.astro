@@ -1,0 +1,84 @@
+---
+import Header from "@components/Header.astro";
+import Footer from "@components/Footer.astro";
+import "@styles/global.css";
+
+export interface Props {
+  title: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = "HawkinsOperations public proof codex for governed detection engineering, truth boundaries, and claim promotion.",
+} = Astro.props;
+const canonical = new URL(Astro.url.pathname, "https://hawkinsoperations.com").toString();
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://hawkinsoperations.com/#website",
+      name: "HawkinsOperations",
+      url: "https://hawkinsoperations.com/",
+      description,
+      publisher: { "@id": "https://hawkinsoperations.com/#organization" },
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://hawkinsoperations.com/#organization",
+      name: "HawkinsOperations",
+      url: "https://hawkinsoperations.com/",
+      sameAs: ["https://github.com/HawkinsOperations"],
+    },
+    {
+      "@type": "Person",
+      "@id": "https://hawkinsoperations.com/#raylee-hawkins",
+      name: "Raylee Hawkins",
+      url: "https://hawkinsoperations.com/about/",
+      jobTitle: "Detection Engineer",
+      knowsAbout: [
+        "Detection engineering",
+        "SOC automation",
+        "Detection-as-code",
+        "AI security operations",
+        "Public proof boundaries",
+      ],
+      sameAs: [
+        "https://github.com/raylee-hawkins",
+        "https://www.linkedin.com/in/raylee-hawkins",
+      ],
+    },
+  ],
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content="HawkinsOperations" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div class="site-shell">
+      <Header />
+      <main id="main-content" tabindex="-1">
+        <slot />
+      </main>
+      <Footer />
+    </div>
+  </body>
+</html>

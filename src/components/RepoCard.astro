@@ -1,0 +1,25 @@
+---
+import type { RepoRecord } from "@data/repos";
+
+export interface Props {
+  repo: RepoRecord;
+}
+
+const { repo } = Astro.props;
+---
+
+<a class="card block p-5" href={repo.href} target="_blank" rel="noopener noreferrer">
+  <p class="mono text-xs uppercase text-blue-100">{repo.truthSurface}</p>
+  <h3 class="mt-4 text-xl font-semibold text-slate-50">{repo.name}</h3>
+  <p class="mt-3 text-sm leading-6 text-slate-400">{repo.purpose}</p>
+  <dl class="mt-5 space-y-3 text-sm">
+    <div>
+      <dt class="mono text-[0.68rem] uppercase text-slate-500">Owns</dt>
+      <dd class="mt-1 text-slate-300">{repo.owns}</dd>
+    </div>
+    <div>
+      <dt class="mono text-[0.68rem] uppercase text-slate-500">Does not prove</dt>
+      <dd class="mt-1 text-slate-400">{repo.doesNotProve}</dd>
+    </div>
+  </dl>
+</a>

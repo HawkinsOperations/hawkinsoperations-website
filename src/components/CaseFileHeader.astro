@@ -1,0 +1,25 @@
+---
+import ProofBadge from "./ProofBadge.astro";
+import type { ProofRecord } from "@data/proofRecords";
+
+export interface Props {
+  record: ProofRecord;
+}
+
+const { record } = Astro.props;
+---
+
+<header class="container py-16" data-detection-id={record.detectionId} data-proof-ceiling={record.proofLevel}>
+  <p class="mono text-xs uppercase text-blue-100">Case file</p>
+  <div class="mt-5 flex flex-wrap items-end justify-between gap-5">
+    <div>
+      <h1 class="text-4xl font-semibold leading-none text-slate-50 [overflow-wrap:anywhere] md:text-7xl">{record.detectionId}</h1>
+      <p class="mt-5 max-w-3xl text-xl leading-8 text-slate-300">{record.title}</p>
+    </div>
+    <div class="flex flex-wrap justify-end gap-2">
+      <ProofBadge label="RENDERING_ONLY" />
+      <ProofBadge label={record.proofLevel} tone="warn" />
+      <ProofBadge label="NOT_PUBLIC_SAFE" tone="block" />
+    </div>
+  </div>
+</header>

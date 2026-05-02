@@ -1,0 +1,18 @@
+---
+import { primaryNavigation, externalLinks } from "@data/navigation";
+---
+
+<header class="sticky top-0 z-40 border-b border-blue-100/10 bg-[#03050a]/90 backdrop-blur">
+  <div class="container flex min-h-16 items-center justify-between gap-5">
+    <a href="/" class="flex items-center gap-3 font-semibold text-slate-50" aria-label="HawkinsOperations home">
+      <span class="grid size-8 place-items-center border border-blue-100/25 bg-blue-100/5 text-xs text-blue-100">HO</span>
+      <span>HawkinsOperations</span>
+    </a>
+    <nav class="hidden items-center gap-5 text-sm text-slate-300 lg:flex" aria-label="Primary navigation">
+      {primaryNavigation.map((item) => <a href={item.href}>{item.label}</a>)}
+    </nav>
+    <a class="mono hidden border border-blue-100/20 px-3 py-2 text-xs uppercase text-slate-200 hover:border-blue-100/45 md:inline-flex" href={externalLinks.githubOrg} target="_blank" rel="noopener noreferrer">
+      GitHub org
+    </a>
+  </div>
+</header>

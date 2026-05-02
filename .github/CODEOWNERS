@@ -11,10 +11,19 @@
 # @HawkinsOperations/website-maintainers
 # @HawkinsOperations/org-maintainers
 
-index.html @raylee-hawkins
-styles.css @raylee-hawkins
-robots.txt @raylee-hawkins
-sitemap.xml @raylee-hawkins
+src/pages/ @raylee-hawkins
+src/components/ @raylee-hawkins
+src/layouts/ @raylee-hawkins
+src/styles/ @raylee-hawkins
+src/data/ @raylee-hawkins
+public/robots.txt @raylee-hawkins
+public/sitemap.xml @raylee-hawkins
+astro.config.mjs @raylee-hawkins
+tailwind.config.mjs @raylee-hawkins
+postcss.config.mjs @raylee-hawkins
+tsconfig.json @raylee-hawkins
+package.json @raylee-hawkins
+package-lock.json @raylee-hawkins
 README.md @raylee-hawkins
 SCOPE.md @raylee-hawkins
 STATUS.md @raylee-hawkins

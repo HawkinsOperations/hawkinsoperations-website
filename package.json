@@ -1,0 +1,19 @@
+{
+  "name": "hawkinsoperations-website",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "check:site": "node scripts/verify-site-contract.mjs",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.4",
+    "astro": "^6.2.1",
+    "tailwindcss": "^4.2.4",
+    "typescript": "^5.9.3"
+  }
+}

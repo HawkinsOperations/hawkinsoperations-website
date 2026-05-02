@@ -1,0 +1,37 @@
+---
+import ProofBadge from "./ProofBadge.astro";
+
+export interface Props {
+  title: string;
+  subtitle: string;
+  description?: string;
+  badges?: { label: string; tone?: "default" | "safe" | "warn" | "block" }[];
+}
+
+const { title, subtitle, description, badges = [] } = Astro.props;
+---
+
+<section class="container grid gap-10 py-20 md:grid-cols-[1.15fr_0.85fr] md:py-24">
+  <div>
+    <h1 class="max-w-4xl text-4xl font-semibold leading-[0.98] text-slate-50 md:text-7xl">{title}</h1>
+    <p class="mt-6 max-w-3xl text-xl leading-8 text-slate-200">{subtitle}</p>
+    {description && <p class="mt-5 max-w-3xl text-base leading-7 text-slate-400">{description}</p>}
+    {badges.length > 0 && (
+      <div class="mt-8 flex flex-wrap gap-2">
+        {badges.map((badge) => <ProofBadge label={badge.label} tone={badge.tone} />)}
+      </div>
+    )}
+  </div>
+  <div class="surface relative overflow-hidden p-5" data-truth-surface="public-rendering">
+    <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-100/55 to-transparent"></div>
+    <p class="mono text-xs uppercase text-blue-100">Public inspection layer</p>
+    <div class="mt-8 grid gap-3">
+      {["source truth", "runtime truth", "signal truth", "evidence truth", "public proof"].map((item) => (
+        <div class="flex min-w-0 flex-wrap items-center justify-between gap-2 border-b border-blue-100/10 px-1 py-3 text-sm">
+          <span class="min-w-0 capitalize text-slate-200">{item}</span>
+          <span class="mono text-[0.66rem] uppercase text-slate-500">separate</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

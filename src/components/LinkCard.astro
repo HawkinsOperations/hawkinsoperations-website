@@ -1,0 +1,17 @@
+---
+export interface Props {
+  href: string;
+  title: string;
+  description: string;
+  external?: boolean;
+}
+
+const { href, title, description, external = false } = Astro.props;
+---
+
+<a class="card group block p-5" href={href} target={external ? "_blank" : undefined} rel={external ? "noopener noreferrer" : undefined}>
+  <span class="mono text-xs uppercase text-blue-100">Open route</span>
+  <h3 class="mt-4 text-xl font-semibold text-slate-50">{title}</h3>
+  <p class="mt-3 text-sm leading-6 text-slate-400">{description}</p>
+  <span class="mt-5 inline-flex text-sm text-slate-300 group-hover:text-blue-100">Inspect path</span>
+</a>

@@ -1,0 +1,32 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import BoundaryNotice from "@components/BoundaryNotice.astro";
+import ClaimPromotionFlow from "@components/ClaimPromotionFlow.astro";
+import LinkCard from "@components/LinkCard.astro";
+import PageHero from "@components/PageHero.astro";
+import SectionHeader from "@components/SectionHeader.astro";
+import TruthSurfaceMap from "@components/TruthSurfaceMap.astro";
+---
+
+<BaseLayout title="System Architecture | HawkinsOperations" description="System architecture map for HawkinsOperations proof planes, repository separation, and claim promotion boundaries.">
+  <PageHero title="System architecture" subtitle="A public map of separated proof planes." description="The architecture is designed so source, validation, runtime, signal, evidence, and public proof do not collapse into one unsupported claim." badges={[{ label: "STATIC_SITE" }, { label: "NO_SSR" }, { label: "NO_WORKERS_REQUIRED" }]} />
+  <section class="container section-tight">
+    <BoundaryNotice text="Public rendering can explain the architecture. It does not prove the architecture is active in runtime." />
+  </section>
+  <section class="container section">
+    <SectionHeader title="Repo plane separation" eyebrow="System overview" description="Each plane owns a different class of truth. Promotion requires movement through gates, not presentation alone." />
+    <ClaimPromotionFlow />
+  </section>
+  <section class="container section">
+    <SectionHeader title="Truth surfaces" eyebrow="Promotion model" />
+    <TruthSurfaceMap />
+  </section>
+  <section class="container section">
+    <SectionHeader title="CI and governance enforcement concept" eyebrow="Controls" description="The website can host stable data attributes for scanners, but enforcement still lives in repositories, workflows, and promotion gates." />
+    <div class="grid gap-4 md:grid-cols-3">
+      <LinkCard href="/controls/" title="Claim firewall" description="Allowed claims, blocked terms, and wording examples." />
+      <LinkCard href="/repos/" title="Repository map" description="Where each proof plane lives." />
+      <LinkCard href="/proof/" title="Proof ledger" description="The flagship HO-DET-001 record and current ceiling." />
+    </div>
+  </section>
+</BaseLayout>

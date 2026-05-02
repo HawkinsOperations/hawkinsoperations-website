@@ -1,0 +1,27 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import BoundaryNotice from "@components/BoundaryNotice.astro";
+import LinkCard from "@components/LinkCard.astro";
+import PageHero from "@components/PageHero.astro";
+import SectionHeader from "@components/SectionHeader.astro";
+import { externalLinks } from "@data/navigation";
+---
+
+<BaseLayout title="Legacy Boundary | HawkinsOperations" description="Legacy boundary explaining HawkinsOps as reference material and HawkinsOperations as the current governed rebuild.">
+  <PageHero title="Legacy boundary" subtitle="HawkinsOps is legacy/reference. HawkinsOperations is the current governed rebuild." description="Legacy proof does not automatically prove current claims. Current claims require current evidence and promotion gates." badges={[{ label: "LEGACY_REFERENCE" }, { label: "CURRENT_EVIDENCE_REQUIRED", tone: "warn" }]} />
+  <section class="container section-tight">
+    <BoundaryNotice text="Legacy material may provide context, but it does not automatically promote current HawkinsOperations claims." />
+  </section>
+  <section class="container section">
+    <SectionHeader title="Boundary rules" eyebrow="Legacy handling" />
+    <div class="grid gap-4 md:grid-cols-3">
+      <article class="card p-5"><h2 class="text-xl font-semibold text-slate-50">HawkinsOps</h2><p class="mt-3 text-sm leading-6 text-slate-400">Legacy/reference unless explicitly revalidated.</p></article>
+      <article class="card p-5"><h2 class="text-xl font-semibold text-slate-50">HawkinsOperations</h2><p class="mt-3 text-sm leading-6 text-slate-400">Current governed rebuild and public proof codex.</p></article>
+      <article class="card p-5"><h2 class="text-xl font-semibold text-slate-50">Promotion</h2><p class="mt-3 text-sm leading-6 text-slate-400">Current claims require current evidence, proof linkage, and promotion gates.</p></article>
+    </div>
+  </section>
+  <section class="container section">
+    <SectionHeader title="Reference route" eyebrow="Context only" />
+    <LinkCard href={externalLinks.legacyHawkinsOps} title="Legacy HawkinsOps" description="Historical and reference context only." external />
+  </section>
+</BaseLayout>

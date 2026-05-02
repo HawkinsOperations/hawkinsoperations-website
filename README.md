@@ -1,6 +1,6 @@
 # HawkinsOperations Website
 
-Public website rendering layer for HawkinsOperations, the governed successor architecture for AI-assisted detection engineering.
+Public proof codex and website rendering layer for HawkinsOperations, the governed successor architecture for AI-assisted detection engineering.
 
 Owner identity: Raylee Hawkins, Detection Engineer | SOC Automation | Detection-as-Code | Security Automation.
 
@@ -8,9 +8,22 @@ Official links: [Raylee Hawkins on LinkedIn](https://www.linkedin.com/in/raylee-
 
 ## Purpose
 
-This repository renders the public explanation for HawkinsOperations: governed detection engineering, truth boundaries, proof promotion, and public claim control.
+This repository renders the public explanation for HawkinsOperations: governed detection engineering, truth boundaries, proof promotion, public claim control, and reviewer routing.
 
 This repo is website rendering only. It is not the source of detection truth, runtime truth, signal truth, evidence truth, or external-use authorization.
+
+## Framework and Deploy Model
+
+- Framework: Astro + Tailwind CSS + TypeScript
+- Output mode: static
+- Primary deploy target: Cloudflare Pages
+- Build command: `npm run build`
+- Output directory: `dist`
+- Workers required: no
+- SSR required: no
+- Fake dynamic APIs: none
+
+Cloudflare Pages should build from the repository root and publish `dist`.
 
 ## HawkinsOperations Closed SOC Loop 001
 
@@ -36,6 +49,7 @@ This repository does not claim: runtime-active, signal-observed, evidence-linked
 - Reviewer routing between public surfaces
 - Repository map and system overview
 - Links to successor source and proof repositories
+- Static public proof codex routes for reviewer inspection
 
 ## Out of Scope
 
@@ -51,6 +65,7 @@ This repository does not claim: runtime-active, signal-observed, evidence-linked
 - Avoid internal plumbing details that do not help external readers.
 - Link claims to source/proof artifacts rather than undocumented assertions.
 - Do not claim that website text proves runtime behavior, validation, signal observation, evidence linkage, or external-use approval.
+- Treat `src/data/*` as the typed public claim-boundary data layer for this static site.
 
 ## Truth Boundary
 
