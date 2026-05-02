@@ -7,8 +7,8 @@ import { proofCeiling } from "@data/claims";
 import { proofRecords } from "@data/proofRecords";
 ---
 
-<BaseLayout title="Proof Ledger | HawkinsOperations">
-  <PageHero title="Proof ledger" subtitle="Public proof records with their claim ceilings visible." description="The ledger makes supported state and blocked promotions readable before reviewers follow source or evidence links." badges={[{ label: proofCeiling, tone: "warn" }, { label: "WEBSITE_RENDERING_IS_NOT_PROOF", tone: "block" }]} />
+<BaseLayout title="Proof Ledger | HawkinsOperations" description="HawkinsOperations proof ledger showing HO-DET-001, proof ceiling, validation state, and blocked promotions.">
+  <PageHero title="Proof ledger" subtitle="Public proof records with their claim ceilings visible." description="The ledger makes supported state and blocked promotions readable before reviewers follow source or evidence links." badges={[{ label: "RENDERING_ONLY" }, { label: proofCeiling, tone: "warn" }, { label: "NOT_PUBLIC_SAFE", tone: "block" }, { label: "WEBSITE_RENDERING_IS_NOT_PROOF", tone: "block" }]} />
   <section class="container section">
     <SectionHeader title="Flagship proof record" eyebrow="HO-DET-001" />
     <div class="grid gap-6">

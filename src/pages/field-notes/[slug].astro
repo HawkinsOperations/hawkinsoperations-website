@@ -16,7 +16,7 @@ const { note } = Astro.props;
 
 <BaseLayout title={`${note.title} | HawkinsOperations Field Notes`} description={note.summary}>
   <article class="container py-16">
-    <p class="mono text-xs uppercase text-emerald-200">{note.status}</p>
+    <p class="mono text-xs uppercase text-blue-100">{note.status}</p>
     <h1 class="mt-5 max-w-4xl text-5xl font-semibold leading-tight text-slate-50">{note.title}</h1>
     <p class="mt-5 max-w-3xl text-xl leading-8 text-slate-300">{note.summary}</p>
     <div class="mt-6 flex flex-wrap gap-2">

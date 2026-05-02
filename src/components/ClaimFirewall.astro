@@ -4,7 +4,7 @@ import { allowedClaims, blockedClaims, promotionRequirements, safeWordingExample
 
 <div class="grid gap-5 lg:grid-cols-2" data-ci-target="blocked-claims">
   <article class="surface rounded-lg p-6">
-    <p class="mono text-xs uppercase text-emerald-200">Allowed claims</p>
+    <p class="mono text-xs uppercase text-blue-100">Allowed claims</p>
     <ul class="mt-5 space-y-3 text-sm leading-6 text-slate-300">
       {allowedClaims.map((claim) => <li>{claim}</li>)}
     </ul>
@@ -27,7 +27,7 @@ import { allowedClaims, blockedClaims, promotionRequirements, safeWordingExample
     <p class="mono text-xs uppercase text-slate-500">Wording examples</p>
     <div class="mt-5 grid gap-4">
       <div>
-        <h3 class="text-sm font-semibold text-emerald-200">Safe wording</h3>
+        <h3 class="text-sm font-semibold text-blue-100">Safe wording</h3>
         <ul class="mt-2 space-y-2 text-sm leading-6 text-slate-400">
           {safeWordingExamples.map((item) => <li>{item}</li>)}
         </ul>

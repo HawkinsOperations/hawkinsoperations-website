@@ -39,5 +39,7 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
+      - name: Check site contract
+        run: npm run check:site
       - name: Build static site
         run: npm run build

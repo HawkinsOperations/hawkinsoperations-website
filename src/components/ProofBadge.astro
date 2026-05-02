@@ -6,8 +6,8 @@ export interface Props {
 
 const { label, tone = "default" } = Astro.props;
 const toneClass = {
-  default: "border-slate-500/30 bg-slate-900/70 text-slate-200",
-  safe: "border-emerald-300/30 bg-emerald-950/40 text-emerald-200",
+  default: "border-blue-200/25 bg-blue-950/20 text-blue-100",
+  safe: "border-sky-200/25 bg-sky-950/25 text-sky-100",
   warn: "border-yellow-300/35 bg-yellow-950/35 text-yellow-100",
   block: "border-rose-300/35 bg-rose-950/35 text-rose-100",
 }[tone];

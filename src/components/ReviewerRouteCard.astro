@@ -9,7 +9,7 @@ const { duration, title, items } = Astro.props;
 ---
 
 <article class="card p-5">
-  <p class="mono text-xs uppercase text-emerald-200">{duration}</p>
+  <p class="mono text-xs uppercase text-blue-100">{duration}</p>
   <h3 class="mt-4 text-xl font-semibold text-slate-50">{title}</h3>
   <ol class="mt-5 space-y-3 text-sm leading-6 text-slate-400">
     {items.map((item) => <li>{item}</li>)}

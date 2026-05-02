@@ -22,12 +22,12 @@ const { title, subtitle, description, badges = [] } = Astro.props;
       </div>
     )}
   </div>
-  <div class="surface relative overflow-hidden rounded-lg p-5" data-truth-surface="public-rendering">
-    <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-300/70 to-transparent"></div>
-    <p class="mono text-xs uppercase text-emerald-200">Public inspection layer</p>
+  <div class="surface relative overflow-hidden p-5" data-truth-surface="public-rendering">
+    <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-100/55 to-transparent"></div>
+    <p class="mono text-xs uppercase text-blue-100">Public inspection layer</p>
     <div class="mt-8 grid gap-3">
       {["source truth", "runtime truth", "signal truth", "evidence truth", "public proof"].map((item) => (
-        <div class="flex min-w-0 flex-wrap items-center justify-between gap-2 border border-slate-700/60 bg-slate-950/50 px-4 py-3 text-sm">
+        <div class="flex min-w-0 flex-wrap items-center justify-between gap-2 border-b border-blue-100/10 px-1 py-3 text-sm">
           <span class="min-w-0 capitalize text-slate-200">{item}</span>
           <span class="mono text-[0.66rem] uppercase text-slate-500">separate</span>
         </div>
