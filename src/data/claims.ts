@@ -13,16 +13,20 @@ export const allowedClaims = [
 ];
 
 export const blockedClaims = [
-  "production-ready",
-  "fleet-wide",
   "runtime-active",
   "signal-observed",
-  "public-safe",
+  "public-safe runtime proof",
+  "production-ready",
+  "fleet-wide",
+  "live Splunk fired",
+  "Splunk-proven Runtime Signal 001",
   "Cribl-routed",
   "Wazuh-routed",
   "AWS-live",
   "autonomous SOC",
   "AI-approved disposition",
+  "analyst-approved disposition",
+  "public-safe",
 ];
 
 export const safeWordingExamples = [
