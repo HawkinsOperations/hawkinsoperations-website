@@ -37,7 +37,9 @@ Cloudflare Pages should build from the repository root and publish `dist`.
 - AI is labor. Governance is authority.
 - Build loud. Verify hard. Claim tight. Ship receipts.
 - Website/public pages route to proof records; they do not replace proof.
-- Next gates: case packet spine, deterministic verifier, claim-boundary scanner, CI proof-loop, proof card, website route.
+- Platform runtime contract enforcement exists for HO-DET-001 through `HawkinsOperations/hawkinsoperations-platform#5` as a non-promotional guardrail.
+- Platform contract status: it preserves `TEST_VALIDATED_SYNTHETIC_SCOPE`, `NOT_PUBLIC_SAFE`, and `BLOCKED`; it does not prove runtime-active status, signal-observed public proof, public-safe runtime proof, live Splunk fired, Splunk-proven Runtime Signal 001, Cribl-routed status, Wazuh-routed public proof, production-ready status, fleet-wide coverage, AWS-live status, autonomous SOC operation, AI-approved disposition, or analyst-approved disposition.
+- Next gates: evidence-backed runtime or signal promotion only after separate proof review, privacy review, stale review, wording review, and Raylee approval.
 
 ## Blocked Claims
 
