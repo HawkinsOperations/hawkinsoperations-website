@@ -48,7 +48,7 @@ export const truthSurfaces: TruthSurface[] = [
   {
     name: "Evidence Truth",
     slug: "evidence",
-    location: "C:\\Raylee\\Data and hawkinsoperations-proof",
+    location: "private evidence vault and hawkinsoperations-proof",
     proves: "A preserved evidence artifact supports a specific bounded claim.",
     doesNotProve: "Claims outside the evidence boundary.",
     promotesBy: "Explicit linkage, retention, and reviewable proof records.",

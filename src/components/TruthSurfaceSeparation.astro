@@ -1,0 +1,81 @@
+---
+const planes = [
+  {
+    name: "Source / Repo Truth",
+    canProve: "detection source and SPL exist.",
+    cannotProve: "a live event fired.",
+    current: "source exists.",
+  },
+  {
+    name: "Validation Truth",
+    canProve: "controlled fixtures passed.",
+    cannotProve: "endpoint runtime activity.",
+    current: "TEST_VALIDATED_SYNTHETIC_SCOPE.",
+  },
+  {
+    name: "Runtime Truth",
+    canProve: "system execution in the lab.",
+    cannotProve: "public-safe signal by itself.",
+    current: "private/not public-promoted.",
+  },
+  {
+    name: "Signal Truth",
+    canProve: "event, match, or correlation observed.",
+    cannotProve: "production or fleet-wide coverage.",
+    current: "not claimed publicly.",
+  },
+  {
+    name: "Evidence Truth",
+    canProve: "receipt, hash, export, or packet exists.",
+    cannotProve: "public wording by itself.",
+    current: "requires review.",
+  },
+  {
+    name: "Public Proof",
+    canProve: "reviewed public claim boundary.",
+    cannotProve: "raw runtime truth by rendering alone.",
+    current: "website rendering is not proof.",
+  },
+];
+---
+
+<section class="truth-separation moon-panel relative overflow-hidden p-6 md:p-8" aria-labelledby="truth-separation-title">
+  <div class="truth-separation__header">
+    <div>
+      <p class="eyebrow">Truth Surface Separation</p>
+      <h2 id="truth-separation-title" class="headline mt-3 text-2xl md:text-3xl">
+        Repo/source truth ≠ validation truth ≠ runtime truth ≠ signal truth ≠ evidence truth ≠ public proof.
+      </h2>
+    </div>
+    <p class="truth-separation__plain">
+      Each plane can support a narrower claim than the next one. HawkinsOperations keeps those planes split so a rendered page, passing fixture, or private lab receipt cannot silently become a stronger public claim.
+    </p>
+  </div>
+
+  <ol class="truth-separation__steps" aria-label="Separated truth planes">
+    {planes.map((plane, index) => (
+      <li class={`truth-plane truth-plane--${index + 1}`}>
+        <div class="truth-plane__rail">
+          <span class="truth-plane__index">{String(index + 1).padStart(2, "0")}</span>
+        </div>
+        <div class="truth-plane__body">
+          <h3>{plane.name}</h3>
+          <dl>
+            <div>
+              <dt>Can prove</dt>
+              <dd>{plane.canProve}</dd>
+            </div>
+            <div>
+              <dt>Cannot prove</dt>
+              <dd>{plane.cannotProve}</dd>
+            </div>
+            <div>
+              <dt>Current HO-DET-001 status</dt>
+              <dd>{plane.current}</dd>
+            </div>
+          </dl>
+        </div>
+      </li>
+    ))}
+  </ol>
+</section>

@@ -1,38 +1,205 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
-import LinkCard from "@components/LinkCard.astro";
-import PageHero from "@components/PageHero.astro";
-import SectionHeader from "@components/SectionHeader.astro";
+import StatusChip from "@components/StatusChip.astro";
+import SectionEyebrow from "@components/SectionEyebrow.astro";
+import PortraitCommandFrame from "@components/PortraitCommandFrame.astro";
 import { externalLinks } from "@data/navigation";
+
+const transferRows = [
+  { left: "Standard work",    right: "Detection-as-code",          note: "Reviewable, repeatable, owned." },
+  { left: "Traceability",     right: "Evidence records",            note: "Bounded artifacts, retained." },
+  { left: "Defect control",   right: "Validation failures",         note: "Deterministic, gated, surfaced." },
+  { left: "Escalation paths", right: "Human review gates",          note: "Operator-approved promotion." },
+  { left: "Quality gates",    right: "CI / verifier enforcement",   note: "Wording cannot ship until checks pass." },
+];
+
+// blockedClaims context: items below are blocked / not claimed publicly.
+const isItems = [
+  "Governed detection engineering SOC.",
+  "Proof-bound security production system.",
+  "Public reviewer surface with bounded claims.",
+];
+const isNotItems = [
+  "Autonomous SOC is blocked / not claimed.",
+  "Production SOC is blocked / not claimed.",
+  "Fleet-wide enterprise deployment is blocked / not claimed.",
+  "Public-safe runtime proof is blocked / not claimed.",
+];
 ---
 
-<BaseLayout title="Operator Profile | HawkinsOperations" description="Operator profile for Raylee Hawkins and the HawkinsOperations governed proof system.">
-  <PageHero title="Operator profile" subtitle="Raylee Hawkins, system-first." description="Detection engineering, SOC automation, AI security operations, and manufacturing control background brought into a governed public proof system." badges={[{ label: "AI_IS_LABOR" }, { label: "GOVERNANCE_IS_AUTHORITY", tone: "safe" }]} />
-  <section class="container section">
-    <SectionHeader title="Profile boundary" eyebrow="Operator" description="This page supports reviewer context. The system remains the primary object; proof claims still route through proof records and promotion gates." />
-    <div class="grid gap-4 md:grid-cols-2">
-      <article class="card p-6">
-        <h2 class="text-2xl font-semibold text-slate-50">Work focus</h2>
-        <ul class="mt-5 space-y-3 text-sm leading-6 text-slate-400">
-          <li>Detection engineering</li>
-          <li>SOC automation</li>
-          <li>AI security operations</li>
-          <li>Manufacturing control and operational discipline</li>
-          <li>Proof boundaries for public security claims</li>
-        </ul>
-      </article>
-      <article class="card p-6">
-        <h2 class="text-2xl font-semibold text-slate-50">HawkinsOperations thesis</h2>
-        <p class="mt-5 text-sm leading-6 text-slate-400">AI is labor. Governance is authority. Build loud. Verify hard. Claim tight. Ship receipts.</p>
-      </article>
+<BaseLayout
+  title="About | HawkinsOperations Detection Engineering SOC"
+  description="Operator profile and methodology for HawkinsOperations Detection Engineering SOC: detection engineering, SOC automation, manufacturing quality-control transfer, and AI governance."
+>
+  <!-- ╔══ HERO ═════════════════════════════════════════════════════════════════ -->
+  <section class="relative overflow-hidden">
+    <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+      <div class="absolute inset-0 opacity-[0.14]" style="background-image: linear-gradient(to right, rgba(201,211,223,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(201,211,223,0.06) 1px, transparent 1px); background-size: 64px 64px; mask-image: radial-gradient(ellipse at 50% 0%, black 0%, transparent 70%);"></div>
+    </div>
+
+    <div class="container relative grid gap-12 pt-14 pb-14 lg:grid-cols-[1.45fr_0.85fr] lg:pt-20 lg:pb-20 lg:gap-14">
+      <!-- LEFT · content always first in flow -->
+      <div class="order-1">
+        <div class="flex flex-wrap items-center gap-2">
+          <StatusChip label="OPERATOR PROFILE" tone="ice" />
+          <span class="mono text-[0.6rem] tracking-[0.22em] uppercase text-[var(--muted)]">methodology · governance · ai</span>
+        </div>
+
+        <h1 class="headline mt-6 text-[clamp(2rem,4.6vw,3.4rem)]">
+          Raylee Hawkins
+          <span class="block mt-2 text-[0.55em] font-medium text-[var(--ice-blue)] tracking-tight">Detection engineer · SOC production</span>
+        </h1>
+
+        <p class="lede mt-6 max-w-2xl">
+          Building a governed detection engineering SOC and AI-assisted production system — proof-bound, evidence-routed, quality-controlled.
+        </p>
+        <p class="muted mt-4 max-w-2xl text-base leading-7">
+          Manufacturing quality control taught the discipline. Detection engineering inherits it: standard work, traceability, defect control, escalation, and gates that decide what can be claimed.
+        </p>
+
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <a class="cta cta-primary" href={externalLinks.rayleeGithub} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+          <a class="cta cta-quiet" href={externalLinks.rayleeLinkedIn} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+          <a class="cta cta-quiet" href="/proof/">Proof ledger</a>
+        </div>
+      </div>
+
+      <!-- RIGHT · editorial portrait, second in flow -->
+      <div class="order-2 flex items-start justify-center lg:justify-end lg:pt-3">
+        <PortraitCommandFrame size="compact" showArc={false} showBoundary={false} />
+      </div>
+    </div>
+    <div class="container"><hr class="thin-rule" /></div>
+  </section>
+
+  <!-- ╔══ FOCUS · 3 quiet panels ═══════════════════════════════════════════ -->
+  <section class="container section-tight">
+    <SectionEyebrow eyebrow="Focus" title="Detection engineering and SOC automation" description="Where the work lives day-to-day, and what it produces." />
+    <div class="grid gap-3 md:grid-cols-3">
+      <div class="status-band">
+        <span class="status-band__rule" aria-hidden="true"></span>
+        <div>
+          <p class="mono text-[0.6rem] tracking-[0.2em] uppercase text-[var(--ice-blue)]">Detection engineering</p>
+          <p class="mt-2 text-sm leading-6 text-[var(--silver)]">Detection-as-code: reviewable source, deterministic validation, bounded claims. Source presence does not prove runtime.</p>
+        </div>
+      </div>
+      <div class="status-band">
+        <span class="status-band__rule" aria-hidden="true"></span>
+        <div>
+          <p class="mono text-[0.6rem] tracking-[0.2em] uppercase text-[var(--ice-blue)]">SOC production</p>
+          <p class="mt-2 text-sm leading-6 text-[var(--silver)]">Closed engineering loops: source → validation → verifier → CI → record. Every step has a gate; no step skips one.</p>
+        </div>
+      </div>
+      <div class="status-band">
+        <span class="status-band__rule" aria-hidden="true"></span>
+        <div>
+          <p class="mono text-[0.6rem] tracking-[0.2em] uppercase text-[var(--ice-blue)]">AI-assisted</p>
+          <p class="mt-2 text-sm leading-6 text-[var(--silver)]">AI accelerates drafting, scaffolding, and review. AI never owns the promotion boundary.</p>
+        </div>
+      </div>
     </div>
   </section>
-  <section class="container section">
-    <SectionHeader title="Public links" eyebrow="Routes" />
-    <div class="grid gap-4 md:grid-cols-3">
-      <LinkCard href={externalLinks.rayleeGithub} title="GitHub" description="Public GitHub profile." external />
-      <LinkCard href={externalLinks.rayleeLinkedIn} title="LinkedIn" description="Professional profile." external />
-      <LinkCard href={externalLinks.githubOrg} title="HawkinsOperations" description="Current governed organization." external />
+
+  <!-- ╔══ MFG QC TRANSFER (editorial table with notes column) ══════════════ -->
+  <section class="container section-tight">
+    <SectionEyebrow eyebrow="Methodology transfer" title="Manufacturing QC → detection engineering" description="The same discipline, mapped." />
+    <div class="ledger" style="--ledger-cols: 1fr 1.2fr 1.4fr;">
+      <div class="ledger__head">
+        <div>Manufacturing QC</div>
+        <div>Detection engineering</div>
+        <div>Practice</div>
+      </div>
+      {transferRows.map((row) => (
+        <div class="ledger__row ledger__row--static">
+          <div class="ledger__cell" data-label="Manufacturing QC">{row.left}</div>
+          <div class="ledger__cell" data-label="Detection engineering"><strong>{row.right}</strong></div>
+          <div class="ledger__cell ledger__cell--muted" data-label="Practice">{row.note}</div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ╔══ AI DOCTRINE (editorial banner) ═══════════════════════════════════ -->
+  <section class="container section-tight">
+    <div class="moon-panel relative overflow-hidden p-8 md:p-10">
+      <div class="absolute -right-20 -top-20 size-[360px] rounded-full pointer-events-none" aria-hidden="true" style="background: radial-gradient(circle, rgba(143,216,255,0.08), transparent 60%); filter: blur(20px);"></div>
+      <div class="relative grid gap-6 md:grid-cols-[1.5fr_1fr] md:items-center">
+        <div>
+          <p class="eyebrow">AI governance</p>
+          <h2 class="headline mt-3 text-3xl md:text-4xl">AI is labor. Governance is authority.</h2>
+          <p class="muted mt-4 max-w-2xl text-base leading-7">
+            AI accelerates the work — drafting detections, scaffolding validators, surfacing review notes. Authority lives in deterministic verifiers, explicit evidence linkage, and operator-approved promotion gates.
+          </p>
+          <p class="mono mt-5 text-[0.62rem] tracking-[0.22em] uppercase text-[var(--silver)]">
+            Build loud · Verify hard · Claim tight · Ship receipts
+          </p>
+        </div>
+        <ul class="grid gap-2.5 text-sm leading-6 text-[var(--silver)] md:border-l md:border-[var(--moon-border)] md:pl-6">
+          <li class="flex gap-3"><span class="mt-2 inline-block size-1.5 shrink-0 rounded-full bg-[var(--ice-blue)] shadow-[0_0_8px_var(--ice-blue-glow)]"></span><span>AI drafts. Verifier decides.</span></li>
+          <li class="flex gap-3"><span class="mt-2 inline-block size-1.5 shrink-0 rounded-full bg-[var(--ice-blue)] shadow-[0_0_8px_var(--ice-blue-glow)]"></span><span>Promotion requires evidence linkage, not model confidence.</span></li>
+          <li class="flex gap-3"><span class="mt-2 inline-block size-1.5 shrink-0 rounded-full bg-[var(--ice-blue)] shadow-[0_0_8px_var(--ice-blue-glow)]"></span><span>Public wording must clear the blocked-claim CI scanner.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔══ IS / IS NOT (status bands, restrained) ═══════════════════════════ -->
+  <section class="container section-tight">
+    <SectionEyebrow eyebrow="Boundary" title="What HawkinsOperations is — and is not" />
+    <div class="grid gap-3 lg:grid-cols-2">
+      <div class="status-band">
+        <span class="status-band__rule" aria-hidden="true"></span>
+        <div>
+          <p class="mono text-[0.6rem] tracking-[0.2em] uppercase text-[var(--ice-blue)]">Is</p>
+          <ul class="mt-3 grid gap-2 text-sm leading-6 text-[var(--silver)]">
+            {isItems.map((item) => (
+              <li class="flex gap-3"><span class="mt-2 inline-block size-1.5 shrink-0 rounded-full bg-[var(--ice-blue)] shadow-[0_0_8px_var(--ice-blue-glow)]"></span><span>{item}</span></li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <div class="status-band status-band--block">
+        <span class="status-band__rule" aria-hidden="true"></span>
+        <div>
+          <p class="mono text-[0.6rem] tracking-[0.2em] uppercase" style="color: #FCA5A5;">Is not</p>
+          <ul class="mt-3 grid gap-2 text-sm leading-6 text-[var(--silver)]">
+            {isNotItems.map((item) => (
+              <li class="flex gap-3"><span class="mt-2 inline-block size-1.5 shrink-0 rounded-full bg-[#FCA5A5] shadow-[0_0_8px_rgba(251,113,133,0.4)]"></span><span>{item}</span></li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔══ LINKS · compact tile row ═══════════════════════════════════════ -->
+  <section class="container section-tight pb-20">
+    <SectionEyebrow eyebrow="Routes" title="Operator and system links" />
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <a class="artifact-tile" href={externalLinks.rayleeGithub} target="_blank" rel="noopener noreferrer">
+        <span class="artifact-tile__cat">EXTERNAL ↗</span>
+        <span class="artifact-tile__title">GitHub</span>
+        <span class="artifact-tile__desc">Operator profile.</span>
+        <span class="artifact-tile__link">Open ↗</span>
+      </a>
+      <a class="artifact-tile" href={externalLinks.rayleeLinkedIn} target="_blank" rel="noopener noreferrer">
+        <span class="artifact-tile__cat">EXTERNAL ↗</span>
+        <span class="artifact-tile__title">LinkedIn</span>
+        <span class="artifact-tile__desc">Professional profile.</span>
+        <span class="artifact-tile__link">Open ↗</span>
+      </a>
+      <a class="artifact-tile" href={externalLinks.legacyHawkinsOps} target="_blank" rel="noopener noreferrer">
+        <span class="artifact-tile__cat">REFERENCE ↗</span>
+        <span class="artifact-tile__title">Legacy HawkinsOps</span>
+        <span class="artifact-tile__desc">Reference / context only.</span>
+        <span class="artifact-tile__link">Open ↗</span>
+      </a>
+      <a class="artifact-tile" href={externalLinks.githubOrg} target="_blank" rel="noopener noreferrer">
+        <span class="artifact-tile__cat">ORGANIZATION ↗</span>
+        <span class="artifact-tile__title">HawkinsOperations</span>
+        <span class="artifact-tile__desc">Current governed organization.</span>
+        <span class="artifact-tile__link">Open ↗</span>
+      </a>
     </div>
   </section>
 </BaseLayout>

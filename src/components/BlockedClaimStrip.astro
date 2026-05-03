@@ -1,0 +1,38 @@
+---
+import { blockedClaims } from "@data/claims";
+
+export interface Props {
+  variant?: "compact" | "full";
+}
+
+const { variant = "full" } = Astro.props;
+const items = variant === "compact" ? blockedClaims.slice(0, 8) : blockedClaims;
+---
+
+<div class="moon-panel p-7 md:p-8" data-blocked-claims data-ci-target="blocked-claims">
+  <div class="flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <p class="eyebrow" style="color: #FCA5A5;">Blocked claims</p>
+      <h3 class="headline mt-2 text-2xl text-[var(--silver-bright)]">Kept off the public surface by design</h3>
+      <p class="muted mt-2 max-w-2xl text-sm leading-6">
+        These claims remain blocked unless separate evidence-backed promotion changes their state. Visibility of the blocked list keeps the supported ceiling honest.
+      </p>
+    </div>
+    <span class="chip chip-block">CLAIM FIREWALL · ACTIVE</span>
+  </div>
+  <ul class="mt-6 flex flex-wrap gap-2">
+    {items.map((claim) => (
+      <li>
+        <span class="mono inline-flex items-center gap-2 border border-[rgba(251,113,133,0.32)] bg-[rgba(251,113,133,0.06)] px-3 py-1.5 text-[0.66rem] font-semibold uppercase tracking-[0.14em] text-[#FCA5A5] rounded-sm">
+          <span class="inline-block size-1.5 rounded-full bg-[#FCA5A5] shadow-[0_0_8px_rgba(251,113,133,0.45)]"></span>
+          {claim}
+        </span>
+      </li>
+    ))}
+  </ul>
+  <div class="mt-5 grid gap-3 border-t border-[var(--moon-border)] pt-5 text-xs leading-5 text-[var(--muted)] md:grid-cols-3">
+    <p>Public-safe runtime proof is not claimed.</p>
+    <p>Cribl-routed, Wazuh-routed, AWS-live are not claimed.</p>
+    <p>Autonomous SOC and AI-approved disposition are not claimed.</p>
+  </div>
+</div>

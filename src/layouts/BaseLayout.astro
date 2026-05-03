@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from "astro:transitions";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
 import "@styles/global.css";
@@ -10,16 +11,18 @@ export interface Props {
 
 const {
   title,
-  description = "HawkinsOperations public proof codex for governed detection engineering, truth boundaries, and claim promotion.",
+  description = "HawkinsOperations Detection Engineering SOC: governed detection engineering and AI-assisted SOC production with separated truth surfaces and proof-bound public claims.",
 } = Astro.props;
+
 const canonical = new URL(Astro.url.pathname, "https://hawkinsoperations.com").toString();
+
 const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
     {
       "@type": "WebSite",
       "@id": "https://hawkinsoperations.com/#website",
-      name: "HawkinsOperations",
+      name: "HawkinsOperations Detection Engineering SOC",
       url: "https://hawkinsoperations.com/",
       description,
       publisher: { "@id": "https://hawkinsoperations.com/#organization" },
@@ -41,7 +44,7 @@ const structuredData = {
         "Detection engineering",
         "SOC automation",
         "Detection-as-code",
-        "AI security operations",
+        "AI-assisted security operations",
         "Public proof boundaries",
       ],
       sameAs: [
@@ -61,6 +64,8 @@ const structuredData = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#03060B" />
+    <meta name="color-scheme" content="dark" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={title} />
@@ -69,7 +74,11 @@ const structuredData = {
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" />
     <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+    <ClientRouter fallback="swap" />
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>

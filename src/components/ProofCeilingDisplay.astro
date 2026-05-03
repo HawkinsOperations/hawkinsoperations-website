@@ -1,0 +1,20 @@
+---
+import { proofCeiling } from "@data/claims";
+
+export interface Props {
+  size?: "default" | "xl";
+  visualLabel?: string;
+}
+
+const { size = "default", visualLabel } = Astro.props;
+
+// Render the machine token as visual editorial words to avoid mid-token wrap.
+// "TEST_VALIDATED_SYNTHETIC_SCOPE" → "Test · Validated · Synthetic Scope"
+const defaultVisual = "Test · Validated · Synthetic Scope";
+const visual = visualLabel ?? defaultVisual;
+---
+
+<div class={`ceiling-display ${size === "xl" ? "ceiling-display--xl" : ""}`}>
+  <p class="ceiling-display__visual">{visual}</p>
+  <p class="ceiling-display__token" title={proofCeiling}>{proofCeiling}</p>
+</div>
