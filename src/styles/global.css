@@ -305,6 +305,20 @@ main { overflow: hidden; }
 
 .cta-quiet { border-color: var(--moon-border); }
 
+.surface-link-label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.surface-link-label--primary { color: var(--ice-blue); }
+.surface-link-label--quiet { color: var(--silver); }
+
 /* ─── Type ────────────────────────────────────────────────────────── */
 
 .eyebrow {
