@@ -8,6 +8,7 @@ const requiredFiles = [
   "src/pages/start.astro",
   "src/pages/proof/index.astro",
   "src/pages/proof/ho-det-001/index.astro",
+  "src/pages/artifacts/index.astro",
   "src/pages/architecture/index.astro",
   "src/pages/architecture/truth-surfaces/index.astro",
   "src/pages/repos.astro",
@@ -20,7 +21,11 @@ const requiredFiles = [
   "src/data/repos.ts",
   "src/data/claims.ts",
   "src/data/truthSurfaces.ts",
+  "src/data/truthPlanes.ts",
+  "src/data/loopSteps.ts",
+  "src/data/artifacts.ts",
   "src/data/navigation.ts",
+  "src/assets/raylee-hawkins-portrait.jpg",
   "public/robots.txt",
   "public/sitemap.xml",
 ];
@@ -32,26 +37,33 @@ if (missing.length > 0) {
 }
 
 const blockedTerms = [
-  "production-ready",
-  "fleet-wide",
   "runtime-active",
   "signal-observed",
-  "public-safe",
+  "public-safe runtime proof",
+  "production-ready",
+  "fleet-wide",
+  "live Splunk fired",
+  "Splunk-proven Runtime Signal 001",
   "Cribl-routed",
   "Wazuh-routed",
   "AWS-live",
   "autonomous SOC",
   "AI-approved disposition",
+  "analyst-approved disposition",
 ];
 
 const allowedContext = [
   /blocked/i,
   /not claimed/i,
+  /not[-_ ]claimed/i,
   /does not claim/i,
   /does not prove/i,
   /doesNotProve/,
+  /cannot[-_ ]prove/i,
   /not prove/i,
+  /not_public_safe/i,
   /claim firewall/i,
+  /claim[- ]firewall/i,
   /promotion/i,
   /unsafe wording/i,
   /remains capped/i,
@@ -80,7 +92,8 @@ for (const file of scanRoots.flatMap(collectFiles)) {
   if (!scanExtensions.has(extname(file))) continue;
   const lines = readFileSync(file, "utf8").split(/\r?\n/);
   lines.forEach((line, index) => {
-    const matchedTerm = blockedTerms.find((term) => line.includes(term));
+    const normalizedLine = line.toLowerCase();
+    const matchedTerm = blockedTerms.find((term) => normalizedLine.includes(term.toLowerCase()));
     if (!matchedTerm) return;
     const contextWindow = lines.slice(Math.max(0, index - 12), Math.min(lines.length, index + 13)).join(" ");
     if (!allowedContext.some((pattern) => pattern.test(contextWindow))) {

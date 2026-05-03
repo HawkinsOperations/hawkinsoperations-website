@@ -1,0 +1,20 @@
+---
+export type ChipTone = "default" | "ice" | "warn" | "block" | "quiet";
+
+export interface Props {
+  label: string;
+  tone?: ChipTone;
+  title?: string;
+}
+
+const { label, tone = "default", title } = Astro.props;
+const toneClass = {
+  default: "",
+  ice: "chip-ice",
+  warn: "chip-warn",
+  block: "chip-block",
+  quiet: "chip-quiet",
+}[tone];
+---
+
+<span class={`chip ${toneClass}`} title={title ?? label}>{label}</span>

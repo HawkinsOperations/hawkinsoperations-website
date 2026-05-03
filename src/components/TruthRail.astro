@@ -1,0 +1,41 @@
+---
+import { truthPlanes } from "@data/truthPlanes";
+---
+
+<section class="moon-panel relative overflow-hidden p-7 md:p-9" data-truth-rail aria-labelledby="truth-rail-title">
+  <header class="flex flex-wrap items-end justify-between gap-4">
+    <div class="max-w-2xl">
+      <p class="eyebrow">Truth split rail</p>
+      <h2 id="truth-rail-title" class="headline mt-2 text-2xl md:text-[1.7rem]">
+        Six surfaces, separated by design.
+      </h2>
+      <p class="muted mt-3 text-sm leading-6">
+        Each surface answers a different question. None inherits proof from another.
+      </p>
+    </div>
+  </header>
+
+  <div class="truth-rail mt-8">
+    <div class="truth-rail__legend">
+      <span class="truth-rail__legend-active">Active surface</span>
+      <span class="truth-rail__legend-blocked">Not claimed publicly</span>
+    </div>
+
+    <div class="truth-rail__track" role="list">
+      {truthPlanes.map((plane, i) => (
+        <div
+          class={`truth-node ${plane.active ? "truth-node--active" : "truth-node--inactive"}`}
+          data-plane={plane.key}
+          role="listitem"
+        >
+          <span class="truth-node__index">{`S${String(i + 1).padStart(2, "0")}`}</span>
+          <span class="truth-node__dot" aria-hidden="true"></span>
+          <div>
+            <span class="truth-node__label">{plane.label}</span>
+            <span class="truth-node__sub">{plane.short}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

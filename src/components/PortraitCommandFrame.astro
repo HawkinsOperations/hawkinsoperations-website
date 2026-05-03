@@ -1,0 +1,57 @@
+---
+import { Image } from "astro:assets";
+import portraitSrc from "../assets/raylee-hawkins-portrait.jpg";
+
+export interface Props {
+  size?: "hero" | "compact";
+  showCaption?: boolean;
+  showBoundary?: boolean;
+  showArc?: boolean;
+}
+
+const {
+  size = "hero",
+  showCaption = true,
+  showBoundary = true,
+  showArc = true,
+} = Astro.props;
+
+const wrapperWidth = size === "hero" ? "max-w-[420px]" : "max-w-[260px]";
+const altText = "Raylee Hawkins, detection engineering and SOC automation profile portrait";
+---
+
+<figure class={`relative mx-auto w-full ${wrapperWidth}`} data-portrait>
+  <div class="portrait-glow" aria-hidden="true"></div>
+
+  {showArc && (
+    <svg class="portrait-arc-quiet" viewBox="0 0 360 360" aria-hidden="true">
+      <defs>
+        <linearGradient id="arcGradQuiet" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%"   stop-color="rgba(143, 216, 255, 0.0)" />
+          <stop offset="55%"  stop-color="rgba(143, 216, 255, 0.45)" />
+          <stop offset="100%" stop-color="rgba(201, 211, 223, 0.0)" />
+        </linearGradient>
+      </defs>
+      <circle cx="180" cy="180" r="174" fill="none" stroke="url(#arcGradQuiet)" stroke-width="0.7" stroke-dasharray="160 600" stroke-linecap="round" transform="rotate(-26 180 180)" />
+      <circle cx="180" cy="180" r="158" fill="none" stroke="rgba(201, 211, 223, 0.12)" stroke-width="0.4" stroke-dasharray="2 8" />
+    </svg>
+  )}
+
+  <div class="portrait-frame-editorial">
+    <div class="portrait-frame-editorial__inner">
+      <Image src={portraitSrc} alt={altText} widths={[420, 640, 880]} sizes="(max-width: 768px) 80vw, 420px" loading="eager" />
+    </div>
+  </div>
+
+  {showCaption && (
+    <figcaption class="mt-5 flex flex-col items-start gap-1 px-1">
+      <span class="text-base font-semibold text-[var(--silver-bright)] tracking-tight">Raylee Hawkins</span>
+      <span class="text-sm text-[var(--muted)]">Detection Engineering · SOC Automation</span>
+      {showBoundary && (
+        <span class="mono mt-2 text-[0.6rem] tracking-[0.22em] uppercase text-[var(--silver)]/70">
+          Public reviewer surface
+        </span>
+      )}
+    </figcaption>
+  )}
+</figure>

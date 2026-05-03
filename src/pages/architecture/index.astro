@@ -5,7 +5,7 @@ import ClaimPromotionFlow from "@components/ClaimPromotionFlow.astro";
 import LinkCard from "@components/LinkCard.astro";
 import PageHero from "@components/PageHero.astro";
 import SectionHeader from "@components/SectionHeader.astro";
-import TruthSurfaceMap from "@components/TruthSurfaceMap.astro";
+import TruthSurfaceSeparation from "@components/TruthSurfaceSeparation.astro";
 ---
 
 <BaseLayout title="System Architecture | HawkinsOperations" description="System architecture map for HawkinsOperations proof planes, repository separation, and claim promotion boundaries.">
@@ -18,8 +18,8 @@ import TruthSurfaceMap from "@components/TruthSurfaceMap.astro";
     <ClaimPromotionFlow />
   </section>
   <section class="container section">
-    <SectionHeader title="Truth surfaces" eyebrow="Promotion model" />
-    <TruthSurfaceMap />
+    <SectionHeader title="Truth Surface Separation" eyebrow="Promotion model" description="A public claim cannot inherit proof from a different plane. Each plane has its own can-prove and cannot-prove boundary." />
+    <TruthSurfaceSeparation />
   </section>
   <section class="container section">
     <SectionHeader title="CI and governance enforcement concept" eyebrow="Controls" description="The website can host stable data attributes for scanners, but enforcement still lives in repositories, workflows, and promotion gates." />

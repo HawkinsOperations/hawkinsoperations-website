@@ -1,80 +1,191 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
-import BoundaryNotice from "@components/BoundaryNotice.astro";
-import CodexIndex from "@components/CodexIndex.astro";
-import FieldNoteCard from "@components/FieldNoteCard.astro";
-import LinkCard from "@components/LinkCard.astro";
-import PageHero from "@components/PageHero.astro";
-import ProofLedgerCard from "@components/ProofLedgerCard.astro";
-import SectionHeader from "@components/SectionHeader.astro";
-import StatusCard from "@components/StatusCard.astro";
-import ClaimFirewall from "@components/ClaimFirewall.astro";
-import { mandatoryBoundary, proofCeiling } from "@data/claims";
-import { latestFieldNotes } from "@data/fieldNotes";
+import PortraitCommandFrame from "@components/PortraitCommandFrame.astro";
+import StatusChip from "@components/StatusChip.astro";
+import TruthRail from "@components/TruthRail.astro";
+import ClosedLoopPreview from "@components/ClosedLoopPreview.astro";
+import ArtifactCard from "@components/ArtifactCard.astro";
+import BlockedClaimStrip from "@components/BlockedClaimStrip.astro";
+import SectionEyebrow from "@components/SectionEyebrow.astro";
+import ProofCeilingDisplay from "@components/ProofCeilingDisplay.astro";
+import TruthSurfaceSeparation from "@components/TruthSurfaceSeparation.astro";
 import { externalLinks } from "@data/navigation";
-import { flagshipProofRecord } from "@data/proofRecords";
+import { flagshipArtifacts, nonFlagshipArtifacts } from "@data/artifacts";
+
+const previewArtifacts = [
+  ...flagshipArtifacts,
+  ...nonFlagshipArtifacts.filter((a) => ["synthetic-validation-boundary", "truth-surface-model", "claim-firewall", "blocked-claim-scanner"].includes(a.slug)),
+].slice(0, 6);
 ---
 
-<BaseLayout title="HawkinsOperations | Public Proof Codex" description="HawkinsOperations public proof codex for reviewer routing, truth surfaces, proof ceilings, and claim-boundary inspection.">
-  <PageHero
-    title="HawkinsOperations"
-    subtitle="Governed detection engineering and SOC automation proof system."
-    description="Built to separate source truth, runtime truth, signal truth, evidence truth, and public proof before claims are promoted."
-    badges={[
-      { label: "RENDERING_ONLY" },
-      { label: proofCeiling, tone: "warn" },
-      { label: "NOT_PUBLIC_SAFE", tone: "block" },
-    ]}
-  />
+<BaseLayout
+  title="HawkinsOperations Detection Engineering SOC"
+  description="HawkinsOperations Detection Engineering SOC — governed detection engineering and AI-assisted SOC production. A proof-bound public reviewer surface separating source, validation, runtime, signal, evidence, and public claims."
+>
+  <!-- ╔══ HERO · Moonlit proof command surface ═══════════════════════════════ -->
+  <section class="relative overflow-hidden">
+    <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+      <div class="absolute inset-0 opacity-[0.16]" style="background-image: linear-gradient(to right, rgba(201,211,223,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(201,211,223,0.06) 1px, transparent 1px); background-size: 64px 64px; mask-image: radial-gradient(ellipse at 50% 30%, black 0%, transparent 75%);"></div>
+      <div class="absolute -top-40 -left-40 size-[640px] rounded-full" style="background: radial-gradient(circle, rgba(143,216,255,0.08), transparent 60%); filter: blur(20px);"></div>
+    </div>
 
+    <div class="container relative grid gap-14 pt-14 pb-20 lg:grid-cols-[1.1fr_0.9fr] lg:pt-24 lg:pb-28 lg:gap-16">
+      <!-- LEFT · headline column · ALWAYS first in flow -->
+      <div class="order-1 flex flex-col">
+        <div class="flex flex-wrap items-center gap-2">
+          <StatusChip label="PUBLIC REVIEWER SURFACE" tone="ice" />
+          <StatusChip label="AI · LABOR" />
+          <span class="mono text-[0.6rem] tracking-[0.22em] uppercase text-[var(--muted)]">v · 2026-05</span>
+        </div>
+
+        <h1 class="headline mt-7 text-[clamp(2.4rem,5.6vw,4.4rem)] tracking-tight">
+          HawkinsOperations
+          <span class="block text-[var(--ice-blue)]">Detection Engineering SOC</span>
+        </h1>
+
+        <p class="lede mt-7 max-w-2xl">
+          Governed detection engineering and AI-assisted SOC production.
+        </p>
+        <p class="muted mt-4 max-w-2xl text-base leading-7">
+          Speeding up security production without letting the system lie. A proof-bound public surface separating source, validation, runtime, signal, evidence, and public claims.
+        </p>
+
+        <!-- CTA row -->
+        <div class="mt-9 flex flex-wrap items-center gap-3">
+          <a class="cta cta-primary" href="/proof/">Review Proof →</a>
+          <a class="cta cta-quiet" href="/artifacts/">Browse Artifacts</a>
+          <a class="cta cta-quiet" href={externalLinks.githubOrg} target="_blank" rel="noopener noreferrer" aria-label="Open the HawkinsOperations GitHub organization">GitHub Organization ↗</a>
+          <a class="cta cta-quiet" href={externalLinks.rayleeLinkedIn} target="_blank" rel="noopener noreferrer" aria-label="Open Raylee Hawkins on LinkedIn">LinkedIn ↗</a>
+        </div>
+
+        <!-- Hero proof ceiling micro-panel -->
+        <aside class="mt-10 max-w-xl moon-panel-strong relative overflow-hidden p-6">
+          <div class="absolute inset-x-6 -top-px h-px bg-gradient-to-r from-transparent via-[var(--ice-blue)] to-transparent"></div>
+          <div class="grid grid-cols-[4px_1fr] gap-4">
+            <div class="boundary-notice__rule" aria-hidden="true"></div>
+            <div class="min-w-0">
+              <p class="mono text-[0.6rem] tracking-[0.22em] uppercase text-[var(--ice-blue)]">Current public proof ceiling</p>
+              <div class="mt-3"><ProofCeilingDisplay /></div>
+              <p class="mt-4 text-sm leading-6 text-[var(--muted)]">
+                Website rendering is routing only. Public-safe runtime proof remains blocked / not_public_safe until separate evidence-backed promotion changes its state.
+              </p>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- RIGHT · Portrait (editorial) · second in flow on narrow, right column on wide -->
+      <div class="order-2 flex items-center justify-center lg:justify-end">
+        <PortraitCommandFrame size="hero" />
+      </div>
+    </div>
+
+    <div class="container"><hr class="thin-rule" /></div>
+  </section>
+
+  <!-- ╔══ EXECUTIVE SUMMARY ═══════════════════════════════════════════════════ -->
+  <section class="container section-tight" aria-labelledby="executive-summary-title">
+    <div class="executive-summary moon-panel-strong p-6 md:p-8">
+      <div class="executive-summary__intro">
+        <p class="eyebrow">Plain English</p>
+        <h2 id="executive-summary-title" class="headline mt-3 text-2xl md:text-3xl">Executive Summary</h2>
+        <p class="lede mt-5">
+          I build and verify detection engineering workflows where the code, tests, evidence, and public claims are kept separate so the system can move fast without overstating what is proven.
+        </p>
+      </div>
+      <ul class="executive-summary__list" aria-label="Executive summary capabilities">
+        <li>Builds detection engineering proof loops.</li>
+        <li>Validates detections with controlled fixtures.</li>
+        <li>Uses AI only as support, not authority.</li>
+        <li>Uses deterministic checks and CI to block unsupported claims.</li>
+        <li>Keeps private lab evidence separate from public proof.</li>
+        <li>Lets reviewers clone/run public validators where possible.</li>
+      </ul>
+    </div>
+
+    <div class="plain-glossary mt-5" aria-label="Plain-English glossary">
+      <details>
+        <summary>TEST_VALIDATED_SYNTHETIC_SCOPE</summary>
+        <p>A detection or validator passed controlled synthetic fixtures. It does not prove endpoint runtime activity, production coverage, or live signal observation.</p>
+      </details>
+      <details>
+        <summary>Public Proof Ceiling</summary>
+        <p>The strongest public claim currently allowed. For HO-DET-001, that ceiling remains TEST_VALIDATED_SYNTHETIC_SCOPE.</p>
+      </details>
+      <details>
+        <summary>Claim Firewall</summary>
+        <p>A boundary that blocks stronger wording until the required evidence, review, and promotion gate exist.</p>
+      </details>
+      <details>
+        <summary>Truth Surface</summary>
+        <p>A proof plane with its own limit: source, validation, runtime, signal, evidence, and public proof each answer different questions.</p>
+      </details>
+      <details>
+        <summary>Website rendering is not proof</summary>
+        <p>A page can explain and route claims, but rendering alone does not prove runtime activity, signal observation, or public-safe evidence.</p>
+      </details>
+      <details>
+        <summary>Support-only AI</summary>
+        <p>AI can assist drafting, review, and workflow speed, but it does not approve disposition, promote evidence, or become governance authority.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ╔══ TRUTH SURFACE SEPARATION ════════════════════════════════════════════ -->
   <section class="container section-tight">
-    <div class="grid gap-4 md:grid-cols-3">
-      <a class="mono border border-blue-100/35 bg-blue-100/[0.045] px-4 py-3 text-center text-xs uppercase text-blue-100" href="/start/">Start reviewer route</a>
-      <a class="mono border border-slate-600 px-4 py-3 text-center text-xs uppercase text-slate-200" href="/proof/">View proof ledger</a>
-      <a class="mono border border-slate-600 px-4 py-3 text-center text-xs uppercase text-slate-200" href={externalLinks.githubOrg} target="_blank" rel="noopener noreferrer">View GitHub organization</a>
-    </div>
-    <div class="mt-8">
-      <BoundaryNotice text={mandatoryBoundary} />
-    </div>
+    <TruthSurfaceSeparation />
   </section>
 
-  <section class="container section">
-    <SectionHeader title="Codex index" eyebrow="Public inspection" description="A routing layer for reviewers: proof ledger, truth surfaces, repository ownership, and the claim firewall." />
-    <CodexIndex />
+  <!-- ╔══ TRUTH RAIL ═══════════════════════════════════════════════════════════ -->
+  <section class="container section-tight">
+    <TruthRail />
   </section>
 
-  <section class="container section">
-    <SectionHeader title="Proof ledger preview" eyebrow="Flagship record" description="The public proof ceiling is visible before any stronger claim can be inferred." />
-    <ProofLedgerCard record={flagshipProofRecord} />
+  <!-- ╔══ CLOSED LOOP PREVIEW ══════════════════════════════════════════════════ -->
+  <section class="container section-tight">
+    <ClosedLoopPreview />
   </section>
 
-  <section class="container section">
-    <SectionHeader title="Truth surface preview" eyebrow="Claim promotion model" description="Each truth surface answers a different question. None inherits proof by presentation." />
-    <div class="grid gap-4 md:grid-cols-3">
-      <StatusCard label="Source" value="reviewable artifact" detail="Source presence does not prove runtime." />
-      <StatusCard label="Validation" value="synthetic scope" detail="Validation does not prove public signal." dataTarget="proof-ceiling" tone="warn" />
-      <StatusCard label="Public rendering" value="routing only" detail="Website pages do not replace proof records." tone="block" />
-    </div>
-  </section>
-
-  <section class="container section">
-    <SectionHeader title="Claim firewall preview" eyebrow="Blocked promotions" description="Blocked claims stay visible so the supported ceiling stays honest." />
-    <ClaimFirewall />
-  </section>
-
-  <section class="container section">
-    <SectionHeader title="Latest field notes" eyebrow="Technical archive" description="Short notes that explain the boundary model behind the public proof codex." />
-    <div>
-      {latestFieldNotes.map((note) => <FieldNoteCard note={note} />)}
+  <!-- ╔══ ARTIFACT VAULT PREVIEW ═══════════════════════════════════════════════ -->
+  <section class="container section-tight">
+    <SectionEyebrow
+      eyebrow="Artifact vault preview"
+      title="Public-safe receipts, routed by surface"
+      description="Proof records, validation outputs, CI verifier records, architecture maps, public packets, and legacy references — each carries its own ceiling and proof boundary."
+      align="between"
+      cta={{ label: "Open the full vault", href: "/artifacts/" }}
+    />
+    <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+      {previewArtifacts.map((artifact) => (
+        <ArtifactCard artifact={artifact} variant={artifact.flagship ? "flagship" : "default"} />
+      ))}
     </div>
   </section>
 
-  <section class="container section">
-    <SectionHeader title="Reviewer route preview" eyebrow="Start here" description="Use the reviewer route when you need the fastest path from homepage to proof ceiling." />
-    <div class="grid gap-4 md:grid-cols-3">
-      <LinkCard href="/start/" title="3-minute path" description="Proof ceiling, blocked claims, and direct proof-record links." />
-      <LinkCard href="/repos/" title="Repo map" description="Which repo owns source, validation, runtime, proof, and rendering." />
-      <LinkCard href="/legacy/" title="Legacy boundary" description="Why HawkinsOps material is reference-only unless revalidated." />
+  <!-- ╔══ BLOCKED CLAIM STRIP ══════════════════════════════════════════════════ -->
+  <section class="container section-tight">
+    <BlockedClaimStrip />
+  </section>
+
+  <!-- ╔══ CLOSING DOCTRINE ═════════════════════════════════════════════════════ -->
+  <section class="container py-16">
+    <div class="moon-panel relative overflow-hidden p-8 md:p-10">
+      <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div class="absolute -right-20 -top-20 size-[360px] rounded-full" style="background: radial-gradient(circle, rgba(143,216,255,0.1), transparent 60%); filter: blur(20px);"></div>
+      </div>
+      <div class="relative grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-center">
+        <div>
+          <p class="eyebrow">Doctrine</p>
+          <h2 class="headline mt-3 text-3xl md:text-4xl">AI is labor. Governance is authority.</h2>
+          <p class="muted mt-4 max-w-2xl text-base leading-7">
+            Build loud. Verify hard. Claim tight. Ship receipts. The system separates the work AI can accelerate from the gates that decide what HawkinsOperations is allowed to claim publicly.
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3 md:justify-end">
+          <a class="cta cta-primary" href="/about/">Operator profile →</a>
+          <a class="cta cta-quiet" href="/proof/">Proof ledger</a>
+        </div>
+      </div>
     </div>
   </section>
 </BaseLayout>

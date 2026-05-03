@@ -1,18 +1,59 @@
 ---
 import { primaryNavigation, externalLinks } from "@data/navigation";
+
+const path = Astro.url.pathname.replace(/\/$/, "") || "/";
+
+const isCurrent = (href: string) => {
+  const normalized = href.replace(/\/$/, "") || "/";
+  if (normalized === "/") return path === "/";
+  return path === normalized || path.startsWith(normalized + "/");
+};
 ---
 
-<header class="sticky top-0 z-40 border-b border-blue-100/10 bg-[#03050a]/90 backdrop-blur">
-  <div class="container flex min-h-16 items-center justify-between gap-5">
-    <a href="/" class="flex items-center gap-3 font-semibold text-slate-50" aria-label="HawkinsOperations home">
-      <span class="grid size-8 place-items-center border border-blue-100/25 bg-blue-100/5 text-xs text-blue-100">HO</span>
-      <span>HawkinsOperations</span>
+<header class="sticky top-0 z-40 border-b border-[var(--moon-border)] bg-[rgba(3,6,11,0.78)] backdrop-blur-md">
+  <div class="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[var(--ice-blue-soft)] to-transparent"></div>
+  <div class="container flex min-h-[68px] items-center justify-between gap-5">
+    <a href="/" class="group flex items-center gap-3" aria-label="HawkinsOperations home">
+      <span class="relative grid size-9 place-items-center border border-[var(--moon-border-bright)] bg-[rgba(11,17,28,0.7)]">
+        <span class="absolute inset-[3px] border border-[rgba(143,216,255,0.25)]"></span>
+        <span class="mono text-[0.6rem] font-bold tracking-[0.16em] text-[var(--ice-blue)]">HO</span>
+      </span>
+      <span class="flex flex-col leading-tight">
+        <span class="text-sm font-semibold text-[var(--silver-bright)]">HawkinsOperations</span>
+        <span class="mono text-[0.58rem] uppercase tracking-[0.22em] text-[var(--muted)]">Detection Engineering SOC</span>
+      </span>
     </a>
-    <nav class="hidden items-center gap-5 text-sm text-slate-300 lg:flex" aria-label="Primary navigation">
-      {primaryNavigation.map((item) => <a href={item.href}>{item.label}</a>)}
+
+    <nav class="hidden items-center gap-7 md:flex" aria-label="Primary navigation">
+      {primaryNavigation.map((item) => (
+        <a
+          class="nav-link"
+          href={item.href}
+          aria-current={isCurrent(item.href) ? "page" : undefined}
+        >
+          {item.label}
+        </a>
+      ))}
     </nav>
-    <a class="mono hidden border border-blue-100/20 px-3 py-2 text-xs uppercase text-slate-200 hover:border-blue-100/45 md:inline-flex" href={externalLinks.githubOrg} target="_blank" rel="noopener noreferrer">
-      GitHub org
-    </a>
+
+    <div class="flex items-center gap-3">
+      <a class="hidden md:inline-flex cta cta-quiet" href={externalLinks.githubOrg} target="_blank" rel="noopener noreferrer" aria-label="Open the HawkinsOperations GitHub organization">
+        GitHub Org
+      </a>
+    </div>
   </div>
+
+  <nav class="md:hidden border-t border-[var(--moon-border)]" aria-label="Primary navigation mobile">
+    <div class="container flex items-center gap-5 overflow-x-auto py-3">
+      {primaryNavigation.map((item) => (
+        <a
+          class="nav-link shrink-0"
+          href={item.href}
+          aria-current={isCurrent(item.href) ? "page" : undefined}
+        >
+          {item.label}
+        </a>
+      ))}
+    </div>
+  </nav>
 </header>

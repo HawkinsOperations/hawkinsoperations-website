@@ -5,13 +5,21 @@ export type NavItem = {
 };
 
 export const primaryNavigation: NavItem[] = [
-  { label: "Start", href: "/start/", description: "Reviewer route" },
+  { label: "Home", href: "/", description: "Command surface" },
   { label: "Proof", href: "/proof/", description: "Proof ledger" },
-  { label: "Architecture", href: "/architecture/", description: "Truth model" },
-  { label: "Repos", href: "/repos/", description: "Repository map" },
-  { label: "Controls", href: "/controls/", description: "Claim firewall" },
-  { label: "Field Notes", href: "/field-notes/", description: "Field notes" },
+  { label: "Artifacts", href: "/artifacts/", description: "Evidence vault" },
   { label: "About", href: "/about/", description: "Operator profile" },
+];
+
+export const reviewerLinks: NavItem[] = [
+  { label: "Reviewer route", href: "/start/", description: "Three-speed inspection path" },
+  { label: "System architecture", href: "/architecture/", description: "Plane separation map" },
+  { label: "Truth surface model", href: "/architecture/truth-surfaces/", description: "Six surfaces, six meanings" },
+  { label: "Repository map", href: "/repos/", description: "Where each plane lives" },
+  { label: "Claim firewall", href: "/controls/", description: "Allowed and blocked wording" },
+  { label: "Field notes", href: "/field-notes/", description: "Boundary notes" },
+  { label: "Legacy boundary", href: "/legacy/", description: "Reference material rules" },
+  { label: "System history", href: "/changelog/", description: "Codex changelog" },
 ];
 
 export const externalLinks = {

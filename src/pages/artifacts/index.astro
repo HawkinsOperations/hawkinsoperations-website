@@ -1,0 +1,234 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import StatusChip from "@components/StatusChip.astro";
+import SectionEyebrow from "@components/SectionEyebrow.astro";
+import ArtifactCard from "@components/ArtifactCard.astro";
+import {
+  artifacts,
+  artifactCategories,
+  flagshipArtifacts,
+  legacyArtifacts,
+  artifactsByCategory,
+  type ArtifactCategory,
+} from "@data/artifacts";
+
+const supportingArtifacts = artifacts.filter(
+  (a) => !a.flagship && !a.legacy && (a.category === "validation" || a.category === "ci-verifier" || a.category === "public-packet" || a.category === "field-note")
+);
+
+const caseStudies = artifactsByCategory("case-study");
+const proofRecordsList = artifactsByCategory("proof-record").filter((a) => !a.flagship);
+const archMaps = [
+  ...artifactsByCategory("architecture"),
+  ...artifactsByCategory("governance").filter((a) => !a.flagship),
+];
+
+const statusBadge = (status: string) => {
+  switch (status) {
+    case "supported": return { label: "SUPPORTED", tone: "ice" as const };
+    case "rendering-only": return { label: "RENDERING ONLY", tone: "default" as const };
+    case "reference": return { label: "REFERENCE", tone: "quiet" as const };
+    case "blocked-pending-promotion": return { label: "BLOCKED · PENDING", tone: "block" as const };
+    default: return { label: status.toUpperCase(), tone: "default" as const };
+  }
+};
+
+const catLabel: Record<string, string> = {
+  "proof-record": "PROOF RECORD",
+  "case-study": "CASE STUDY",
+  "validation": "VALIDATION",
+  "ci-verifier": "CI / VERIFIER",
+  "architecture": "ARCHITECTURE",
+  "governance": "GOVERNANCE",
+  "public-packet": "PUBLIC PACKET",
+  "field-note": "FIELD NOTE",
+  "legacy": "LEGACY",
+};
+---
+
+<BaseLayout
+  title="Artifacts | HawkinsOperations Detection Engineering SOC"
+  description="HawkinsOperations Artifacts: a routed library of reviewer-safe receipts — proof cards, validation outputs, case studies, diagrams, CI records, and bounded evidence surfaces."
+>
+  <!-- ╔══ HERO ═════════════════════════════════════════════════════════════════ -->
+  <section class="relative overflow-hidden">
+    <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+      <div class="absolute inset-0 opacity-[0.14]" style="background-image: linear-gradient(to right, rgba(201,211,223,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(201,211,223,0.06) 1px, transparent 1px); background-size: 64px 64px; mask-image: radial-gradient(ellipse at 50% 0%, black 0%, transparent 70%);"></div>
+      <div class="absolute -top-40 right-0 size-[520px] rounded-full" style="background: radial-gradient(circle, rgba(143,216,255,0.06), transparent 60%); filter: blur(20px);"></div>
+    </div>
+
+    <div class="container relative pt-14 pb-10 lg:pt-20">
+      <div class="flex flex-wrap items-center gap-2">
+        <StatusChip label="EVIDENCE VAULT" tone="ice" />
+        <StatusChip label="PUBLIC-FACING SHELVES" />
+        <StatusChip label="WEBSITE RENDERING IS NOT PROOF" tone="block" />
+      </div>
+
+      <h1 class="headline mt-6 text-[clamp(2.2rem,5vw,3.8rem)]">Artifacts</h1>
+      <p class="lede mt-5 max-w-3xl">
+        A routed library of proof cards, validation outputs, case studies, diagrams, CI records, and reviewer-safe evidence surfaces.
+      </p>
+
+      <ul class="muted mt-7 grid max-w-3xl gap-1 text-sm leading-6 md:grid-cols-2">
+        <li>· Artifacts are not automatically proof.</li>
+        <li>· Screenshots are not automatically evidence.</li>
+        <li>· Website cards are not proof records.</li>
+        <li>· Legacy artifacts do not promote current claims.</li>
+        <li>· Private runtime artifacts stay private until sanitized.</li>
+        <li>· Case studies preserve their proof ceiling.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ╔══ SHELF NAV (anchor row) ═══════════════════════════════════════════════ -->
+  <section class="container section-snug">
+    <nav aria-label="Shelf navigation" class="shelf-nav hairline">
+      <ul class="shelf-nav__list flex flex-wrap items-center gap-x-6 gap-y-2 py-5 text-sm">
+        {artifactCategories.map((cat) => (
+          <li>
+            <a class="mono text-[0.66rem] tracking-[0.18em] uppercase text-[var(--silver)] hover:text-[var(--ice-blue)]" href={`#cat-${cat.key}`}>{cat.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </section>
+
+  <!-- ╔══ FLAGSHIP ANCHOR SPREADS ═════════════════════════════════════════════ -->
+  <section class="container section-tight" id="cat-flagship">
+    <SectionEyebrow eyebrow="Anchors" title="Two flagship artifacts" description="The proof record that holds the bounded ceiling, and the doctrine that keeps rendering separate from proof." />
+    <div class="grid gap-6 lg:grid-cols-1 xl:grid-cols-2">
+      {flagshipArtifacts.map((artifact) => {
+        const sb = statusBadge(artifact.status);
+        const isExternal = artifact.primary.external === true;
+        return (
+          <a
+            class="flagship-spread"
+            data-artifact={artifact.slug}
+            href={artifact.primary.href}
+            target={isExternal ? "_blank" : undefined}
+            rel={isExternal ? "noopener noreferrer" : undefined}
+            aria-label={`${artifact.primary.label}: ${artifact.title}`}
+          >
+            <div class="flagship-spread__rail">
+              <div>
+                <p class="mono text-[0.6rem] tracking-[0.2em] uppercase text-[var(--ice-blue)]">{catLabel[artifact.category] ?? artifact.category}</p>
+                <h3 class="mt-3 text-[1.65rem] font-semibold leading-tight text-[var(--silver-bright)]">{artifact.title}</h3>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <StatusChip label={sb.label} tone={sb.tone} />
+                {artifact.proofCeiling && <StatusChip label={artifact.proofCeiling} tone="warn" />}
+                <StatusChip label={artifact.truthSurface.toUpperCase()} tone="quiet" />
+              </div>
+            </div>
+            <div class="flagship-spread__body">
+              <p class="text-[var(--silver)] leading-relaxed">{artifact.description}</p>
+              <dl class="grid gap-3 border-t border-[var(--moon-border)] pt-4 text-sm">
+                <div class="grid grid-cols-[7em_1fr] gap-3">
+                  <dt class="mono text-[0.6rem] tracking-[0.18em] uppercase text-[var(--silver)]">Proves</dt>
+                  <dd class="text-[var(--muted)] leading-6">{artifact.proves}</dd>
+                </div>
+                <div class="grid grid-cols-[7em_1fr] gap-3">
+                  <dt class="mono text-[0.6rem] tracking-[0.18em] uppercase text-[var(--silver)]">Not proves</dt>
+                  <dd class="text-[var(--muted)] leading-6">{artifact.doesNotProve}</dd>
+                </div>
+              </dl>
+              <div class="mt-2 flex flex-wrap gap-2">
+                <span class="surface-link-label surface-link-label--primary" aria-hidden="true">
+                  {artifact.primary.label} →
+                </span>
+                {artifact.secondary && (
+                  <span class="surface-link-label surface-link-label--quiet" aria-hidden="true">
+                    {artifact.secondary.label}
+                  </span>
+                )}
+              </div>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+
+  <!-- ╔══ PROOF RECORDS + CASE STUDIES (interactive cards) ═══════════════════ -->
+  <section class="container section-tight" id="cat-proof-record">
+    <SectionEyebrow eyebrow="Records · Case studies" title="Bounded narratives" description="Each record holds its proof ceiling. Case studies preserve the same boundary." />
+    <div class="grid gap-5 md:grid-cols-2">
+      {[...proofRecordsList, ...caseStudies].map((artifact) => (
+        <ArtifactCard artifact={artifact} />
+      ))}
+    </div>
+  </section>
+
+  <!-- ╔══ SUPPORTING (compact tiles, dense rack) ═════════════════════════════ -->
+  <section class="container section-tight" id="cat-validation">
+    <SectionEyebrow
+      eyebrow="Validation · CI · Public packets"
+      title="Supporting receipts"
+      description="Compact rack: validation outputs, the deterministic CI scanner, and reviewer-safe packets."
+    />
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      {supportingArtifacts.map((artifact) => {
+        const isExternal = artifact.primary.external === true;
+        return (
+          <a class="artifact-tile" href={artifact.primary.href}
+             target={isExternal ? "_blank" : undefined}
+             rel={isExternal ? "noopener noreferrer" : undefined}>
+            <span class="artifact-tile__cat">{catLabel[artifact.category]}</span>
+            <span class="artifact-tile__title">{artifact.title}</span>
+            <span class="artifact-tile__desc">{artifact.description}</span>
+            <span class="artifact-tile__link">{isExternal ? "Open ↗" : "Open →"}</span>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+
+  <!-- ╔══ ARCHITECTURE & GOVERNANCE (very compact ledger row) ═══════════════ -->
+  <section class="container section-tight" id="cat-architecture">
+    <SectionEyebrow eyebrow="Architecture · Governance" title="Plane separation and authority" description="System maps and governance documents. Compact rows — one line, one route." />
+    <div class="ledger" style="--ledger-cols: 1.4fr 2fr 0.5fr;">
+      <div class="ledger__head">
+        <div>Artifact</div>
+        <div>What it routes</div>
+        <div>Status</div>
+      </div>
+      {archMaps.map((artifact) => {
+        const isExternal = artifact.primary.external === true;
+        const sb = statusBadge(artifact.status);
+        return (
+          <a class="ledger__row ledger__row--link" href={artifact.primary.href}
+             target={isExternal ? "_blank" : undefined}
+             rel={isExternal ? "noopener noreferrer" : undefined}>
+            <div class="ledger__cell" data-label="Artifact"><strong>{artifact.title}</strong> <span class="muted text-xs">{isExternal ? "↗" : "→"}</span></div>
+            <div class="ledger__cell ledger__cell--muted" data-label="Routes">{artifact.description}</div>
+            <div class="ledger__cell" data-label="Status"><StatusChip label={sb.label} tone={sb.tone} /></div>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+
+  <!-- ╔══ LEGACY (intentionally subdued) ═════════════════════════════════════ -->
+  <section class="container section-tight pb-20" id="cat-legacy">
+    <SectionEyebrow
+      eyebrow="Legacy"
+      title="Reference material"
+      description="Older HawkinsOps material is reference-only. Current claims require current evidence and promotion gates."
+      align="between"
+      cta={{ label: "Open the legacy boundary", href: "/legacy/" }}
+    />
+    <div class="grid gap-3 md:grid-cols-2">
+      {legacyArtifacts.map((artifact) => {
+        const isExternal = artifact.primary.external === true;
+        return (
+          <a class="legacy-quiet" href={artifact.primary.href}
+             target={isExternal ? "_blank" : undefined}
+             rel={isExternal ? "noopener noreferrer" : undefined}>
+            <span><strong>{artifact.title}</strong> · {artifact.description}</span>
+            <span class="mono text-[0.62rem] tracking-[0.18em] uppercase shrink-0">{isExternal ? "Open ↗" : "Open →"}</span>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+</BaseLayout>
