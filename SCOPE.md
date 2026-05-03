@@ -4,9 +4,9 @@ Repository: `hawkinsoperations-website`
 
 ## In Scope
 
-- Public-safe project narrative and navigation
+- Reviewer-facing project narrative and navigation
 - Repository map and system overview pages
-- Public-safe evidence summary links
+- Claim-bounded evidence summary links
 - Astro static routes for reviewer, proof, architecture, repository, claim firewall, field-note, operator, and legacy-boundary pages
 - Typed public rendering data under `src/data`
 
