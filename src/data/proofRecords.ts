@@ -35,15 +35,19 @@ export const proofRecords: ProofRecord[] = [
       "A public proof record route exists.",
       "A public website route can point reviewers to the proof record.",
       "A synthetic validation boundary is stated.",
+      "Platform runtime contract enforcement exists as a non-promotional guardrail.",
     ],
     passed: [
       "The public ceiling is stated as TEST_VALIDATED_SYNTHETIC_SCOPE.",
       "Blocked promotions are visible instead of hidden.",
       "Website rendering remains separated from evidence authority.",
+      "The platform verifier preserves NOT_PUBLIC_SAFE and BLOCKED runtime promotion fields.",
     ],
     notClaimed: [
       "Runtime activation is not claimed.",
       "Signal observation is not claimed.",
+      "Public-safe runtime proof is not claimed.",
+      "Live Splunk fired, Cribl-routed status, Wazuh-routed public proof, AWS-live status, production-ready status, fleet-wide coverage, autonomous SOC operation, AI-approved disposition, and analyst-approved disposition are not claimed.",
       "External-use approval is not claimed.",
       "Public-safe proof is not claimed.",
     ],
@@ -51,6 +55,7 @@ export const proofRecords: ProofRecord[] = [
       "Runtime evidence must be promoted separately.",
       "Signal evidence must be promoted separately.",
       "Public proof requires evidence linkage.",
+      "The platform runtime contract does not promote HO-DET-001 beyond TEST_VALIDATED_SYNTHETIC_SCOPE.",
       "Blocked-claim scanner must stay clean before wording changes ship.",
     ],
     promotionRequirements: [
