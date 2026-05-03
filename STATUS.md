@@ -2,11 +2,11 @@
 
 ## Current Milestone
 
-Astro proof-codex redesign in implementation PR.
+Astro proof-codex redesign merged; current work is post-merge public wording and claim-boundary cleanup.
 
 ## Next Gate
 
-Review, validate, and merge the static Astro + Tailwind + TypeScript website rebuild.
+Preserve the static Astro + Tailwind + TypeScript website rebuild while tightening public wording and claim-boundary guardrails.
 
 ## Blocking Risks
 
