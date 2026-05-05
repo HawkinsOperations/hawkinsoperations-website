@@ -133,8 +133,10 @@ const allowedRows = allowedClaims.map((c, i) => ({
           </dl>
 
           <footer class="flex flex-wrap gap-3 border-t border-[var(--moon-border)] p-7">
-            <a class="cta cta-primary" href="/proof/ho-det-001/">Open case file →</a>
-            <a class="cta cta-quiet" href={record.proofRepoLink} target="_blank" rel="noopener noreferrer">Proof repo record ↗</a>
+            {record.caseFileHref && (
+              <a class="cta cta-primary" href={record.caseFileHref}>Open case file →</a>
+            )}
+            <a class={record.caseFileHref ? "cta cta-quiet" : "cta cta-primary"} href={record.proofRepoLink} target="_blank" rel="noopener noreferrer">Proof repo record ↗</a>
             <a class="cta cta-quiet" href={record.sourceRepoLink} target="_blank" rel="noopener noreferrer">Source repo ↗</a>
           </footer>
         </article>

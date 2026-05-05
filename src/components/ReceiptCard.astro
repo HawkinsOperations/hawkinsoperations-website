@@ -1,0 +1,48 @@
+---
+import StatusChip from "./StatusChip.astro";
+
+export interface Props {
+  title: string;
+  surface: string;
+  statusBadge: string;
+  publicSafe: boolean;
+  claim: string;
+  boundary: string;
+  href: string;
+  hrefLabel: string;
+}
+
+const { title, surface, statusBadge, publicSafe, claim, boundary, href, hrefLabel } = Astro.props;
+const external = href.startsWith("http");
+---
+
+<article class="receipt-card">
+  <div class="receipt-card__chips">
+    <StatusChip label={surface.toUpperCase()} tone="quiet" />
+    {!publicSafe && <StatusChip label="NOT_PUBLIC_SAFE" tone="block" />}
+  </div>
+
+  <h3 class="receipt-card__title">{title}</h3>
+
+  <p class="receipt-card__status mono" title={statusBadge}>{statusBadge}</p>
+
+  <div class="receipt-card__body">
+    <div class="receipt-card__row">
+      <span class="receipt-card__label">Allowed claim</span>
+      <p class="receipt-card__text">{claim}</p>
+    </div>
+    <div class="receipt-card__row">
+      <span class="receipt-card__label receipt-card__label--block">Boundary</span>
+      <p class="receipt-card__text receipt-card__text--block">{boundary}</p>
+    </div>
+  </div>
+
+  <a
+    class="receipt-card__link"
+    href={href}
+    target={external ? "_blank" : undefined}
+    rel={external ? "noopener noreferrer" : undefined}
+  >
+    {hrefLabel}
+  </a>
+</article>

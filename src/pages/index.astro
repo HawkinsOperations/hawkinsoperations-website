@@ -5,22 +5,88 @@ import StatusChip from "@components/StatusChip.astro";
 import TruthRail from "@components/TruthRail.astro";
 import ClosedLoopPreview from "@components/ClosedLoopPreview.astro";
 import ArtifactCard from "@components/ArtifactCard.astro";
+import ReceiptCard from "@components/ReceiptCard.astro";
 import BlockedClaimStrip from "@components/BlockedClaimStrip.astro";
 import SectionEyebrow from "@components/SectionEyebrow.astro";
 import ProofCeilingDisplay from "@components/ProofCeilingDisplay.astro";
 import TruthSurfaceSeparation from "@components/TruthSurfaceSeparation.astro";
 import { externalLinks } from "@data/navigation";
-import { flagshipArtifacts, nonFlagshipArtifacts } from "@data/artifacts";
+import { artifacts, type Artifact } from "@data/artifacts";
 
-const previewArtifacts = [
-  ...flagshipArtifacts,
-  ...nonFlagshipArtifacts.filter((a) => ["synthetic-validation-boundary", "truth-surface-model", "claim-firewall", "blocked-claim-scanner"].includes(a.slug)),
-].slice(0, 6);
+const previewSlugs = [
+  "ho-det-001-proof-record",
+  "aws-det-001-proof-record",
+  "ho-det-001-lab-runtime-match",
+  "cribl-to-splunk-marker-delivery",
+  "synthetic-validation-boundary",
+  "blocked-claim-scanner",
+];
+const previewArtifacts = previewSlugs
+  .map((slug) => artifacts.find((a) => a.slug === slug))
+  .filter((a): a is Artifact => a !== undefined);
+
+const reviewerSnapshot = [
+  {
+    title: "Work exists",
+    body: "Detection source, validation artifacts, proof records, and controlled lab receipts are separated by plane.",
+  },
+  {
+    title: "Proof is bounded",
+    body: "Synthetic validation and private/internal receipts do not silently become public runtime claims.",
+  },
+  {
+    title: "AI is labor",
+    body: "AI can support drafting and triage, but deterministic checks and CI own claim promotion.",
+  },
+];
+
+const loopReceipts = [
+  {
+    title: "HO-DET-001 Synthetic Validation",
+    surface: "Validation",
+    statusBadge: "TEST_VALIDATED_SYNTHETIC_SCOPE",
+    publicSafe: true,
+    claim: "HO-DET-001 passed synthetic validation against controlled positive and negative process-creation fixtures.",
+    boundary: "Does not prove runtime activity, signal observation, fleet scope, or public-safe runtime proof.",
+    href: externalLinks.validationReportHo,
+    hrefLabel: "Validation report ↗",
+  },
+  {
+    title: "HO-DET-001 Controlled Lab Runtime Match",
+    surface: "Runtime",
+    statusBadge: "PROVEN_PRIVATE_INTERNAL",
+    publicSafe: false,
+    claim: "HO-DET-001 produced a controlled lab runtime match in Splunk.",
+    boundary: "Does not prove runtime-active deployment, public-safe runtime proof, fleet-wide coverage, Cribl-routed telemetry, Wazuh-routed public proof, AWS-live status, autonomous SOC operation, or live Splunk fired as public proof.",
+    href: externalLinks.proofRecord + "#controlled-runtime-signal-packet-001",
+    hrefLabel: "Proof record ↗",
+  },
+  {
+    title: "Cribl-to-Splunk Marker Delivery",
+    surface: "Evidence",
+    statusBadge: "CONTROLLED_LAB_CRIBL_TO_SPLUNK_MARKER_DELIVERY_VERIFIED",
+    publicSafe: false,
+    claim: "A controlled clean remote marker was delivered through the Cribl-to-Splunk lab lane and observed in expected Splunk rawdata with marker fields preserved.",
+    boundary: "Does not prove HO-DET-001/Sysmon telemetry is Cribl-routed, does not prove Cribl-routed telemetry for production or fleet scope, and does not change the public proof ceiling.",
+    href: externalLinks.proofRecord + "#controlled-cribl-to-splunk-marker-delivery-packet-001",
+    hrefLabel: "Proof record ↗",
+  },
+  {
+    title: "AWS-DET-001 Cloud Fixture Validation",
+    surface: "Validation",
+    statusBadge: "TEST_VALIDATED_SYNTHETIC_SCOPE",
+    publicSafe: false,
+    claim: "AWS-DET-001 passed fixture-only validation against controlled CloudTrail-style IAM denial fixtures.",
+    boundary: "Does not prove AWS-live, CloudTrail live, cloud runtime-active, signal-observed, or public-safe runtime proof.",
+    href: externalLinks.validationReportAws,
+    hrefLabel: "Validation report ↗",
+  },
+];
 ---
 
 <BaseLayout
   title="HawkinsOperations Detection Engineering SOC"
-  description="HawkinsOperations Detection Engineering SOC — governed detection engineering and AI-assisted security operations production workflow. A proof-bound public reviewer surface separating source, validation, runtime, signal, evidence, and public claims."
+  description="HawkinsOperations is a governed detection engineering system that turns security work into validated, bounded proof. Reviewer-facing surface separating source, validation, runtime, signal, evidence, and public claims."
 >
   <!-- ╔══ HERO · Moonlit proof command surface ═══════════════════════════════ -->
   <section class="relative overflow-hidden">
@@ -44,10 +110,10 @@ const previewArtifacts = [
         </h1>
 
         <p class="lede mt-7 max-w-2xl">
-          Governed detection engineering and AI-assisted security operations production workflow.
+          HawkinsOperations is a governed detection engineering system that turns security work into validated, bounded proof.
         </p>
         <p class="muted mt-4 max-w-2xl text-base leading-7">
-          Speeding up security production without letting the system lie. A proof-bound public surface separating source, validation, runtime, signal, evidence, and public claims.
+          Speeding up security production without letting the system lie.
         </p>
 
         <!-- CTA row -->
@@ -59,17 +125,15 @@ const previewArtifacts = [
         </div>
 
         <!-- Hero proof ceiling micro-panel -->
-        <aside class="mt-10 max-w-xl moon-panel-strong relative overflow-hidden p-6">
-          <div class="absolute inset-x-6 -top-px h-px bg-gradient-to-r from-transparent via-[var(--ice-blue)] to-transparent"></div>
-          <div class="grid grid-cols-[4px_1fr] gap-4">
-            <div class="boundary-notice__rule" aria-hidden="true"></div>
-            <div class="min-w-0">
-              <p class="mono text-[0.6rem] tracking-[0.22em] uppercase text-[var(--ice-blue)]">Current public proof ceiling</p>
-              <div class="mt-3"><ProofCeilingDisplay /></div>
-              <p class="mt-4 text-sm leading-6 text-[var(--muted)]">
-                Website rendering is routing only. Public-safe runtime proof remains blocked / not_public_safe until separate evidence-backed promotion changes its state.
-              </p>
+        <aside class="hero-ceiling mt-10 max-w-xl">
+          <div class="hero-ceiling__inner">
+            <p class="hero-ceiling__eyebrow mono">Current public proof ceiling</p>
+            <div class="hero-ceiling__display">
+              <ProofCeilingDisplay visualLabel="Synthetic Validation Scope" />
             </div>
+            <p class="hero-ceiling__note">
+              Website rendering is routing only. Stronger runtime, signal, and evidence claims remain blocked until separately promoted.
+            </p>
           </div>
         </aside>
       </div>
@@ -81,6 +145,25 @@ const previewArtifacts = [
     </div>
 
     <div class="container"><hr class="thin-rule" /></div>
+  </section>
+
+  <!-- ╔══ REVIEWER SNAPSHOT · 3 cards · what to understand first ═════════════ -->
+  <section class="container section-tight" aria-labelledby="reviewer-snapshot-title">
+    <header class="mb-7 flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <p class="eyebrow">Reviewer snapshot</p>
+        <h2 id="reviewer-snapshot-title" class="headline mt-2 text-2xl md:text-[1.7rem]">What reviewers should understand first</h2>
+      </div>
+    </header>
+    <ul class="snapshot-grid" aria-label="Reviewer snapshot">
+      {reviewerSnapshot.map((item, i) => (
+        <li class="snapshot-card">
+          <span class="snapshot-card__num mono">{`0${i + 1}`}</span>
+          <h3 class="snapshot-card__title">{item.title}</h3>
+          <p class="snapshot-card__body">{item.body}</p>
+        </li>
+      ))}
+    </ul>
   </section>
 
   <!-- ╔══ EXECUTIVE SUMMARY ═══════════════════════════════════════════════════ -->
@@ -128,6 +211,33 @@ const previewArtifacts = [
         <summary>Support-only AI</summary>
         <p>AI can assist drafting, review, and workflow speed, but it does not approve disposition, promote evidence, or become governance authority.</p>
       </details>
+    </div>
+  </section>
+
+  <!-- ╔══ CONTROLLED LOOP RECEIPTS · routed by claim boundary ════════════════ -->
+  <section class="container section-tight" aria-labelledby="controlled-loop-receipts-title">
+    <header class="mb-7 flex flex-wrap items-end justify-between gap-3">
+      <div class="max-w-2xl">
+        <p class="eyebrow">Controlled Loop Receipts</p>
+        <h2 id="controlled-loop-receipts-title" class="headline mt-2 text-2xl md:text-[1.7rem]">Receipts are routed by claim boundary.</h2>
+        <p class="muted mt-3 text-sm leading-6">
+          Stronger claims stay blocked until separately promoted. Private/internal receipts carry a NOT_PUBLIC_SAFE badge and do not promote public-runtime wording.
+        </p>
+      </div>
+    </header>
+    <div class="receipt-grid">
+      {loopReceipts.map((receipt) => (
+        <ReceiptCard
+          title={receipt.title}
+          surface={receipt.surface}
+          statusBadge={receipt.statusBadge}
+          publicSafe={receipt.publicSafe}
+          claim={receipt.claim}
+          boundary={receipt.boundary}
+          href={receipt.href}
+          hrefLabel={receipt.hrefLabel}
+        />
+      ))}
     </div>
   </section>
 
