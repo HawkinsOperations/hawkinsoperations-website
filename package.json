@@ -8,11 +8,13 @@
     "build": "astro build",
     "check:site": "node scripts/verify-site-contract.mjs",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "generate:brand-assets": "node scripts/generate-brand-assets.mjs"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.4",
     "astro": "^6.2.1",
+    "sharp": "^0.33.5",
     "tailwindcss": "^4.2.4",
     "typescript": "^5.9.3"
   }

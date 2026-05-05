@@ -1,4 +1,5 @@
 ---
+import BrandMark from "@components/BrandMark.astro";
 import { primaryNavigation, externalLinks } from "@data/navigation";
 
 const path = Astro.url.pathname.replace(/\/$/, "") || "/";
@@ -10,14 +11,11 @@ const isCurrent = (href: string) => {
 };
 ---
 
-<header class="sticky top-0 z-40 border-b border-[var(--moon-border)] bg-[rgba(3,6,11,0.78)] backdrop-blur-md">
+<header class="site-header sticky top-0 z-40 border-b border-[var(--moon-border)] bg-[rgba(0,2,5,0.86)] backdrop-blur-md">
   <div class="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[var(--ice-blue-soft)] to-transparent"></div>
   <div class="container flex min-h-[68px] items-center justify-between gap-5">
     <a href="/" class="group flex items-center gap-3" aria-label="HawkinsOperations home">
-      <span class="relative grid size-9 place-items-center border border-[var(--moon-border-bright)] bg-[rgba(11,17,28,0.7)]">
-        <span class="absolute inset-[3px] border border-[rgba(143,216,255,0.25)]"></span>
-        <span class="mono text-[0.6rem] font-bold tracking-[0.16em] text-[var(--ice-blue)]">HO</span>
-      </span>
+      <BrandMark size="sm" />
       <span class="flex flex-col leading-tight">
         <span class="text-sm font-semibold text-[var(--silver-bright)]">HawkinsOperations</span>
         <span class="mono text-[0.58rem] uppercase tracking-[0.22em] text-[var(--muted)]">Detection Engineering SOC</span>
