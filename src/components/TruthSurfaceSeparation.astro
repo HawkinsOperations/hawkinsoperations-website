@@ -1,40 +1,34 @@
 ---
 const planes = [
   {
-    name: "Source / Repo Truth",
-    canProve: "detection source and SPL exist.",
-    cannotProve: "a live event fired.",
-    current: "source exists.",
+    name: "Source",
+    canProve: "Detection source and SPL exist.",
+    cannotProve: "A live event fired.",
   },
   {
-    name: "Validation Truth",
-    canProve: "controlled fixtures passed.",
-    cannotProve: "endpoint runtime activity.",
-    current: "TEST_VALIDATED_SYNTHETIC_SCOPE.",
+    name: "Validation",
+    canProve: "Controlled fixtures passed.",
+    cannotProve: "Endpoint runtime activity.",
   },
   {
-    name: "Runtime Truth",
-    canProve: "system execution in the lab.",
-    cannotProve: "public-safe signal by itself.",
-    current: "private/not public-promoted.",
+    name: "Runtime",
+    canProve: "System execution in the lab.",
+    cannotProve: "Public-safe signal by itself.",
   },
   {
-    name: "Signal Truth",
-    canProve: "event, match, or correlation observed.",
-    cannotProve: "production or fleet-wide coverage.",
-    current: "not claimed publicly.",
+    name: "Signal",
+    canProve: "Event, match, or correlation observed.",
+    cannotProve: "Production or fleet scope.",
   },
   {
-    name: "Evidence Truth",
-    canProve: "receipt, hash, export, or packet exists.",
-    cannotProve: "public wording by itself.",
-    current: "requires review.",
+    name: "Evidence",
+    canProve: "Receipt, hash, export, or packet exists.",
+    cannotProve: "Public wording by itself.",
   },
   {
     name: "Public Proof",
-    canProve: "reviewed public claim boundary.",
-    cannotProve: "raw runtime truth by rendering alone.",
-    current: "website rendering is not proof.",
+    canProve: "Reviewed public claim boundary.",
+    cannotProve: "Raw runtime truth by rendering alone.",
   },
 ];
 ---
@@ -43,12 +37,12 @@ const planes = [
   <div class="truth-separation__header">
     <div>
       <p class="eyebrow">Truth Surface Separation</p>
-      <h2 id="truth-separation-title" class="headline mt-3 text-2xl md:text-3xl">
-        Repo/source truth ≠ validation truth ≠ runtime truth ≠ signal truth ≠ evidence truth ≠ public proof.
+      <h2 id="truth-separation-title" class="headline mt-3 text-2xl md:text-[1.7rem]">
+        Six surfaces. Each answers a different question.
       </h2>
     </div>
     <p class="truth-separation__plain">
-      Each plane can support a narrower claim than the next one. HawkinsOperations keeps those planes split so a rendered page, passing fixture, or private lab receipt cannot silently become a stronger public claim.
+      None inherits proof from another. A passing fixture, lab receipt, or rendered page cannot silently become a stronger public claim.
     </p>
   </div>
 
@@ -68,10 +62,6 @@ const planes = [
             <div>
               <dt>Cannot prove</dt>
               <dd>{plane.cannotProve}</dd>
-            </div>
-            <div>
-              <dt>Current HO-DET-001 status</dt>
-              <dd>{plane.current}</dd>
             </div>
           </dl>
         </div>

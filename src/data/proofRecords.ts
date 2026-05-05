@@ -11,6 +11,7 @@ export type ProofRecord = {
   publicSafeState: string;
   sourceRepoLink: string;
   proofRepoLink: string;
+  caseFileHref?: string;
   blockedPromotions: string[];
   exists: string[];
   passed: string[];
@@ -30,6 +31,7 @@ export const proofRecords: ProofRecord[] = [
     publicSafeState: "blocked until evidence linkage and explicit promotion",
     sourceRepoLink: externalLinks.detections,
     proofRepoLink: externalLinks.proofRecord,
+    caseFileHref: "/proof/ho-det-001/",
     blockedPromotions: blockedClaims,
     exists: [
       "A public proof record route exists.",
@@ -63,6 +65,48 @@ export const proofRecords: ProofRecord[] = [
       "Evidence bundle with current trust classification.",
       "Runtime and signal claims reviewed independently.",
       "Public wording reviewed against blocked promotions.",
+    ],
+  },
+  {
+    detectionId: "AWS-DET-001",
+    title: "CloudTrail-style IAM denial fixture proof card",
+    proofLevel: proofCeiling,
+    validationState: "fixture-only synthetic validation status",
+    runtimeState: "not claimed from public website",
+    signalState: "not claimed from public website",
+    publicSafeState: "blocked until evidence linkage and explicit promotion",
+    sourceRepoLink: externalLinks.detections,
+    proofRepoLink: externalLinks.proofRecordAws,
+    blockedPromotions: blockedClaims,
+    exists: [
+      "A public proof record route exists for AWS-DET-001.",
+      "A fixture-only CloudTrail-style detection candidate is published as source.",
+      "A synthetic validation report is published in the validation repository.",
+    ],
+    passed: [
+      "AWS-DET-001 passed fixture-only validation against controlled CloudTrail-style IAM denial fixtures.",
+      "The proof record states the public ceiling as TEST_VALIDATED_SYNTHETIC_SCOPE.",
+      "Blocked promotions for AWS-live, CloudTrail live, cloud runtime-active, signal-observed, and public-safe runtime proof are visible instead of hidden.",
+    ],
+    notClaimed: [
+      "AWS-live status is not claimed.",
+      "AWS CloudTrail live evidence is not claimed.",
+      "Cloud runtime-active deployment is not claimed.",
+      "Signal-observed public proof is not claimed.",
+      "Public-safe runtime proof is not claimed.",
+      "AWS account coverage is not claimed.",
+    ],
+    remainingBlocked: [
+      "AWS-live proof requires separate evidence and Raylee approval.",
+      "Cloud runtime-active proof requires separate deployment evidence.",
+      "Signal-observed public proof requires preserved cloud telemetry.",
+      "Public-safe runtime proof requires evidence linkage and promotion.",
+    ],
+    promotionRequirements: [
+      "Real CloudTrail evidence with sanitization and stale review.",
+      "Cloud deployment evidence linking the rule to an enabled environment.",
+      "Public wording reviewed against the blocked-claim list.",
+      "Raylee approval after evidence and claim review.",
     ],
   },
 ];
