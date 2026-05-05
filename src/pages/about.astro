@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
+import BrandMark from "@components/BrandMark.astro";
 import StatusChip from "@components/StatusChip.astro";
 import SectionEyebrow from "@components/SectionEyebrow.astro";
 import PortraitCommandFrame from "@components/PortraitCommandFrame.astro";
@@ -41,6 +42,7 @@ const isNotItems = [
       <!-- LEFT · content always first in flow -->
       <div class="order-1">
         <div class="flex flex-wrap items-center gap-2">
+          <BrandMark size="sm" />
           <StatusChip label="OPERATOR PROFILE" tone="ice" />
           <span class="mono text-[0.6rem] tracking-[0.22em] uppercase text-[var(--muted)]">methodology · governance · ai</span>
         </div>

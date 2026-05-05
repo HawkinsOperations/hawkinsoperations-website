@@ -1,0 +1,12 @@
+---
+export interface Props {
+  size?: "sm" | "md" | "lg";
+  label?: string;
+}
+
+const { size = "md", label = "HawkinsOperations" } = Astro.props;
+---
+
+<span class={`brand-mark brand-mark--${size}`} aria-label={label} role="img">
+  <img src="/brand/hawkinsoperations-mark-source.png" alt="" width="512" height="512" loading="eager" decoding="async" />
+</span>

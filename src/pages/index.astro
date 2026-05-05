@@ -1,12 +1,10 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
+import BrandMark from "@components/BrandMark.astro";
 import PortraitCommandFrame from "@components/PortraitCommandFrame.astro";
 import StatusChip from "@components/StatusChip.astro";
-import TruthRail from "@components/TruthRail.astro";
-import ClosedLoopPreview from "@components/ClosedLoopPreview.astro";
 import ArtifactCard from "@components/ArtifactCard.astro";
 import ReceiptCard from "@components/ReceiptCard.astro";
-import BlockedClaimStrip from "@components/BlockedClaimStrip.astro";
 import SectionEyebrow from "@components/SectionEyebrow.astro";
 import ProofCeilingDisplay from "@components/ProofCeilingDisplay.astro";
 import TruthSurfaceSeparation from "@components/TruthSurfaceSeparation.astro";
@@ -140,7 +138,14 @@ const loopReceipts = [
 
       <!-- RIGHT · Portrait (editorial) · second in flow on narrow, right column on wide -->
       <div class="order-2 flex items-center justify-center lg:justify-end">
-        <PortraitCommandFrame size="hero" />
+        <div class="hero-identity-panel" aria-label="HawkinsOperations brand identity">
+          <BrandMark size="lg" />
+          <div>
+            <p class="hero-identity-panel__wordmark">HawkinsOperations</p>
+            <p class="hero-identity-panel__line mono">Proof &gt; Truth &gt; Authority</p>
+          </div>
+          <PortraitCommandFrame size="compact" showArc={false} />
+        </div>
       </div>
     </div>
 
@@ -184,33 +189,12 @@ const loopReceipts = [
         <li>Keeps private lab evidence separate from public proof.</li>
         <li>Lets reviewers clone/run public validators where possible.</li>
       </ul>
-    </div>
-
-    <div class="plain-glossary mt-5" aria-label="Plain-English glossary">
-      <details>
-        <summary>TEST_VALIDATED_SYNTHETIC_SCOPE</summary>
-        <p>A detection or validator passed controlled synthetic fixtures. It does not prove endpoint runtime activity, production coverage, or live signal observation.</p>
-      </details>
-      <details>
-        <summary>Public Proof Ceiling</summary>
-        <p>The strongest public claim currently allowed. For HO-DET-001, that ceiling remains TEST_VALIDATED_SYNTHETIC_SCOPE.</p>
-      </details>
-      <details>
-        <summary>Claim Firewall</summary>
-        <p>A boundary that blocks stronger wording until the required evidence, review, and promotion gate exist.</p>
-      </details>
-      <details>
-        <summary>Truth Surface</summary>
-        <p>A proof plane with its own limit: source, validation, runtime, signal, evidence, and public proof each answer different questions.</p>
-      </details>
-      <details>
-        <summary>Website rendering is not proof</summary>
-        <p>A page can explain and route claims, but rendering alone does not prove runtime activity, signal observation, or public-safe evidence.</p>
-      </details>
-      <details>
-        <summary>Support-only AI</summary>
-        <p>AI can assist drafting, review, and workflow speed, but it does not approve disposition, promote evidence, or become governance authority.</p>
-      </details>
+      <div class="executive-summary__chips" aria-label="Governance shorthand">
+        <span>TEST_VALIDATED_SYNTHETIC_SCOPE</span>
+        <span>Website rendering is not proof</span>
+        <span>AI is labor</span>
+        <span>Governance is authority</span>
+      </div>
     </div>
   </section>
 
@@ -247,21 +231,15 @@ const loopReceipts = [
   </section>
 
   <!-- ╔══ TRUTH RAIL ═══════════════════════════════════════════════════════════ -->
-  <section class="container section-tight">
-    <TruthRail />
-  </section>
 
   <!-- ╔══ CLOSED LOOP PREVIEW ══════════════════════════════════════════════════ -->
-  <section class="container section-tight">
-    <ClosedLoopPreview />
-  </section>
 
   <!-- ╔══ ARTIFACT VAULT PREVIEW ═══════════════════════════════════════════════ -->
-  <section class="container section-tight">
+  <section class="container section-tight proof-cta-block">
     <SectionEyebrow
-      eyebrow="Artifact vault preview"
-      title="Reviewer-facing receipts, routed by surface"
-      description="Proof records, validation outputs, CI verifier records, architecture maps, public packets, and legacy references — each carries its own ceiling and proof boundary."
+      eyebrow="Artifact / proof route"
+      title="Open the receipts, then follow the record."
+      description="Proof records, validation outputs, CI verifier records, and public packets each carry their own ceiling and proof boundary."
       align="between"
       cta={{ label: "Open the full vault", href: "/artifacts/" }}
     />
@@ -273,12 +251,9 @@ const loopReceipts = [
   </section>
 
   <!-- ╔══ BLOCKED CLAIM STRIP ══════════════════════════════════════════════════ -->
-  <section class="container section-tight">
-    <BlockedClaimStrip />
-  </section>
 
   <!-- ╔══ CLOSING DOCTRINE ═════════════════════════════════════════════════════ -->
-  <section class="container py-16">
+  <section class="container py-16 quiet-text-section">
     <div class="moon-panel relative overflow-hidden p-8 md:p-10">
       <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div class="absolute -right-20 -top-20 size-[360px] rounded-full" style="background: radial-gradient(circle, rgba(143,216,255,0.1), transparent 60%); filter: blur(20px);"></div>

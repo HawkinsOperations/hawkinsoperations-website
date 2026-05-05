@@ -64,9 +64,9 @@ const catLabel: Record<string, string> = {
         <StatusChip label="WEBSITE RENDERING IS NOT PROOF" tone="block" />
       </div>
 
-      <h1 class="headline mt-6 text-[clamp(2.2rem,5vw,3.8rem)]">Artifacts</h1>
+      <h1 class="headline mt-6 text-[clamp(2.2rem,5vw,3.8rem)]">Reviewer artifacts</h1>
       <p class="lede mt-5 max-w-3xl">
-        A routed library of proof cards, validation outputs, case studies, diagrams, CI records, and reviewer-safe evidence surfaces.
+        Proof records, validation outputs, CI verifier records, and reviewer-safe packets first. Every artifact keeps its own ceiling.
       </p>
 
       <ul class="muted mt-7 grid max-w-3xl gap-1 text-sm leading-6 md:grid-cols-2">
@@ -95,7 +95,7 @@ const catLabel: Record<string, string> = {
 
   <!-- ╔══ FLAGSHIP ANCHOR SPREADS ═════════════════════════════════════════════ -->
   <section class="container section-tight" id="cat-flagship">
-    <SectionEyebrow eyebrow="Anchors" title="Two flagship artifacts" description="The proof record that holds the bounded ceiling, and the doctrine that keeps rendering separate from proof." />
+    <SectionEyebrow eyebrow="Reviewer anchors" title="Start with the proof-bearing artifacts" description="The proof record holds the bounded ceiling. The doctrine keeps rendering separate from proof." />
     <div class="grid gap-6 lg:grid-cols-1 xl:grid-cols-2">
       {flagshipArtifacts.map((artifact) => {
         const sb = statusBadge(artifact.status);
@@ -128,7 +128,7 @@ const catLabel: Record<string, string> = {
                   <dd class="text-[var(--muted)] leading-6">{artifact.proves}</dd>
                 </div>
                 <div class="grid grid-cols-[7em_1fr] gap-3">
-                  <dt class="mono text-[0.6rem] tracking-[0.18em] uppercase text-[var(--silver)]">Not proves</dt>
+                  <dt class="mono text-[0.6rem] tracking-[0.18em] uppercase text-[var(--silver)]">Does not prove</dt>
                   <dd class="text-[var(--muted)] leading-6">{artifact.doesNotProve}</dd>
                 </div>
               </dl>

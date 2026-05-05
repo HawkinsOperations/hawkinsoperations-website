@@ -41,7 +41,7 @@ const allowedRows = allowedClaims.map((c, i) => ({
   <!-- ╔══ 01 · CURRENT CEILING (status band, no big card) ═══════════════════ -->
   <section class="container section-tight">
     <SectionEyebrow eyebrow="01 · Ceiling" title="Current public proof ceiling" />
-    <div class="status-band">
+    <div class="status-band signature-status-module">
       <span class="status-band__rule" aria-hidden="true"></span>
       <div class="grid gap-6 md:grid-cols-[1.6fr_1fr] md:items-center">
         <ProofCeilingDisplay size="xl" />
@@ -100,7 +100,7 @@ const allowedRows = allowedClaims.map((c, i) => ({
     <SectionEyebrow eyebrow="04 · Records" title="Proof records" description="Each record holds its bounded ceiling, supported state, and what is not claimed." />
     <div class="grid gap-5">
       {proofRecords.map((record) => (
-        <article class="moon-panel-strong overflow-hidden" data-detection-id={record.detectionId} data-proof-ceiling={record.proofLevel}>
+        <article class="proof-record-panel moon-panel-strong overflow-hidden" data-detection-id={record.detectionId} data-proof-ceiling={record.proofLevel}>
           <header class="grid gap-6 border-b border-[var(--moon-border)] p-7 md:grid-cols-[1.4fr_1fr] md:items-center">
             <div>
               <p class="mono text-[0.6rem] tracking-[0.2em] uppercase text-[var(--ice-blue)]">Detection ID</p>
