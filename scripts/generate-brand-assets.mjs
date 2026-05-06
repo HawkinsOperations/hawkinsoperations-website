@@ -252,7 +252,7 @@ async function makeProofSheet(source) {
 async function makeManifest() {
   const manifest = {
     name: "HawkinsOperations",
-    short_name: "HawkinsOps",
+    short_name: "HawkinsOperations",
     description: "Detection Engineering SOC",
     start_url: "/",
     scope: "/",

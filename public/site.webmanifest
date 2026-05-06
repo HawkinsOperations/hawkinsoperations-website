@@ -1,6 +1,6 @@
 {
   "name": "HawkinsOperations",
-  "short_name": "HawkinsOps",
+  "short_name": "HawkinsOperations",
   "description": "Detection Engineering SOC",
   "start_url": "/",
   "scope": "/",
