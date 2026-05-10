@@ -1,5 +1,4 @@
 ---
-import { ClientRouter } from "astro:transitions";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
 import "@styles/global.css";
@@ -112,7 +111,6 @@ const structuredData = {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" />
     <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
-    <ClientRouter fallback="swap" />
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
