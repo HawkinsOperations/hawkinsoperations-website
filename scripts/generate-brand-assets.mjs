@@ -61,6 +61,24 @@ async function makePng(input, output, size, options = {}) {
     .toFile(output);
 }
 
+async function makeRuntimeFormats(input) {
+  const runtimeBase = sharp(input).resize(1024, 1024, {
+    fit: "contain",
+    background: { r: 0, g: 2, b: 5, alpha: 1 },
+    kernel: sharp.kernel.lanczos3,
+  });
+
+  await runtimeBase
+    .clone()
+    .avif({ quality: 70, effort: 9 })
+    .toFile(path.join(paths.brandDir, "hawkinsoperations-mark-runtime-1024.avif"));
+
+  await runtimeBase
+    .clone()
+    .webp({ quality: 90, effort: 6 })
+    .toFile(path.join(paths.brandDir, "hawkinsoperations-mark-runtime-1024.webp"));
+}
+
 async function makeMaskable(input) {
   const output = path.join(paths.publicDir, "android-maskable-512x512.png");
   const paddedMark = await sharp(input)
@@ -299,6 +317,7 @@ async function main() {
   await makePng(source, path.join(paths.publicDir, "apple-touch-icon.png"), 180);
   await makePng(source, path.join(paths.publicDir, "android-chrome-192x192.png"), 192);
   await makePng(source, path.join(paths.publicDir, "android-chrome-512x512.png"), 512);
+  await makeRuntimeFormats(source);
   await makeMaskable(source);
   await makeSvg();
   await makeOgPreview(source);
