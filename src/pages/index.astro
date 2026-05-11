@@ -8,7 +8,9 @@ import ReceiptCard from "@components/ReceiptCard.astro";
 import SectionEyebrow from "@components/SectionEyebrow.astro";
 import ProofCeilingDisplay from "@components/ProofCeilingDisplay.astro";
 import TruthSurfaceSeparation from "@components/TruthSurfaceSeparation.astro";
+import { credibilityMetrics } from "@data/credibilityMetrics";
 import { externalLinks } from "@data/navigation";
+import { reviewerRoutes } from "@data/reviewerRoutes";
 import { artifacts, type Artifact } from "@data/artifacts";
 
 const previewSlugs = [
@@ -46,6 +48,7 @@ const loopReceipts = [
     publicSafe: true,
     claim: "HO-DET-001 passed synthetic validation against controlled positive and negative process-creation fixtures.",
     boundary: "Does not prove runtime activity, signal observation, fleet scope, or public-safe runtime proof.",
+    nextGate: "Runtime + public-safe evidence review remain separate.",
     href: externalLinks.validationReportHo,
     hrefLabel: "Validation report ↗",
   },
@@ -56,6 +59,7 @@ const loopReceipts = [
     publicSafe: false,
     claim: "HO-DET-001 produced a controlled lab runtime match in Splunk.",
     boundary: "Does not prove runtime-active deployment, public-safe runtime proof, fleet-wide coverage, Cribl-routed telemetry, Wazuh-routed public proof, AWS-live status, autonomous SOC operation, or live Splunk fired as public proof.",
+    nextGate: "Privacy review · evidence linkage · stale review · Raylee approval.",
     href: externalLinks.proofRecord + "#controlled-runtime-signal-packet-001",
     hrefLabel: "Proof record ↗",
   },
@@ -66,6 +70,7 @@ const loopReceipts = [
     publicSafe: false,
     claim: "A controlled clean remote marker was delivered through the Cribl-to-Splunk lab lane and observed in expected Splunk rawdata with marker fields preserved.",
     boundary: "Does not prove HO-DET-001/Sysmon telemetry is Cribl-routed, does not prove Cribl-routed telemetry for production or fleet scope, and does not change the public proof ceiling.",
+    nextGate: "HO-DET-001 / Sysmon field-preservation comparison remains separate.",
     href: externalLinks.proofRecord + "#controlled-cribl-to-splunk-marker-delivery-packet-001",
     hrefLabel: "Proof record ↗",
   },
@@ -76,6 +81,7 @@ const loopReceipts = [
     publicSafe: false,
     claim: "AWS-DET-001 passed fixture-only validation against controlled CloudTrail-style IAM denial fixtures.",
     boundary: "Does not prove AWS-live, CloudTrail live, cloud runtime-active, signal-observed, or public-safe runtime proof.",
+    nextGate: "Live AWS surface remains blocked until separately approved.",
     href: externalLinks.validationReportAws,
     hrefLabel: "Validation report ↗",
   },
@@ -114,12 +120,10 @@ const loopReceipts = [
           Speeding up security production without letting the system lie.
         </p>
 
-        <!-- CTA row -->
+        <!-- CTA row · primary + single secondary; org and operator links live in nav/footer -->
         <div class="mt-9 flex flex-wrap items-center gap-3">
           <a class="cta cta-primary" href="/proof/">Review Proof →</a>
-          <a class="cta cta-quiet" href="/artifacts/">Browse Artifacts</a>
-          <a class="cta cta-quiet" href={externalLinks.githubOrg} target="_blank" rel="noopener noreferrer" aria-label="Open the HawkinsOperations GitHub organization">GitHub Organization ↗</a>
-          <a class="cta cta-quiet" href={externalLinks.rayleeLinkedIn} target="_blank" rel="noopener noreferrer" aria-label="Open Raylee Hawkins on LinkedIn">LinkedIn ↗</a>
+          <a class="cta cta-quiet" href="/start/">Start Here →</a>
         </div>
 
         <!-- Hero proof ceiling micro-panel -->
@@ -171,6 +175,25 @@ const loopReceipts = [
     </ul>
   </section>
 
+  <!-- ╔══ CREDIBILITY STRIP · repo-derived surface counts only ═══════════════ -->
+  <section class="container section-tight" aria-labelledby="credibility-metrics-title">
+    <div class="surface-coverage">
+      <header class="surface-coverage__header">
+        <p class="eyebrow">Surface coverage, not runtime activity</p>
+        <h2 id="credibility-metrics-title" class="headline mt-2 text-2xl md:text-[1.7rem]">Reviewer-visible routes are counted from repo data.</h2>
+      </header>
+      <ul class="surface-coverage__grid" aria-label="Repository-derived surface coverage">
+        {credibilityMetrics.map((metric) => (
+          <li class="surface-coverage__tile">
+            <span class="surface-coverage__value mono">{metric.value}</span>
+            <span class="surface-coverage__label">{metric.label}</span>
+            <span class="surface-coverage__footnote">{metric.footnote}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
   <!-- ╔══ EXECUTIVE SUMMARY ═══════════════════════════════════════════════════ -->
   <section class="container section-tight" aria-labelledby="executive-summary-title">
     <div class="executive-summary moon-panel-strong p-6 md:p-8">
@@ -198,6 +221,78 @@ const loopReceipts = [
     </div>
   </section>
 
+  <!-- ╔══ DETERMINISTIC SCANNER · visible trust strip ════════════════════════ -->
+  <section class="container section-tight" aria-labelledby="scanner-strip-title">
+    <div class="scanner-trust-strip">
+      <p class="eyebrow" id="scanner-strip-title">DETERMINISTIC SCANNER</p>
+      <p>Site wording is checked by a deterministic blocked-claim scanner. This does not prove runtime control coverage or branch protection.</p>
+    </div>
+  </section>
+
+  <!-- ╔══ REVIEWER ROUTES · three inline inspection paths ════════════════════ -->
+  <section class="container section-tight" aria-labelledby="review-depth-title">
+    <div class="review-depth-header">
+      <div>
+        <p class="eyebrow">Inspection paths</p>
+        <h2 id="review-depth-title" class="headline mt-2 text-2xl md:text-[1.7rem]">Choose your review depth</h2>
+        <p class="muted mt-3 text-sm leading-6 max-w-xl">
+          Pick the depth that fits the review window and follow the proof from the same public ceiling.
+        </p>
+      </div>
+      <a class="surface-link-label surface-link-label--primary review-depth-header__link" href="/start/">Open full reviewer route →</a>
+    </div>
+    <ul class="review-route-grid" aria-label="Review depths">
+      {reviewerRoutes.map((route) => (
+        <li class="review-route-card">
+          <span class="review-route-card__duration mono">{route.duration}</span>
+          <h3>{route.title}</h3>
+          <p>{route.purpose}</p>
+          <div class="review-route-card__links">
+            {route.links.slice(0, 3).map((link) => (
+              <a href={link.href} target={link.external ? "_blank" : undefined} rel={link.external ? "noopener noreferrer" : undefined}>
+                {link.label}{link.external ? " ↗" : ""}
+              </a>
+            ))}
+          </div>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- ╔══ FLAGSHIP PROOF ROUTE · HO-DET-001 visible path ═════════════════════ -->
+  <section class="container section-tight" aria-labelledby="flagship-proof-route-title">
+    <div class="flagship-spread homepage-flagship">
+      <div class="flagship-spread__rail">
+        <p class="eyebrow">Flagship proof route</p>
+        <div>
+          <h2 id="flagship-proof-route-title" class="headline text-3xl md:text-4xl">HO-DET-001 · Closed SOC loop</h2>
+          <p class="muted mt-4 text-base leading-7">Splunk detection → validation → proof record → blocked claims → next gate</p>
+        </div>
+        <div class="homepage-flagship__status mono">TEST_VALIDATED_SYNTHETIC_SCOPE</div>
+      </div>
+      <div class="flagship-spread__body">
+        <dl class="homepage-flagship__claims">
+          <div>
+            <dt>Proves</dt>
+            <dd>Controlled synthetic validation at TEST_VALIDATED_SYNTHETIC_SCOPE.</dd>
+          </div>
+          <div>
+            <dt>Does not prove</dt>
+            <dd>Does not prove runtime-active deployment, signal observation, fleet scope, production, or public-safe runtime proof.</dd>
+          </div>
+          <div>
+            <dt>Next gate</dt>
+            <dd>Privacy review · evidence linkage · stale review · Raylee approval.</dd>
+          </div>
+        </dl>
+        <div class="homepage-flagship__actions">
+          <a class="cta cta-primary" href="/proof/ho-det-001/">Open proof record</a>
+          <a class="cta cta-quiet" href={externalLinks.validationReportHo} target="_blank" rel="noopener noreferrer">Open validation report ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ╔══ CONTROLLED LOOP RECEIPTS · routed by claim boundary ════════════════ -->
   <section class="container section-tight" aria-labelledby="controlled-loop-receipts-title">
     <header class="mb-7 flex flex-wrap items-end justify-between gap-3">
@@ -218,6 +313,7 @@ const loopReceipts = [
           publicSafe={receipt.publicSafe}
           claim={receipt.claim}
           boundary={receipt.boundary}
+          nextGate={receipt.nextGate}
           href={receipt.href}
           hrefLabel={receipt.hrefLabel}
         />

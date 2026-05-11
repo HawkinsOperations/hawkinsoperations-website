@@ -8,11 +8,12 @@ export interface Props {
   publicSafe: boolean;
   claim: string;
   boundary: string;
+  nextGate?: string;
   href: string;
   hrefLabel: string;
 }
 
-const { title, surface, statusBadge, publicSafe, claim, boundary, href, hrefLabel } = Astro.props;
+const { title, surface, statusBadge, publicSafe, claim, boundary, nextGate, href, hrefLabel } = Astro.props;
 const external = href.startsWith("http");
 ---
 
@@ -35,6 +36,12 @@ const external = href.startsWith("http");
       <span class="receipt-card__label receipt-card__label--block">Boundary</span>
       <p class="receipt-card__text receipt-card__text--block">{boundary}</p>
     </div>
+    {nextGate && (
+      <div class="receipt-card__row receipt-card__row--gate">
+        <span class="receipt-card__label receipt-card__label--gate">Next gate</span>
+        <p class="receipt-card__text receipt-card__text--gate">{nextGate}</p>
+      </div>
+    )}
   </div>
 
   <a

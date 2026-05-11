@@ -7,6 +7,7 @@ import ReviewerRouteCard from "@components/ReviewerRouteCard.astro";
 import SectionHeader from "@components/SectionHeader.astro";
 import { blockedClaims, proofCeiling } from "@data/claims";
 import { externalLinks } from "@data/navigation";
+import { reviewerRoutes } from "@data/reviewerRoutes";
 ---
 
 <BaseLayout title="Reviewer Route | HawkinsOperations" description="Reviewer route for HawkinsOperations proof ceiling, blocked claims, and public inspection links.">
@@ -14,9 +15,9 @@ import { externalLinks } from "@data/navigation";
   <section class="container section">
     <SectionHeader title="Choose the route that fits the review window" eyebrow="Inspection paths" />
     <div class="grid gap-4 lg:grid-cols-3">
-      <ReviewerRouteCard duration="3 minutes" title="Ceiling and blocked claims" items={["Read the current proof ceiling.", "Open the HO-DET-001 proof card.", "Confirm the blocked claim list."]} />
-      <ReviewerRouteCard duration="10 minutes" title="Proof and repo context" items={["Read the proof ledger.", "Check the repository map.", "Confirm website rendering is not proof."]} />
-      <ReviewerRouteCard duration="Deep technical" title="Surface-by-surface inspection" items={["Trace source, validation, runtime, signal, evidence, and public proof.", "Inspect owner repositories.", "Review promotion requirements before accepting any stronger wording."]} />
+      {reviewerRoutes.map((route) => (
+        <ReviewerRouteCard duration={route.duration} title={route.title} purpose={route.purpose} items={route.items} links={route.links} />
+      ))}
     </div>
   </section>
   <section class="container section-tight">
