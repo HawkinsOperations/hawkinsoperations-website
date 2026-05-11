@@ -2,16 +2,28 @@
 export interface Props {
   duration: string;
   title: string;
+  purpose?: string;
   items: string[];
+  links?: { label: string; href: string; external?: boolean }[];
 }
 
-const { duration, title, items } = Astro.props;
+const { duration, title, purpose, items, links = [] } = Astro.props;
 ---
 
-<article class="card p-5">
+<article class="reviewer-route-card card p-5">
   <p class="mono text-xs uppercase text-blue-100">{duration}</p>
   <h3 class="mt-4 text-xl font-semibold text-slate-50">{title}</h3>
+  {purpose && <p class="mt-3 text-sm leading-6 text-slate-400">{purpose}</p>}
   <ol class="mt-5 space-y-3 text-sm leading-6 text-slate-400">
     {items.map((item) => <li>{item}</li>)}
   </ol>
+  {links.length > 0 && (
+    <div class="reviewer-route-card__links" aria-label={`${title} links`}>
+      {links.map((link) => (
+        <a href={link.href} target={link.external ? "_blank" : undefined} rel={link.external ? "noopener noreferrer" : undefined}>
+          {link.label}{link.external ? " ↗" : ""}
+        </a>
+      ))}
+    </div>
+  )}
 </article>
