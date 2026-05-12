@@ -3847,7 +3847,7 @@ body[data-active-surface] .lane-card__details.is-surface-match {
 }
 
 .pipeline-shell::before {
-  content: "Evidence conveyor / detection production line";
+  content: "Evidence conveyor / controlled review line";
   display: block;
   margin-bottom: 14px;
   font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;

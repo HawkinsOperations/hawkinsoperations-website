@@ -141,8 +141,8 @@ const pipelineStages: PipelineStage[] = [
     name: "AI Support",
     chip: "AI_AS_LABOR",
     tone: "ice",
-    body: "AI drafts summaries and reviewer prep. It assists the line, but cannot authorize release.",
-    surfaces: ["evidence"],
+    body: "AI drafts summaries and reviewer prep. It assists the controlled review line, but cannot authorize release.",
+    surfaces: ["evidence", "runtime"],
     detail: {
       proves: "AI is wired in as labor for drafting, summarizing, and reviewer prep.",
       doesNotProve: "Any AI-approved disposition or analyst-approved disposition. AI cannot promote a claim by itself.",
@@ -159,7 +159,7 @@ const pipelineStages: PipelineStage[] = [
     chip: "SCANNER_CLEAN",
     tone: "ice",
     body: "Deterministic checks block unsupported wording before any public route ships.",
-    surfaces: ["evidence", "public-proof"],
+    surfaces: ["evidence", "runtime", "signal", "public-proof"],
     detail: {
       proves: "A deterministic site contract and blocked-claim scanner run before any wording change ships.",
       doesNotProve: "That every runtime statement is independently witnessed. The scanner gates wording, not telemetry.",
@@ -176,7 +176,7 @@ const pipelineStages: PipelineStage[] = [
     chip: "RECORD_PUBLISHED",
     tone: "quiet",
     body: "The receipt ships with evidence pointers, explicit boundaries, and a stated ceiling.",
-    surfaces: ["public-proof"],
+    surfaces: ["signal", "public-proof"],
     detail: {
       proves: "A public proof record exists with a stated ceiling, evidence pointers, and bounded scope.",
       doesNotProve: "Runtime-active deployment, signal-observed truth, or public-safe runtime proof.",
@@ -302,7 +302,7 @@ const qcMap = [
   {
     shop: "Standard work",
     detection: "Detection-as-code",
-    line: "A rule enters the line with a reviewable source path.",
+    line: "A rule enters the evidence line with a reviewable source path.",
   },
   {
     shop: "Traceability",
@@ -625,7 +625,7 @@ const qcMap = [
           <p class="eyebrow">Trace One Receipt</p>
           <h2 id="trace-title" class="headline mt-2 text-2xl md:text-3xl">HO-DET-001 · proof trace terminal</h2>
           <p class="muted mt-3 max-w-2xl text-sm leading-6">
-            A single bounded receipt traced through the production line. Rows expand to explain the route.
+            A single bounded receipt traced through the controlled review line. Rows expand to explain the route.
           </p>
         </div>
         <div class="trace-terminal__badge mono">
@@ -675,7 +675,7 @@ const qcMap = [
         <p class="eyebrow">Manufacturing QC → Detection Engineering</p>
         <h2 id="qc-map-title" class="headline mt-3 text-2xl md:text-3xl">A control system for claims, not a dashboard for vibes.</h2>
         <p class="muted mt-4 max-w-3xl text-sm leading-6">
-          HawkinsOperations treats each detection like work on a quality line: source enters, fixtures test it,
+          HawkinsOperations treats each detection like work on a controlled review line: source enters, fixtures test it,
           human review owns escalation, deterministic checks guard release, and the public record carries a ceiling.
         </p>
       </div>
