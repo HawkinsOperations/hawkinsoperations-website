@@ -20,7 +20,7 @@ export const loopSteps: LoopStep[] = [
   },
   {
     num: "03",
-    title: "Synthetic Validation",
+    title: "Controlled-Test Validation",
     body: "Deterministic test inputs and expected outputs in the validation repo.",
     status: "active",
   },

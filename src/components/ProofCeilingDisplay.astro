@@ -9,8 +9,7 @@ export interface Props {
 const { size = "default", visualLabel } = Astro.props;
 
 // Render the machine token as visual editorial words to avoid mid-token wrap.
-// "TEST_VALIDATED_SYNTHETIC_SCOPE" → "Test · Validated · Synthetic Scope"
-const defaultVisual = "Test · Validated · Synthetic Scope";
+const defaultVisual = "Controlled · Test · Validated";
 const visual = visualLabel ?? defaultVisual;
 ---
 

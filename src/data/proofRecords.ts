@@ -4,7 +4,7 @@ import { externalLinks } from "./navigation";
 export type ProofRecord = {
   detectionId: string;
   title: string;
-  proofLevel: typeof proofCeiling;
+  proofLevel: string;
   validationState: string;
   runtimeState: string;
   signalState: string;
@@ -23,9 +23,9 @@ export type ProofRecord = {
 export const proofRecords: ProofRecord[] = [
   {
     detectionId: "HO-DET-001",
-    title: "Synthetic validation proof card",
+    title: "Controlled-test validation proof card",
     proofLevel: proofCeiling,
-    validationState: "synthetic validation status",
+    validationState: "controlled-test validation status",
     runtimeState: "not claimed from public website",
     signalState: "not claimed from public website",
     publicSafeState: "blocked until evidence linkage and explicit promotion",
@@ -36,11 +36,11 @@ export const proofRecords: ProofRecord[] = [
     exists: [
       "A public proof record route exists.",
       "A public website route can point reviewers to the proof record.",
-      "A synthetic validation boundary is stated.",
+      "A controlled-test validation boundary is stated.",
       "Platform runtime contract enforcement exists as a non-promotional guardrail.",
     ],
     passed: [
-      "The public ceiling is stated as TEST_VALIDATED_SYNTHETIC_SCOPE.",
+      "The public ceiling is stated as CONTROLLED_TEST_VALIDATED.",
       "Blocked promotions are visible instead of hidden.",
       "Website rendering remains separated from evidence authority.",
       "The platform verifier preserves NOT_PUBLIC_SAFE and BLOCKED runtime promotion fields.",
@@ -57,7 +57,7 @@ export const proofRecords: ProofRecord[] = [
       "Runtime evidence must be promoted separately.",
       "Signal evidence must be promoted separately.",
       "Public proof requires evidence linkage.",
-      "The platform runtime contract does not promote HO-DET-001 beyond TEST_VALIDATED_SYNTHETIC_SCOPE.",
+      "The platform runtime contract does not promote HO-DET-001 beyond CONTROLLED_TEST_VALIDATED.",
       "Blocked-claim scanner must stay clean before wording changes ship.",
     ],
     promotionRequirements: [
@@ -71,7 +71,7 @@ export const proofRecords: ProofRecord[] = [
     detectionId: "AWS-DET-001",
     title: "CloudTrail-style IAM denial fixture proof card",
     proofLevel: proofCeiling,
-    validationState: "fixture-only synthetic validation status",
+    validationState: "fixture-only controlled validation status",
     runtimeState: "not claimed from public website",
     signalState: "not claimed from public website",
     publicSafeState: "blocked until evidence linkage and explicit promotion",
@@ -81,11 +81,11 @@ export const proofRecords: ProofRecord[] = [
     exists: [
       "A public proof record route exists for AWS-DET-001.",
       "A fixture-only CloudTrail-style detection candidate is published as source.",
-      "A synthetic validation report is published in the validation repository.",
+      "A fixture-only validation report is published in the validation repository.",
     ],
     passed: [
       "AWS-DET-001 passed fixture-only validation against controlled CloudTrail-style IAM denial fixtures.",
-      "The proof record states the public ceiling as TEST_VALIDATED_SYNTHETIC_SCOPE.",
+      "The website renders the public ceiling as CONTROLLED_TEST_VALIDATED.",
       "Blocked promotions for AWS-live, CloudTrail live, cloud runtime-active, signal-observed, and public-safe runtime proof are visible instead of hidden.",
     ],
     notClaimed: [

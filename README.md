@@ -1,6 +1,6 @@
 # HawkinsOperations Website
 
-Public proof codex and website rendering layer for HawkinsOperations, the governed successor architecture for AI-assisted detection engineering.
+Public proof codex and website rendering layer for HawkinsOperations, the governed successor architecture for detection engineering.
 
 Owner identity: Raylee Hawkins, Detection Engineer | SOC Automation | Detection-as-Code | Security Automation.
 
@@ -31,14 +31,14 @@ Cloudflare Pages should build from the repository root and publish `dist`.
 - Reviewer entry point: https://github.com/HawkinsOperations/.github/blob/main/profile/START_HERE.md
 - Repository authority map: https://github.com/HawkinsOperations/.github/blob/main/architecture/REPO_AUTHORITY_MAP.md
 - HO-DET-001 public proof route: https://github.com/HawkinsOperations/hawkinsoperations-proof/blob/main/proof/records/HO-DET-001.md
-- Current HO-DET-001 ceiling: TEST_VALIDATED_SYNTHETIC_SCOPE
+- Current HO-DET-001 public label: CONTROLLED_TEST_VALIDATED
 - HawkinsOperations is the governed successor system; HawkinsOps and older surfaces are legacy/reference unless revalidated.
 - Sprint thesis: speed with enforcement through deterministic validation, CI/CD gates, evidence records, proof contracts, and bounded public claims.
 - AI is labor. Governance is authority.
 - Build loud. Verify hard. Claim tight. Ship receipts.
 - Website/public pages route to proof records; they do not replace proof.
 - Platform runtime contract enforcement exists for HO-DET-001 through `HawkinsOperations/hawkinsoperations-platform#5` as a non-promotional guardrail.
-- Platform contract status: it preserves `TEST_VALIDATED_SYNTHETIC_SCOPE`, `NOT_PUBLIC_SAFE`, and `BLOCKED`; it does not prove runtime-active status, signal-observed public proof, public-safe runtime proof, live Splunk fired, Splunk-proven Runtime Signal 001, Cribl-routed status, Wazuh-routed public proof, production-ready status, fleet-wide coverage, AWS-live status, autonomous SOC operation, AI-approved disposition, or analyst-approved disposition.
+- Platform contract status: it preserves `CONTROLLED_TEST_VALIDATED`, `NOT_PUBLIC_SAFE`, and `BLOCKED`; it does not prove runtime-active status, signal-observed public proof, public-safe runtime proof, live Splunk fired, Splunk-proven Runtime Signal 001, Cribl-routed status, Wazuh-routed public proof, production-ready status, fleet-wide coverage, AWS-live status, autonomous SOC operation, AI-approved disposition, or analyst-approved disposition.
 - Next gates: evidence-backed runtime or signal promotion only after separate proof review, privacy review, stale review, wording review, and Raylee approval.
 
 ## Blocked Claims

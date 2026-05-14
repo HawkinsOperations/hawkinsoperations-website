@@ -10,6 +10,6 @@ Preserve the static Astro + Tailwind + TypeScript website rebuild while tighteni
 
 ## Blocking Risks
 
-- Public wording must continue to preserve the TEST_VALIDATED_SYNTHETIC_SCOPE ceiling.
+- Public wording must continue to preserve the CONTROLLED_TEST_VALIDATED ceiling.
 - Website rendering must not be treated as proof.
 - Blocked claims must stay in blocked / not-claimed / claim-firewall context.
