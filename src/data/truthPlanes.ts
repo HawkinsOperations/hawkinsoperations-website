@@ -16,9 +16,9 @@ export const truthPlanes: TruthPlane[] = [
   {
     key: "validation",
     label: "Validation Truth",
-    short: "Synthetic scope",
+    short: "Controlled-test scope",
     active: true,
-    ceiling: "TEST_VALIDATED_SYNTHETIC_SCOPE",
+    ceiling: "CONTROLLED_TEST_VALIDATED",
   },
   {
     key: "runtime",

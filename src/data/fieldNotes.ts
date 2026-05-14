@@ -40,17 +40,17 @@ export const fieldNotes: FieldNote[] = [
     ],
   },
   {
-    slug: "what-synthetic-validation-proves",
-    title: "What synthetic validation proves",
+    slug: "what-controlled-test-validation-proves",
+    title: "What controlled-test validation proves",
     date: "2026-05-01",
     status: "VALIDATION_BOUNDARY",
-    tags: ["validation", "HO-DET-001", "synthetic"],
-    summary: "Synthetic validation can prove a bounded test path, not full operational behavior.",
-    proofBoundary: "HO-DET-001 remains at TEST_VALIDATED_SYNTHETIC_SCOPE.",
+    tags: ["validation", "HO-DET-001", "controlled-test"],
+    summary: "Controlled-test validation can prove a bounded test path, not full operational behavior.",
+    proofBoundary: "HO-DET-001 remains at CONTROLLED_TEST_VALIDATED.",
     relatedLinks: [{ label: "HO-DET-001 case file", href: "/proof/ho-det-001/" }],
     body: [
-      "Synthetic validation is valuable because it is bounded and repeatable.",
-      "The correct public claim is the bounded one: the proof ceiling remains TEST_VALIDATED_SYNTHETIC_SCOPE until separate runtime, signal, and evidence gates are satisfied.",
+      "Controlled-test validation is valuable because it is bounded and repeatable.",
+      "The correct public claim is the bounded one: the proof ceiling remains CONTROLLED_TEST_VALIDATED until separate runtime, signal, and evidence gates are satisfied.",
     ],
   },
   {
@@ -77,7 +77,7 @@ export const fieldNotes: FieldNote[] = [
     proofBoundary: "Governance controls decide what can be claimed.",
     relatedLinks: [{ label: "Architecture", href: "/architecture/" }],
     body: [
-      "The system can use AI-assisted labor to build, inspect, and validate artifacts.",
+      "The system can use AI labor to build, inspect, and validate artifacts.",
       "Authority remains in deterministic controls, explicit evidence, and Raylee-approved promotion gates.",
     ],
   },

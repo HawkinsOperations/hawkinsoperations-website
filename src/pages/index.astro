@@ -16,7 +16,7 @@ const previewSlugs = [
   "aws-det-001-proof-record",
   "ho-det-001-lab-runtime-match",
   "cribl-to-splunk-marker-delivery",
-  "synthetic-validation-boundary",
+  "controlled-test-validation-boundary",
   "blocked-claim-scanner",
 ];
 const previewArtifacts = previewSlugs
@@ -195,7 +195,7 @@ const pipelineStages: PipelineStage[] = [
     body: "Public wording holds at the approved ceiling. Stronger claims require a separate gate.",
     surfaces: ["public-proof"],
     detail: {
-      proves: "The public surface holds the stated ceiling: TEST_VALIDATED_SYNTHETIC_SCOPE.",
+      proves: "The public surface holds the stated ceiling: CONTROLLED_TEST_VALIDATED.",
       doesNotProve: "Anything stronger than the ceiling. Stronger wording is blocked until separately promoted.",
       links: [
         { label: "Claim firewall", href: "/controls/" },
@@ -257,7 +257,7 @@ const traceSteps = [
   {
     code: "FIXTURE_VALIDATED",
     label: "Fixture validated",
-    line: "HO-DET-001 passes controlled synthetic fixtures in the validation repo.",
+    line: "HO-DET-001 passes controlled positive and negative test cases in the validation repo.",
     href: externalLinks.validationReportHo,
     external: true,
   },
@@ -292,7 +292,7 @@ const traceSteps = [
   {
     code: "PUBLIC_CEILING_HELD",
     label: "Public ceiling held",
-    line: "Public claim ceiling stays at TEST_VALIDATED_SYNTHETIC_SCOPE. Stronger claims require a separate promotion gate.",
+    line: "Public claim ceiling stays at CONTROLLED_TEST_VALIDATED. Stronger claims require a separate promotion gate.",
     href: "/proof/ho-det-001/",
     external: false,
   },
@@ -365,7 +365,7 @@ const qcMap = [
           <div class="hero-ceiling__inner">
             <p class="hero-ceiling__eyebrow mono">Current public claim ceiling</p>
             <div class="hero-ceiling__display">
-              <ProofCeilingDisplay visualLabel="Synthetic Validation Scope" />
+              <ProofCeilingDisplay visualLabel="Controlled Test Validated" />
             </div>
             <p class="hero-ceiling__note">
               Every public claim has a ceiling. Stronger wording requires a separate promotion gate.
@@ -415,6 +415,16 @@ const qcMap = [
         Wazuh → Cribl → Splunk validation work is prior operating evidence only, not a current HawkinsOperations proof-ledger claim.
       </p>
     </div>
+  </section>
+
+  <!-- ╔══ HO-DET-001 PUBLIC PIPELINE ROUTE ═══════════════════════════════════ -->
+  <section class="container section-tight" aria-labelledby="pipeline-proof-title">
+    <a class="pipeline-strip" href="/pipeline/" aria-label="Trace the HO-DET-001 public pipeline proof">
+      <span class="pipeline-strip__tag mono">New · /pipeline/</span>
+      <span id="pipeline-proof-title" class="pipeline-strip__title">HO-DET-001 public pipeline proof</span>
+      <span class="pipeline-strip__stats mono">14 controlled test cases · 14/14 passed · 0 missed positives · 0 false-positive negatives · 10 blocked claim categories</span>
+      <span class="pipeline-strip__cta">Trace the pipeline →</span>
+    </a>
   </section>
 
   <!-- ╔══ GOVERNED AGENT PROMOTION SYSTEM ═════════════════════════════════════ -->
@@ -630,7 +640,7 @@ const qcMap = [
         </div>
         <div class="trace-terminal__badge mono">
           <span>Public ceiling</span>
-          <strong>TEST_VALIDATED_SYNTHETIC_SCOPE</strong>
+          <strong>CONTROLLED_TEST_VALIDATED</strong>
         </div>
       </header>
 

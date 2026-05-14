@@ -1,12 +1,12 @@
-export const proofCeiling = "TEST_VALIDATED_SYNTHETIC_SCOPE" as const;
+export const proofCeiling = "CONTROLLED_TEST_VALIDATED" as const;
 
 export const mandatoryBoundary = "Website rendering is not proof.";
 
 export const allowedClaims = [
   "HawkinsOperations is a public rendering layer.",
   "HawkinsOperations separates source truth, runtime truth, signal truth, evidence truth, and public proof.",
-  "HO-DET-001 has synthetic validation status.",
-  "HO-DET-001 public proof ceiling is TEST_VALIDATED_SYNTHETIC_SCOPE.",
+  "HO-DET-001 is CONTROLLED_TEST_VALIDATED.",
+  "HO-DET-001 has controlled-test validation status.",
   "Source presence does not prove runtime.",
   "Validation does not prove public signal.",
   "Public proof requires evidence linkage and explicit promotion.",
@@ -30,9 +30,9 @@ export const blockedClaims = [
 ];
 
 export const safeWordingExamples = [
-  "HO-DET-001 is presented at TEST_VALIDATED_SYNTHETIC_SCOPE.",
+  "HO-DET-001 is presented at CONTROLLED_TEST_VALIDATED.",
   "Website pages route reviewers to proof records; they do not replace proof records.",
-  "Synthetic validation supports the validation surface only.",
+  "Controlled-test validation supports the validation surface only.",
   "Runtime, signal, evidence, and public proof require separate promotion gates.",
 ];
 

@@ -19,7 +19,7 @@
 - Second-pass polish: CSS-only mobile density and scanability tuning for lifecycle wrapping, card padding, CTA hover/focus behavior, tap target consistency, and footer link rhythm.
 - Track F pass: clarified HawkinsOperations as the successor governance architecture, added reviewer routing for hawkinsops.com, rayleeops.com, and the HawkinsOperations GitHub org, and tightened HO-DET-001 wording to source/proof path in progress without validation, runtime, signal, evidence, or public-safe overclaiming.
 - Claims added:
-  - HawkinsOperations is governed AI-assisted detection engineering.
+  - HawkinsOperations is governed detection engineering with AI labor under human/evidence authority.
   - The successor architecture separates source, runtime, signal, evidence, public proof, and legacy/reference truth.
   - Website content is public rendering and routing only.
   - HO-DET-001 status is limited to proof path in progress.

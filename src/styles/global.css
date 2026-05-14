@@ -4400,6 +4400,280 @@ body[data-active-surface] .truth-board__status {
     rgba(4, 7, 12, 0.66);
 }
 
+/* ─── HO-DET-001 public pipeline proof cockpit ───────────────────── */
+
+.pipeline-hero {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(54px, 8vw, 96px) 0 42px;
+  border-bottom: 1px solid var(--moon-border);
+  background:
+    radial-gradient(circle at 78% 12%, rgba(143, 216, 255, 0.12), transparent 32%),
+    linear-gradient(180deg, rgba(6, 12, 21, 0.96), rgba(2, 5, 10, 0.98));
+}
+
+.pipeline-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, rgba(201, 211, 223, 0.035) 0 1px, transparent 1px 96px),
+    repeating-linear-gradient(0deg, rgba(201, 211, 223, 0.025) 0 1px, transparent 1px 72px);
+  mask-image: linear-gradient(180deg, black, transparent 78%);
+}
+
+.pipeline-hero__grid {
+  position: relative;
+  display: grid;
+  gap: 28px;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: end;
+}
+
+.pipeline-hero__receipt {
+  display: grid;
+  gap: 9px;
+  align-self: stretch;
+  max-width: 360px;
+  padding: 20px;
+  border: 1px solid rgba(143, 216, 255, 0.28);
+  border-left: 4px solid var(--ice-blue);
+  border-radius: 6px;
+  background: rgba(4, 8, 14, 0.74);
+  box-shadow: inset 0 0 0 1px rgba(143, 216, 255, 0.06);
+}
+
+.pipeline-hero__receipt span {
+  color: var(--ice-blue);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.pipeline-hero__receipt strong {
+  color: var(--silver-bright);
+  font-size: clamp(2rem, 4vw, 3.1rem);
+  line-height: 1;
+}
+
+.pipeline-hero__receipt p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.scoreboard {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.scoreboard__cell {
+  min-height: 104px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--moon-border);
+  border-radius: 6px;
+  background:
+    linear-gradient(180deg, rgba(143, 216, 255, 0.05), rgba(6, 10, 18, 0.82));
+}
+
+.scoreboard__cell--quiet { opacity: 0.86; }
+.scoreboard__cell--pass { border-color: rgba(143, 216, 255, 0.34); }
+.scoreboard__cell--block {
+  border-color: rgba(255, 155, 170, 0.36);
+  background: linear-gradient(180deg, rgba(255, 155, 170, 0.07), rgba(6, 10, 18, 0.82));
+}
+
+.scoreboard__value {
+  color: var(--silver-bright);
+  font-size: clamp(1.75rem, 3vw, 2.45rem);
+  line-height: 1;
+}
+
+.scoreboard__cell--block .scoreboard__value { color: #ffbdc7; }
+
+.scoreboard__label {
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.pipeline-shell--proof::before {
+  content: "Public proof loop / traceable machine";
+}
+
+.pipeline-proof-node {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: inherit;
+  text-decoration: none;
+  border: 1px solid rgba(143, 216, 255, 0.12);
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.pipeline-proof-node:hover,
+.pipeline-proof-node:focus-visible {
+  border-color: rgba(143, 216, 255, 0.42);
+  box-shadow: 0 0 0 1px rgba(143, 216, 255, 0.1) inset;
+  outline: none;
+}
+
+.proof-split {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.proof-split__panel {
+  padding: 24px;
+  border: 1px solid var(--moon-border);
+  border-radius: 6px;
+  background: linear-gradient(180deg, rgba(11, 17, 28, 0.66), rgba(4, 7, 12, 0.92));
+}
+
+.proof-split__panel--block {
+  border-color: rgba(255, 155, 170, 0.3);
+  background: linear-gradient(180deg, rgba(255, 155, 170, 0.05), rgba(4, 7, 12, 0.92));
+}
+
+.proof-split__panel--block .eyebrow { color: #ffbdc7; }
+
+.proof-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--silver);
+}
+
+.proof-list li {
+  padding-left: 18px;
+  border-left: 3px solid rgba(143, 216, 255, 0.52);
+  line-height: 1.55;
+}
+
+.blocked-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.blocked-chip-grid span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 155, 170, 0.32);
+  border-radius: 4px;
+  background: rgba(255, 155, 170, 0.055);
+  color: #ffbdc7;
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+}
+
+.artifact-tile--proof {
+  min-height: 190px;
+}
+
+.pipeline-takeaway {
+  border-left: 4px solid var(--ice-blue);
+}
+
+.pipeline-strip {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "tag title cta"
+    "tag stats cta";
+  gap: 4px 18px;
+  align-items: center;
+  padding: 18px 20px;
+  border: 1px solid var(--moon-border);
+  border-left: 4px solid var(--ice-blue);
+  border-radius: 6px;
+  background:
+    linear-gradient(90deg, rgba(143, 216, 255, 0.1), transparent 48%),
+    rgba(4, 8, 14, 0.78);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 180ms ease, transform 180ms ease;
+}
+
+.pipeline-strip:hover,
+.pipeline-strip:focus-visible {
+  border-color: var(--moon-border-bright);
+  transform: translateX(2px);
+  outline: none;
+}
+
+.pipeline-strip__tag {
+  grid-area: tag;
+  color: var(--ice-blue);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.pipeline-strip__title {
+  grid-area: title;
+  color: var(--silver-bright);
+  font-weight: 700;
+}
+
+.pipeline-strip__stats {
+  grid-area: stats;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.pipeline-strip__cta {
+  grid-area: cta;
+  color: var(--ice-blue);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@media (min-width: 920px) {
+  .pipeline-hero__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.34fr);
+  }
+
+  .proof-split {
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  }
+}
+
+@media (max-width: 720px) {
+  .pipeline-strip {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "tag"
+      "title"
+      "stats"
+      "cta";
+  }
+
+  .pipeline-strip__cta {
+    white-space: normal;
+  }
+}
+
 @media (min-width: 860px) {
   .truth-board__header,
   .trace-terminal__header {
