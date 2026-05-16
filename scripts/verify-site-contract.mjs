@@ -39,6 +39,7 @@ if (missing.length > 0) {
 const blockedTerms = [
   "runtime-active",
   "signal-observed",
+  "public-safe",
   "public-safe runtime proof",
   "production-ready",
   "fleet-wide",
@@ -50,6 +51,14 @@ const blockedTerms = [
   "autonomous SOC",
   "AI-approved disposition",
   "analyst-approved disposition",
+  "PROVEN_PRIVATE_INTERNAL",
+  "PRIVATE_RUNTIME_EVIDENCE_CAPTURED",
+  "CONTROLLED_LAB_RUNTIME",
+  "CONTROLLED_LAB_RUNTIME_MATCH_VERIFIED",
+  "controlled lab runtime match",
+  "HO-GPU-01",
+  "marker-bearing",
+  'proofCeiling: "PROVEN_PRIVATE_INTERNAL"',
 ];
 
 const allowedContext = [
@@ -61,14 +70,38 @@ const allowedContext = [
   /doesNotProve/,
   /cannot[-_ ]prove/i,
   /not prove/i,
+  /not public/i,
+  /not public-safe/i,
   /not_public_safe/i,
   /claim firewall/i,
   /claim[- ]firewall/i,
   /promotion/i,
+  /not promotion-authorizing/i,
   /unsafe wording/i,
   /remains capped/i,
   /no .{0,80} claim/i,
   /blockedClaims/,
+  /excluded/i,
+  /private\/internal material/i,
+  /outside the public proof basis/i,
+];
+
+const privateRuntimeClaimTerms = [
+  "PROVEN_PRIVATE_INTERNAL",
+  "PRIVATE_RUNTIME_EVIDENCE_CAPTURED",
+  "CONTROLLED_LAB_RUNTIME",
+  "CONTROLLED_LAB_RUNTIME_MATCH_VERIFIED",
+  "controlled lab runtime match",
+  "Cribl-to-Splunk",
+  "marker-bearing",
+  "HO-GPU-01",
+];
+
+const renderedArtifactCopyField = /^\s*(title|description|proves|doesNotProve|proofCeiling|tags)\s*:/i;
+const renderedArtifactBoundaryTerms = [
+  ...privateRuntimeClaimTerms,
+  "public-safe",
+  'proofCeiling: "PROVEN_PRIVATE_INTERNAL"',
 ];
 
 const scanRoots = ["README.md", "SCOPE.md", "STATUS.md", "src", "public"];
@@ -88,6 +121,10 @@ function collectFiles(target) {
 }
 
 const failures = [];
+function isNeutralPublicSafeLabel(line) {
+  return /Public-safe(?: state)?/i.test(line) && !/PUBLIC_SAFE|proof|runtime|promote|approved|supported/i.test(line);
+}
+
 for (const file of scanRoots.flatMap(collectFiles)) {
   if (!scanExtensions.has(extname(file))) continue;
   const lines = readFileSync(file, "utf8").split(/\r?\n/);
@@ -95,9 +132,30 @@ for (const file of scanRoots.flatMap(collectFiles)) {
     const normalizedLine = line.toLowerCase();
     const matchedTerm = blockedTerms.find((term) => normalizedLine.includes(term.toLowerCase()));
     if (!matchedTerm) return;
+    if (matchedTerm === "public-safe" && isNeutralPublicSafeLabel(line)) return;
+    if (/cannotProve/.test(line)) return;
     const contextWindow = lines.slice(Math.max(0, index - 12), Math.min(lines.length, index + 13)).join(" ");
     if (!allowedContext.some((pattern) => pattern.test(contextWindow))) {
       failures.push(`${relative(root, file)}:${index + 1}: ${line.trim()}`);
+    }
+
+    const isPublicProofCeiling = /proofCeiling\s*:\s*["']PROVEN_PRIVATE_INTERNAL["']/i.test(line);
+    if (isPublicProofCeiling) {
+      failures.push(`${relative(root, file)}:${index + 1}: public artifact cards must not use PROVEN_PRIVATE_INTERNAL as proofCeiling`);
+    }
+  });
+
+  lines.forEach((line, index) => {
+    const renderedField = line.match(renderedArtifactCopyField)?.[1];
+    if (!renderedField) return;
+    const normalizedLine = line.toLowerCase();
+    const privateTerm = renderedArtifactBoundaryTerms.find((term) => normalizedLine.includes(term.toLowerCase()));
+    if (!privateTerm) return;
+    const boundaryScoped =
+      renderedField === "doesNotProve" ||
+      /not to a public|does not prove|blocked|not public|outside the public proof basis/i.test(line);
+    if (!boundaryScoped) {
+      failures.push(`${relative(root, file)}:${index + 1}: public ${renderedField} field cannot assert private runtime, marker, or public-safe proof: ${line.trim()}`);
     }
   });
 }
