@@ -97,6 +97,13 @@ const privateRuntimeClaimTerms = [
   "HO-GPU-01",
 ];
 
+const renderedArtifactCopyField = /^\s*(title|description|proves|doesNotProve|proofCeiling|tags)\s*:/i;
+const renderedArtifactBoundaryTerms = [
+  ...privateRuntimeClaimTerms,
+  "public-safe",
+  'proofCeiling: "PROVEN_PRIVATE_INTERNAL"',
+];
+
 const scanRoots = ["README.md", "SCOPE.md", "STATUS.md", "src", "public"];
 const scanExtensions = new Set([".astro", ".ts", ".md", ".mjs", ".json", ".xml", ".txt"]);
 
@@ -139,13 +146,16 @@ for (const file of scanRoots.flatMap(collectFiles)) {
   });
 
   lines.forEach((line, index) => {
-    if (!/\bproves\s*:/i.test(line)) return;
+    const renderedField = line.match(renderedArtifactCopyField)?.[1];
+    if (!renderedField) return;
     const normalizedLine = line.toLowerCase();
-    const privateTerm = privateRuntimeClaimTerms.find((term) => normalizedLine.includes(term.toLowerCase()));
+    const privateTerm = renderedArtifactBoundaryTerms.find((term) => normalizedLine.includes(term.toLowerCase()));
     if (!privateTerm) return;
-    const boundaryScoped = /not to a public|does not prove|blocked|not public|outside the public proof basis/i.test(line);
+    const boundaryScoped =
+      renderedField === "doesNotProve" ||
+      /not to a public|does not prove|blocked|not public|outside the public proof basis/i.test(line);
     if (!boundaryScoped) {
-      failures.push(`${relative(root, file)}:${index + 1}: public proves field cannot assert private runtime or marker proof: ${line.trim()}`);
+      failures.push(`${relative(root, file)}:${index + 1}: public ${renderedField} field cannot assert private runtime, marker, or public-safe proof: ${line.trim()}`);
     }
   });
 }
