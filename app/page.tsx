@@ -1,235 +1,25 @@
 import type { Metadata } from "next";
-import BrandMark from "@components/BrandMark";
-import PortraitCommandFrame from "@components/PortraitCommandFrame";
-import StatusChip from "@components/StatusChip";
-import ArtifactCard from "@components/ArtifactCard";
-import SectionEyebrow from "@components/SectionEyebrow";
-import ProofCeilingDisplay from "@components/ProofCeilingDisplay";
-import TruthSurfaceSeparation from "@components/TruthSurfaceSeparation";
-import EvidenceConveyor, { type PipelineStage } from "@components/EvidenceConveyor";
-import { credibilityMetrics } from "@data/credibilityMetrics";
+import ArtifactMachine from "@components/ArtifactMachine";
+import ArtifactFamilyMatrix from "@components/ArtifactFamilyMatrix";
+import ClaimFirewallPanel from "@components/ClaimFirewallPanel";
+import ProofPathTimeline, { type ProofPathStep } from "@components/ProofPathTimeline";
+import RepoAuthorityDAG from "@components/RepoAuthorityDAG";
+import ReviewRouteSelector from "@components/ReviewRouteSelector";
+import StatusConsole from "@components/StatusConsole";
+import TruthSurfaceInfographic from "@components/TruthSurfaceInfographic";
 import { externalLinks } from "@data/navigation";
-import { artifacts, type Artifact } from "@data/artifacts";
 
 export const metadata: Metadata = {
   title: "HawkinsOperations Detection Engineering SOC",
   description:
-    "HawkinsOperations turns detection work into governed proof. Trace the path from detection source to public claim across seven separated stages.",
+    "HawkinsOperations turns detection work into bounded artifacts: source, validation, case packet, AI support, verifier, CI, proof card, and public claim boundary.",
 };
 
-const previewSlugs = [
-  "ho-det-001-proof-record",
-  "aws-det-001-proof-record",
-  "ho-det-001-lab-runtime-match",
-  "cribl-to-splunk-marker-delivery",
-  "controlled-test-validation-boundary",
-  "blocked-claim-scanner",
-];
-
-const reviewerModes = [
-  {
-    id: "exec",
-    label: "Executive",
-    duration: "3 min",
-    question: "Can this system show disciplined proof without overstating status?",
-    checklist: [
-      "Follow HO-DET-001 from source to proof ceiling.",
-      "Confirm AI is assistive labor, not approval authority.",
-      "Check that blocked wording stays visually secondary and accessible.",
-    ],
-    nextClick: { label: "Trace HO-DET-001", href: "#trace" },
-    path: ["HO-DET-001", "Verifier", "Claim Ceiling"],
-  },
-  {
-    id: "proof",
-    label: "Proof",
-    duration: "10 min",
-    question: "Which evidence surface supports each public claim?",
-    checklist: [
-      "Inspect validation fixture boundaries.",
-      "Open the proof record and confirm the claim ceiling.",
-      "Use the Truth Surface Control Board to isolate public proof.",
-    ],
-    nextClick: { label: "Open proof ledger", href: "/proof/" },
-    path: ["Fixtures", "Case Packet", "Proof Record"],
-  },
-  {
-    id: "tech",
-    label: "Technical",
-    duration: "deep",
-    question: "Can the reviewer clone the route and understand the gates?",
-    checklist: [
-      "Review source, fixtures, scanner, and repo authority routes.",
-      "Confirm deterministic checks gate website wording.",
-      "Verify no runtime or signal wording is promoted by rendering.",
-    ],
-    nextClick: { label: "Open repo map", href: "/repos/" },
-    path: ["Detection Source", "Fixtures", "Verifier"],
-  },
-];
-
-const pipelineStages: PipelineStage[] = [
-  {
-    id: "source",
-    n: "01",
-    name: "Detection Source",
-    chip: "SOURCE_PRESENT",
-    tone: "quiet",
-    body: "Work enters as a reviewable rule and SPL source. Presence is the starting input, not runtime proof.",
-    surfaces: ["source"],
-    detail: {
-      proves: "A reviewable detection rule exists under version control with a stated owner.",
-      doesNotProve: "That the rule has executed, matched, or produced any signal-observed runtime-active result.",
-      links: [
-        { label: "Detections repository", href: externalLinks.detections, external: true },
-        { label: "Repository map", href: "/repos/" },
-      ],
-    },
-  },
-  {
-    id: "validation",
-    n: "02",
-    name: "Fixtures",
-    chip: "FIXTURE_PASSED",
-    tone: "ice",
-    body: "Positive and negative fixtures test behavior in a controlled validation boundary.",
-    surfaces: ["validation"],
-    detail: {
-      proves: "The rule passes deterministic positive and negative fixtures inside the validation repo.",
-      doesNotProve: "Endpoint, fleet-wide, or production-ready behavior. Validation does not claim live telemetry.",
-      links: [
-        { label: "Validation repository", href: externalLinks.validation, external: true },
-        { label: "HO-DET-001 validation report", href: externalLinks.validationReportHo, external: true },
-      ],
-    },
-  },
-  {
-    id: "case-packet",
-    n: "03",
-    name: "Case Packet",
-    chip: "PACKET_ROUTED",
-    tone: "quiet",
-    body: "Findings, fixture output, and reviewer wording move together as a routable packet.",
-    surfaces: ["evidence"],
-    detail: {
-      proves: "Findings, validation outputs, and reviewer wording are bundled into a routable case file.",
-      doesNotProve: "Any claim that has not been independently linked to evidence inside the packet.",
-      links: [
-        { label: "HO-DET-001 case file", href: "/proof/ho-det-001/" },
-        { label: "Artifact vault", href: "/artifacts/" },
-      ],
-    },
-  },
-  {
-    id: "ai-triage",
-    n: "04",
-    name: "AI Support",
-    chip: "AI_AS_LABOR",
-    tone: "ice",
-    body: "AI drafts summaries and reviewer prep. It assists the controlled review line, but cannot authorize release.",
-    surfaces: ["evidence", "runtime"],
-    detail: {
-      proves: "AI is wired in as labor for drafting, summarizing, and reviewer prep.",
-      doesNotProve: "Any AI-approved disposition or analyst-approved disposition. AI cannot promote a claim by itself.",
-      links: [
-        { label: "Claim firewall", href: "/controls/" },
-        { label: "Field note · AI is labor", href: "/field-notes/ai-is-labor-governance-is-authority/" },
-      ],
-    },
-  },
-  {
-    id: "verifier",
-    n: "05",
-    name: "Verifier",
-    chip: "SCANNER_CLEAN",
-    tone: "ice",
-    body: "Deterministic checks block unsupported wording before any public route ships.",
-    surfaces: ["evidence", "runtime", "signal", "public-proof"],
-    detail: {
-      proves: "A deterministic site contract and blocked-claim scanner run before any wording change ships.",
-      doesNotProve: "That every runtime statement is independently witnessed. The scanner gates wording, not telemetry.",
-      links: [
-        { label: "Claim firewall", href: "/controls/" },
-        { label: "Repo authority map", href: externalLinks.repoAuthorityMap, external: true },
-      ],
-    },
-  },
-  {
-    id: "proof-record",
-    n: "06",
-    name: "Proof Record",
-    chip: "RECORD_PUBLISHED",
-    tone: "quiet",
-    body: "The receipt ships with evidence pointers, explicit boundaries, and a stated ceiling.",
-    surfaces: ["signal", "public-proof"],
-    detail: {
-      proves: "A public proof record exists with a stated ceiling, evidence pointers, and bounded scope.",
-      doesNotProve: "Runtime-active deployment, signal-observed truth, or public-safe runtime proof.",
-      links: [
-        { label: "Proof ledger", href: "/proof/" },
-        { label: "HO-DET-001 proof card", href: "/proof/ho-det-001/" },
-      ],
-    },
-  },
-  {
-    id: "public-claim",
-    n: "07",
-    name: "Claim Ceiling",
-    chip: "CEILING_HELD",
-    tone: "ice",
-    body: "Public wording holds at the approved ceiling. Stronger claims require a separate gate.",
-    surfaces: ["public-proof"],
-    detail: {
-      proves: "The public surface holds the stated ceiling: CONTROLLED_TEST_VALIDATED.",
-      doesNotProve: "Anything stronger than the ceiling. Stronger wording is blocked until separately promoted.",
-      links: [
-        { label: "Claim firewall", href: "/controls/" },
-        { label: "Architecture", href: "/architecture/" },
-      ],
-    },
-  },
-];
-
-const priorEvidence = [
-  { value: "324,074", label: "cases processed" },
-  { value: "200+", label: "detections built" },
-  { value: "208/208", label: "CI assertions" },
-  { value: "39.7%", label: "reduction measured" },
-  { value: "100%", label: "high-severity preservation" },
-];
-
-const promotionSurfaces = [
-  { name: ".github", role: "Governance / reviewer routing" },
-  { name: "platform", role: "Runtime contracts / execution boundaries" },
-  { name: "detections", role: "Source logic" },
-  { name: "validation", role: "Tests / fixtures / verifiers" },
-  { name: "proof", role: "Evidence boundary / claim ceilings" },
-  { name: "website", role: "Public rendering / reviewer routing" },
-];
-
-const launchControls = [
-  "Fixed working directory",
-  "AGENTS.md launch contract",
-  "Control folder routing",
-  "Path restrictions",
-  "Stop conditions",
-  "Governed logging",
-];
-
-const gateChecks = ["checks pass", "claim ceiling preserved", "no private leakage", "explicit review"];
-
-const preventionList = [
-  "unauthorized claim promotion",
-  "private leakage",
-  "source treated as proof",
-  "dashboards mistaken for truth",
-];
-
-const traceSteps = [
+const traceSteps: ProofPathStep[] = [
   {
     code: "SOURCE_PRESENT",
     label: "Source present",
-    line: "Detection rule and SPL exist in hawkinsoperations-detections. This proves source presence only.",
+    line: "Detection rule and SPL exist in hawkinsoperations-detections under version control with a stated owner.",
     href: externalLinks.detections,
     external: true,
   },
@@ -243,396 +33,240 @@ const traceSteps = [
   {
     code: "CASE_PACKET_ROUTED",
     label: "Case packet routed",
-    line: "Findings, validation result, and reviewer wording assemble into the case file.",
+    line: "Findings, validation output, and reviewer wording assemble into the case file.",
     href: "/proof/ho-det-001/",
-    external: false,
   },
   {
     code: "AI_SUPPORT_ONLY",
     label: "AI support only",
-    line: "AI assists triage, drafting, and reviewer prep. It does not approve a disposition.",
+    line: "AI accelerates labor: drafting, scaffolding, reviewer prep. AI does not promote claims.",
     href: "/controls/",
-    external: false,
   },
   {
-    code: "CLAIM_SCANNER_CLEAN",
-    label: "Claim scanner clean",
-    line: "Site contract verifier and blocked-claim scanner must pass before wording ships.",
+    code: "SCANNER_CLEAN",
+    label: "Scanner clean",
+    line: "Site contract verifier and blocked-claim scanner pass before wording can ship.",
     href: externalLinks.repoAuthorityMap,
     external: true,
   },
   {
-    code: "PROOF_RECORD_PUBLISHED",
-    label: "Proof record published",
-    line: "Public proof record published with bounded ceiling, evidence pointers, and explicit boundaries.",
+    code: "CI_ENFORCED",
+    label: "CI enforced",
+    line: "CI fails the build when contract assertions or blocked-claim rules trip on a change.",
+    href: "/proof-loop/",
+  },
+  {
+    code: "RECORD_PUBLISHED",
+    label: "Record published",
+    line: "Public proof record exists with a stated ceiling, evidence pointers, and bounded scope.",
     href: externalLinks.proofRecord,
     external: true,
   },
   {
-    code: "PUBLIC_CEILING_HELD",
-    label: "Public ceiling held",
-    line: "Public claim ceiling stays at CONTROLLED_TEST_VALIDATED. Stronger claims require a separate promotion gate.",
+    code: "CEILING_HELD",
+    label: "Public boundary held",
+    line: "Public claim ceiling holds at CONTROLLED_TEST_VALIDATED. Stronger wording requires a separate promotion gate.",
     href: "/proof/ho-det-001/",
-    external: false,
   },
 ];
 
-const qcMap = [
-  { shop: "Standard work", detection: "Detection-as-code", line: "A rule enters the evidence line with a reviewable source path." },
-  { shop: "Traceability", detection: "Evidence records", line: "Receipts preserve what was tested, routed, and reviewed." },
-  { shop: "Defect control", detection: "Validation failures", line: "A failed fixture stops promotion instead of becoming copy." },
-  { shop: "Escalation paths", detection: "Human review gates", line: "Unsupported wording routes to review before release." },
-  { shop: "Quality gates", detection: "CI / verifier enforcement", line: "Checks keep the public claim ceiling from drifting." },
+const priorContext = [
+  { value: "324,074", label: "cases processed" },
+  { value: "200+", label: "detections built" },
+  { value: "208/208", label: "CI assertions" },
+  { value: "39.7%", label: "reduction measured" },
+  { value: "100%", label: "high-severity preservation" },
 ];
 
 export default function HomePage() {
-  const previewArtifacts = previewSlugs
-    .map((slug) => artifacts.find((a) => a.slug === slug))
-    .filter((a): a is Artifact => a !== undefined);
-
   return (
     <>
-      <section className="relative overflow-hidden">
-        <div className="container relative grid gap-14 pt-14 pb-16 lg:grid-cols-[1.1fr_0.9fr] lg:pt-24 lg:pb-20 lg:gap-16">
-          <div className="order-1 flex flex-col">
-            <div className="flex flex-wrap items-center gap-2">
-              <StatusChip label="GOVERNED REBUILD" tone="ice" />
-              <StatusChip label="AI · LABOR" />
-              <StatusChip label="GOVERNANCE · AUTHORITY" tone="quiet" />
-              <span className="mono text-[0.6rem] tracking-[0.22em] uppercase text-[var(--muted)]">v · 2026-05</span>
-            </div>
-
-            <h1 className="headline mt-7 text-[clamp(2.4rem,5.6vw,4.4rem)] tracking-tight">
-              HawkinsOperations
-              <span className="block text-[var(--ice-blue)]">Detection Engineering SOC</span>
+      {/* ── Hero ─────────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden cockpit-section">
+        <div className="container grid gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 items-start">
+          <div>
+            <p className="cockpit-eyebrow">Governed detection engineering</p>
+            <h1 className="cockpit-headline cockpit-headline--xl mt-5">
+              HawkinsOperations turns detection work into governed proof routes.
+              <span className="block mt-2" style={{ color: "var(--electric-blue-bright)" }}>
+                Human review controls promotion.
+              </span>
             </h1>
-
-            <p className="lede mt-7 max-w-2xl">
-              A governed detection engineering system that turns agent-generated work into bounded, reviewable proof routes.
-            </p>
-            <p className="muted mt-4 max-w-2xl text-base leading-7">
-              Raylee builds detection-as-code, validation fixtures, evidence packets, and public reviewer surfaces. Agents generate work; HawkinsOperations decides what can move upward into a claim.
+            <p className="lede mt-7 max-w-2xl" style={{ color: "var(--silver)" }}>
+              AI accelerates the work. The system separates source, validation,
+              evidence, and public claims so reviewers can follow the artifact trail
+              without treating website rendering as proof.
             </p>
 
             <div className="mt-9 flex flex-wrap items-center gap-3">
-              <a className="cta cta-primary" href="#promotion-system">See Promotion System →</a>
-              <a className="cta cta-quiet" href="#conveyor">Follow the Conveyor →</a>
-              <a className="cta cta-quiet" href="#trace">Trace HO-DET-001 →</a>
+              <a className="cta cta-primary" href="#artifact-machine">See the artifact machine →</a>
+              <a className="cta cta-quiet" href="#flagship">Trace HO-DET-001 →</a>
+              <a className="cta cta-quiet" href="/start/">Reviewer routes</a>
             </div>
-
-            <aside className="hero-ceiling mt-10 max-w-xl">
-              <div className="hero-ceiling__inner">
-                <p className="hero-ceiling__eyebrow mono">Current public claim ceiling</p>
-                <div className="hero-ceiling__display">
-                  <ProofCeilingDisplay visualLabel="Controlled Test Validated" />
-                </div>
-                <p className="hero-ceiling__note">
-                  Every public claim has a ceiling. Stronger wording requires a separate promotion gate.
-                </p>
-              </div>
-            </aside>
           </div>
 
-          <div className="order-2 flex items-center justify-center lg:justify-end">
-            <div className="hero-identity-panel" aria-label="HawkinsOperations brand identity">
-              <BrandMark size="lg" />
-              <div>
-                <p className="hero-identity-panel__wordmark">HawkinsOperations</p>
-                <p className="hero-identity-panel__line mono">Proof &gt; Truth &gt; Authority</p>
-              </div>
-              <PortraitCommandFrame size="compact" showArc={false} />
-            </div>
+          <div className="lg:pt-2">
+            <StatusConsole />
           </div>
         </div>
 
-        <div className="container"><hr className="thin-rule" /></div>
-      </section>
-
-      <section className="container section-tight" aria-labelledby="prior-evidence-title">
-        <div className="prior-evidence">
-          <div className="prior-evidence__intro">
-            <p className="eyebrow">HawkinsOps V1 / SignalFoundry Operating Evidence</p>
-            <h2 id="prior-evidence-title" className="headline mt-3 text-2xl md:text-3xl">
-              Prior systems showed operating output. HawkinsOperations shows governance.
-            </h2>
-            <p className="muted mt-4 text-sm leading-6">
-              Prior-system operating evidence. Current HawkinsOperations proof claims remain separately bounded by source, validation, runtime, signal, evidence, and public-proof surfaces. Cross-repo prior metrics are marked{" "}
-              <span className="mono">NEEDS_LIVE_GITHUB_REVIEW</span> before they can be packaged as current public proof.
-            </p>
-          </div>
-          <ul className="prior-evidence__metrics" aria-label="Prior operating evidence metrics">
-            {priorEvidence.map((metric) => (
-              <li key={metric.label}>
-                <strong>{metric.value}</strong>
-                <span>{metric.label}</span>
-              </li>
-            ))}
-          </ul>
-          <p className="prior-evidence__line mono">
-            Wazuh → Cribl → Splunk validation work is prior operating evidence only, not a current HawkinsOperations proof-ledger claim.
-          </p>
+        <div className="container mt-12">
+          <hr className="cockpit-rule" />
         </div>
       </section>
 
-      <section className="container section-tight" aria-labelledby="pipeline-proof-title">
-        <a className="pipeline-strip" href="/pipeline/" aria-label="Trace the HO-DET-001 public pipeline proof">
-          <span className="pipeline-strip__tag mono">New · /pipeline/</span>
-          <span id="pipeline-proof-title" className="pipeline-strip__title">HO-DET-001 public pipeline proof</span>
-          <span className="pipeline-strip__stats mono">
-            14 controlled test cases · 14/14 passed · 0 missed positives · 0 false-positive negatives · 10 blocked claim categories
-          </span>
-          <span className="pipeline-strip__cta">Trace the pipeline →</span>
-        </a>
-      </section>
-
-      <section className="container section-tight" id="promotion-system" aria-labelledby="promotion-system-title">
-        <div className="promotion-system">
-          <header className="promotion-system__header">
+      {/* ── Artifact machine (8 stages) ──────────────────────────────── */}
+      <section id="artifact-machine" className="cockpit-section--tight">
+        <div className="container">
+          <div className="flex flex-wrap items-baseline justify-between gap-3 mb-6">
             <div>
-              <p className="eyebrow">Governed Agent Promotion System</p>
-              <h2 id="promotion-system-title" className="headline mt-3 text-2xl md:text-3xl">
-                Agents generate work. The system promotes claims.
+              <p className="cockpit-eyebrow">Artifact machine</p>
+              <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+                Eight stages. One direction. Source to public boundary.
               </h2>
-              <p className="muted mt-4 max-w-3xl text-sm leading-6">
-                Agent output starts inside launch controls. Work can move upward only when lower-surface rules are satisfied. Higher surfaces can inherit only bounded truth from lower surfaces.
+            </div>
+            <p className="muted max-w-md text-sm leading-6">
+              The machine describes what the system does. Each stage produces a named receipt; the next stage requires it.
+            </p>
+          </div>
+          <ArtifactMachine />
+        </div>
+      </section>
+
+      {/* ── Reviewer route selector ──────────────────────────────────── */}
+      <section className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Reviewer routes</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Three reviewers. Three inspection paths.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              The route changes how you read the system. It does not change the underlying proof state.
+            </p>
+          </div>
+          <ReviewRouteSelector />
+        </div>
+      </section>
+
+      {/* ── HO-DET-001 flagship proof path ───────────────────────────── */}
+      <section id="flagship" className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Flagship proof path</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              HO-DET-001 · the artifact you can inspect end to end.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              Eight named receipts move a single detection from version-controlled source to the current public boundary.
+            </p>
+          </div>
+          <ProofPathTimeline detectionId="HO-DET-001" title="Source to public boundary" steps={traceSteps} />
+        </div>
+      </section>
+
+      {/* ── Six Truth Surfaces ───────────────────────────────────────── */}
+      <section className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Truth surfaces</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Six surfaces. Each one supports its own claims, nothing more.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              Promotion is always upward and gated. The surfaces describe what each layer can prove and the receipt the next layer requires.
+            </p>
+          </div>
+          <TruthSurfaceInfographic />
+        </div>
+      </section>
+
+      {/* ── Repository authority DAG ─────────────────────────────────── */}
+      <section className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Repository authority</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Six repositories. Three planes. Authority flows down only.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              detections → validation → proof feeds the chain. .github and platform overlay it. website renders the receipts; it does not author them.
+            </p>
+          </div>
+          <RepoAuthorityDAG />
+        </div>
+      </section>
+
+      {/* ── Artifact family matrix ───────────────────────────────────── */}
+      <section className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Artifact registry preview</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Seven families. Four evidence axes. What is supported and what is gated.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              Filled cells are supported at the current ceiling. Hollow cells require a specific promotion gate before they can be claimed.
+            </p>
+          </div>
+          <ArtifactFamilyMatrix />
+        </div>
+      </section>
+
+      {/* ── Claim firewall (precision boundary) ──────────────────────── */}
+      <section className="cockpit-section--tight">
+        <div className="container">
+          <ClaimFirewallPanel />
+        </div>
+      </section>
+
+      {/* ── Website rendering boundary ───────────────────────────────── */}
+      <section className="cockpit-section--tight">
+        <div className="container">
+          <div
+            className="moon-panel-strong"
+            style={{ padding: "22px 24px", display: "grid", gap: 14, gridTemplateColumns: "1fr auto", alignItems: "center" }}
+          >
+            <div>
+              <p className="cockpit-eyebrow">Website rendering</p>
+              <p style={{ color: "var(--silver-bright)", fontWeight: 700, fontSize: "1.1rem", marginTop: 6 }}>
+                Website renders the map. Proof lives in the repos.
               </p>
             </div>
-            <ul className="promotion-system__controls" aria-label="Agent launch controls">
-              {launchControls.map((control) => (
-                <li key={control}>{control}</li>
-              ))}
-            </ul>
-          </header>
-
-          <ol className="promotion-ladder" aria-label="Promotion ladder">
-            {promotionSurfaces.map((surface, index) => (
-              <li key={surface.name}>
-                <span className="promotion-ladder__index mono">{String(index + 1).padStart(2, "0")}</span>
-                <strong>{surface.name}</strong>
-                <span>{surface.role}</span>
-              </li>
-            ))}
-          </ol>
-
-          <div className="promotion-system__footer">
-            <div>
-              <p className="mono">Promotion gate</p>
-              <ul>
-                {gateChecks.map((check) => (
-                  <li key={check}>{check}</li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <p className="mono">Prevents</p>
-              <ul>
-                {preventionList.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
+            <a className="cta cta-quiet" href="/proof/">Open the proof ledger →</a>
           </div>
         </div>
       </section>
 
-      <section className="container section-tight" id="conveyor" aria-labelledby="conveyor-title">
-        <div className="conveyor-section">
-          <header className="conveyor-section__header">
-            <p className="eyebrow">Evidence Conveyor</p>
-            <h2 id="conveyor-title" className="headline mt-2 text-2xl md:text-[1.85rem]">
-              Detection work moves through controlled inspection gates.
-            </h2>
-            <p className="muted mt-3 max-w-3xl text-sm leading-6">
-              Detection Source → Fixtures → Case Packet → AI Support → Verifier → Proof Record → Claim Ceiling. The rail is a promotion path, not a live dashboard.
-            </p>
-          </header>
-
-          <EvidenceConveyor stages={pipelineStages} />
-        </div>
-      </section>
-
-      <section className="container section-tight" id="cockpit" aria-labelledby="cockpit-title">
-        <div className="cockpit">
-          <header className="cockpit__header">
+      {/* ── Prior context strip (demoted V1 metrics) ─────────────────── */}
+      <section className="cockpit-section--tight">
+        <div className="container">
+          <div className="prior-context-strip" aria-label="Prior operating context — HawkinsOps V1 / SignalFoundry">
             <div>
-              <p className="eyebrow">Reviewer Command Deck</p>
-              <h2 id="cockpit-title" className="headline mt-2 text-2xl md:text-[1.85rem]">Choose the inspection mode.</h2>
-              <p className="muted mt-3 text-sm leading-6 max-w-2xl">
-                Executive, Proof, and Technical modes change the reviewer path only. They do not change the underlying proof state.
+              <p className="prior-context-strip__label">Prior operating context · HawkinsOps V1 / SignalFoundry</p>
+              <p className="prior-context-strip__note">
+                Recorded for context, not as current HawkinsOperations proof. Current claims are bounded by source, validation, evidence, and the public-proof surface.
               </p>
             </div>
-            <ul className="cockpit__metrics" aria-label="Repo-derived surface metrics">
-              {credibilityMetrics.slice(0, 3).map((metric) => (
-                <li key={metric.label} className="cockpit__metric" title={metric.footnote}>
-                  <span className="cockpit__metric-value mono">{metric.value}</span>
-                  <span className="cockpit__metric-label">{metric.label}</span>
+            <ul className="prior-context-strip__metrics">
+              {priorContext.map((metric) => (
+                <li key={metric.label} className="prior-context-strip__metric">
+                  <strong>{metric.value}</strong>
+                  {metric.label}
                 </li>
               ))}
             </ul>
-          </header>
-
-          <div className="cockpit-tabs" role="radiogroup" aria-label="Reviewer mode">
-            <input className="cockpit-tabs__radio" type="radio" name="reviewer-mode" id="cockpit-mode-exec" defaultChecked />
-            <input className="cockpit-tabs__radio" type="radio" name="reviewer-mode" id="cockpit-mode-proof" />
-            <input className="cockpit-tabs__radio" type="radio" name="reviewer-mode" id="cockpit-mode-tech" />
-
-            <div className="cockpit-tabs__bar">
-              <label className="cockpit-tabs__label" htmlFor="cockpit-mode-exec" data-mode="exec">
-                <span className="cockpit-tabs__dot" aria-hidden="true"></span>
-                <span className="cockpit-tabs__name">Executive · 3 min</span>
-              </label>
-              <label className="cockpit-tabs__label" htmlFor="cockpit-mode-proof" data-mode="proof">
-                <span className="cockpit-tabs__dot" aria-hidden="true"></span>
-                <span className="cockpit-tabs__name">Proof review · 10 min</span>
-              </label>
-              <label className="cockpit-tabs__label" htmlFor="cockpit-mode-tech" data-mode="tech">
-                <span className="cockpit-tabs__dot" aria-hidden="true"></span>
-                <span className="cockpit-tabs__name">Technical · deep</span>
-              </label>
-            </div>
-
-            {reviewerModes.map((mode) => (
-              <div key={mode.id} className="cockpit-panel command-panel" data-mode={mode.id}>
-                <div className="command-panel__question">
-                  <p className="mono">Primary reviewer question</p>
-                  <h3>{mode.question}</h3>
-                </div>
-                <ul className="command-panel__checklist" aria-label={`${mode.label} checklist`}>
-                  {mode.checklist.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-                <div className="command-panel__footer">
-                  <a className="command-panel__next" href={mode.nextClick.href}>
-                    {mode.nextClick.label} →
-                  </a>
-                  <ol className="command-panel__path" aria-label={`${mode.label} highlighted path`}>
-                    {mode.path.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ol>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
 
-      <section className="container section-tight" id="trace" aria-labelledby="trace-title">
-        <div className="trace-terminal">
-          <header className="trace-terminal__header">
-            <div>
-              <p className="eyebrow">Trace One Receipt</p>
-              <h2 id="trace-title" className="headline mt-2 text-2xl md:text-3xl">HO-DET-001 · proof trace terminal</h2>
-              <p className="muted mt-3 max-w-2xl text-sm leading-6">
-                A single bounded receipt traced through the controlled review line. Rows expand to explain the route.
-              </p>
-            </div>
-            <div className="trace-terminal__badge mono">
-              <span>Public ceiling</span>
-              <strong>CONTROLLED_TEST_VALIDATED</strong>
-            </div>
-          </header>
-
-          <div className="trace-terminal__screen" aria-label="HO-DET-001 proof trace terminal">
-            <div className="trace-terminal__prompt mono">
-              <span>receipt://HO-DET-001</span>
-              <span>RENDERING_ONLY</span>
-            </div>
-            {traceSteps.map((step, idx) => (
-              <details key={step.code} className="trace-terminal__row" open={idx === 0}>
-                <summary>
-                  <span className="trace-terminal__row-index mono">{String(idx + 1).padStart(2, "0")}</span>
-                  <span className="trace-terminal__row-code mono">{step.code}</span>
-                  <span className="trace-terminal__row-label">{step.label}</span>
-                </summary>
-                <div className="trace-terminal__row-body">
-                  <p>{step.line}</p>
-                  <a
-                    className="trace-terminal__link"
-                    href={step.href}
-                    target={step.external ? "_blank" : undefined}
-                    rel={step.external ? "noopener noreferrer" : undefined}
-                  >
-                    {step.external ? "Open linked repo ↗" : "Open route →"}
-                  </a>
-                </div>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="container section-tight">
-        <TruthSurfaceSeparation />
-      </section>
-
-      <section className="container section-tight" aria-labelledby="qc-map-title">
-        <div className="qc-map" data-static-card>
-          <div className="qc-map__intro">
-            <p className="eyebrow">Manufacturing QC → Detection Engineering</p>
-            <h2 id="qc-map-title" className="headline mt-3 text-2xl md:text-3xl">A control system for claims, not a dashboard for vibes.</h2>
-            <p className="muted mt-4 max-w-3xl text-sm leading-6">
-              HawkinsOperations treats each detection like work on a controlled review line: source enters, fixtures test it, human review owns escalation, deterministic checks guard release, and the public record carries a ceiling.
-            </p>
-          </div>
-          <ol className="qc-map__rows" aria-label="Manufacturing quality control mapped to detection engineering">
-            {qcMap.map((item) => (
-              <li key={item.shop} className="qc-map__row">
-                <span className="qc-map__shop mono">{item.shop}</span>
-                <span className="qc-map__arrow" aria-hidden="true">→</span>
-                <span className="qc-map__detection">{item.detection}</span>
-                <span className="qc-map__line">{item.line}</span>
-              </li>
-            ))}
-          </ol>
-          <p className="qc-map__note mono">
-            Mapping only · this section explains the operating model and does not create proof.
-          </p>
-        </div>
-      </section>
-
-      <section className="container section-tight proof-cta-block">
-        <SectionEyebrow
-          eyebrow="Artifact / proof route"
-          title="Open the receipts, then follow the record."
-          description="Proof records, validation outputs, CI verifier records, and public packets each carry their own ceiling."
-          align="between"
-          cta={{ label: "Open the full vault", href: "/artifacts/" }}
-        />
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {previewArtifacts.map((artifact) => (
-            <ArtifactCard key={artifact.slug} artifact={artifact} variant={artifact.flagship ? "flagship" : "default"} />
-          ))}
-        </div>
-      </section>
-
-      <section className="container section-snug" aria-labelledby="boundary-drawer-title">
-        <details className="boundary-drawer">
-          <summary>
-            <span>
-              <span className="eyebrow">Claim Boundary Drawer</span>
-              <strong id="boundary-drawer-title">What HawkinsOperations is not claiming from the homepage</strong>
-            </span>
-            <span className="boundary-drawer__toggle mono">Inspect boundary</span>
-          </summary>
-          <div className="boundary-drawer__body">
-            <p>
-              This homepage is a reviewer route, not proof by itself. It does not claim runtime-active deployment, signal-observed truth, production scope, fleet-wide coverage, Cribl-routed public proof, Wazuh-routed public proof, AWS-live status, public-safe runtime proof, autonomous SOC operation, AI-approved disposition, or analyst-approved disposition.
-            </p>
-            <p>
-              Security Onion visibility boundary is under private/internal review and is not a public proof claim. No homepage wording should imply production NDR, permanent SPAN, PCAP availability, signal observation, live runtime visibility, cross-source corroboration, or long-term retention.
-            </p>
-          </div>
-        </details>
-      </section>
-
-      <section className="container py-16 quiet-text-section">
-        <div className="doctrine-strip" data-static-card>
+      {/* ── Doctrine closer ──────────────────────────────────────────── */}
+      <section className="cockpit-section">
+        <div className="container">
           <div className="grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-center">
             <div>
-              <p className="eyebrow">Doctrine</p>
-              <h2 className="headline mt-3 text-3xl md:text-4xl">AI is labor. Governance is authority.</h2>
+              <p className="cockpit-eyebrow">Doctrine</p>
+              <h2 className="cockpit-headline mt-3">AI is labor. Governance is authority.</h2>
               <p className="muted mt-4 max-w-2xl text-base leading-7">
                 Build loud. Verify hard. Claim tight. Ship receipts. The system separates the work AI can accelerate from the gates that decide what HawkinsOperations is allowed to claim publicly.
               </p>

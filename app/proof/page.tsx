@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ArtifactFamilyMatrix from "@components/ArtifactFamilyMatrix";
 import StatusChip from "@components/StatusChip";
 import SectionEyebrow from "@components/SectionEyebrow";
 import ProofCeilingDisplay from "@components/ProofCeilingDisplay";
@@ -123,6 +124,17 @@ export default function ProofIndexPage() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="container section-tight">
+        <SectionEyebrow
+          eyebrow="03b · Registry"
+          title="Artifact registry preview"
+          description="Seven artifact families by four evidence axes. Filled cells are supported at the current ceiling; hollow cells require a specific promotion gate."
+        />
+        <div className="mt-5">
+          <ArtifactFamilyMatrix />
         </div>
       </section>
 
