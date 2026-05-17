@@ -11,6 +11,24 @@ export const metadata: Metadata = {
 
 const entries = [
   {
+    label: "2026-05-17",
+    title: "Proof Pack 001 release path implemented",
+    detail:
+      "Proof repo merged the source / check-mode release path for Proof Pack 001 on main. No official release, tag, zip, or signed artifact is claimed from the website; the next gate is explicit release approval. Public ceiling remains controlled-test scope and is NOT_PUBLIC_SAFE.",
+  },
+  {
+    label: "2026-05-17",
+    title: "Reviewer cockpit extended across core pages",
+    detail:
+      "Pipeline, proof, artifacts, and about pages now share the cockpit shell, status console, and receipt-style routing language for senior reviewers.",
+  },
+  {
+    label: "2026-05-16",
+    title: "Black / blue reviewer cockpit implemented",
+    detail:
+      "Homepage moved to a black/electric-blue cockpit layout with a status console, claim firewall, and artifact family matrix. Rendering surface remains routing only.",
+  },
+  {
     label: "PR #7",
     title: "Astro proof codex redesign",
     detail:

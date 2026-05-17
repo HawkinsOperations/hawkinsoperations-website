@@ -238,6 +238,56 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── Proof Pack 001 release-path console ──────────────────────── */}
+      <section className="cockpit-section--tight">
+        <div className="container">
+          <div className="proof-pack-console" aria-label="Proof Pack 001 release-path status console">
+            <header className="proof-pack-console__head">
+              <div>
+                <p className="cockpit-eyebrow">Release path · governed</p>
+                <h2 className="proof-pack-console__title">
+                  Proof Pack 001 · release path implemented.
+                </h2>
+                <p className="proof-pack-console__sub">
+                  Source / check-mode release path is merged on the proof repo. No official release, tag, or signed artifact is claimed from this surface.
+                </p>
+              </div>
+              <span className="proof-pack-console__ceiling mono">CONTROLLED_TEST_VALIDATED</span>
+            </header>
+            <dl className="proof-pack-console__grid">
+              <div className="proof-pack-console__cell">
+                <dt>Detection</dt>
+                <dd className="mono">HO-DET-001</dd>
+              </div>
+              <div className="proof-pack-console__cell">
+                <dt>Pack status</dt>
+                <dd className="mono proof-pack-console__cell-strong">RELEASE_PATH_IMPLEMENTED</dd>
+              </div>
+              <div className="proof-pack-console__cell">
+                <dt>Source mode</dt>
+                <dd className="mono">CHECK_MODE_SOURCE_ONLY</dd>
+              </div>
+              <div className="proof-pack-console__cell">
+                <dt>Next gate</dt>
+                <dd className="mono">OFFICIAL_RELEASE_PENDING_APPROVAL</dd>
+              </div>
+              <div className="proof-pack-console__cell">
+                <dt>Public-safe state</dt>
+                <dd className="mono proof-pack-console__cell-block">NOT_PUBLIC_SAFE</dd>
+              </div>
+              <div className="proof-pack-console__cell">
+                <dt>Authority</dt>
+                <dd>Proof repo holds the receipt; website routes only.</dd>
+              </div>
+            </dl>
+            <footer className="proof-pack-console__foot">
+              <span className="mono">no tag · no GitHub Release · no zip · no signing claimed</span>
+              <a className="cta cta-quiet" href="/artifacts/#cat-proof-record">Artifact coverage →</a>
+            </footer>
+          </div>
+        </div>
+      </section>
+
       {/* ── Prior context strip (demoted V1 metrics) ─────────────────── */}
       <section className="cockpit-section--tight">
         <div className="container">

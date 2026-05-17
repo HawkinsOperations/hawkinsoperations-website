@@ -315,6 +315,56 @@ export default function PipelinePage() {
         </div>
       </section>
 
+      {/* ── Proof Pack 001 release-path panel ────────────────────────── */}
+      <section className="cockpit-section--tight">
+        <div className="container">
+          <div className="proof-pack-console" aria-label="Proof Pack 001 release-path status panel">
+            <header className="proof-pack-console__head">
+              <div>
+                <p className="cockpit-eyebrow">Release path · governed</p>
+                <h2 className="proof-pack-console__title">
+                  Proof Pack 001 · source / check-mode release path implemented.
+                </h2>
+                <p className="proof-pack-console__sub">
+                  The release-path implementation is merged on the proof repo main branch. No official release, tag, zip, or signed artifact is claimed from this surface; the next gate is explicit release approval.
+                </p>
+              </div>
+              <span className="proof-pack-console__ceiling mono">CONTROLLED_TEST_VALIDATED</span>
+            </header>
+            <dl className="proof-pack-console__grid">
+              <div className="proof-pack-console__cell">
+                <dt>Detection</dt>
+                <dd className="mono">HO-DET-001</dd>
+              </div>
+              <div className="proof-pack-console__cell">
+                <dt>Pack ID</dt>
+                <dd className="mono">PROOF_PACK_001</dd>
+              </div>
+              <div className="proof-pack-console__cell">
+                <dt>Pack status</dt>
+                <dd className="mono proof-pack-console__cell-strong">RELEASE_PATH_IMPLEMENTED</dd>
+              </div>
+              <div className="proof-pack-console__cell">
+                <dt>Source mode</dt>
+                <dd className="mono">CHECK_MODE_SOURCE_ONLY</dd>
+              </div>
+              <div className="proof-pack-console__cell">
+                <dt>Next gate</dt>
+                <dd className="mono">OFFICIAL_RELEASE_PENDING_APPROVAL</dd>
+              </div>
+              <div className="proof-pack-console__cell">
+                <dt>Public-safe state</dt>
+                <dd className="mono proof-pack-console__cell-block">NOT_PUBLIC_SAFE</dd>
+              </div>
+            </dl>
+            <footer className="proof-pack-console__foot">
+              <span className="mono">no tag · no GitHub Release · no zip · no signing claimed · routing only</span>
+              <a className="cta cta-quiet" href="/proof/">Proof ledger →</a>
+            </footer>
+          </div>
+        </div>
+      </section>
+
       {/* ── Reviewer takeaway ────────────────────────────────────────── */}
       <section className="cockpit-section--tight pb-24">
         <div className="container">

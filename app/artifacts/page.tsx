@@ -182,6 +182,102 @@ export default function ArtifactsIndexPage() {
         </div>
       </section>
 
+      {/* ── Artifact coverage matrix ─────────────────────────────────── */}
+      <section className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Reviewer evidence coverage</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Artifact coverage matrix.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              Each row is an artifact family. Each column is an authority surface. Cells declare what
+              exists in public, what is routed by the website, and what is held private or blocked.
+              The matrix does not promote claims; it shows what is covered and what is not.
+            </p>
+          </div>
+
+          <div className="coverage-matrix" role="table" aria-label="Reviewer artifact coverage matrix">
+            <div className="coverage-matrix__head" role="row">
+              <span role="columnheader">Artifact family</span>
+              <span role="columnheader">Source</span>
+              <span role="columnheader">Validation</span>
+              <span role="columnheader">Proof</span>
+              <span role="columnheader">Website</span>
+              <span role="columnheader">Private evidence</span>
+              <span role="columnheader">Public status</span>
+            </div>
+
+            {[
+              {
+                family: "HO-DET-001 proof loop",
+                cells: ["present", "present", "present", "routed", "—", "controlled-test"],
+              },
+              {
+                family: "Proof Pack 001",
+                cells: ["present", "present", "routed", "routed", "—", "pending"],
+              },
+              {
+                family: "HO-DET-001 detection source",
+                cells: ["present", "present", "routed", "routed", "—", "controlled-test"],
+              },
+              {
+                family: "Validation CI / report",
+                cells: ["present", "present", "routed", "routed", "—", "present"],
+              },
+              {
+                family: "Backend adapter · field mapping",
+                cells: ["private", "private", "—", "reference", "private", "blocked"],
+              },
+              {
+                family: "AI support · GPU support",
+                cells: ["private", "private", "—", "—", "private", "blocked"],
+              },
+              {
+                family: "NDR · Security Onion record",
+                cells: ["private", "—", "reference", "reference", "private", "unpublished"],
+              },
+              {
+                family: "ATT&CK alignment matrix",
+                cells: ["pending", "—", "—", "pending", "—", "pending"],
+              },
+              {
+                family: "Governance · review authority",
+                cells: ["present", "present", "routed", "routed", "—", "present"],
+              },
+              {
+                family: "Website proof routing",
+                cells: ["present", "present", "routed", "routed", "—", "rendering"],
+              },
+            ].map((row) => (
+              <div key={row.family} className="coverage-matrix__row" role="row">
+                <span className="coverage-matrix__family" role="cell">{row.family}</span>
+                {row.cells.map((value, i) => (
+                  <span
+                    key={i}
+                    className={`coverage-matrix__cell coverage-matrix__cell--${value}`}
+                    role="cell"
+                    data-value={value}
+                  >
+                    {value === "—" ? "—" : value}
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
+
+          <p className="muted mt-6 text-xs leading-5 max-w-3xl">
+            Legend · <span className="mono">present</span> = public artifact exists on its authority repo ·
+            {" "}<span className="mono">routed</span> = website surface points to the receipt ·
+            {" "}<span className="mono">private</span> = held in private/internal evidence, not public ·
+            {" "}<span className="mono">reference</span> = referenced but not promoted ·
+            {" "}<span className="mono">blocked</span> = not eligible for public claim until promotion gate clears ·
+            {" "}<span className="mono">pending</span> = candidate route, not yet implemented.
+            Website rendering is not proof; the matrix only describes coverage state.
+          </p>
+        </div>
+      </section>
+
       {/* ── Bounded narratives (records + case studies) ─────────────── */}
       <section id="cat-proof-record" className="cockpit-section--tight">
         <div className="container">
