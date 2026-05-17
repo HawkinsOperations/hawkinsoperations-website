@@ -107,7 +107,7 @@ export default function ProofIndexPage() {
   const blockedCategories = blockedCategorization(blockedClaims);
 
   return (
-    <>
+    <div className="page-proof">
       {/* ── Hero · proof authority surface ────────────────────────────── */}
       <section className="relative overflow-hidden cockpit-section">
         <div className="container grid gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 items-start">
@@ -516,6 +516,6 @@ export default function ProofIndexPage() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

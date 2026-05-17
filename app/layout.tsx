@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import Header from "@components/Header";
 import Footer from "@components/Footer";
+import BoundaryRail from "@components/BoundaryRail";
 import "./globals.css";
+import "./design-system-v2.css";
 import { siteName, siteUrl } from "@config/site";
 
 const defaultDescription =
@@ -119,6 +121,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main id="main-content" tabIndex={-1}>{children}</main>
           <Footer />
         </div>
+        <BoundaryRail />
       </body>
     </html>
   );

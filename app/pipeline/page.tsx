@@ -120,7 +120,7 @@ const receiptLanes: ReceiptLane[] = [
 
 export default function PipelinePage() {
   return (
-    <>
+    <div className="page-pipeline">
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section className="pipeline-hero pipeline-hero--cockpit">
         <div className="container">
@@ -384,6 +384,6 @@ export default function PipelinePage() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

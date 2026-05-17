@@ -60,7 +60,7 @@ export default function ArtifactsIndexPage() {
     artifacts.filter((a) => a.category === key).length;
 
   return (
-    <>
+    <div className="page-artifacts">
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden cockpit-section">
         <div className="container grid gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 items-start">
@@ -438,6 +438,6 @@ export default function ArtifactsIndexPage() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }
