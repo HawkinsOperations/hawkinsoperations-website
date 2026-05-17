@@ -4,19 +4,28 @@ import { extname, join, relative } from "node:path";
 const root = process.cwd();
 
 const requiredFiles = [
-  "src/pages/index.astro",
-  "src/pages/start.astro",
-  "src/pages/proof/index.astro",
-  "src/pages/proof/ho-det-001/index.astro",
-  "src/pages/artifacts/index.astro",
-  "src/pages/architecture/index.astro",
-  "src/pages/architecture/truth-surfaces/index.astro",
-  "src/pages/repos.astro",
-  "src/pages/controls.astro",
-  "src/pages/field-notes/index.astro",
-  "src/pages/about.astro",
-  "src/pages/legacy.astro",
-  "src/pages/changelog.astro",
+  "app/layout.tsx",
+  "app/page.tsx",
+  "app/start/page.tsx",
+  "app/proof/page.tsx",
+  "app/proof/ho-det-001/page.tsx",
+  "app/proof-loop/page.tsx",
+  "app/artifacts/page.tsx",
+  "app/architecture/page.tsx",
+  "app/architecture/truth-surfaces/page.tsx",
+  "app/repos/page.tsx",
+  "app/controls/page.tsx",
+  "app/pipeline/page.tsx",
+  "app/field-notes/page.tsx",
+  "app/field-notes/[slug]/page.tsx",
+  "app/about/page.tsx",
+  "app/legacy/page.tsx",
+  "app/changelog/page.tsx",
+  "config/site.ts",
+  "config/blocked-claims.ts",
+  "config/proof-loop.ts",
+  "config/truth-surfaces.ts",
+  "config/repo-authority.ts",
   "src/data/proofRecords.ts",
   "src/data/repos.ts",
   "src/data/claims.ts",
@@ -24,8 +33,11 @@ const requiredFiles = [
   "src/data/truthPlanes.ts",
   "src/data/loopSteps.ts",
   "src/data/artifacts.ts",
+  "src/data/fieldNotes.ts",
   "src/data/navigation.ts",
-  "src/assets/raylee-hawkins-portrait.jpg",
+  "src/data/reviewerRoutes.ts",
+  "src/data/credibilityMetrics.ts",
+  "public/raylee-hawkins-portrait.jpg",
   "public/robots.txt",
   "public/sitemap.xml",
 ];
@@ -104,8 +116,8 @@ const renderedArtifactBoundaryTerms = [
   'proofCeiling: "PROVEN_PRIVATE_INTERNAL"',
 ];
 
-const scanRoots = ["README.md", "SCOPE.md", "STATUS.md", "src", "public"];
-const scanExtensions = new Set([".astro", ".ts", ".md", ".mjs", ".json", ".xml", ".txt"]);
+const scanRoots = ["README.md", "SCOPE.md", "STATUS.md", "app", "components", "config", "src/data", "public"];
+const scanExtensions = new Set([".astro", ".ts", ".tsx", ".md", ".mjs", ".json", ".xml", ".txt", ".css"]);
 
 function collectFiles(target) {
   const absolute = join(root, target);
@@ -114,7 +126,7 @@ function collectFiles(target) {
   if (stat.isFile()) return [absolute];
   const files = [];
   for (const entry of readdirSync(absolute)) {
-    if (entry === "node_modules" || entry === "dist" || entry === ".astro" || entry === ".git") continue;
+    if (entry === "node_modules" || entry === "dist" || entry === "out" || entry === ".astro" || entry === ".next" || entry === ".git") continue;
     files.push(...collectFiles(join(target, entry)));
   }
   return files;

@@ -14,16 +14,19 @@ This repo is website rendering only. It is not the source of detection truth, ru
 
 ## Framework and Deploy Model
 
-- Framework: Astro + Tailwind CSS + TypeScript
-- Output mode: static
+- Framework: Next.js (App Router) + Tailwind CSS + TypeScript
+- Output mode: static export (`output: "export"` in `next.config.mjs`)
 - Primary deploy target: Cloudflare Pages
-- Build command: `npm run build`
+- Build command: `npm run build` (runs `next build` then moves `out/` to `dist/`)
 - Output directory: `dist`
 - Workers required: no
 - SSR required: no
+- Image optimization: disabled (`images.unoptimized: true`)
 - Fake dynamic APIs: none
 
-Cloudflare Pages should build from the repository root and publish `dist`.
+Cloudflare Pages should build from the repository root and publish `dist`. No dashboard
+setting change is required for this migration: the `finalize-dist.mjs` postbuild script
+renames Next.js's `out/` directory to `dist/` to preserve the existing publish path.
 
 ## HawkinsOperations Closed SOC Loop 001
 

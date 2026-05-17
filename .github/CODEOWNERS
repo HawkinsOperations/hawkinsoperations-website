@@ -11,14 +11,14 @@
 # @HawkinsOperations/website-maintainers
 # @HawkinsOperations/org-maintainers
 
-src/pages/ @raylee-hawkins
-src/components/ @raylee-hawkins
-src/layouts/ @raylee-hawkins
-src/styles/ @raylee-hawkins
+app/ @raylee-hawkins
+components/ @raylee-hawkins
+config/ @raylee-hawkins
 src/data/ @raylee-hawkins
+scripts/ @raylee-hawkins
 public/robots.txt @raylee-hawkins
 public/sitemap.xml @raylee-hawkins
-astro.config.mjs @raylee-hawkins
+next.config.mjs @raylee-hawkins
 tailwind.config.mjs @raylee-hawkins
 postcss.config.mjs @raylee-hawkins
 tsconfig.json @raylee-hawkins
