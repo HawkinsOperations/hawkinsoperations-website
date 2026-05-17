@@ -1,0 +1,125 @@
+import type { Metadata, Viewport } from "next";
+import Header from "@components/Header";
+import Footer from "@components/Footer";
+import "./globals.css";
+import { siteName, siteUrl } from "@config/site";
+
+const defaultDescription =
+  "HawkinsOperations Detection Engineering SOC: governed detection engineering and security operations workflow with separated truth surfaces and proof-bound public claims.";
+
+const socialImage = `${siteUrl}/og-preview.png`;
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: siteName,
+    template: "%s",
+  },
+  description: defaultDescription,
+  applicationName: "HawkinsOperations",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+  },
+  manifest: "/site.webmanifest",
+  openGraph: {
+    type: "website",
+    url: siteUrl,
+    siteName: "HawkinsOperations",
+    title: siteName,
+    description: defaultDescription,
+    images: [
+      {
+        url: socialImage,
+        width: 1200,
+        height: 630,
+        alt: "HawkinsOperations monogram preview for governed detection engineering and SOC automation",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteName,
+    description: defaultDescription,
+    images: [socialImage],
+  },
+  other: {
+    "msapplication-TileColor": "#000205",
+    "apple-mobile-web-app-title": "HawkinsOperations",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#000205",
+  colorScheme: "dark",
+  width: "device-width",
+  initialScale: 1,
+};
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://hawkinsoperations.com/#website",
+      name: siteName,
+      url: "https://hawkinsoperations.com/",
+      description: defaultDescription,
+      publisher: { "@id": "https://hawkinsoperations.com/#organization" },
+      image: socialImage,
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://hawkinsoperations.com/#organization",
+      name: "HawkinsOperations",
+      url: "https://hawkinsoperations.com/",
+      logo: socialImage,
+      sameAs: ["https://github.com/HawkinsOperations"],
+    },
+    {
+      "@type": "Person",
+      "@id": "https://hawkinsoperations.com/#raylee-hawkins",
+      name: "Raylee Hawkins",
+      url: "https://hawkinsoperations.com/about/",
+      jobTitle: "Detection Engineer",
+      knowsAbout: [
+        "Detection engineering",
+        "SOC automation",
+        "Detection-as-code",
+        "AI labor under human governance",
+        "Public proof boundaries",
+      ],
+      sameAs: [
+        "https://github.com/raylee-hawkins",
+        "https://www.linkedin.com/in/raylee-hawkins",
+      ],
+    },
+  ],
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      </head>
+      <body>
+        <a className="skip-link" href="#main-content">Skip to content</a>
+        <div className="site-shell">
+          <Header />
+          <main id="main-content" tabIndex={-1}>{children}</main>
+          <Footer />
+        </div>
+      </body>
+    </html>
+  );
+}
