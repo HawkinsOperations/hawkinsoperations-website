@@ -19,7 +19,7 @@ export default function Header() {
 
   return (
     <header className="site-header sticky top-0 z-40 border-b border-[var(--moon-border)] bg-[rgba(0,2,5,0.86)] backdrop-blur-md">
-      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[var(--ice-blue-soft)] to-transparent"></div>
+      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[var(--electric-blue-soft)] to-transparent"></div>
       <div className="container flex min-h-[68px] items-center justify-between gap-5">
         <a href="/" className="group flex items-center gap-3" aria-label="HawkinsOperations home">
           <BrandMark size="sm" />
