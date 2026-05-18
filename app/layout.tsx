@@ -8,7 +8,7 @@ const displayName = "HawkinsOperations";
 const defaultDescription =
   "HawkinsOperations: governed detection engineering and security operations workflow with separated truth surfaces and proof-bound public claims.";
 
-const socialImage = `${siteUrl}/og-preview.png`;
+const socialImage = `${siteUrl}/og-preview.png?v=20260518-2`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -40,8 +40,8 @@ export const metadata: Metadata = {
       {
         url: socialImage,
         width: 1200,
-        height: 630,
-        alt: "HawkinsOperations monogram preview for governed detection engineering and SOC automation",
+        height: 627,
+        alt: "HawkinsOperations governed detection engineering social preview",
       },
     ],
   },
