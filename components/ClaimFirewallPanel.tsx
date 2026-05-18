@@ -22,7 +22,7 @@ export default function ClaimFirewallPanel({
   line?: string;
 } = {}) {
   return (
-    <section className="claim-firewall-panel" aria-label={title}>
+    <section className="claim-firewall-panel scan-sweep" aria-label={title}>
       <div className="claim-firewall-panel__intro">
         <p className="cockpit-eyebrow">Precision boundary</p>
         <h3 className="claim-firewall-panel__title">{title}</h3>
@@ -69,7 +69,16 @@ export default function ClaimFirewallPanel({
 
         <div className="claim-firewall-panel__chips" aria-label="Blocked terms">
           {blockedClaims.map((claim) => (
-            <span key={claim} className="claim-firewall-panel__chip" title={`${claim} is blocked from public wording`}>{claim}</span>
+            <span
+              key={claim}
+              className="claim-firewall-panel__chip"
+              tabIndex={0}
+              role="note"
+              aria-label={`Blocked: ${claim} is blocked from public wording`}
+              data-tooltip={`Blocked: ${claim} is not permitted in public wording at this surface.`}
+            >
+              {claim}
+            </span>
           ))}
         </div>
       </div>

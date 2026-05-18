@@ -43,7 +43,7 @@ const ceilingBoundaryIndex = matrixColumns.findIndex((c) => c.boundary === "abov
 
 export default function TruthTelemetryMatrix() {
   return (
-    <div className="truth-matrix" role="region" aria-label="Truth vs telemetry matrix">
+    <div className="truth-matrix scan-sweep" role="region" aria-label="Truth vs telemetry matrix">
       <p className="truth-matrix__why">
         <strong>Why this matters · </strong>
         Recruiters and security leaders can read claim discipline in one glance. Filled cells say what is

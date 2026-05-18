@@ -105,7 +105,12 @@ export default function HomePage() {
               <span className="hero-status__chip hero-status__chip--ceiling">
                 CONTROLLED_TEST_VALIDATED
               </span>
-              <span className="hero-status__chip hero-status__chip--blocked">
+              <span
+                className="hero-status__chip hero-status__chip--blocked"
+                tabIndex={0}
+                data-tooltip="Blocked: runtime evidence has not been promoted to public-safe proof at this surface."
+                aria-label="Blocked: runtime evidence has not been promoted to public-safe proof"
+              >
                 Public-safe runtime proof · BLOCKED
               </span>
             </div>
