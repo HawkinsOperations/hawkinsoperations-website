@@ -93,7 +93,7 @@ const routeSlots = [
 
 export default function AboutPage() {
   return (
-    <div className="page-about">
+    <>
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden cockpit-section">
         <div className="container grid gap-14 lg:grid-cols-[1.45fr_0.85fr] lg:gap-16 items-start">
@@ -326,6 +326,6 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-    </div>
+    </>
   );
 }

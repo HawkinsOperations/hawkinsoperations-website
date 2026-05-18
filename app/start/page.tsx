@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function StartPage() {
   return (
-    <div className="page-start">
+    <>
       <PageHero
         title="Reviewer route"
         subtitle="Three reviewers. Three inspection paths."
@@ -58,6 +58,6 @@ export default function StartPage() {
           />
         </div>
       </section>
-    </div>
+    </>
   );
 }

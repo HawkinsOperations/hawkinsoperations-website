@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
+import ActivityLedger from "@components/ActivityLedger";
 import ArtifactMachine from "@components/ArtifactMachine";
-import CaseStudyCTA from "@components/CaseStudyCTA";
-import CeilingStrip from "@components/CeilingStrip";
-import ClaimFirewallStrip from "@components/ClaimFirewallStrip";
-import EvidenceImpactCards from "@components/EvidenceImpactCards";
-import FeaturedProofRecord from "@components/FeaturedProofRecord";
-import { type ProofPathStep } from "@components/ProofPathTimeline";
+import ClaimFirewallPanel from "@components/ClaimFirewallPanel";
+import FailureModeStrip from "@components/FailureModeStrip";
+import PromotionLadderHomepage from "@components/PromotionLadderHomepage";
+import ProofPathTimeline, { type ProofPathStep } from "@components/ProofPathTimeline";
+import RepoAuthorityDAG from "@components/RepoAuthorityDAG";
 import ReviewRouteSelector from "@components/ReviewRouteSelector";
-import ThesisBand from "@components/ThesisBand";
+import StatusConsole from "@components/StatusConsole";
 import TruthSurfaceInfographic from "@components/TruthSurfaceInfographic";
-import V1V2Bridge from "@components/V1V2Bridge";
+import TruthTelemetryMatrix from "@components/TruthTelemetryMatrix";
 import { externalLinks } from "@data/navigation";
 
 export const metadata: Metadata = {
   title: "HawkinsOperations Detection Engineering SOC",
   description:
-    "HawkinsOperations is a governed detection-engineering system where AI accelerates the work and deterministic validation, evidence records, and human review decide what may be claimed publicly. Website rendering is not proof.",
+    "HawkinsOperations is a governed AI-assisted detection engineering control layer: source, validation, evidence, and public proof stay separated so AI labor cannot quietly inflate the truth. Website rendering is not proof.",
 };
 
 const traceSteps: ProofPathStep[] = [
@@ -75,57 +75,66 @@ const traceSteps: ProofPathStep[] = [
 
 export default function HomePage() {
   return (
-    <div className="page-home">
-      {/* ── 01 · Thesis (paper) ───────────────────────────────────────── */}
-      <ThesisBand />
+    <>
+      {/* ── 01 · Hero ────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden cockpit-section">
+        <div className="container grid gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 items-start">
+          <div>
+            <p className="cockpit-eyebrow">Governed AI-assisted detection engineering</p>
+            <h1 className="cockpit-headline cockpit-headline--xl mt-5">
+              AI accelerates the work.
+              <span className="block mt-2" style={{ color: "var(--electric-blue-bright)" }}>
+                Evidence and human review authorize the claims.
+              </span>
+            </h1>
+            <p className="lede mt-7 max-w-2xl" style={{ color: "var(--silver)" }}>
+              HawkinsOperations is a control layer for AI-assisted security work. The system separates
+              source, validation, evidence, and public proof so generated work cannot become operational
+              truth without passing gates a human signed off on.
+            </p>
 
-      {/* ── 02 · Ceiling strip ────────────────────────────────────────── */}
-      <section className="cockpit-section--tight">
-        <div className="container">
-          <CeilingStrip />
+            <div className="mt-9 flex flex-wrap items-center gap-3">
+              <a className="cta cta-primary" href="#control-layer">See the control layer →</a>
+              <a className="cta cta-quiet" href="#flagship">Trace HO-DET-001 →</a>
+              <a className="cta cta-quiet" href="/start/">Reviewer routes</a>
+            </div>
+          </div>
+
+          <div className="lg:pt-2">
+            <StatusConsole />
+          </div>
+        </div>
+
+        <div className="container mt-12">
+          <hr className="cockpit-rule" />
         </div>
       </section>
 
-      {/* ── 03 · Reviewer routes (promoted up the page) ───────────────── */}
-      <section className="cockpit-section--tight">
+      {/* ── 02 · Enterprise failure mode (NEW) ───────────────────────── */}
+      <section id="failure-mode" className="cockpit-section--tight">
+        <div className="container">
+          <FailureModeStrip />
+        </div>
+      </section>
+
+      {/* ── 03 · Control layer · promotion ladder (NEW) ──────────────── */}
+      <section id="control-layer" className="cockpit-section--tight">
         <div className="container">
           <div className="mb-6">
-            <p className="cockpit-eyebrow">Reviewer routes</p>
+            <p className="cockpit-eyebrow">Control layer</p>
             <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              Three reviewers. Three inspection paths.
+              Six surfaces. One direction. Promotion is gated.
             </h2>
             <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              Pick by time, not by role. The route changes how you read the system. It does not change the underlying proof state.
+              Work moves upward only when lower-surface rules are satisfied. That is how AI labor is
+              used aggressively without letting output quietly inflate the truth.
             </p>
           </div>
-          <ReviewRouteSelector />
+          <PromotionLadderHomepage />
         </div>
       </section>
 
-      {/* ── 04 · Evidence impact (paper cards) ────────────────────────── */}
-      <section className="section-paper section-paper--tight">
-        <div className="container">
-          <div className="mb-7">
-            <p className="thesis-band__eyebrow">Evidence boundary</p>
-            <h2 className="display-serif display-serif--md mt-2" style={{ color: "var(--paper-ink)" }}>
-              What each evidence type proves — and what it does not.
-            </h2>
-            <p className="mt-3 text-sm leading-6 max-w-2xl" style={{ color: "var(--paper-muted)" }}>
-              The proof boundary is enforced per evidence type. The "does not prove" line is as load-bearing as the "proves" line.
-            </p>
-          </div>
-          <EvidenceImpactCards />
-        </div>
-      </section>
-
-      {/* ── 05 · Flagship proof (paper slab) ──────────────────────────── */}
-      <section className="cockpit-section--tight">
-        <div className="container">
-          <FeaturedProofRecord steps={traceSteps} />
-        </div>
-      </section>
-
-      {/* ── 06 · Artifact machine (preserved, compressed eyebrow) ─────── */}
+      {/* ── 04 · Artifact machine (preserved) ────────────────────────── */}
       <section id="artifact-machine" className="cockpit-section--tight">
         <div className="container">
           <div className="flex flex-wrap items-baseline justify-between gap-3 mb-6">
@@ -143,45 +152,112 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── 07 · Truth surfaces (compressed) ──────────────────────────── */}
+      {/* ── 05 · Reviewer routes (preserved) ─────────────────────────── */}
+      <section className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Reviewer routes</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Three reviewers. Three inspection paths.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              The route changes how you read the system. It does not change the underlying proof state.
+            </p>
+          </div>
+          <ReviewRouteSelector />
+        </div>
+      </section>
+
+      {/* ── 06 · HO-DET-001 flagship (preserved) ─────────────────────── */}
+      <section id="flagship" className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Flagship proof path</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              HO-DET-001 · the artifact you can inspect end to end.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              Eight named receipts move a single detection from version-controlled source to the current public boundary.
+            </p>
+          </div>
+          <ProofPathTimeline detectionId="HO-DET-001" title="Source to public boundary" steps={traceSteps} />
+        </div>
+      </section>
+
+      {/* ── 07 · Six truth surfaces (preserved) ──────────────────────── */}
       <section className="cockpit-section--tight">
         <div className="container">
           <div className="mb-6">
             <p className="cockpit-eyebrow">Truth surfaces</p>
             <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              Six surfaces. Each supports its own claims, nothing more.
+              Six surfaces. Each one supports its own claims, nothing more.
             </h2>
             <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              Promotion is always upward and gated. The full repo authority map and artifact registry live on{" "}
-              <a href="/repos/">Repos</a> and <a href="/artifacts/">Artifacts</a>.
+              Promotion is always upward and gated. The surfaces describe what each layer can prove and the receipt the next layer requires.
             </p>
           </div>
           <TruthSurfaceInfographic />
         </div>
       </section>
 
-      {/* ── 08 · V1 → V2 bridge (replaces prior-context strip) ────────── */}
+      {/* ── 08 · Repository authority (preserved) ────────────────────── */}
       <section className="cockpit-section--tight">
         <div className="container">
-          <V1V2Bridge />
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Repository authority</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Six repositories. Three planes. Authority flows down only.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              detections → validation → proof feeds the chain. .github and platform overlay it. website renders the receipts; it does not author them.
+            </p>
+          </div>
+          <RepoAuthorityDAG />
         </div>
       </section>
 
-      {/* ── 09 · Case study CTA ───────────────────────────────────────── */}
+      {/* ── 09 · Truth vs telemetry matrix (NEW — replaces registry preview) ── */}
       <section className="cockpit-section--tight">
         <div className="container">
-          <CaseStudyCTA />
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Evidence boundary</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Six detections. Six claim axes. The ceiling is a vertical line in this grid.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              Filled cells are supported at the current public ceiling. Hollow cells require the next promotion gate. Blocked cells stay that way unless a separate evidence-backed promotion changes their state.
+            </p>
+          </div>
+          <TruthTelemetryMatrix />
         </div>
       </section>
 
-      {/* ── 10 · Claim firewall (compressed) ──────────────────────────── */}
+      {/* ── 10 · Claim firewall (preserved) ──────────────────────────── */}
       <section className="cockpit-section--tight">
         <div className="container">
-          <ClaimFirewallStrip />
+          <ClaimFirewallPanel />
         </div>
       </section>
 
-      {/* ── 11 · Proof Pack 001 release-path console (preserved) ──────── */}
+      {/* ── 11 · Website rendering boundary (preserved) ──────────────── */}
+      <section className="cockpit-section--tight">
+        <div className="container">
+          <div
+            className="moon-panel-strong"
+            style={{ padding: "22px 24px", display: "grid", gap: 14, gridTemplateColumns: "1fr auto", alignItems: "center" }}
+          >
+            <div>
+              <p className="cockpit-eyebrow">Website rendering</p>
+              <p style={{ color: "var(--silver-bright)", fontWeight: 700, fontSize: "1.1rem", marginTop: 6 }}>
+                Website renders the map. Proof lives in the repos.
+              </p>
+            </div>
+            <a className="cta cta-quiet" href="/proof/">Open the proof ledger →</a>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 12 · Proof Pack 001 release-path console (preserved) ─────── */}
       <section className="cockpit-section--tight">
         <div className="container">
           <div className="proof-pack-console" aria-label="Proof Pack 001 release-path status console">
@@ -231,26 +307,45 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── 12 · Doctrine closer (paper band) ─────────────────────────── */}
-      <section className="section-paper section-paper--tight">
+      {/* ── 13 · Recent governed work snapshot (NEW — replaces prior-context) ── */}
+      <section className="cockpit-section--tight">
+        <div className="container">
+          <ActivityLedger />
+        </div>
+      </section>
+
+      {/* ── 14 · Doctrine closer (preserved wording, receipt-strip treatment) ── */}
+      <section className="cockpit-section">
         <div className="container">
           <div className="grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-center">
             <div>
-              <p className="thesis-band__eyebrow">Doctrine</p>
-              <h2 className="display-serif display-serif--lg mt-3" style={{ color: "var(--paper-ink)" }}>
-                AI is labor. Governance is authority.
+              <p className="cockpit-eyebrow">Doctrine</p>
+              <h2 className="cockpit-headline mt-3">
+                AI generates work. Evidence and human review authorize claims.
               </h2>
-              <p className="mt-4 max-w-2xl text-base leading-7" style={{ color: "var(--paper-muted)" }}>
-                Build loud. Verify hard. Claim tight. Ship receipts. The system separates the work AI can accelerate from the gates that decide what HawkinsOperations is allowed to claim publicly.
+              <p className="muted mt-4 max-w-2xl text-base leading-7">
+                The system separates the work AI can accelerate from the gates that decide what HawkinsOperations is allowed to claim publicly. Promotion is gated. Receipts are reviewer-visible. Public ceiling holds at CONTROLLED_TEST_VALIDATED.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3 md:justify-end">
-              <a className="thesis-band__cta thesis-band__cta--primary" href="/about/">Operator profile →</a>
-              <a className="thesis-band__cta thesis-band__cta--quiet" href="/proof/">Proof ledger</a>
+              <a className="cta cta-primary" href="/about/">Operator profile →</a>
+              <a className="cta cta-quiet" href="/proof/">Proof ledger</a>
+            </div>
+          </div>
+
+          <div className="mt-10">
+            <div className="receipt-strip" aria-label="Doctrine motto">
+              <span>Build loud</span>
+              <span className="receipt-strip__sep">·</span>
+              <span>Verify hard</span>
+              <span className="receipt-strip__sep">·</span>
+              <span>Claim tight</span>
+              <span className="receipt-strip__sep">·</span>
+              <span>Ship receipts</span>
             </div>
           </div>
         </div>
       </section>
-    </div>
+    </>
   );
 }
