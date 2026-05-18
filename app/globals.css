@@ -8177,3 +8177,279 @@ body::after {
   font-size: 0.88rem;
   line-height: 1.55;
 }
+
+/* ── Hero status chips (release, ceiling, blocked) ─────────────────── */
+.hero-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  margin: 22px 0 24px;
+}
+.hero-status__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+  background: rgba(8, 13, 22, 0.85);
+  border: 1px solid rgba(96, 165, 250, 0.35);
+  color: var(--silver-bright);
+}
+.hero-status__chip--released {
+  border-color: rgba(96, 165, 250, 0.65);
+  color: var(--electric-blue-bright);
+}
+.hero-status__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--electric-blue-bright);
+  box-shadow: 0 0 8px rgba(96, 165, 250, 0.7);
+}
+.hero-status__chip--det {
+  color: var(--ice-blue);
+  border-color: rgba(143, 216, 255, 0.55);
+}
+.hero-status__chip--ceiling {
+  color: var(--electric-blue-bright);
+  border-color: rgba(96, 165, 250, 0.55);
+}
+.hero-status__chip--blocked {
+  color: #ffbdc7;
+  border-color: rgba(255, 107, 129, 0.55);
+}
+
+/* ── Release receipt · stamped docket above the fold ───────────────── */
+.release-receipt {
+  position: relative;
+  padding: 28px 28px 24px;
+  background:
+    linear-gradient(180deg, rgba(7, 12, 22, 0.94), rgba(5, 8, 16, 0.96));
+  border: 1px solid rgba(96, 165, 250, 0.32);
+  border-radius: 4px;
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(143, 216, 255, 0.06);
+  overflow: hidden;
+}
+.release-receipt::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--electric-blue-bright), var(--ice-blue), var(--ceiling-amber));
+  opacity: 0.85;
+}
+.release-receipt__perf {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 10px;
+  background-image: radial-gradient(circle, rgba(5, 8, 16, 1) 2.5px, transparent 3px);
+  background-size: 14px 10px;
+  background-repeat: repeat-x;
+  pointer-events: none;
+}
+.release-receipt__perf--top { top: 3px; }
+.release-receipt__perf--bottom { bottom: 0; }
+
+.release-receipt__head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 18px 22px;
+  align-items: start;
+  padding-bottom: 18px;
+  border-bottom: 1px dashed rgba(143, 216, 255, 0.22);
+}
+@media (max-width: 720px) {
+  .release-receipt__head { grid-template-columns: 1fr; }
+}
+.release-receipt__stamp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 14px;
+  border: 2px solid var(--electric-blue-bright);
+  border-radius: 6px;
+  color: var(--electric-blue-bright);
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  transform: rotate(-2deg);
+  box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.18) inset;
+  background: rgba(5, 9, 18, 0.6);
+}
+.release-receipt__stamp-id { font-size: 1.1rem; font-weight: 800; letter-spacing: 0.16em; }
+.release-receipt__stamp-tag { font-size: 0.66rem; letter-spacing: 0.32em; color: var(--ice-blue); }
+.release-receipt__intro { min-width: 0; }
+.release-receipt__eyebrow {
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.64rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--electric-blue-bright);
+  margin-bottom: 6px;
+}
+.release-receipt__title {
+  color: var(--silver-bright);
+  font-size: clamp(1.4rem, 2.2vw, 1.8rem);
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 8px;
+}
+.release-receipt__sub {
+  color: var(--silver);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+.release-receipt__det {
+  color: var(--ice-blue);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+.release-receipt__ceiling {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  padding: 10px 14px;
+  border: 1px solid var(--electric-blue-bright);
+  border-radius: 4px;
+  background: rgba(5, 9, 18, 0.6);
+  white-space: nowrap;
+}
+.release-receipt__ceiling-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.28em;
+  color: var(--muted);
+}
+.release-receipt__ceiling-value {
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  color: var(--electric-blue-bright);
+  font-weight: 700;
+}
+.release-receipt__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  padding: 18px 0;
+  border-bottom: 1px dashed rgba(143, 216, 255, 0.22);
+}
+@media (min-width: 720px) {
+  .release-receipt__grid { grid-template-columns: 1fr 1fr; column-gap: 28px; }
+}
+.release-receipt__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(143, 216, 255, 0.08);
+}
+.release-receipt__row:last-child { border-bottom: 0; }
+@media (min-width: 720px) {
+  .release-receipt__row--wide { grid-column: 1 / -1; }
+}
+.release-receipt__row dt {
+  color: var(--muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+}
+.release-receipt__row dd {
+  color: var(--silver-bright);
+  font-size: 0.82rem;
+  text-align: right;
+  word-break: break-all;
+}
+.release-receipt__row-ok { color: var(--silver-bright); letter-spacing: 0.06em; }
+.release-receipt__row-block { color: #ffbdc7; font-weight: 700; letter-spacing: 0.06em; }
+.release-receipt__sha { font-size: 0.74rem; color: var(--ice-blue); }
+.release-receipt__foot {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  padding-top: 18px;
+}
+@media (min-width: 900px) {
+  .release-receipt__foot { grid-template-columns: 1.4fr auto; align-items: center; }
+}
+.release-receipt__note {
+  color: var(--silver);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  margin: 0;
+}
+.release-receipt__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.release-receipt__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-radius: 4px;
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border: 1px solid var(--moon-border);
+  background: rgba(5, 9, 18, 0.7);
+  color: var(--silver-bright);
+  transition: transform 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+.release-receipt__cta:hover { transform: translateY(-1px); }
+.release-receipt__cta--primary {
+  border-color: var(--electric-blue-bright);
+  color: var(--electric-blue-bright);
+  box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.25) inset, 0 8px 24px rgba(96, 165, 250, 0.18);
+}
+.release-receipt__cta--primary:hover {
+  box-shadow: 0 0 0 1px rgba(143, 216, 255, 0.45) inset, 0 12px 32px rgba(96, 165, 250, 0.32);
+  color: var(--ice-blue);
+}
+.release-receipt__cta--quiet {
+  color: var(--silver);
+}
+.release-receipt__cta--quiet:hover {
+  color: var(--ice-blue);
+  border-color: rgba(143, 216, 255, 0.45);
+}
+
+/* ── Four-route reviewer grid + per-card metadata ──────────────────── */
+.review-route-selector--four { gap: 18px; }
+@media (min-width: 960px) {
+  .review-route-selector--four { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 1280px) {
+  .review-route-selector--four { grid-template-columns: repeat(4, 1fr); }
+}
+.review-route-selector__meta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 10px;
+  row-gap: 4px;
+  padding: 10px 0;
+  border-top: 1px dashed rgba(143, 216, 255, 0.16);
+}
+.review-route-selector__meta dt {
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.review-route-selector__meta dd {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--silver);
+  margin: 0;
+}
+.review-route-selector__route--loop:hover  { box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 22px rgba(96, 165, 250, 0.32); }
+.review-route-selector__route--split:hover { box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 22px rgba(224, 189, 99, 0.35); }
