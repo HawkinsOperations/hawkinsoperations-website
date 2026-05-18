@@ -119,6 +119,43 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main id="main-content" tabIndex={-1}>{children}</main>
           <Footer />
         </div>
+        {/* Scroll reveal + spotlight pointer tracking — tiny, no dependency. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+(function(){
+  if (typeof window === 'undefined') return;
+  var rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var els = document.querySelectorAll('.reveal');
+  if (rm || !('IntersectionObserver' in window)) {
+    els.forEach(function(el){ el.classList.add('is-revealed'); });
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) { e.target.classList.add('is-revealed'); io.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -10% 0px', threshold: 0.12 });
+    els.forEach(function(el){ io.observe(el); });
+  }
+  // Spotlight pointer tracking — sets --mx / --my CSS vars per .spotlight card
+  var spots = document.querySelectorAll('.spotlight');
+  spots.forEach(function(el){
+    el.addEventListener('pointermove', function(ev){
+      var r = el.getBoundingClientRect();
+      var x = ((ev.clientX - r.left) / r.width) * 100;
+      var y = ((ev.clientY - r.top) / r.height) * 100;
+      el.style.setProperty('--mx', x + '%');
+      el.style.setProperty('--my', y + '%');
+    });
+    el.addEventListener('pointerleave', function(){
+      el.style.removeProperty('--mx');
+      el.style.removeProperty('--my');
+    });
+  });
+})();
+            `.trim(),
+          }}
+        />
       </body>
     </html>
   );

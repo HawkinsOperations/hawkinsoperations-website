@@ -67,6 +67,7 @@ export default function FailureModeStrip() {
 
   return (
     <aside className="failure-strip" aria-labelledby="failure-strip-title">
+      <span className="failure-strip__diagonal" aria-hidden="true">Blocked path</span>
       <header className="failure-strip__head">
         <div>
           <p className="cockpit-eyebrow" style={{ color: "var(--blocked-red-strong)" }}>
@@ -76,9 +77,6 @@ export default function FailureModeStrip() {
             How AI quietly inflates the truth.
           </h2>
         </div>
-        <span className="rubber-stamp-blocked" aria-label="Uncontrolled promotion pattern">
-          Uncontrolled promotion
-        </span>
       </header>
 
       <p className="failure-strip__sub">

@@ -60,7 +60,7 @@ export default function PreventionBridge() {
       {cards.map((card) => (
         <li
           key={card.num}
-          className={`prevention-card ${card.variant === "amber" ? "prevention-card--amber" : card.variant === "red" ? "prevention-card--red" : ""}`}
+          className={`prevention-card spotlight ${card.variant === "amber" ? "prevention-card--amber spotlight--amber" : card.variant === "red" ? "prevention-card--red spotlight--red" : ""}`}
         >
           <span className="prevention-card__num">{card.num}</span>
           <h3 className="prevention-card__title">{card.title}</h3>

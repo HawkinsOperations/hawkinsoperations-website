@@ -44,6 +44,14 @@ const ceilingBoundaryIndex = matrixColumns.findIndex((c) => c.boundary === "abov
 export default function TruthTelemetryMatrix() {
   return (
     <div className="truth-matrix" role="region" aria-label="Truth vs telemetry matrix">
+      <p className="truth-matrix__why">
+        <strong>Why this matters · </strong>
+        Recruiters and security leaders can read claim discipline in one glance. Filled cells say what is
+        supported. Hollow cells say what still needs the next gate. The <strong>amber line</strong> marks
+        the public ceiling — every cell to the right of it remains blocked at this surface and cannot be
+        promoted by website rendering alone.
+      </p>
+      <div className="truth-matrix__table-wrap">
       <table className="truth-matrix__table">
         <thead>
           <tr>
@@ -80,6 +88,31 @@ export default function TruthTelemetryMatrix() {
           ))}
         </tbody>
       </table>
+      </div>
+
+      {/* Mobile fallback — per-detection cards instead of the wide table */}
+      <div className="truth-matrix__mobile" aria-label="Truth matrix mobile view">
+        {matrixDetections.map((row) => (
+          <div key={row.id} className="truth-matrix__mobile-card">
+            <p className="truth-matrix__mobile-card-id">{row.id}</p>
+            {matrixColumns.map((col) => {
+              const cell = row.cells[col.key];
+              return (
+                <div key={col.key} className="truth-matrix__mobile-row">
+                  <span>{col.label}</span>
+                  <span
+                    className={`truth-matrix__glyph ${glyphClass[cell]}`}
+                    aria-label={glyphLabel[cell]}
+                  >
+                    {glyph[cell]}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+
       <div className="truth-matrix__legend" aria-label="Matrix legend">
         <span className="truth-matrix__legend-item">
           <span className="truth-matrix__glyph truth-matrix__glyph--supported">●</span> supported

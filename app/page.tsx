@@ -82,8 +82,9 @@ export default function HomePage() {
     <>
       {/* ── 01 · Hero (S-tier cockpit) ───────────────────────────────── */}
       <section className="relative overflow-hidden cockpit-section hero-cockpit">
+        <div className="hero-backdrop" aria-hidden="true" />
         <div className="container grid gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 items-start">
-          <div>
+          <div className="reveal reveal--up">
             <p className="hero-cockpit__eyebrow">
               Governed AI-assisted detection engineering
             </p>
@@ -125,7 +126,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="lg:pt-2">
+          <div className="lg:pt-2 reveal reveal--up" data-delay="2">
             <HeroControlConsole />
           </div>
         </div>
@@ -138,7 +139,7 @@ export default function HomePage() {
       {/* ── 02 · Prevention bridge (NEW — CISO/SecOps on-ramp) ───────── */}
       <section className="cockpit-section--tight">
         <div className="container">
-          <div className="mb-6">
+          <div className="mb-6 reveal reveal--up">
             <p className="cockpit-eyebrow">What this prevents</p>
             <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.5rem, 2.4vw, 2.0rem)" }}>
               Three failure modes the system is built to block.
@@ -148,13 +149,19 @@ export default function HomePage() {
               controls.
             </p>
           </div>
-          <PreventionBridge />
+          <div className="reveal reveal--up" data-delay="1">
+            <PreventionBridge />
+          </div>
+          <div className="biz-translate reveal reveal--up" data-delay="2" role="note" aria-label="Business translation">
+            <span className="biz-translate__label">In plain English</span>
+            <span><span className="biz-translate__text">Polished output cannot promote a security claim without evidence and human review.</span></span>
+          </div>
         </div>
       </section>
 
       {/* ── 03 · Enterprise failure mode ─────────────────────────────── */}
       <section id="failure-mode" className="cockpit-section--tight">
-        <div className="container">
+        <div className="container reveal reveal--up">
           <FailureModeStrip />
         </div>
       </section>
@@ -172,7 +179,13 @@ export default function HomePage() {
               used aggressively without letting output quietly inflate the truth.
             </p>
           </div>
-          <PromotionLadderHomepage />
+          <div className="reveal reveal--up" data-delay="1">
+            <PromotionLadderHomepage />
+          </div>
+          <div className="biz-translate" role="note" aria-label="Business translation">
+            <span className="biz-translate__label">In plain English</span>
+            <span><span className="biz-translate__text">Work moves up only when the surface below has receipts. Public claims stay capped at CONTROLLED_TEST_VALIDATED until stronger evidence exists.</span></span>
+          </div>
         </div>
       </section>
 
@@ -271,6 +284,10 @@ export default function HomePage() {
             </p>
           </div>
           <TruthTelemetryMatrix />
+          <div className="biz-translate" role="note" aria-label="Business translation">
+            <span className="biz-translate__label">In plain English</span>
+            <span><span className="biz-translate__text">Every row shows what HawkinsOperations can prove and what it cannot. Runtime-Active and Signal-Observed columns are blocked at this surface — those claims need separate evidence promotion.</span></span>
+          </div>
         </div>
       </section>
 
