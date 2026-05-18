@@ -162,6 +162,22 @@ export default function ArtifactMachine() {
             );
           })}
 
+          {/* Animated data pulse — single packet traveling left→right along the rail */}
+          <circle r={4.5} fill="var(--ice-blue)" opacity={0.95} aria-hidden="true" className="svg-pulse">
+            <animateMotion
+              dur="5.2s"
+              repeatCount="indefinite"
+              path={`M ${PAD_X} ${centerY} L ${width - PAD_X} ${centerY}`}
+            />
+          </circle>
+          <circle r={10} fill="none" stroke="var(--ice-blue)" strokeOpacity={0.32} aria-hidden="true" className="svg-pulse">
+            <animateMotion
+              dur="5.2s"
+              repeatCount="indefinite"
+              path={`M ${PAD_X} ${centerY} L ${width - PAD_X} ${centerY}`}
+            />
+          </circle>
+
           {/* Title strip */}
           <text x={PAD_X} y={28} fontSize={11} fontFamily='"JetBrains Mono", monospace' fill="var(--electric-blue-bright)" letterSpacing="3">
             ARTIFACT MACHINE · 08 STAGES

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ArtifactFamilyMatrix from "@components/ArtifactFamilyMatrix";
+import RecentGovernedArtifacts from "@components/RecentGovernedArtifacts";
 import ClaimFirewallPanel from "@components/ClaimFirewallPanel";
 import PromotionGateLadder from "@components/PromotionGateLadder";
 import ProofPathTimeline, { type ProofPathStep } from "@components/ProofPathTimeline";
@@ -11,7 +12,7 @@ import { externalLinks } from "@data/navigation";
 import { ceiling, publicSafe } from "@config/site";
 
 export const metadata: Metadata = {
-  title: "Proof Ledger | HawkinsOperations Detection Engineering SOC",
+  title: "Proof | HawkinsOps",
   description:
     "HawkinsOperations proof authority console: public ceiling, supported claim routes, blocked claim firewall, proof records, and promotion gates.",
 };
@@ -77,7 +78,7 @@ const flagshipTraceSteps: ProofPathStep[] = [
   {
     code: "SOURCE_PRESENT",
     label: "Source present",
-    line: "Detection rule and SPL live in the detections repo under version control with a stated owner.",
+    line: "Detection rule and SPL reside in the detections repo under version control with a stated owner.",
     href: externalLinks.hoDet001Rule,
     external: true,
   },
@@ -141,6 +142,20 @@ export default function ProofIndexPage() {
       </section>
 
       {/* ── Ceiling authority console ─────────────────────────────────── */}
+      <section id="recent-governed-proof-work" className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
+          <RecentGovernedArtifacts
+            surface="proof"
+            heading="Recent governed proof-repo work"
+            sub="Recent governed work on the proof repo. Public-safe reviewer cards. Hand-maintained static snapshot. Does not promote runtime or public-safe runtime proof."
+          />
+          <div className="biz-translate" role="note" aria-label="Business translation">
+            <span className="biz-translate__label">In plain English</span>
+            <span><span className="biz-translate__text">Proof-repo updates are reviewer-visible but do not change the public claim ceiling. Stronger wording requires a separate evidence-backed promotion gate.</span></span>
+          </div>
+        </div>
+      </section>
+
       <section id="ceiling-console" className="cockpit-section--tight">
         <div className="container">
           <div className="mb-6">
@@ -390,7 +405,7 @@ export default function ProofIndexPage() {
                 </h3>
                 <p className="proof-pack-console__sub">
                   Reviewer packet, manifest, checksum file, release-notes template, verifier script,
-                  and the publish workflow live on proof repo main. Nothing here promotes the public ceiling.
+                  and the publish workflow reside on proof repo main. Nothing here promotes the public ceiling.
                 </p>
               </div>
               <span className="proof-pack-console__ceiling mono">{ceiling}</span>
