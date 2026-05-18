@@ -33,9 +33,15 @@ export default function ArtifactFamilyMatrix() {
             </div>
             {artifactFamilyAxes.map((axis) => {
               const state = family.cells[axis.key];
+              const stateLabel = state === "filled" ? "supports today" : state === "gated" ? "requires next promotion gate" : "out of scope by design";
               return (
-                <div key={axis.key} className={`artifact-matrix__cell ${cellModifier[state]}`} title={`${family.name} · ${axis.label} · ${state}`}>
-                  {glyph[state]}
+                <div
+                  key={axis.key}
+                  className={`artifact-matrix__cell ${cellModifier[state]}`}
+                  role="img"
+                  aria-label={`${family.name} · ${axis.label}: ${stateLabel}`}
+                >
+                  <span aria-hidden="true">{glyph[state]}</span>
                 </div>
               );
             })}

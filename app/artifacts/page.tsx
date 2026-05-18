@@ -96,6 +96,36 @@ export default function ArtifactsIndexPage() {
         </div>
       </section>
 
+      {/* ── Vault shelf selector (moved up — first nav under hero) ───── */}
+      <section id="shelves" className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Shelves</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Pick a shelf · the ceiling travels with the artifact.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              Categories describe what the artifact authoritatively renders. Website rendering is
+              not proof, and legacy material does not promote current claims.
+            </p>
+          </div>
+
+          <nav className="vault-shelf" aria-label="Vault shelf navigation">
+            <span className="vault-shelf__rail" aria-hidden="true" />
+            {artifactCategories.map((cat) => {
+              const count = countByCategory(cat.key);
+              return (
+                <a key={cat.key} className="vault-shelf__slot" href={`#cat-${cat.key}`}>
+                  <span className="vault-shelf__cat">{cat.label}</span>
+                  <span className="vault-shelf__label">{count} {count === 1 ? "artifact" : "artifacts"}</span>
+                  <span className="vault-shelf__count">on this shelf</span>
+                </a>
+              );
+            })}
+          </nav>
+        </div>
+      </section>
+
       {/* ── Featured GPU / Factory governed lane ─────────────────────── */}
       <section id="recent-governed-work" className="cockpit-section--tight">
         <div className="container reveal reveal--up">
@@ -172,35 +202,6 @@ export default function ArtifactsIndexPage() {
         </div>
       </section>
 
-      {/* ── Vault shelf selector ─────────────────────────────────────── */}
-      <section id="shelves" className="cockpit-section--tight">
-        <div className="container">
-          <div className="mb-6">
-            <p className="cockpit-eyebrow">Shelves</p>
-            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              Pick a shelf · the ceiling travels with the artifact.
-            </h2>
-            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              Categories describe what the artifact authoritatively renders. Website rendering is
-              not proof, and legacy material does not promote current claims.
-            </p>
-          </div>
-
-          <nav className="vault-shelf" aria-label="Vault shelf navigation">
-            <span className="vault-shelf__rail" aria-hidden="true" />
-            {artifactCategories.map((cat) => {
-              const count = countByCategory(cat.key);
-              return (
-                <a key={cat.key} className="vault-shelf__slot" href={`#cat-${cat.key}`}>
-                  <span className="vault-shelf__cat">{cat.label}</span>
-                  <span className="vault-shelf__label">{count} {count === 1 ? "artifact" : "artifacts"}</span>
-                  <span className="vault-shelf__count">on this shelf</span>
-                </a>
-              );
-            })}
-          </nav>
-        </div>
-      </section>
 
       {/* ── Anchor artifacts ─────────────────────────────────────────── */}
       <section id="anchors" className="cockpit-section--tight">
@@ -260,18 +261,20 @@ export default function ArtifactsIndexPage() {
         </div>
       </section>
 
-      {/* ── Artifact coverage matrix ─────────────────────────────────── */}
+      {/* ── Artifact family coverage matrix ──────────────────────────── */}
       <section className="cockpit-section--tight">
         <div className="container">
           <div className="mb-6">
             <p className="cockpit-eyebrow">Reviewer evidence coverage</p>
             <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              Artifact coverage matrix.
+              Artifact family coverage.
             </h2>
             <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              Each row is an artifact family. Each column is an authority surface. Cells declare what
-              exists in public, what is routed by the website, and what is held private or blocked.
-              The matrix does not promote claims; it shows what is covered and what is not.
+              This matrix groups <strong>artifact families</strong>, not a complete count of every
+              artifact page. Recent governed work appears in the surface-grouped cards and the
+              <a href="#recent-governed-work" style={{ color: "var(--ice-blue)", borderBottom: "1px solid rgba(143,216,255,0.4)" }}> GPU / Factory lane</a> above, and on the individual <a href="#by-surface" style={{ color: "var(--ice-blue)", borderBottom: "1px solid rgba(143,216,255,0.4)" }}>surface-grouped artifact pages</a>. Cells below declare what exists in
+              public, what is routed by the website, and what is held private or blocked. The matrix
+              does not promote claims; it shows family-level coverage.
             </p>
           </div>
 

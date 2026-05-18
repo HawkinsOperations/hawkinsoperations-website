@@ -155,7 +155,7 @@ export default function AboutPage() {
           </div>
 
           <div className="v1-v2">
-            <article className="v1-v2__card v1-v2__card--legacy">
+            <article className="v1-v2__card v1-v2__card--legacy spotlight">
               <p className="v1-v2__eyebrow">HawkinsOps v1 · legacy reference</p>
               <h3 className="v1-v2__title">The work was built.</h3>
               <p className="v1-v2__body">
@@ -169,6 +169,16 @@ export default function AboutPage() {
                 <li>Dashboards and reporting</li>
                 <li>Operational proof-of-work</li>
               </ul>
+              <p style={{ marginTop: "0.9rem", fontFamily: '"JetBrains Mono", monospace', fontSize: "0.7rem", letterSpacing: "0.14em" }}>
+                <a
+                  href={externalLinks.legacyHawkinsOps}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "var(--ice-blue)", borderBottom: "1px solid rgba(143,216,255,0.4)" }}
+                >
+                  Open legacy HawkinsOps reference ↗
+                </a>
+              </p>
             </article>
 
             <div className="v1-v2__arrow" aria-hidden="true">→</div>
@@ -187,6 +197,22 @@ export default function AboutPage() {
                 <li>Proof records with explicit ceilings</li>
                 <li>Human review as promotion authority</li>
               </ul>
+              <p style={{ marginTop: "0.9rem", fontFamily: '"JetBrains Mono", monospace', fontSize: "0.7rem", letterSpacing: "0.14em", display: "flex", flexWrap: "wrap", gap: "0.6rem 1rem" }}>
+                <a
+                  href="/proof/"
+                  style={{ color: "var(--ceiling-amber)", borderBottom: "1px solid rgba(224,189,99,0.5)" }}
+                >
+                  Inspect governed successor →
+                </a>
+                <a
+                  href="https://github.com/HawkinsOperations"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "var(--ice-blue)", borderBottom: "1px solid rgba(143,216,255,0.4)" }}
+                >
+                  Open GitHub org ↗
+                </a>
+              </p>
             </article>
           </div>
 
@@ -210,9 +236,19 @@ export default function AboutPage() {
             <p className="muted mt-3 text-sm leading-6 max-w-3xl" style={{ color: "#B7C4D6" }}>
               Without controls, AI output becomes analyst conclusion, operational action, public
               claim, and executive truth without enough validation, evidence, or human review.
-              HawkinsOperations is built to block that path. AI accelerates the work. Evidence and
-              human review authorize the claims.
+              HawkinsOperations is built to block that path.
             </p>
+            <details className="disclose" style={{ marginTop: "0.9rem" }}>
+              <summary>Read the failure mode in detail</summary>
+              <dl className="disclose__body">
+                <dt>Where it breaks</dt>
+                <dd>AI output is the cheapest part of an AI system to produce and the hardest to govern. Without a gate, downstream surfaces treat it as fact.</dd>
+                <dt>What HawkinsOperations blocks</dt>
+                <dd>Runtime-active, signal-observed, public-safe runtime proof, autonomous SOC, AI-approved disposition, analyst-approved disposition. Those wordings remain blocked by the claim firewall.</dd>
+                <dt>Next inspection</dt>
+                <dd><a href="/artifacts/ai-governance-control-layer-case-study/" style={{ color: "var(--electric-blue-bright)" }}>Read the AI Governance Control Layer case study →</a></dd>
+              </dl>
+            </details>
           </div>
           <div className="biz-translate" role="note" aria-label="Business translation">
             <span className="biz-translate__label">In plain English</span>

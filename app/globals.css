@@ -5304,6 +5304,13 @@ body::after {
   border-left: 1px solid var(--moon-border);
 }
 .artifact-matrix__head, .artifact-matrix__row { display: contents; }
+/* Inline row highlight on hover/focus — no floating tooltip. */
+.artifact-matrix__row:hover .artifact-matrix__cell,
+.artifact-matrix__row:focus-within .artifact-matrix__cell {
+  background-color: rgba(15, 22, 36, 0.7);
+  outline: 1px solid rgba(143, 216, 255, 0.18);
+  outline-offset: -1px;
+}
 .artifact-matrix__cell {
   padding: 12px 14px;
   border-right: 1px solid var(--moon-border);
@@ -8011,6 +8018,27 @@ body::after {
   border: 1px solid var(--moon-border);
   border-radius: 10px;
   background: linear-gradient(180deg, rgba(15, 22, 36, 0.85), rgba(3, 6, 11, 0.95));
+  transition: transform 200ms ease, border-color 200ms ease, box-shadow 220ms ease;
+}
+.v1-v2__card:hover,
+.v1-v2__card:focus-within {
+  transform: translateY(-2px);
+  border-color: var(--electric-blue-bright);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), var(--route-glow);
+}
+.v1-v2__card--successor:hover,
+.v1-v2__card--successor:focus-within {
+  border-color: var(--ceiling-amber);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), var(--ceiling-glow);
+}
+.operator-profile {
+  transition: transform 200ms ease, border-color 200ms ease, box-shadow 220ms ease;
+}
+.operator-profile:hover,
+.operator-profile:focus-within {
+  transform: translateY(-2px);
+  border-color: var(--electric-blue-bright);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), var(--route-glow);
 }
 .v1-v2__card--legacy { border-color: var(--moon-border); }
 .v1-v2__card--successor {
