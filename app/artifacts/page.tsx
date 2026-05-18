@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import RecentGovernedArtifacts from "@components/RecentGovernedArtifacts";
 import StatusConsole from "@components/StatusConsole";
 import {
   artifacts,
@@ -91,6 +92,20 @@ export default function ArtifactsIndexPage() {
 
         <div className="container mt-12">
           <hr className="cockpit-rule" />
+        </div>
+      </section>
+
+      {/* ── Recent governed work · static snapshot ───────────────────── */}
+      <section id="recent-governed-work" className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
+          <RecentGovernedArtifacts
+            heading="Recent governed work · artifacts"
+            sub="Each card opens a public-safe reviewer review page. Hand-maintained static snapshot. No row claims runtime-active, signal-observed, or public-safe runtime proof. Website rendering is not proof."
+          />
+          <div className="biz-translate" role="note" aria-label="Business translation">
+            <span className="biz-translate__label">In plain English</span>
+            <span><span className="biz-translate__text">Recently merged work is reviewer-visible and routes back to the upstream PR. The cards are bounded snapshots; they are not auto-updated and they do not promote runtime claims.</span></span>
+          </div>
         </div>
       </section>
 

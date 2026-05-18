@@ -140,6 +140,38 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* ── Why this matters · AI governance bridge ──────────────────── */}
+      <section className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
+          <div className="mb-5">
+            <p className="cockpit-eyebrow">Why this matters</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.5rem, 2.4vw, 2.0rem)" }}>
+              The enterprise AI failure mode is uncontrolled promotion.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl" style={{ color: "#B7C4D6" }}>
+              Without controls, AI output becomes analyst conclusion, operational action, public
+              claim, and executive truth without enough validation, evidence, or human review.
+              HawkinsOperations is built to block that path. AI generates work. Evidence and human
+              review authorize the claims.
+            </p>
+          </div>
+          <div className="biz-translate" role="note" aria-label="Business translation">
+            <span className="biz-translate__label">In plain English</span>
+            <span>
+              <span className="biz-translate__text">
+                Polished output cannot promote a security claim without evidence and human review.
+              </span>{" "}
+              <a
+                href="/artifacts/ai-governance-control-layer-case-study/"
+                style={{ color: "var(--ice-blue)", borderBottom: "1px solid rgba(143,216,255,0.4)" }}
+              >
+                Read the AI Governance Control Layer case study →
+              </a>
+            </span>
+          </div>
+        </div>
+      </section>
+
       {/* ── Operator lanes ──────────────────────────────────────────── */}
       <section className="cockpit-section--tight">
         <div className="container">

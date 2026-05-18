@@ -3,10 +3,43 @@ import BoundaryNotice from "@components/BoundaryNotice";
 import ClaimFirewallPanel from "@components/ClaimFirewallPanel";
 import LinkCard from "@components/LinkCard";
 import PageHero from "@components/PageHero";
+import RecentGovernedArtifacts from "@components/RecentGovernedArtifacts";
 import ReviewRouteSelector from "@components/ReviewRouteSelector";
 import SectionHeader from "@components/SectionHeader";
 import { ceiling } from "@config/site";
 import { externalLinks } from "@data/navigation";
+
+const intakeRoutes = [
+  {
+    num: "01",
+    title: "Inspect the proof system",
+    sub: "Open the proof ledger, then the HO-DET-001 record. Confirm the public ceiling holds at CONTROLLED_TEST_VALIDATED.",
+    href: "/proof/",
+    variant: "amber" as const,
+  },
+  {
+    num: "02",
+    title: "Review artifacts",
+    sub: "Open the artifact vault. Each recent governed work item routes to a public-safe reviewer review page.",
+    href: "/artifacts/#recent-governed-work",
+    variant: "default" as const,
+  },
+  {
+    num: "03",
+    title: "Trace HO-DET-001",
+    sub: "Walk the source → validation → proof receipts for the flagship detection. Stronger wording requires a separate promotion gate.",
+    href: "/pipeline/",
+    variant: "default" as const,
+  },
+  {
+    num: "04",
+    title: "Open the GitHub org",
+    sub: "Inspect the upstream repos. Website rendering is not proof; the repos hold the receipts.",
+    href: "https://github.com/HawkinsOperations",
+    variant: "ice" as const,
+    external: true,
+  },
+];
 
 export const metadata: Metadata = {
   title: "Reviewer Route | HawkinsOperations",
@@ -25,11 +58,54 @@ export default function StartPage() {
       />
 
       <section className="cockpit-section--tight">
-        <div className="container">
+        <div className="container reveal reveal--up">
+          <SectionHeader
+            title="Pick your starting route"
+            eyebrow="Reviewer intake"
+          />
+          <p className="muted mt-3 max-w-3xl text-sm leading-6">
+            Four bounded routes into the governed proof system. Each card is a starting action — none
+            promotes a stronger claim than the public ceiling allows.
+          </p>
+          <div className="start-routes mt-6">
+            {intakeRoutes.map((r) => (
+              <a
+                key={r.num}
+                className={`start-routes__card spotlight ${
+                  r.variant === "amber" ? "start-routes__card--amber spotlight--amber"
+                  : r.variant === "ice" ? "start-routes__card--ice"
+                  : ""
+                }`}
+                href={r.href}
+                target={r.external ? "_blank" : undefined}
+                rel={r.external ? "noopener noreferrer" : undefined}
+              >
+                <span className="start-routes__num">{r.num}</span>
+                <h3 className="start-routes__title">{r.title}</h3>
+                <p className="start-routes__sub">{r.sub}</p>
+                <p className="start-routes__arrow">{r.external ? "Open ↗" : "Open →"}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
           <SectionHeader title="Choose the route that fits the review window" eyebrow="Inspection paths" />
           <div className="mt-6">
             <ReviewRouteSelector />
           </div>
+        </div>
+      </section>
+
+      <section className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
+          <RecentGovernedArtifacts
+            heading="Recent governed work · snapshot"
+            sub="Hand-maintained static snapshot of recent governed work. Each card opens a public-safe reviewer review page."
+            limit={6}
+          />
         </div>
       </section>
 

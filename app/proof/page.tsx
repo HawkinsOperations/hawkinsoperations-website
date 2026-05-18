@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ArtifactFamilyMatrix from "@components/ArtifactFamilyMatrix";
+import RecentGovernedArtifacts from "@components/RecentGovernedArtifacts";
 import ClaimFirewallPanel from "@components/ClaimFirewallPanel";
 import PromotionGateLadder from "@components/PromotionGateLadder";
 import ProofPathTimeline, { type ProofPathStep } from "@components/ProofPathTimeline";
@@ -141,6 +142,20 @@ export default function ProofIndexPage() {
       </section>
 
       {/* ── Ceiling authority console ─────────────────────────────────── */}
+      <section id="recent-governed-proof-work" className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
+          <RecentGovernedArtifacts
+            surface="proof"
+            heading="Recent governed proof-repo work"
+            sub="Recent governed work on the proof repo. Public-safe reviewer cards. Hand-maintained static snapshot. Does not promote runtime or public-safe runtime proof."
+          />
+          <div className="biz-translate" role="note" aria-label="Business translation">
+            <span className="biz-translate__label">In plain English</span>
+            <span><span className="biz-translate__text">Proof-repo updates are reviewer-visible but do not change the public claim ceiling. Stronger wording requires a separate evidence-backed promotion gate.</span></span>
+          </div>
+        </div>
+      </section>
+
       <section id="ceiling-console" className="cockpit-section--tight">
         <div className="container">
           <div className="mb-6">

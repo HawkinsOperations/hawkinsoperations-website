@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import RecentGovernedArtifacts from "@components/RecentGovernedArtifacts";
 import StatusConsole from "@components/StatusConsole";
 import StatusChip from "@components/StatusChip";
 import { externalLinks } from "@data/navigation";
@@ -165,6 +166,21 @@ export default function PipelinePage() {
                 showLoop={false}
               />
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Recent governed platform work · static snapshot ──────────── */}
+      <section id="recent-governed-platform-work" className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
+          <RecentGovernedArtifacts
+            surface="platform"
+            heading="Recent governed platform work"
+            sub="Recent governed work on the platform repo — Local GPU Triage gate path and Detection Factory Controller scaffolding. Hand-maintained static snapshot. No row claims model execution in CI, GPU CI proven, runtime-active, or public-safe runtime proof."
+          />
+          <div className="biz-translate" role="note" aria-label="Business translation">
+            <span className="biz-translate__label">In plain English</span>
+            <span><span className="biz-translate__text">Platform work is reviewer-visible as governed labor and bounded receipts. Stronger claims (runtime, signal, public-safe runtime proof) remain blocked at this surface.</span></span>
           </div>
         </div>
       </section>
