@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import ActivityLedger from "@components/ActivityLedger";
-import ArtifactMachine from "@components/ArtifactMachine";
 import ClaimFirewallPanel from "@components/ClaimFirewallPanel";
 import FailureModeStrip from "@components/FailureModeStrip";
 import HeroControlConsole from "@components/HeroControlConsole";
@@ -9,14 +8,13 @@ import PromotionLadderHomepage from "@components/PromotionLadderHomepage";
 import ProofPathTimeline, { type ProofPathStep } from "@components/ProofPathTimeline";
 import RepoAuthorityDAG from "@components/RepoAuthorityDAG";
 import ReviewRouteSelector from "@components/ReviewRouteSelector";
-import TruthSurfaceInfographic from "@components/TruthSurfaceInfographic";
 import TruthTelemetryMatrix from "@components/TruthTelemetryMatrix";
 import { externalLinks } from "@data/navigation";
 
 export const metadata: Metadata = {
   title: "HawkinsOperations",
   description:
-    "HawkinsOperations is a governed detection-engineering control layer that keeps AI-generated security work from becoming public or operational truth until validation, evidence, and human review authorize the claim. Website rendering is not proof.",
+    "HawkinsOperations is an AI security operations control layer. AI can generate security work faster than enterprises can govern it; this framework keeps that work from becoming analyst conclusion, operational action, public claim, or executive truth before validation, evidence, CI controls, and human review authorize it. Website rendering is not proof.",
 };
 
 const traceSteps: ProofPathStep[] = [
@@ -77,24 +75,25 @@ const traceSteps: ProofPathStep[] = [
 export default function HomePage() {
   return (
     <>
-      {/* ── 01 · Hero ─ enterprise statement + system identity ──────── */}
+      {/* ── 01 · Hero ─ enterprise problem + control surface identity ─── */}
       <section className="relative overflow-hidden cockpit-section hero-cockpit">
         <div className="hero-backdrop" aria-hidden="true" />
-        <div className="container grid gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 items-start">
+        <div className="container-cockpit grid gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 items-start">
           <div className="reveal reveal--up">
             <p className="hero-cockpit__eyebrow">
-              Governed detection-engineering control layer
+              AI Security Operations Control Layer
             </p>
             <h1 className="hero-cockpit__headline">
-              AI can accelerate security work.
+              AI can generate security work faster than enterprises can govern it.
               <span className="hero-cockpit__headline-emph">
-                It cannot authorize the truth.
+                HawkinsOperations decides what becomes truth.
               </span>
             </h1>
             <p className="hero-cockpit__lede">
-              HawkinsOperations is a governed detection-engineering control layer that keeps
-              AI-generated security work from becoming public or operational truth until
-              validation, evidence, and human review authorize the claim.
+              A governed framework that stops AI-assisted security output from becoming
+              analyst conclusion, operational action, public claim, or executive truth
+              before validation, evidence, CI controls, and human review authorize it.
+              AI accelerates the work. Evidence and human review authorize the claim.
             </p>
 
             <div className="hero-status" role="note" aria-label="Release and ceiling status">
@@ -118,10 +117,10 @@ export default function HomePage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Open GitHub Release ↗
+                Inspect Proof Pack 001 ↗
               </a>
               <a className="hero-cockpit__secondary" href="/proof/ho-det-001/">
-                Inspect proof route →
+                Trace HO-DET-001 →
               </a>
               <a
                 className="hero-cockpit__secondary"
@@ -129,15 +128,10 @@ export default function HomePage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Open GitHub org ↗
+                View GitHub Org ↗
               </a>
-              <a
-                className="hero-cockpit__tertiary"
-                href={externalLinks.proofPack001Discussion}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Discussion ↗
+              <a className="hero-cockpit__tertiary" href="/about/">
+                Read Operator page →
               </a>
             </div>
           </div>
@@ -148,23 +142,41 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── 02 · Proof Pack 001 release receipt · above the fold ────── */}
+      {/* ── 02 · Proof-now strip · Release 001 receipt above the fold ── */}
       <section id="release-001" className="cockpit-section--tight">
-        <div className="container reveal reveal--up">
+        <div className="container-cockpit reveal reveal--up">
           <ProofPackReceipt />
         </div>
       </section>
 
-      {/* ── 03 · Enterprise failure mode ─────────────────────────────── */}
+      {/* ── 03 · What shipped · receipts, not roadmap ───────────────── */}
+      <section id="release-sprint" className="cockpit-section--tight">
+        <div className="container-cockpit">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">What exists now</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Receipts that already shipped in Release 001.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              Proof record, validation result, detection source, deterministic verifier, CI workflow,
+              and the public claim ceiling. Each item is a link to the artifact in the repo, not a
+              promise on this page.
+            </p>
+          </div>
+          <ActivityLedger />
+        </div>
+      </section>
+
+      {/* ── 04 · Enterprise failure mode · why this exists ──────────── */}
       <section id="failure-mode" className="cockpit-section--tight">
-        <div className="container reveal reveal--up">
+        <div className="container-cockpit reveal reveal--up">
           <FailureModeStrip />
         </div>
       </section>
 
-      {/* ── 04 · HawkinsOperations control route · promotion ladder ──── */}
+      {/* ── 05 · HawkinsOperations control route · promotion ladder ── */}
       <section id="control-route" className="cockpit-section--tight">
-        <div className="container">
+        <div className="container-cockpit">
           <div className="mb-6">
             <p className="cockpit-eyebrow">HawkinsOperations control route</p>
             <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
@@ -191,60 +203,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── 05 · Proof ceiling chart · supported vs blocked lanes ────── */}
-      <section id="proof-ceiling" className="cockpit-section--tight">
-        <div className="container">
-          <div className="mb-6">
-            <p className="cockpit-eyebrow">Proof ceiling</p>
-            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              Supported lanes are filled. Blocked lanes stay blocked.
-            </h2>
-            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              Source, controlled validation, and bounded public-claim lanes are filled at the
-              current public ceiling. Runtime-active and signal-observed lanes are blocked at this
-              surface — those claims require a separate evidence-backed promotion gate.
-            </p>
-          </div>
-          <TruthTelemetryMatrix />
-          <div className="biz-translate" role="note" aria-label="Business translation">
-            <span className="biz-translate__label">In plain English</span>
-            <span>
-              <span className="biz-translate__text">
-                Every row shows what HawkinsOperations can prove today and what it cannot. The
-                ceiling is a vertical line in this grid.
-              </span>
-            </span>
-          </div>
-        </div>
-      </section>
-
-      {/* ── 06 · Reviewer routes · four audiences ────────────────────── */}
-      <section id="reviewer-routes" className="cockpit-section--tight">
-        <div className="container">
-          <div className="mb-6">
-            <p className="cockpit-eyebrow">Reviewer routes</p>
-            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              Four audiences. Four inspection paths.
-            </h2>
-            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              The route changes how you read the system. It does not change the underlying proof
-              state. Each route lists what to inspect first and what not to infer.
-            </p>
-          </div>
-          <ReviewRouteSelector />
-        </div>
-      </section>
-
-      {/* ── 07 · What shipped in Release 001 · sprint strip ──────────── */}
-      <section id="release-sprint" className="cockpit-section--tight">
-        <div className="container">
-          <ActivityLedger />
-        </div>
-      </section>
-
-      {/* ── 08 · HO-DET-001 flagship proof path ──────────────────────── */}
+      {/* ── 06 · HO-DET-001 flagship proof path ─────────────────────── */}
       <section id="flagship" className="cockpit-section--tight">
-        <div className="container">
+        <div className="container-cockpit">
           <div className="mb-6">
             <p className="cockpit-eyebrow">Flagship proof path</p>
             <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
@@ -259,64 +220,66 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── 09 · Artifact machine ────────────────────────────────────── */}
-      <section id="artifact-machine" className="cockpit-section--tight">
-        <div className="container">
-          <div className="flex flex-wrap items-baseline justify-between gap-3 mb-6">
-            <div>
-              <p className="cockpit-eyebrow">Artifact machine</p>
-              <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-                Eight stages. One direction. Source to public boundary.
-              </h2>
-            </div>
-            <p className="muted max-w-md text-sm leading-6">
-              Each stage produces a named receipt; the next stage requires it. Receipts live in the repos, not on this page.
-            </p>
-          </div>
-          <ArtifactMachine />
-        </div>
-      </section>
-
-      {/* ── 10 · Repository authority ────────────────────────────────── */}
+      {/* ── 07 · Repository authority ───────────────────────────────── */}
       <section id="repo-authority" className="cockpit-section--tight">
-        <div className="container">
+        <div className="container-cockpit">
           <div className="mb-6">
             <p className="cockpit-eyebrow">Repository authority</p>
             <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
               Six repositories. Three planes. Authority flows down only.
             </h2>
             <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              detections → validation → proof feeds the chain. .github and platform overlay it. website renders the receipts; it does not author them.
+              detections → validation → proof feeds the chain. .github and platform overlay it.
+              website renders the receipts; it does not author them.
             </p>
           </div>
           <RepoAuthorityDAG />
         </div>
       </section>
 
-      {/* ── 11 · Six truth surfaces ──────────────────────────────────── */}
-      <section id="truth-surfaces" className="cockpit-section--tight">
-        <div className="container">
+      {/* ── 08 · Proof ceiling chart · supported vs blocked lanes ──── */}
+      <section id="proof-ceiling" className="cockpit-section--tight">
+        <div className="container-cockpit">
           <div className="mb-6">
-            <p className="cockpit-eyebrow">Truth surfaces</p>
+            <p className="cockpit-eyebrow">Proof ceiling</p>
             <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              Six surfaces. Each one supports its own claims, nothing more.
+              Supported lanes are filled. Blocked lanes stay blocked.
             </h2>
             <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              Promotion is always upward and gated. The surfaces describe what each layer can prove and the receipt the next layer requires.
+              Source, controlled validation, and bounded public-claim lanes are filled at the
+              current public ceiling. Runtime-active and signal-observed lanes are blocked at this
+              surface — those claims require a separate evidence-backed promotion gate.
             </p>
           </div>
-          <TruthSurfaceInfographic />
+          <TruthTelemetryMatrix />
         </div>
       </section>
 
-      {/* ── 12 · Claim firewall ──────────────────────────────────────── */}
+      {/* ── 09 · Reviewer routes · four audiences ───────────────────── */}
+      <section id="reviewer-routes" className="cockpit-section--tight">
+        <div className="container-cockpit">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Reviewer routes</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Four audiences. Four inspection paths.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              The route changes how you read the system. It does not change the underlying proof
+              state. Each route lists what to inspect first and what not to infer.
+            </p>
+          </div>
+          <ReviewRouteSelector />
+        </div>
+      </section>
+
+      {/* ── 10 · Claim firewall · compact boundary panel ────────────── */}
       <section id="claim-firewall" className="cockpit-section--tight">
-        <div className="container">
+        <div className="container-cockpit">
           <ClaimFirewallPanel />
         </div>
       </section>
 
-      {/* ── 13 · Doctrine closer ─────────────────────────────────────── */}
+      {/* ── 11 · Doctrine closer ────────────────────────────────────── */}
       <section className="cockpit-section">
         <div className="container">
           <div className="grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-center">

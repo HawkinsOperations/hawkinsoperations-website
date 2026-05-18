@@ -9,7 +9,7 @@ export const primaryNavigation: NavItem[] = [
   { label: "Pipeline", href: "/pipeline/", description: "HO-DET-001 proof route" },
   { label: "Proof", href: "/proof/", description: "Proof ledger" },
   { label: "Artifacts", href: "/artifacts/", description: "Evidence vault" },
-  { label: "About", href: "/about/", description: "Operator profile" },
+  { label: "Operator", href: "/about/", description: "Operator profile" },
 ];
 
 export const reviewerLinks: NavItem[] = [
