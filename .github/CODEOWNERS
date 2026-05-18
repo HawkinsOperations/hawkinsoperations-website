@@ -16,6 +16,7 @@ components/ @raylee-hawkins
 config/ @raylee-hawkins
 src/data/ @raylee-hawkins
 scripts/ @raylee-hawkins
+public/ @raylee-hawkins
 public/robots.txt @raylee-hawkins
 public/sitemap.xml @raylee-hawkins
 next.config.mjs @raylee-hawkins
