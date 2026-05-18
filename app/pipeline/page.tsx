@@ -384,7 +384,7 @@ export default function PipelinePage() {
                   Proof Pack 001 · official release routed.
                 </h2>
                 <p className="proof-pack-console__sub">
-                  The proof repo holds the official GitHub Release and approved reviewer ZIP.
+                  The proof repo holds the official GitHub Release and bounded reviewer ZIP.
                   Website rendering is not proof; this pipeline page routes reviewers to the release.
                 </p>
               </div>
