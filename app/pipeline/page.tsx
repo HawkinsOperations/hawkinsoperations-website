@@ -373,18 +373,19 @@ export default function PipelinePage() {
         </div>
       </section>
 
-      {/* ── Proof Pack 001 release-path panel ────────────────────────── */}
+      {/* ── Proof Pack 001 release route panel ───────────────────────── */}
       <section className="cockpit-section--tight">
         <div className="container">
-          <div className="proof-pack-console" aria-label="Proof Pack 001 release-path status panel">
+          <div className="proof-pack-console" aria-label="Proof Pack 001 release route status panel">
             <header className="proof-pack-console__head">
               <div>
-                <p className="cockpit-eyebrow">Release path · governed</p>
+                <p className="cockpit-eyebrow">Release route · governed</p>
                 <h2 className="proof-pack-console__title">
-                  Proof Pack 001 · source / check-mode release path implemented.
+                  Proof Pack 001 · official release routed.
                 </h2>
                 <p className="proof-pack-console__sub">
-                  The release-path implementation is merged on the proof repo main branch. No official release, tag, zip, or signed artifact is claimed from this surface; the next gate is explicit release approval.
+                  The proof repo holds the official GitHub Release and approved reviewer ZIP.
+                  Website rendering is not proof; this pipeline page routes reviewers to the release.
                 </p>
               </div>
               <span className="proof-pack-console__ceiling mono">CONTROLLED_TEST_VALIDATED</span>
@@ -396,19 +397,19 @@ export default function PipelinePage() {
               </div>
               <div className="proof-pack-console__cell">
                 <dt>Pack ID</dt>
-                <dd className="mono">PROOF_PACK_001</dd>
+                <dd className="mono">HAWKINSOPERATIONS_PROOF_PACK_001</dd>
               </div>
               <div className="proof-pack-console__cell">
                 <dt>Pack status</dt>
-                <dd className="mono proof-pack-console__cell-strong">RELEASE_PATH_IMPLEMENTED</dd>
+                <dd className="mono proof-pack-console__cell-strong">PUBLIC_SAFE_REVIEWER_RELEASE_CANDIDATE</dd>
               </div>
               <div className="proof-pack-console__cell">
-                <dt>Source mode</dt>
-                <dd className="mono">CHECK_MODE_SOURCE_ONLY</dd>
+                <dt>ZIP SHA256</dt>
+                <dd className="mono">44d8a643aa2b113c9e99be0462e699d39af707a67190823cc05bb381907dc452</dd>
               </div>
               <div className="proof-pack-console__cell">
-                <dt>Next gate</dt>
-                <dd className="mono">OFFICIAL_RELEASE_PENDING_APPROVAL</dd>
+                <dt>Public-safe runtime proof</dt>
+                <dd className="mono proof-pack-console__cell-block">BLOCKED</dd>
               </div>
               <div className="proof-pack-console__cell">
                 <dt>Public-safe state</dt>
@@ -416,7 +417,10 @@ export default function PipelinePage() {
               </div>
             </dl>
             <footer className="proof-pack-console__foot">
-              <span className="mono">no tag · no GitHub Release · no zip · no signing claimed · routing only</span>
+              <span className="mono">GitHub Release route · ZIP asset only · release package does not promote runtime proof</span>
+              <a className="cta cta-primary" href={externalLinks.proofPack001Release} target="_blank" rel="noopener noreferrer">
+                Open official release ↗
+              </a>
               <a className="cta cta-quiet" href="/proof/">Proof ledger →</a>
             </footer>
           </div>

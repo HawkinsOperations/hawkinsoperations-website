@@ -145,9 +145,9 @@ export default function HoDet001CaseFilePage() {
         <div className="container">
           <SectionHeader title="Related links" eyebrow="Evidence routes" />
           <div className="mt-6 grid gap-4 md:grid-cols-3">
+            <LinkCard href={externalLinks.proofPack001Release} title="Proof Pack 001 release" description="Official GitHub Release for the bounded HO-DET-001 reviewer ZIP. Stronger public proof status remains blocked." external />
             <LinkCard href={externalLinks.proofRecord} title="Proof record" description="The canonical public proof record route for HO-DET-001." external />
             <LinkCard href={externalLinks.detections} title="Source repo" description="Detection source candidates. Source presence does not prove runtime." external />
-            <LinkCard href="/controls/" title="Claim firewall" description="Blocked terms and promotion requirements." />
           </div>
         </div>
       </section>

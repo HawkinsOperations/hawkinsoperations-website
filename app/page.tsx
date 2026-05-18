@@ -316,18 +316,19 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── 12 · Proof Pack 001 release-path console (preserved) ─────── */}
+      {/* ── 12 · Proof Pack 001 release console (preserved) ──────────── */}
       <section className="cockpit-section--tight">
         <div className="container">
-          <div className="proof-pack-console" aria-label="Proof Pack 001 release-path status console">
+          <div className="proof-pack-console" aria-label="Proof Pack 001 release status console">
             <header className="proof-pack-console__head">
               <div>
-                <p className="cockpit-eyebrow">Release path · governed</p>
+                <p className="cockpit-eyebrow">Release route · governed</p>
                 <h2 className="proof-pack-console__title">
-                  Proof Pack 001 · release path implemented.
+                  Proof Pack 001 · official release routed.
                 </h2>
                 <p className="proof-pack-console__sub">
-                  Source / check-mode release path is merged on the proof repo. No official release, tag, or signed artifact is claimed from this surface.
+                  The proof repo holds the official GitHub Release and approved reviewer ZIP.
+                  Website rendering is not proof; this page routes reviewers to the release.
                 </p>
               </div>
               <span className="proof-pack-console__ceiling mono">CONTROLLED_TEST_VALIDATED</span>
@@ -339,15 +340,15 @@ export default function HomePage() {
               </div>
               <div className="proof-pack-console__cell">
                 <dt>Pack status</dt>
-                <dd className="mono proof-pack-console__cell-strong">RELEASE_PATH_IMPLEMENTED</dd>
+                <dd className="mono proof-pack-console__cell-strong">PUBLIC_SAFE_REVIEWER_RELEASE_CANDIDATE</dd>
               </div>
               <div className="proof-pack-console__cell">
-                <dt>Source mode</dt>
-                <dd className="mono">CHECK_MODE_SOURCE_ONLY</dd>
+                <dt>ZIP SHA256</dt>
+                <dd className="mono">44d8a643aa2b113c9e99be0462e699d39af707a67190823cc05bb381907dc452</dd>
               </div>
               <div className="proof-pack-console__cell">
-                <dt>Next gate</dt>
-                <dd className="mono">OFFICIAL_RELEASE_PENDING_APPROVAL</dd>
+                <dt>Public-safe runtime proof</dt>
+                <dd className="mono proof-pack-console__cell-block">BLOCKED</dd>
               </div>
               <div className="proof-pack-console__cell">
                 <dt>Public-safe state</dt>
@@ -359,7 +360,10 @@ export default function HomePage() {
               </div>
             </dl>
             <footer className="proof-pack-console__foot">
-              <span className="mono">no tag · no GitHub Release · no zip · no signing claimed</span>
+              <span className="mono">GitHub Release route · ZIP asset only · release package does not promote runtime proof</span>
+              <a className="cta cta-primary" href={externalLinks.proofPack001Release} target="_blank" rel="noopener noreferrer">
+                Open official release ↗
+              </a>
               <a className="cta cta-quiet" href="/artifacts/#cat-proof-record">Artifact coverage →</a>
             </footer>
           </div>

@@ -52,7 +52,7 @@ export type RecentGovernedArtifact = {
   relatedLabel?: string;
 };
 
-export const recentGovernedArtifactsSnapshotDate = "2026-05-17" as const;
+export const recentGovernedArtifactsSnapshotDate = "2026-05-18" as const;
 
 export const recentGovernedArtifacts: RecentGovernedArtifact[] = [
   {
@@ -169,11 +169,11 @@ export const recentGovernedArtifacts: RecentGovernedArtifact[] = [
     summary:
       "Reviewer-package wording for Proof Pack 001 tightened. Wording only.",
     whatChanged:
-      "Wording in the Proof Pack 001 reviewer package was hardened so that public-safe runtime proof, runtime-active, and signal-observed claims cannot be implied through the package framing. No official release, tag, zip, signing, or public-safe release was added.",
+      "Wording in the Proof Pack 001 reviewer package was hardened so that stronger runtime, signal, and public-proof claims cannot be implied through the package framing. This row records the earlier wording hardening, not the later official release.",
     supports:
       "The Proof Pack 001 reviewer-package wording is bounded and does not imply runtime-active, signal-observed, or public-safe runtime proof status.",
     doesNotProve:
-      "An official released Proof Pack, a public-safe release, a runtime-active claim, a signal-observed claim, or a public-safe runtime proof. Wording was hardened; no release artifact exists from this surface.",
+      "Stronger runtime, signal, or public-proof status. Wording was hardened; release routing is tracked in the Proof Pack 001 receipt console.",
     reviewRoute:
       "Open the proof repo PR to inspect the wording diff and the bounded reviewer-package framing.",
     prHref: "https://github.com/HawkinsOperations/hawkinsoperations-proof/pull/36",

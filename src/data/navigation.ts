@@ -33,6 +33,7 @@ export const externalLinks = {
   platform: "https://github.com/HawkinsOperations/hawkinsoperations-platform",
   proof: "https://github.com/HawkinsOperations/hawkinsoperations-proof",
   proofRecord: "https://github.com/HawkinsOperations/hawkinsoperations-proof/blob/main/proof/records/HO-DET-001.md",
+  proofPack001Release: "https://github.com/HawkinsOperations/hawkinsoperations-proof/releases/tag/hawkinsoperations-proof-pack-001",
   proofRecordAws: "https://github.com/HawkinsOperations/hawkinsoperations-proof/blob/main/proof/records/AWS-DET-001.md",
   pipelineProof: "https://github.com/HawkinsOperations/hawkinsoperations-validation/blob/main/reports/ho-det-001/pipeline-proof.md",
   pipelineProofJson: "https://github.com/HawkinsOperations/hawkinsoperations-validation/blob/main/reports/ho-det-001/pipeline-proof.json",

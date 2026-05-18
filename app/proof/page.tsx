@@ -391,8 +391,8 @@ export default function ProofIndexPage() {
               Proof Pack 001 · receipt console.
             </h2>
             <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              The release-path implementation is merged on the proof repo main branch. The pack
-              remains source / check-mode only; official release is gated by explicit approval.
+              The official GitHub Release is published from the proof repo. This surface routes
+              reviewers to the release; it does not raise the public proof ceiling.
             </p>
           </div>
 
@@ -401,11 +401,12 @@ export default function ProofIndexPage() {
               <div>
                 <p className="cockpit-eyebrow">Proof Pack 001</p>
                 <h3 className="proof-pack-console__title">
-                  HO-DET-001 · source / check-mode release path.
+                  HO-DET-001 · official reviewer release route.
                 </h3>
                 <p className="proof-pack-console__sub">
-                  Reviewer packet, manifest, checksum file, release-notes template, verifier script,
-                  and the publish workflow reside on proof repo main. Nothing here promotes the public ceiling.
+                  Reviewer packet, manifest, checksum file, proof card, proof record, validation
+                  record, ledger/schema, and proof verifier are packaged in the approved release ZIP.
+                  Nothing here promotes runtime, signal, production, or stronger public proof status.
                 </p>
               </div>
               <span className="proof-pack-console__ceiling mono">{ceiling}</span>
@@ -413,7 +414,7 @@ export default function ProofIndexPage() {
             <dl className="proof-pack-console__grid">
               <div className="proof-pack-console__cell">
                 <dt>Pack ID</dt>
-                <dd className="mono">PROOF_PACK_001</dd>
+                <dd className="mono">HAWKINSOPERATIONS_PROOF_PACK_001</dd>
               </div>
               <div className="proof-pack-console__cell">
                 <dt>Detection</dt>
@@ -421,23 +422,30 @@ export default function ProofIndexPage() {
               </div>
               <div className="proof-pack-console__cell">
                 <dt>Pack status</dt>
-                <dd className="mono proof-pack-console__cell-strong">RELEASE_PATH_IMPLEMENTED</dd>
+                <dd className="mono proof-pack-console__cell-strong">PUBLIC_SAFE_REVIEWER_RELEASE_CANDIDATE</dd>
               </div>
               <div className="proof-pack-console__cell">
-                <dt>Source mode</dt>
-                <dd className="mono">CHECK_MODE_SOURCE_ONLY</dd>
+                <dt>ZIP SHA256</dt>
+                <dd className="mono">44d8a643aa2b113c9e99be0462e699d39af707a67190823cc05bb381907dc452</dd>
               </div>
               <div className="proof-pack-console__cell">
                 <dt>Public-safe state</dt>
                 <dd className="mono proof-pack-console__cell-block">{publicSafe}</dd>
               </div>
               <div className="proof-pack-console__cell">
+                <dt>Public-safe runtime proof</dt>
+                <dd className="mono proof-pack-console__cell-block">BLOCKED</dd>
+              </div>
+              <div className="proof-pack-console__cell">
                 <dt>Next gate</dt>
-                <dd className="mono">OFFICIAL_RELEASE_PENDING_APPROVAL</dd>
+                <dd className="mono">RUNTIME_AND_SIGNAL_EVIDENCE_REVIEW</dd>
               </div>
             </dl>
             <footer className="proof-pack-console__foot">
-              <span className="mono">no tag · no GitHub Release · no zip · no signing claimed</span>
+              <span className="mono">GitHub Release route · ZIP asset only · release package does not promote runtime proof</span>
+              <a className="cta cta-primary" href={externalLinks.proofPack001Release} target="_blank" rel="noopener noreferrer">
+                Open official release ↗
+              </a>
               <a className="cta cta-quiet" href="/artifacts/">Artifact coverage →</a>
             </footer>
           </div>
