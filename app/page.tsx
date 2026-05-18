@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import ActivityLedger from "@components/ActivityLedger";
 import ClaimFirewallPanel from "@components/ClaimFirewallPanel";
-import FailureModeStrip from "@components/FailureModeStrip";
 import HeroControlConsole from "@components/HeroControlConsole";
 import ProofPackReceipt from "@components/ProofPackReceipt";
 import PromotionLadderHomepage from "@components/PromotionLadderHomepage";
 import ProofPathTimeline, { type ProofPathStep } from "@components/ProofPathTimeline";
-import RepoAuthorityDAG from "@components/RepoAuthorityDAG";
+import RepoAuthorityFlow from "@components/RepoAuthorityFlow";
 import ReviewRouteSelector from "@components/ReviewRouteSelector";
 import TruthTelemetryMatrix from "@components/TruthTelemetryMatrix";
+import UncontrolledPromotionFlow from "@components/UncontrolledPromotionFlow";
 import { externalLinks } from "@data/navigation";
 
 export const metadata: Metadata = {
@@ -167,10 +167,24 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── 04 · Enterprise failure mode · why this exists ──────────── */}
+      {/* ── 04 · Enterprise failure mode · interactive React Flow ───── */}
       <section id="failure-mode" className="cockpit-section--tight">
         <div className="container-cockpit reveal reveal--up">
-          <FailureModeStrip />
+          <div className="mb-6">
+            <p className="cockpit-eyebrow" style={{ color: "var(--blocked-red)" }}>
+              Enterprise failure mode
+            </p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Uncontrolled AI promotion gets blocked here.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              The top red path is the enterprise failure mode: AI output becomes analyst
+              conclusion, operational action, public claim, and executive truth without
+              authorization. The bottom ice-blue path is the HawkinsOperations control route
+              through deterministic gates to the public boundary. Click a node to inspect.
+            </p>
+          </div>
+          <UncontrolledPromotionFlow />
         </div>
       </section>
 
@@ -233,7 +247,7 @@ export default function HomePage() {
               website renders the receipts; it does not author them.
             </p>
           </div>
-          <RepoAuthorityDAG />
+          <RepoAuthorityFlow />
         </div>
       </section>
 
