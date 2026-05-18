@@ -13,14 +13,50 @@
  *    disposition claim is asserted.
  */
 
-type FailureNode = { label: string; sub: string; glyph: string };
+type FailureNode = {
+  label: string;
+  sub: string;
+  glyph: string;
+  why: string;
+  blockedBy: string;
+};
 
 const failureNodes: FailureNode[] = [
-  { label: "AI OUTPUT", sub: "Unrestricted generation", glyph: "⚠" },
-  { label: "ANALYST CONCLUSION", sub: "Opinion without bounded evidence", glyph: "❓" },
-  { label: "OPERATIONAL ACTION", sub: "Actions taken on unverified claims", glyph: "⚙" },
-  { label: "PUBLIC CLAIM", sub: "Marketing or public statements", glyph: "📣" },
-  { label: "EXECUTIVE TRUTH", sub: "Becomes accepted as organizational truth", glyph: "👑" },
+  {
+    label: "AI OUTPUT",
+    sub: "Unrestricted generation",
+    glyph: "⚠",
+    why: "Generated text is the cheapest part of an AI system to produce and the hardest to govern. Without a gate, output is treated as fact by whatever reads it next.",
+    blockedBy: "Source surface — output stays inside the labor lane; promotion requires a downstream receipt.",
+  },
+  {
+    label: "ANALYST CONCLUSION",
+    sub: "Opinion without bounded evidence",
+    glyph: "❓",
+    why: "Once AI-generated wording is pasted into a ticket, a brief, or a Slack thread, it becomes a claim an analyst attaches their name to — usually without the evidence chain attached.",
+    blockedBy: "Validation surface — analyst-approved disposition remains blocked unless an evidence-linked record is present.",
+  },
+  {
+    label: "OPERATIONAL ACTION",
+    sub: "Actions taken on unverified claims",
+    glyph: "⚙",
+    why: "Operational systems act on inputs they trust. If an unverified claim reaches an action surface — block, alert, escalate — the action becomes proof the claim was real.",
+    blockedBy: "Runtime surface — runtime-active state is blocked from public rendering and gated behind evidence promotion.",
+  },
+  {
+    label: "PUBLIC CLAIM",
+    sub: "Marketing or public statements",
+    glyph: "📣",
+    why: "Public statements are the hardest to retract. Once a claim ships to a website, deck, or press surface, it becomes the new baseline for everything downstream.",
+    blockedBy: "Public-claim surface — claim firewall blocks runtime, signal-observed, public-safe runtime proof, autonomous SOC, and AI-approved disposition wording.",
+  },
+  {
+    label: "EXECUTIVE TRUTH",
+    sub: "Becomes organizational truth",
+    glyph: "👑",
+    why: "Once enough downstream surfaces repeat a claim, executives treat it as established truth. The original AI-generated origin is no longer in view.",
+    blockedBy: "Ceiling surface — public claims are capped at CONTROLLED_TEST_VALIDATED; higher wording requires a separate evidence-backed promotion gate.",
+  },
 ];
 
 export default function FailureModeStrip() {
@@ -151,10 +187,27 @@ export default function FailureModeStrip() {
       </div>
 
       <div className="failure-strip__footer">
-        <span className="failure-strip__footer-stamp">⊖ HawkinsOperations blocks this path</span>
+        <span className="failure-strip__footer-stamp">▌ Claim firewall · path blocked</span>
         <span className="failure-strip__footer-text">
-          No uncontrolled promotion. No silent inflation of truth.
+          HawkinsOperations blocks this path. No uncontrolled promotion. No silent inflation of truth.
         </span>
+      </div>
+
+      <div className="failure-strip__nodes" aria-label="Failure-mode node details">
+        {failureNodes.map((node) => (
+          <details key={node.label} className="disclose failure-strip__node">
+            <summary>
+              <span className="failure-strip__node-glyph" aria-hidden="true">{node.glyph}</span>
+              {node.label}
+            </summary>
+            <dl className="disclose__body">
+              <dt>Why uncontrolled promotion here is dangerous</dt>
+              <dd>{node.why}</dd>
+              <dt>How HawkinsOperations blocks it</dt>
+              <dd>{node.blockedBy}</dd>
+            </dl>
+          </details>
+        ))}
       </div>
     </aside>
   );

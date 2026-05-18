@@ -100,6 +100,46 @@ export default function TruthTelemetryMatrix() {
           amber bar = public ceiling boundary
         </span>
       </div>
+
+      <div className="truth-matrix__details" aria-label="Per-detection inspection drawer">
+        {matrixDetections.map((row) => {
+          const supported = matrixColumns.filter((c) => row.cells[c.key] === "supported").map((c) => c.label);
+          const atCeiling = matrixColumns.filter((c) => row.cells[c.key] === "at-ceiling").map((c) => c.label);
+          const gated = matrixColumns.filter((c) => row.cells[c.key] === "gate-defined").map((c) => c.label);
+          const blocked = matrixColumns.filter((c) => row.cells[c.key] === "blocked").map((c) => c.label);
+          return (
+            <details key={row.id} className="disclose">
+              <summary>Inspect · {row.id}</summary>
+              <div className="disclose__body">
+                <div className="truth-matrix__details-grid">
+                  <div className="truth-matrix__details-card">
+                    <strong>Supported</strong>
+                    <div style={{ marginTop: 4 }}>{supported.length ? supported.join(" · ") : "—"}</div>
+                  </div>
+                  <div className="truth-matrix__details-card">
+                    <strong>At ceiling</strong>
+                    <div style={{ marginTop: 4 }}>{atCeiling.length ? atCeiling.join(" · ") : "—"}</div>
+                  </div>
+                  <div className="truth-matrix__details-card">
+                    <strong>Gate defined · not promoted</strong>
+                    <div style={{ marginTop: 4 }}>{gated.length ? gated.join(" · ") : "—"}</div>
+                  </div>
+                  <div className="truth-matrix__details-card">
+                    <strong>Blocked at this ceiling</strong>
+                    <div style={{ marginTop: 4, color: "var(--blocked-red-strong)" }}>
+                      {blocked.length ? blocked.join(" · ") : "—"}
+                    </div>
+                  </div>
+                </div>
+                <p style={{ marginTop: "0.8rem", fontSize: "0.8rem", color: "var(--muted)" }}>
+                  Public claims for {row.id} remain bounded by the ceiling line. Runtime-Active and
+                  Signal-Observed are blocked at this ceiling and do not change row-by-row.
+                </p>
+              </div>
+            </details>
+          );
+        })}
+      </div>
     </div>
   );
 }

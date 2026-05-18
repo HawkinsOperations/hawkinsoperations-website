@@ -3,14 +3,18 @@ import ActivityLedger from "@components/ActivityLedger";
 import ArtifactMachine from "@components/ArtifactMachine";
 import ClaimFirewallPanel from "@components/ClaimFirewallPanel";
 import FailureModeStrip from "@components/FailureModeStrip";
+import HeroControlConsole from "@components/HeroControlConsole";
+import PreventionBridge from "@components/PreventionBridge";
 import PromotionLadderHomepage from "@components/PromotionLadderHomepage";
 import ProofPathTimeline, { type ProofPathStep } from "@components/ProofPathTimeline";
 import RepoAuthorityDAG from "@components/RepoAuthorityDAG";
 import ReviewRouteSelector from "@components/ReviewRouteSelector";
-import StatusConsole from "@components/StatusConsole";
 import TruthSurfaceInfographic from "@components/TruthSurfaceInfographic";
 import TruthTelemetryMatrix from "@components/TruthTelemetryMatrix";
 import { externalLinks } from "@data/navigation";
+
+const caseStudyHref =
+  "https://github.com/HawkinsOperations/hawkinsoperations-proof/blob/main/docs/case-studies/AI-GOVERNANCE-CONTROL-LAYER.md";
 
 export const metadata: Metadata = {
   title: "HawkinsOperations Detection Engineering SOC",
@@ -76,32 +80,53 @@ const traceSteps: ProofPathStep[] = [
 export default function HomePage() {
   return (
     <>
-      {/* ── 01 · Hero ────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden cockpit-section">
-        <div className="container grid gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 items-start">
+      {/* ── 01 · Hero (S-tier cockpit) ───────────────────────────────── */}
+      <section className="relative overflow-hidden cockpit-section hero-cockpit">
+        <div className="container grid gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 items-start">
           <div>
-            <p className="cockpit-eyebrow">Governed AI-assisted detection engineering</p>
-            <h1 className="cockpit-headline cockpit-headline--xl mt-5">
+            <p className="hero-cockpit__eyebrow">
+              Governed AI-assisted detection engineering
+            </p>
+            <h1 className="hero-cockpit__headline">
               AI accelerates the work.
-              <span className="block mt-2" style={{ color: "var(--electric-blue-bright)" }}>
+              <span className="hero-cockpit__headline-emph">
                 Evidence and human review authorize the claims.
               </span>
             </h1>
-            <p className="lede mt-7 max-w-2xl" style={{ color: "var(--silver)" }}>
+            <p className="hero-cockpit__lede">
               HawkinsOperations is a control layer for AI-assisted security work. The system separates
               source, validation, evidence, and public proof so generated work cannot become operational
               truth without passing gates a human signed off on.
             </p>
 
-            <div className="mt-9 flex flex-wrap items-center gap-3">
-              <a className="cta cta-primary" href="#control-layer">See the control layer →</a>
-              <a className="cta cta-quiet" href="#flagship">Trace HO-DET-001 →</a>
-              <a className="cta cta-quiet" href="/start/">Reviewer routes</a>
+            <div className="hero-cockpit__ctas">
+              <a className="hero-cockpit__primary" href="/proof/">
+                Inspect the proof system →
+              </a>
+              <a
+                className="hero-cockpit__secondary"
+                href={externalLinks.githubOrg}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open GitHub org ↗
+              </a>
+              <a
+                className="hero-cockpit__secondary"
+                href={caseStudyHref}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                AI governance case study ↗
+              </a>
+              <a className="hero-cockpit__tertiary" href="#flagship">
+                Trace HO-DET-001 →
+              </a>
             </div>
           </div>
 
           <div className="lg:pt-2">
-            <StatusConsole />
+            <HeroControlConsole />
           </div>
         </div>
 
@@ -110,7 +135,24 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── 02 · Enterprise failure mode (NEW) ───────────────────────── */}
+      {/* ── 02 · Prevention bridge (NEW — CISO/SecOps on-ramp) ───────── */}
+      <section className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">What this prevents</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.5rem, 2.4vw, 2.0rem)" }}>
+              Three failure modes the system is built to block.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              The diagrams below show how. The cards here name what would be at risk without the
+              controls.
+            </p>
+          </div>
+          <PreventionBridge />
+        </div>
+      </section>
+
+      {/* ── 03 · Enterprise failure mode ─────────────────────────────── */}
       <section id="failure-mode" className="cockpit-section--tight">
         <div className="container">
           <FailureModeStrip />

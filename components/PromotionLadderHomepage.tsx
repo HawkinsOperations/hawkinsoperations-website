@@ -21,16 +21,73 @@ type Rung = {
   role: string;
   detail: string;
   glyph: string;
+  supported: string;
+  blocked: string;
+  nextGate: string;
 };
 
 // Ordered bottom (.github = 1) to top (website = 6)
 const rungs: Rung[] = [
-  { num: 1, name: ".github",     role: "Governance · reviewer routing", detail: "PR templates · human review visibility · required checks", glyph: "⟨/⟩" },
-  { num: 2, name: "platform",    role: "Runtime contracts",             detail: "Execution boundaries · runtime handling rules · no fantasy claims", glyph: "🛡" },
-  { num: 3, name: "detections",  role: "Source logic",                  detail: "Detection content · logic lives here · source is not proof", glyph: "🐛" },
-  { num: 4, name: "validation",  role: "Tests · fixtures · verifiers",  detail: "Schema checks · CI validation · controlled-test boundaries", glyph: "🧪" },
-  { num: 5, name: "proof",       role: "Evidence boundary",             detail: "Claim ceilings · what is supported · no auto-promotion", glyph: "📜" },
-  { num: 6, name: "website",     role: "Public rendering",              detail: "Bounded claims only · rendering is not proof", glyph: "🌐" },
+  {
+    num: 1,
+    name: ".github",
+    role: "Governance · reviewer routing",
+    detail: "PR templates · human review visibility · required checks",
+    glyph: "⟨/⟩",
+    supported: "Reviewer-visible PRs, required checks, and CODEOWNERS routing.",
+    blocked: "Governance metadata does not promote any downstream claim.",
+    nextGate: "Promotion gate · platform: runtime contract review before runtime behavior is described.",
+  },
+  {
+    num: 2,
+    name: "platform",
+    role: "Runtime contracts",
+    detail: "Execution boundaries · runtime handling rules · no fantasy claims",
+    glyph: "🛡",
+    supported: "Execution boundaries and runtime handling rules exist at known paths.",
+    blocked: "Runtime-active, signal-observed, GPU CI proven, and model execution in CI remain blocked.",
+    nextGate: "Promotion gate · detections: source logic owner check.",
+  },
+  {
+    num: 3,
+    name: "detections",
+    role: "Source logic",
+    detail: "Detection content · logic lives here · source is not proof",
+    glyph: "🐛",
+    supported: "Detection rule, SPL, and mapping source under version control.",
+    blocked: "Source presence is not proof of runtime activity, fired signal, or production deployment.",
+    nextGate: "Promotion gate · validation: deterministic test pass required before validation claims.",
+  },
+  {
+    num: 4,
+    name: "validation",
+    role: "Tests · fixtures · verifiers",
+    detail: "Schema checks · CI validation · controlled-test boundaries",
+    glyph: "🧪",
+    supported: "Controlled positive/negative cases produce deterministic pass/fail receipts.",
+    blocked: "Test passage does not prove runtime activity, observed signal, or public-safe runtime proof.",
+    nextGate: "Promotion gate · proof: evidence record links source, validation, and ceiling.",
+  },
+  {
+    num: 5,
+    name: "proof",
+    role: "Evidence boundary",
+    detail: "Claim ceilings · what is supported · no auto-promotion",
+    glyph: "📜",
+    supported: "Proof records hold claim ceilings, supported wording, and blocked wording.",
+    blocked: "Evidence-linked is not automatically public-safe; promotion to public requires human review.",
+    nextGate: "Promotion gate · website: claim firewall + scanner clean before wording can render.",
+  },
+  {
+    num: 6,
+    name: "website",
+    role: "Public rendering",
+    detail: "Bounded claims only · rendering is not proof",
+    glyph: "🌐",
+    supported: "Bounded public wording, reviewer-visible routes, and pointers back to the repo evidence.",
+    blocked: "Website rendering is not proof. Stronger wording requires a separate evidence-backed promotion gate.",
+    nextGate: "Public ceiling holds at CONTROLLED_TEST_VALIDATED. No automatic promotion above this surface.",
+  },
 ];
 
 const gateRules = "checks pass · ceiling preserved · no private leakage · explicit review";
@@ -67,6 +124,19 @@ export default function PromotionLadderHomepage() {
                     Ceiling · {ceiling}
                   </span>
                 )}
+                <details className="disclose promo-ladder__rung-detail">
+                  <summary>Inspect rung · {rung.name}</summary>
+                  <dl className="disclose__body">
+                    <dt>Role</dt>
+                    <dd>{rung.role}</dd>
+                    <dt>Supported at this surface</dt>
+                    <dd>{rung.supported}</dd>
+                    <dt>Blocked / not claimed at this surface</dt>
+                    <dd>{rung.blocked}</dd>
+                    <dt>Next gate above</dt>
+                    <dd>{rung.nextGate}</dd>
+                  </dl>
+                </details>
               </article>
               {!isLast && (
                 <div className="promo-ladder__gate" aria-hidden="true">
