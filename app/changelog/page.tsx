@@ -12,9 +12,9 @@ export const metadata: Metadata = {
 const entries = [
   {
     label: "2026-05-17",
-    title: "Proof Pack 001 release path implemented",
+    title: "Proof Pack 001 official release routed",
     detail:
-      "Proof repo merged the source / check-mode release path for Proof Pack 001 on main. No official release, tag, zip, or signed artifact is claimed from the website; the next gate is explicit release approval. Public ceiling remains controlled-test scope and is NOT_PUBLIC_SAFE.",
+      "Proof repo holds the official Proof Pack 001 GitHub Release, and the website routes reviewers to that release. ZIP SHA256 is 44d8a643aa2b113c9e99be0462e699d39af707a67190823cc05bb381907dc452. Website rendering is not proof; public ceiling remains CONTROLLED_TEST_VALIDATED, reviewer package status remains PUBLIC_SAFE_REVIEWER_RELEASE_CANDIDATE, raw/private runtime evidence remains NOT_PUBLIC_SAFE and excluded, and public-safe runtime proof remains BLOCKED.",
   },
   {
     label: "2026-05-17",

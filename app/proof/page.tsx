@@ -442,7 +442,7 @@ export default function ProofIndexPage() {
               </div>
             </dl>
             <footer className="proof-pack-console__foot">
-              <span className="mono">GitHub Release route · ZIP asset only · no signing claimed</span>
+              <span className="mono">GitHub Release route · ZIP asset only · release package does not promote runtime proof</span>
               <a className="cta cta-primary" href={externalLinks.proofPack001Release} target="_blank" rel="noopener noreferrer">
                 Open official release ↗
               </a>
