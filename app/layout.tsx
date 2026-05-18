@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import BackgroundDepth from "@components/BackgroundDepth";
 import Header from "@components/Header";
 import Footer from "@components/Footer";
 import "./globals.css";
@@ -52,13 +53,13 @@ export const metadata: Metadata = {
     images: [socialImage],
   },
   other: {
-    "msapplication-TileColor": "#000205",
+    "msapplication-TileColor": "#000000",
     "apple-mobile-web-app-title": "HawkinsOperations",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000205",
+  themeColor: "#000000",
   colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
@@ -116,6 +117,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <a className="skip-link" href="#main-content">Skip to content</a>
+        <BackgroundDepth />
         <div className="site-shell">
           <Header />
           <main id="main-content" tabIndex={-1}>{children}</main>
