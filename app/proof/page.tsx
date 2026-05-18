@@ -78,7 +78,7 @@ const flagshipTraceSteps: ProofPathStep[] = [
   {
     code: "SOURCE_PRESENT",
     label: "Source present",
-    line: "Detection rule and SPL live in the detections repo under version control with a stated owner.",
+    line: "Detection rule and SPL reside in the detections repo under version control with a stated owner.",
     href: externalLinks.hoDet001Rule,
     external: true,
   },
@@ -405,7 +405,7 @@ export default function ProofIndexPage() {
                 </h3>
                 <p className="proof-pack-console__sub">
                   Reviewer packet, manifest, checksum file, release-notes template, verifier script,
-                  and the publish workflow live on proof repo main. Nothing here promotes the public ceiling.
+                  and the publish workflow reside on proof repo main. Nothing here promotes the public ceiling.
                 </p>
               </div>
               <span className="proof-pack-console__ceiling mono">{ceiling}</span>

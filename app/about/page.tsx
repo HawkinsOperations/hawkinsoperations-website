@@ -25,7 +25,7 @@ const lanes: Lane[] = [
     note: "Detection-as-code: reviewable source, deterministic validation, no claim that source presence is runtime.",
   },
   {
-    eyebrow: "SOC production",
+    eyebrow: "SOC automation",
     title: "Findings → gate → record",
     steps: ["Findings packet", "Verifier / CI gate", "Proof record"],
     note: "Closed engineering loops: source → validation → verifier → CI → record. Every step has a gate; no step skips one.",
@@ -106,7 +106,7 @@ export default function AboutPage() {
             <h1 className="cockpit-headline cockpit-headline--xl mt-6">
               Raylee Hawkins.
               <span className="block mt-2" style={{ color: "var(--electric-blue-bright)" }}>
-                Detection engineer · SOC production.
+                Detection engineer · SOC automation.
               </span>
             </h1>
 
@@ -160,7 +160,7 @@ export default function AboutPage() {
               <h3 className="v1-v2__title">The work was built.</h3>
               <p className="v1-v2__body">
                 v1 demonstrated that the work could be done: detections, triage, dashboards, automation,
-                and operational proof-of-work in a live SOC context. It is the historical operating
+                and operational proof-of-work in a historical v1 context. It is the historical operating
                 layer.
               </p>
               <ul className="v1-v2__list">
@@ -178,8 +178,8 @@ export default function AboutPage() {
               <h3 className="v1-v2__title">Rebuilt with stricter claim boundaries.</h3>
               <p className="v1-v2__body">
                 HawkinsOperations rebuilds that work with separated truth surfaces, deterministic
-                validation, proof records, blocked-claim wording, and human-review authority. AI does
-                the labor. Evidence and human review authorize the claims.
+                validation, proof records, blocked-claim wording, and human-review authority. AI
+                accelerates the work. Evidence and human review authorize the claims.
               </p>
               <ul className="v1-v2__list">
                 <li>Source · validation · runtime · signal · evidence · public proof — separated</li>
@@ -210,8 +210,8 @@ export default function AboutPage() {
             <p className="muted mt-3 text-sm leading-6 max-w-3xl" style={{ color: "#B7C4D6" }}>
               Without controls, AI output becomes analyst conclusion, operational action, public
               claim, and executive truth without enough validation, evidence, or human review.
-              HawkinsOperations is built to block that path. AI generates work. Evidence and human
-              review authorize the claims.
+              HawkinsOperations is built to block that path. AI accelerates the work. Evidence and
+              human review authorize the claims.
             </p>
           </div>
           <div className="biz-translate" role="note" aria-label="Business translation">

@@ -380,7 +380,7 @@ export default function HomePage() {
             <div>
               <p className="cockpit-eyebrow">Doctrine</p>
               <h2 className="cockpit-headline mt-3">
-                AI generates work. Evidence and human review authorize claims.
+                AI accelerates the work. Evidence and human review authorize the claims.
               </h2>
               <p className="muted mt-4 max-w-2xl text-base leading-7">
                 The system separates the work AI can accelerate from the gates that decide what HawkinsOperations is allowed to claim publicly. Promotion is gated. Receipts are reviewer-visible. Public ceiling holds at CONTROLLED_TEST_VALIDATED.

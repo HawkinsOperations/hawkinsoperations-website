@@ -2,10 +2,11 @@ import type { Metadata, Viewport } from "next";
 import Header from "@components/Header";
 import Footer from "@components/Footer";
 import "./globals.css";
-import { siteName, siteUrl } from "@config/site";
+import { siteUrl } from "@config/site";
 
+const displayName = "HawkinsOperations";
 const defaultDescription =
-  "HawkinsOperations Detection Engineering SOC: governed detection engineering and security operations workflow with separated truth surfaces and proof-bound public claims.";
+  "HawkinsOperations: governed detection engineering and security operations workflow with separated truth surfaces and proof-bound public claims.";
 
 const socialImage = `${siteUrl}/og-preview.png`;
 
@@ -32,8 +33,8 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: siteUrl,
-    siteName: "HawkinsOperations",
-    title: siteName,
+    siteName: displayName,
+    title: displayName,
     description: defaultDescription,
     images: [
       {
@@ -46,7 +47,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: siteName,
+    title: displayName,
     description: defaultDescription,
     images: [socialImage],
   },
@@ -69,7 +70,7 @@ const structuredData = {
     {
       "@type": "WebSite",
       "@id": "https://hawkinsoperations.com/#website",
-      name: siteName,
+      name: displayName,
       url: "https://hawkinsoperations.com/",
       description: defaultDescription,
       publisher: { "@id": "https://hawkinsoperations.com/#organization" },
