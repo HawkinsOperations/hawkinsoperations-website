@@ -12,7 +12,7 @@ import { externalLinks } from "@data/navigation";
 import { ceiling, publicSafe } from "@config/site";
 
 export const metadata: Metadata = {
-  title: "Proof Ledger | HawkinsOperations Detection Engineering SOC",
+  title: "Proof | HawkinsOps",
   description:
     "HawkinsOperations proof authority console: public ceiling, supported claim routes, blocked claim firewall, proof records, and promotion gates.",
 };

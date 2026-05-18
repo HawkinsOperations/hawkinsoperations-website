@@ -42,7 +42,7 @@ const intakeRoutes = [
 ];
 
 export const metadata: Metadata = {
-  title: "Reviewer Route | HawkinsOperations",
+  title: "Start | HawkinsOps",
   description:
     "Reviewer routes for the HawkinsOperations public proof ceiling: hiring manager, security engineer, research partner.",
 };

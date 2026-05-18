@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import GpuFactoryLane from "@components/GpuFactoryLane";
 import RecentGovernedArtifacts from "@components/RecentGovernedArtifacts";
 import StatusConsole from "@components/StatusConsole";
 import {
@@ -12,9 +13,9 @@ import {
 } from "@data/artifacts";
 
 export const metadata: Metadata = {
-  title: "Artifacts | HawkinsOperations Detection Engineering SOC",
+  title: "Artifacts | HawkinsOps",
   description:
-    "Reviewer artifact vault: proof records, validation outputs, CI receipts, case files, and reviewer-safe packets — separated by what each one can prove.",
+    "Reviewer artifact vault: proof records, validation outputs, CI receipts, case files, and reviewer-safe packets — grouped by surface and separated by what each one can prove.",
 };
 
 const catLabel: Record<string, string> = {
@@ -95,14 +96,76 @@ export default function ArtifactsIndexPage() {
         </div>
       </section>
 
-      {/* ── Recent governed work · static snapshot ───────────────────── */}
+      {/* ── Featured GPU / Factory governed lane ─────────────────────── */}
       <section id="recent-governed-work" className="cockpit-section--tight">
         <div className="container reveal reveal--up">
-          <RecentGovernedArtifacts
-            heading="Recent governed work · artifacts"
-            sub="Each card opens a public-safe reviewer review page. Hand-maintained static snapshot. No row claims runtime-active, signal-observed, or public-safe runtime proof. Website rendering is not proof."
-          />
-          <div className="biz-translate" role="note" aria-label="Business translation">
+          <GpuFactoryLane />
+        </div>
+      </section>
+
+      {/* ── Recent governed work · grouped by surface ────────────────── */}
+      <section id="by-surface" className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
+          <div className="mb-5">
+            <p className="cockpit-eyebrow">Recent governed work · by surface</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.4rem, 2.2vw, 1.9rem)" }}>
+              Grouped by where the work lives.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl" style={{ color: "#B7C4D6" }}>
+              Each group is a hand-maintained static snapshot. Cards open public-safe reviewer review
+              pages. No card claims runtime-active, signal-observed, or public-safe runtime proof.
+            </p>
+          </div>
+
+          <div className="surface-group">
+            <div className="surface-group__head">
+              <h3 className="surface-group__title">Proof · case studies</h3>
+              <span className="surface-group__eyebrow">Evidence boundary</span>
+            </div>
+            <p className="surface-group__sub">
+              Proof-repo updates and reviewer-visible case studies. Does not promote runtime or
+              public-safe runtime proof.
+            </p>
+            <RecentGovernedArtifacts surface="proof" heading="Proof / case study artifacts" eyebrow="Proof surface" sub="Proof-repo updates and reviewer-visible case studies." />
+          </div>
+
+          <div className="surface-group">
+            <div className="surface-group__head">
+              <h3 className="surface-group__title">Platform · GPU · Factory</h3>
+              <span className="surface-group__eyebrow">Governed labor</span>
+            </div>
+            <p className="surface-group__sub">
+              Platform-repo work — bounded workflow gates, receipt emission, and Detection Factory
+              Controller status packets. Governed labor only; does not claim model execution in CI or
+              GPU CI proven status.
+            </p>
+            <RecentGovernedArtifacts surface="platform" heading="Platform / GPU / Factory artifacts" eyebrow="Platform surface" sub="Bounded workflow gates and receipts. Governed labor only." />
+          </div>
+
+          <div className="surface-group">
+            <div className="surface-group__head">
+              <h3 className="surface-group__title">Validation · verifiers</h3>
+              <span className="surface-group__eyebrow">Controlled-test boundary</span>
+            </div>
+            <p className="surface-group__sub">
+              Validation-repo verifier work for HO-DET-001 AI triage. Closes controlled-test edge
+              cases; runtime and signal-observed status remain blocked at this surface.
+            </p>
+            <RecentGovernedArtifacts surface="validation" heading="Validation / verifier artifacts" eyebrow="Validation surface" sub="Controlled-test verifier work." />
+          </div>
+
+          <div className="surface-group">
+            <div className="surface-group__head">
+              <h3 className="surface-group__title">Website · public rendering</h3>
+              <span className="surface-group__eyebrow">Public rendering</span>
+            </div>
+            <p className="surface-group__sub">
+              Website-repo updates. Public rendering only — website rendering is not proof.
+            </p>
+            <RecentGovernedArtifacts surface="website" heading="Website / public rendering artifacts" eyebrow="Website surface" sub="Public rendering updates only." />
+          </div>
+
+          <div className="biz-translate mt-6" role="note" aria-label="Business translation">
             <span className="biz-translate__label">In plain English</span>
             <span><span className="biz-translate__text">Recently merged work is reviewer-visible and routes back to the upstream PR. The cards are bounded snapshots; they are not auto-updated and they do not promote runtime claims.</span></span>
           </div>

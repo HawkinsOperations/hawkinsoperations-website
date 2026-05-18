@@ -10,7 +10,7 @@ import { externalLinks } from "@data/navigation";
 import { flagshipProofRecord as record } from "@data/proofRecords";
 
 export const metadata: Metadata = {
-  title: "HO-DET-001 Case File | HawkinsOperations",
+  title: "HO-DET-001 | HawkinsOps",
   description:
     "HO-DET-001 case file preserving the CONTROLLED_TEST_VALIDATED proof ceiling and public claim boundary.",
 };

@@ -12,7 +12,8 @@ const socialImage = `${siteUrl}/og-preview.png`;
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: siteName,
+    // Browser-tab title kept short. Pages set their own concise titles.
+    default: "HawkinsOperations",
     template: "%s",
   },
   description: defaultDescription,

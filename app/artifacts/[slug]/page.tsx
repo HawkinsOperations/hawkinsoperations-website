@@ -38,8 +38,10 @@ export function generateStaticParams() {
 export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
   const a = getArtifactBySlug(params.slug);
   if (!a) return { title: "Artifact not found | HawkinsOperations" };
+  // Keep tab title concise. Drop long brand suffix to avoid clipping.
+  const short = a.title.length > 56 ? a.title.slice(0, 53).trimEnd() + "…" : a.title;
   return {
-    title: `${a.title} | HawkinsOperations artifact review`,
+    title: `${short} | HawkinsOps`,
     description: `${a.summary} Snapshot as of ${recentGovernedArtifactsSnapshotDate}. Website rendering is not proof.`,
   };
 }

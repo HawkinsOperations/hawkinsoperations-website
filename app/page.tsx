@@ -17,7 +17,7 @@ const caseStudyHref =
   "https://github.com/HawkinsOperations/hawkinsoperations-proof/blob/main/docs/case-studies/AI-GOVERNANCE-CONTROL-LAYER.md";
 
 export const metadata: Metadata = {
-  title: "HawkinsOperations Detection Engineering SOC",
+  title: "HawkinsOperations",
   description:
     "HawkinsOperations is a governed AI-assisted detection engineering control layer: source, validation, evidence, and public proof stay separated so AI labor cannot quietly inflate the truth. Website rendering is not proof.",
 };

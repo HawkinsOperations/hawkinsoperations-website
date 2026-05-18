@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
-import RecentGovernedArtifacts from "@components/RecentGovernedArtifacts";
+import GpuFactoryLane from "@components/GpuFactoryLane";
+import PipelineGateCards from "@components/PipelineGateCards";
+import PipelineGateFlow from "@components/PipelineGateFlow";
 import StatusConsole from "@components/StatusConsole";
 import StatusChip from "@components/StatusChip";
 import { externalLinks } from "@data/navigation";
 
 export const metadata: Metadata = {
-  title: "HO-DET-001 Public Pipeline Proof | HawkinsOperations",
+  title: "Pipeline | HawkinsOps",
   description:
-    "HO-DET-001 routed through public workflow gates, controlled-test validation, deterministic pass/fail checks, and blocked-claim enforcement.",
+    "How a change becomes public wording: GitHub Actions, controlled fixtures, deterministic validators, blocked-claim scanner, proof record, website rendering. HO-DET-001 + Local GPU Triage / Factory governed lane.",
 };
 
 type Cluster = {
@@ -170,17 +172,57 @@ export default function PipelinePage() {
         </div>
       </section>
 
-      {/* ── Recent governed platform work · static snapshot ──────────── */}
-      <section id="recent-governed-platform-work" className="cockpit-section--tight">
+      {/* ── How the proof pipeline works · gate flow ────────────────── */}
+      <section id="how-it-works" className="cockpit-section--tight">
         <div className="container reveal reveal--up">
-          <RecentGovernedArtifacts
-            surface="platform"
-            heading="Recent governed platform work"
-            sub="Recent governed work on the platform repo — Local GPU Triage gate path and Detection Factory Controller scaffolding. Hand-maintained static snapshot. No row claims model execution in CI, GPU CI proven, runtime-active, or public-safe runtime proof."
-          />
-          <div className="biz-translate" role="note" aria-label="Business translation">
-            <span className="biz-translate__label">In plain English</span>
-            <span><span className="biz-translate__text">Platform work is reviewer-visible as governed labor and bounded receipts. Stronger claims (runtime, signal, public-safe runtime proof) remain blocked at this surface.</span></span>
+          <div className="mb-5">
+            <p className="cockpit-eyebrow">How the proof pipeline works</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.5rem, 2.4vw, 2.0rem)" }}>
+              GitHub Actions, deterministic validators, blocked-claim scanner, proof record, website rendering.
+            </h2>
+            <p className="muted mt-3 max-w-3xl text-sm leading-6" style={{ color: "#B7C4D6" }}>
+              A change only moves toward public wording after GitHub Actions, deterministic validators,
+              blocked-claim scans, proof records, and human review keep the claim inside its evidence
+              boundary. The route is a reviewer-visible proof-route map; it is not a runtime telemetry
+              claim.
+            </p>
+          </div>
+          <PipelineGateFlow />
+        </div>
+      </section>
+
+      {/* ── GitHub Actions gate explanation cards ────────────────────── */}
+      <section className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
+          <div className="mb-5">
+            <p className="cockpit-eyebrow">GitHub Actions · gates</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.4rem, 2.2vw, 1.85rem)" }}>
+              Three gates the pipeline can't ship past quietly.
+            </h2>
+          </div>
+          <PipelineGateCards />
+        </div>
+      </section>
+
+      {/* ── Local GPU Triage / Factory governed lane ────────────────── */}
+      <section id="gpu-factory-lane" className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
+          <GpuFactoryLane />
+        </div>
+      </section>
+
+      {/* ── Bridge: HO-DET-001 vs GPU/Factory lane ──────────────────── */}
+      <section className="cockpit-section--tight">
+        <div className="container">
+          <div className="biz-translate" role="note" aria-label="Lane bridge">
+            <span className="biz-translate__label">Lane bridge</span>
+            <span>
+              <span className="biz-translate__text">
+                HO-DET-001 is the public proof-loop example below. The Local GPU Triage / Factory
+                lane above is governed platform work — bounded receipts and status packets only. The
+                website renders both lanes; it does not prove runtime behaviour for either.
+              </span>
+            </span>
           </div>
         </div>
       </section>

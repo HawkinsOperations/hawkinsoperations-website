@@ -5,9 +5,9 @@ import PortraitCommandFrame from "@components/PortraitCommandFrame";
 import { externalLinks } from "@data/navigation";
 
 export const metadata: Metadata = {
-  title: "About | HawkinsOperations Detection Engineering SOC",
+  title: "About | HawkinsOps",
   description:
-    "Operator methodology for HawkinsOperations Detection Engineering SOC: detection engineering, SOC production, AI labor, manufacturing quality-control transfer, and governance authority.",
+    "Operator methodology for HawkinsOperations: governed detection engineering, AI-assisted security work bounded by gates, evidence, and human review. HawkinsOps v1 → HawkinsOperations successor framing.",
 };
 
 type Lane = {
@@ -140,6 +140,65 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* ── From HawkinsOps v1 → HawkinsOperations · successor framing ─ */}
+      <section className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
+          <div className="mb-5">
+            <p className="cockpit-eyebrow">From HawkinsOps v1 to HawkinsOperations</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.5rem, 2.4vw, 2.0rem)" }}>
+              The successor system: same builder energy, rebuilt around evidence boundaries.
+            </h2>
+            <p className="muted mt-3 max-w-3xl text-sm leading-6" style={{ color: "#B7C4D6" }}>
+              HawkinsOps v1 is the historical operating layer. HawkinsOperations is the governed
+              successor.
+            </p>
+          </div>
+
+          <div className="v1-v2">
+            <article className="v1-v2__card v1-v2__card--legacy">
+              <p className="v1-v2__eyebrow">HawkinsOps v1 · legacy reference</p>
+              <h3 className="v1-v2__title">The work was built.</h3>
+              <p className="v1-v2__body">
+                v1 demonstrated that the work could be done: detections, triage, dashboards, automation,
+                and operational proof-of-work in a live SOC context. It is the historical operating
+                layer.
+              </p>
+              <ul className="v1-v2__list">
+                <li>Detections shipped</li>
+                <li>Triage automation</li>
+                <li>Dashboards and reporting</li>
+                <li>Operational proof-of-work</li>
+              </ul>
+            </article>
+
+            <div className="v1-v2__arrow" aria-hidden="true">→</div>
+
+            <article className="v1-v2__card v1-v2__card--successor spotlight spotlight--amber">
+              <p className="v1-v2__eyebrow">HawkinsOperations · governed successor</p>
+              <h3 className="v1-v2__title">Rebuilt with stricter claim boundaries.</h3>
+              <p className="v1-v2__body">
+                HawkinsOperations rebuilds that work with separated truth surfaces, deterministic
+                validation, proof records, blocked-claim wording, and human-review authority. AI does
+                the labor. Evidence and human review authorize the claims.
+              </p>
+              <ul className="v1-v2__list">
+                <li>Source · validation · runtime · signal · evidence · public proof — separated</li>
+                <li>Deterministic gates + blocked-claim scanner</li>
+                <li>Proof records with explicit ceilings</li>
+                <li>Human review as promotion authority</li>
+              </ul>
+            </article>
+          </div>
+
+          <p className="v1-v2__caveat">
+            <strong>Legacy claim boundary:</strong> v1 metrics (detections shipped, cases handled,
+            automation built) are historical/reference context. They are not current HawkinsOperations
+            proof and do not automatically transfer into HawkinsOperations claims. Stronger wording for
+            the successor surface requires a separate evidence-backed promotion gate.
+          </p>
+        </div>
+      </section>
+
       {/* ── Why this matters · AI governance bridge ──────────────────── */}
       <section className="cockpit-section--tight">
         <div className="container reveal reveal--up">
@@ -168,6 +227,67 @@ export default function AboutPage() {
                 Read the AI Governance Control Layer case study →
               </a>
             </span>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Operator profile · concise ────────────────────────────────── */}
+      <section className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
+          <div className="operator-profile spotlight">
+            <div>
+              <p className="operator-profile__eyebrow">Operator profile</p>
+              <h2 className="operator-profile__name">Raylee Hawkins</h2>
+              <p className="operator-profile__role">
+                Detection engineer · SOC automation · AI-assisted proof routing
+              </p>
+              <div className="operator-profile__bio">
+                <p>
+                  Raylee Hawkins is a self-taught detection engineer and SOC automation builder.
+                </p>
+                <p>
+                  Her background in manufacturing quality systems shaped HawkinsOperations: move fast,
+                  validate hard, and never let a public claim outrun its evidence.
+                </p>
+                <p>
+                  HawkinsOperations applies that discipline to AI-assisted security work. AI accelerates
+                  drafting, triage, and reviewer preparation. Evidence and human review authorize what
+                  can be claimed.
+                </p>
+              </div>
+              <p className="operator-profile__focus">
+                <b>Focus</b>
+                Detection engineering · SOC automation · validation gates · proof records · claim-safe
+                public surfaces.
+              </p>
+            </div>
+            <div>
+              <p className="operator-profile__eyebrow">Reviewer routes</p>
+              <div className="operator-profile__ctas">
+                <a className="thesis-band__cta thesis-band__cta--primary" href="/proof/">
+                  Inspect the proof system →
+                </a>
+                <a className="thesis-band__cta thesis-band__cta--quiet" href="/artifacts/">
+                  View artifacts →
+                </a>
+                <a className="thesis-band__cta thesis-band__cta--quiet" href="/artifacts/ai-governance-control-layer-case-study/">
+                  Read case study →
+                </a>
+                <a
+                  className="thesis-band__cta thesis-band__cta--quiet"
+                  href="https://github.com/HawkinsOperations"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Open GitHub org ↗
+                </a>
+              </div>
+              <p className="operator-profile__focus" style={{ marginTop: "1.4rem" }}>
+                <b>Public-safe</b>
+                NOT_PUBLIC_SAFE. Public ceiling holds at CONTROLLED_TEST_VALIDATED. Website rendering
+                is not proof. Human review required.
+              </p>
+            </div>
           </div>
         </div>
       </section>
