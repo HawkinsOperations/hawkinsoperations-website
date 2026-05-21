@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type KeyboardEvent } from "react";
 import { truthSurfaces } from "@config/truth-surfaces";
 
 /**
@@ -12,9 +12,33 @@ import { truthSurfaces } from "@config/truth-surfaces";
  * and the related repo. Reuses config/truth-surfaces.ts only.
  */
 export default function TruthSurfaceBoard() {
-  const [active, setActive] = useState(0);
+  const [activeSlug, setActiveSlug] = useState(truthSurfaces[0]?.slug ?? "");
   const total = truthSurfaces.length;
+  const active = Math.max(
+    truthSurfaces.findIndex((surface) => surface.slug === activeSlug),
+    0,
+  );
   const s = truthSurfaces[active];
+
+  const setActiveByIndex = (index: number) => {
+    setActiveSlug(truthSurfaces[index].slug);
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+      e.preventDefault();
+      setActiveByIndex((active + 1) % total);
+    } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+      e.preventDefault();
+      setActiveByIndex((active - 1 + total) % total);
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      setActiveByIndex(0);
+    } else if (e.key === "End") {
+      e.preventDefault();
+      setActiveByIndex(total - 1);
+    }
+  };
 
   return (
     <div className="tsb">
@@ -36,18 +60,10 @@ export default function TruthSurfaceBoard() {
               aria-controls="tsb-panel"
               tabIndex={isActive ? 0 : -1}
               className={`tsb__item${isActive ? " tsb__item--active" : ""}`}
-              onClick={() => setActive(i)}
-              onFocus={() => setActive(i)}
-              onMouseEnter={() => setActive(i)}
-              onKeyDown={(e) => {
-                if (e.key === "ArrowDown" || e.key === "ArrowRight") {
-                  e.preventDefault();
-                  setActive((i + 1) % total);
-                } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
-                  e.preventDefault();
-                  setActive((i - 1 + total) % total);
-                }
-              }}
+              onClick={() => setActiveSlug(surface.slug)}
+              onFocus={() => setActiveSlug(surface.slug)}
+              onMouseEnter={() => setActiveSlug(surface.slug)}
+              onKeyDown={handleKeyDown}
             >
               <span className="tsb__item-n">{String(i + 1).padStart(2, "0")}</span>
               <span className="tsb__item-name">{surface.name}</span>
