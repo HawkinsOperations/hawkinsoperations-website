@@ -71,7 +71,7 @@ export default function FailureModeStrip() {
       <header className="failure-strip__head">
         <div>
           <p className="cockpit-eyebrow" style={{ color: "var(--blocked-red-strong)" }}>
-            Enterprise failure mode
+            What this work prevents
           </p>
           <h2 id="failure-strip-title" className="failure-strip__title">
             How AI quietly inflates the truth.
@@ -80,9 +80,9 @@ export default function FailureModeStrip() {
       </header>
 
       <p className="failure-strip__sub">
-        The enterprise AI failure mode is uncontrolled promotion. Generated output becomes analyst
-        conclusion, operational action, public claim, and executive truth without enough validation,
-        evidence, or human review to support it. This is the path HawkinsOperations is built to block.
+        Uncontrolled promotion: generated output becomes analyst conclusion, operational action, and
+        public claim without the validation, evidence, or human review to support it. The controls
+        block that path.
       </p>
 
       <div className="failure-strip__svg-wrap">

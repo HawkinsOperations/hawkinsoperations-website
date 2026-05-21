@@ -1,21 +1,14 @@
 import type { Metadata } from "next";
+import EvidenceBay from "@components/EvidenceBay";
 import GpuFactoryLane from "@components/GpuFactoryLane";
 import RecentGovernedArtifacts from "@components/RecentGovernedArtifacts";
 import StatusConsole from "@components/StatusConsole";
-import {
-  artifacts,
-  artifactCategories,
-  flagshipArtifacts,
-  legacyArtifacts,
-  artifactsByCategory,
-  type Artifact,
-  type ArtifactCategory,
-} from "@data/artifacts";
+import { flagshipArtifacts } from "@data/artifacts";
 
 export const metadata: Metadata = {
   title: "Artifacts | HawkinsOps",
   description:
-    "Reviewer artifact vault: proof records, validation outputs, CI receipts, case files, and reviewer-safe packets — grouped by surface and separated by what each one can prove.",
+    "Reviewer evidence bay: proof records, validation outputs, CI receipts, case files, and reviewer-safe packets — filterable by family and separated by what each one can prove.",
 };
 
 const catLabel: Record<string, string> = {
@@ -41,26 +34,6 @@ const statusLabel = (status: string): string => {
 };
 
 export default function ArtifactsIndexPage() {
-  const supportingArtifacts: Artifact[] = artifacts.filter(
-    (a) =>
-      !a.flagship &&
-      !a.legacy &&
-      (a.category === "validation" ||
-        a.category === "ci-verifier" ||
-        a.category === "public-packet" ||
-        a.category === "field-note"),
-  );
-
-  const caseStudies = artifactsByCategory("case-study");
-  const proofRecordsList = artifactsByCategory("proof-record").filter((a) => !a.flagship);
-  const archMaps: Artifact[] = [
-    ...artifactsByCategory("architecture"),
-    ...artifactsByCategory("governance").filter((a) => !a.flagship),
-  ];
-
-  const countByCategory = (key: ArtifactCategory) =>
-    artifacts.filter((a) => a.category === key).length;
-
   return (
     <>
       {/* ── Hero ─────────────────────────────────────────────────────── */}
@@ -71,17 +44,16 @@ export default function ArtifactsIndexPage() {
             <h1 className="cockpit-headline cockpit-headline--xl mt-5">
               Reviewer artifacts.
               <span className="block mt-2" style={{ color: "var(--electric-blue-bright)" }}>
-                Each shelf keeps its own ceiling.
+                Each card keeps its own ceiling.
               </span>
             </h1>
             <p className="lede mt-7 max-w-2xl" style={{ color: "var(--silver)" }}>
-              Proof records, validation outputs, CI receipts, case files, and reviewer-safe packets
-              are separated by what they can prove. Website cards route reviewers to evidence; they
-              are not the evidence.
+              Filter the evidence by family. Every card routes reviewers to the receipt and states
+              what it supports and what it does not prove. Website cards are not the evidence.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-3">
-              <a className="cta cta-primary" href="#anchors">See the anchor artifacts →</a>
-              <a className="cta cta-quiet" href="#shelves">Browse shelves</a>
+              <a className="cta cta-primary" href="#evidence-bay">Open the evidence bay →</a>
+              <a className="cta cta-quiet" href="#anchors">Anchor artifacts</a>
               <a className="cta cta-quiet" href="/proof/">Proof ledger</a>
             </div>
           </div>
@@ -96,33 +68,78 @@ export default function ArtifactsIndexPage() {
         </div>
       </section>
 
-      {/* ── Vault shelf selector (moved up — first nav under hero) ───── */}
-      <section id="shelves" className="cockpit-section--tight">
+      {/* ── Evidence Bay · filterable control room ───────────────────── */}
+      <section id="evidence-bay" className="cockpit-section--tight">
         <div className="container reveal reveal--up">
           <div className="mb-6">
-            <p className="cockpit-eyebrow">Shelves</p>
+            <p className="cockpit-eyebrow">Evidence bay</p>
             <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              Pick a shelf · the ceiling travels with the artifact.
+              Filter by family · the ceiling travels with the artifact.
             </h2>
             <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              Categories describe what the artifact authoritatively renders. Website rendering is
-              not proof, and legacy material does not promote current claims.
+              One control room for every reviewer artifact. Pick a family; each card shows its owning
+              surface, what it supports, what it does not prove, and where to inspect it.
+            </p>
+          </div>
+          <EvidenceBay />
+        </div>
+      </section>
+
+      {/* ── Anchor artifacts ─────────────────────────────────────────── */}
+      <section id="anchors" className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Reviewer anchors</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Start with the proof-bearing artifacts.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              The proof record holds the bounded ceiling. The doctrine keeps rendering separate
+              from proof. The route line shows how the rendered card points back to evidence.
             </p>
           </div>
 
-          <nav className="vault-shelf" aria-label="Vault shelf navigation">
-            <span className="vault-shelf__rail" aria-hidden="true" />
-            {artifactCategories.map((cat) => {
-              const count = countByCategory(cat.key);
+          <div className="anchor-spread-grid">
+            {flagshipArtifacts.map((artifact) => {
+              const isExternal = artifact.primary.external === true;
               return (
-                <a key={cat.key} className="vault-shelf__slot" href={`#cat-${cat.key}`}>
-                  <span className="vault-shelf__cat">{cat.label}</span>
-                  <span className="vault-shelf__label">{count} {count === 1 ? "artifact" : "artifacts"}</span>
-                  <span className="vault-shelf__count">on this shelf</span>
+                <a
+                  key={artifact.slug}
+                  className="anchor-spread"
+                  href={artifact.primary.href}
+                  target={isExternal ? "_blank" : undefined}
+                  rel={isExternal ? "noopener noreferrer" : undefined}
+                  aria-label={`${artifact.primary.label}: ${artifact.title}`}
+                >
+                  <header className="anchor-spread__head">
+                    <span className="anchor-spread__cat">{catLabel[artifact.category] ?? artifact.category}</span>
+                    <span className="chip chip-quiet">{statusLabel(artifact.status)}</span>
+                  </header>
+                  <h3 className="anchor-spread__title">{artifact.title}</h3>
+                  <p className="anchor-spread__body">{artifact.description}</p>
+
+                  <div className="anchor-spread__rail" aria-hidden="true">
+                    <span className="anchor-spread__rail-pill">{artifact.truthSurface.toUpperCase()}</span>
+                    <span className="anchor-spread__rail-arrow" />
+                    <span className="anchor-spread__rail-pill">{artifact.proofCeiling ?? "RENDERING"}</span>
+                  </div>
+
+                  <dl className="anchor-spread__meta">
+                    <div className="anchor-spread__meta-cell">
+                      <dt>Proves</dt>
+                      <dd>{artifact.proves}</dd>
+                    </div>
+                    <div className="anchor-spread__meta-cell">
+                      <dt>Does not prove</dt>
+                      <dd>{artifact.doesNotProve}</dd>
+                    </div>
+                  </dl>
+
+                  <span className="anchor-spread__cta">{artifact.primary.label} {isExternal ? "↗" : "→"}</span>
                 </a>
               );
             })}
-          </nav>
+          </div>
         </div>
       </section>
 
@@ -142,8 +159,8 @@ export default function ArtifactsIndexPage() {
               Grouped by where the work lives.
             </h2>
             <p className="muted mt-3 text-sm leading-6 max-w-3xl" style={{ color: "#B7C4D6" }}>
-              Each group is a hand-maintained static snapshot. Cards open public-safe reviewer review
-              pages. No card claims runtime-active, signal-observed, or public-safe runtime proof.
+              Each group is a hand-maintained static snapshot. Cards open reviewer review pages. No
+              card claims runtime-active, signal-observed, or public-safe runtime proof.
             </p>
           </div>
 
@@ -194,75 +211,11 @@ export default function ArtifactsIndexPage() {
             </p>
             <RecentGovernedArtifacts surface="website" heading="Website / public rendering artifacts" eyebrow="Website surface" sub="Public rendering updates only." />
           </div>
-
-          <div className="biz-translate mt-6" role="note" aria-label="Business translation">
-            <span className="biz-translate__label">In plain English</span>
-            <span><span className="biz-translate__text">Recently merged work is reviewer-visible and routes back to the upstream PR. The cards are bounded snapshots; they are not auto-updated and they do not promote runtime claims.</span></span>
-          </div>
-        </div>
-      </section>
-
-
-      {/* ── Anchor artifacts ─────────────────────────────────────────── */}
-      <section id="anchors" className="cockpit-section--tight">
-        <div className="container">
-          <div className="mb-6">
-            <p className="cockpit-eyebrow">Reviewer anchors</p>
-            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              Start with the proof-bearing artifacts.
-            </h2>
-            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              The proof record holds the bounded ceiling. The doctrine keeps rendering separate
-              from proof. The route line below shows how the rendered card points back to evidence.
-            </p>
-          </div>
-
-          <div className="anchor-spread-grid">
-            {flagshipArtifacts.map((artifact) => {
-              const isExternal = artifact.primary.external === true;
-              return (
-                <a
-                  key={artifact.slug}
-                  className="anchor-spread"
-                  href={artifact.primary.href}
-                  target={isExternal ? "_blank" : undefined}
-                  rel={isExternal ? "noopener noreferrer" : undefined}
-                  aria-label={`${artifact.primary.label}: ${artifact.title}`}
-                >
-                  <header className="anchor-spread__head">
-                    <span className="anchor-spread__cat">{catLabel[artifact.category] ?? artifact.category}</span>
-                    <span className="chip chip-quiet">{statusLabel(artifact.status)}</span>
-                  </header>
-                  <h3 className="anchor-spread__title">{artifact.title}</h3>
-                  <p className="anchor-spread__body">{artifact.description}</p>
-
-                  <div className="anchor-spread__rail" aria-hidden="true">
-                    <span className="anchor-spread__rail-pill">{artifact.truthSurface.toUpperCase()}</span>
-                    <span className="anchor-spread__rail-arrow" />
-                    <span className="anchor-spread__rail-pill">{artifact.proofCeiling ?? "RENDERING"}</span>
-                  </div>
-
-                  <dl className="anchor-spread__meta">
-                    <div className="anchor-spread__meta-cell">
-                      <dt>Proves</dt>
-                      <dd>{artifact.proves}</dd>
-                    </div>
-                    <div className="anchor-spread__meta-cell">
-                      <dt>Does not prove</dt>
-                      <dd>{artifact.doesNotProve}</dd>
-                    </div>
-                  </dl>
-
-                  <span className="anchor-spread__cta">{artifact.primary.label} {isExternal ? "↗" : "→"}</span>
-                </a>
-              );
-            })}
-          </div>
         </div>
       </section>
 
       {/* ── Artifact family coverage matrix ──────────────────────────── */}
-      <section className="cockpit-section--tight">
+      <section className="cockpit-section--tight pb-24">
         <div className="container">
           <div className="mb-6">
             <p className="cockpit-eyebrow">Reviewer evidence coverage</p>
@@ -270,11 +223,9 @@ export default function ArtifactsIndexPage() {
               Artifact family coverage.
             </h2>
             <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              This matrix groups <strong>artifact families</strong>, not a complete count of every
-              artifact page. Recent governed work appears in the surface-grouped cards and the
-              <a href="#recent-governed-work" style={{ color: "var(--ice-blue)", borderBottom: "1px solid rgba(143,216,255,0.4)" }}> GPU / Factory lane</a> above, and on the individual <a href="#by-surface" style={{ color: "var(--ice-blue)", borderBottom: "1px solid rgba(143,216,255,0.4)" }}>surface-grouped artifact pages</a>. Cells below declare what exists in
-              public, what is routed by the website, and what is held private or blocked. The matrix
-              does not promote claims; it shows family-level coverage.
+              This matrix groups <strong>artifact families</strong> across planes. Cells declare what
+              exists in public, what the website routes, and what is held private or blocked. The
+              matrix does not promote claims; it shows family-level coverage.
             </p>
           </div>
 
@@ -356,167 +307,6 @@ export default function ArtifactsIndexPage() {
             {" "}<span className="mono">pending</span> = candidate route, not yet implemented.
             Website rendering is not proof; the matrix only describes coverage state.
           </p>
-        </div>
-      </section>
-
-      {/* ── Bounded narratives (records + case studies) ─────────────── */}
-      <section id="cat-proof-record" className="cockpit-section--tight">
-        <div className="container">
-          <div className="mb-6">
-            <p className="cockpit-eyebrow">Records · Case studies</p>
-            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              Bounded narratives · ceiling stays with the artifact.
-            </h2>
-            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              Each record holds its proof ceiling and the surface it routes back to. Case studies
-              preserve the same boundary.
-            </p>
-          </div>
-
-          <div className="record-row-grid" id="cat-case-study">
-            {[...proofRecordsList, ...caseStudies].map((artifact) => {
-              const isExternal = artifact.primary.external === true;
-              return (
-                <a
-                  key={artifact.slug}
-                  className="record-row"
-                  href={artifact.primary.href}
-                  target={isExternal ? "_blank" : undefined}
-                  rel={isExternal ? "noopener noreferrer" : undefined}
-                >
-                  <header className="record-row__head">
-                    <span className="record-row__cat">{catLabel[artifact.category]}</span>
-                    <span className="chip chip-quiet">{statusLabel(artifact.status)}</span>
-                    {artifact.proofCeiling && <span className="chip chip-warn">{artifact.proofCeiling}</span>}
-                  </header>
-                  <h3 className="record-row__title">{artifact.title}</h3>
-                  <p className="record-row__desc">{artifact.description}</p>
-                  <dl className="record-row__meta">
-                    <div className="record-row__meta-cell">
-                      <span className="record-row__meta-label">Proves</span>
-                      <span className="record-row__meta-value">{artifact.proves}</span>
-                    </div>
-                    <div className="record-row__meta-cell">
-                      <span className="record-row__meta-label">Does not prove</span>
-                      <span className="record-row__meta-value">{artifact.doesNotProve}</span>
-                    </div>
-                  </dl>
-                </a>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Supporting receipts conveyor ─────────────────────────────── */}
-      <section id="cat-validation" className="cockpit-section--tight">
-        <div className="container">
-          <div className="mb-6">
-            <p className="cockpit-eyebrow">Validation · CI · Public packets · Field notes</p>
-            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              Supporting receipts conveyor.
-            </h2>
-            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              Validation outputs, the deterministic CI scanner, reviewer-safe packets, and short
-              technical field notes. Each cell routes to its named receipt.
-            </p>
-          </div>
-
-          <div id="cat-ci-verifier" className="receipt-conveyor">
-            {supportingArtifacts.map((artifact) => {
-              const isExternal = artifact.primary.external === true;
-              return (
-                <a
-                  key={artifact.slug}
-                  className="receipt-conveyor__cell"
-                  href={artifact.primary.href}
-                  target={isExternal ? "_blank" : undefined}
-                  rel={isExternal ? "noopener noreferrer" : undefined}
-                >
-                  <span className="receipt-conveyor__cat">{catLabel[artifact.category]}</span>
-                  <span className="receipt-conveyor__title">{artifact.title}</span>
-                  <span className="receipt-conveyor__desc">{artifact.description}</span>
-                  <span className="receipt-conveyor__link">{isExternal ? "Open ↗" : "Open →"}</span>
-                </a>
-              );
-            })}
-          </div>
-          <div id="cat-public-packet" aria-hidden="true" />
-          <div id="cat-field-note" aria-hidden="true" />
-        </div>
-      </section>
-
-      {/* ── Architecture · Governance ───────────────────────────────── */}
-      <section id="cat-architecture" className="cockpit-section--tight">
-        <div className="container">
-          <div className="mb-6">
-            <p className="cockpit-eyebrow">Architecture · Governance</p>
-            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              Plane separation · authority routing.
-            </h2>
-            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              System maps and governance documents. Compact lanes — one line, one route.
-            </p>
-          </div>
-
-          <div id="cat-governance" className="receipt-lanes">
-            {archMaps.map((artifact) => {
-              const isExternal = artifact.primary.external === true;
-              return (
-                <a
-                  key={artifact.slug}
-                  className="receipt-lane"
-                  href={artifact.primary.href}
-                  target={isExternal ? "_blank" : undefined}
-                  rel={isExternal ? "noopener noreferrer" : undefined}
-                >
-                  <span className="receipt-lane__route">{catLabel[artifact.category]}</span>
-                  <span className="receipt-lane__title">{artifact.title}</span>
-                  <span className="receipt-lane__desc">{artifact.description}</span>
-                  <span className="receipt-lane__inspect">{isExternal ? "Open ↗" : "Open →"}</span>
-                </a>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Legacy archive strip ─────────────────────────────────────── */}
-      <section id="cat-legacy" className="cockpit-section--tight pb-24">
-        <div className="container">
-          <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <p className="cockpit-eyebrow">Legacy archive</p>
-              <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.5rem, 2.4vw, 2rem)" }}>
-                Reference only · does not promote current claims.
-              </h2>
-            </div>
-            <a className="cta cta-quiet" href="/legacy/">Open the legacy boundary →</a>
-          </div>
-
-          <div className="archive-strip">
-            <span className="archive-strip__label">Archive · reference material</span>
-            <div className="grid gap-2 md:grid-cols-2">
-              {legacyArtifacts.map((artifact) => {
-                const isExternal = artifact.primary.external === true;
-                return (
-                  <a
-                    key={artifact.slug}
-                    className="archive-row"
-                    href={artifact.primary.href}
-                    target={isExternal ? "_blank" : undefined}
-                    rel={isExternal ? "noopener noreferrer" : undefined}
-                  >
-                    <span>
-                      <strong>{artifact.title}</strong>
-                      <span className="ml-2 muted text-xs">{artifact.description}</span>
-                    </span>
-                    <span className="archive-row__tag">{isExternal ? "OPEN ↗" : "OPEN →"}</span>
-                  </a>
-                );
-              })}
-            </div>
-          </div>
         </div>
       </section>
     </>

@@ -1,11 +1,20 @@
 import { ceiling, publicSafe, mandatoryBoundary } from "@config/site";
 
 type Row = { tone: "primary" | "ice" | "quiet"; label: string; value: string };
+type Disposition = { label: string; state: string };
 
 const defaultRows: Row[] = [
   { tone: "ice", label: "Public ceiling", value: ceiling },
   { tone: "primary", label: "Surface mode", value: "RENDERING_ONLY" },
   { tone: "quiet", label: "Public-safe", value: publicSafe },
+];
+
+// Runtime, signal, and autonomous dispositions are blocked at this surface.
+// Bare axis words only — never the hyphenated blocked-claim literals.
+const defaultDispositions: Disposition[] = [
+  { label: "Runtime", state: "BLOCKED" },
+  { label: "Signal", state: "BLOCKED" },
+  { label: "Autonomous", state: "BLOCKED" },
 ];
 
 const dotClass = (tone: Row["tone"]) =>
@@ -17,15 +26,19 @@ const dotClass = (tone: Row["tone"]) =>
 
 export default function StatusConsole({
   rows = defaultRows,
+  dispositions = defaultDispositions,
   footer = mandatoryBoundary,
   showLoop = true,
+  showDisposition = true,
 }: {
   rows?: Row[];
+  dispositions?: Disposition[];
   footer?: string;
   showLoop?: boolean;
+  showDisposition?: boolean;
 }) {
   return (
-    <aside className="status-console" aria-label="Reviewer status console">
+    <aside className="status-console" aria-label="Reviewer boundary console">
       {rows.map((row) => (
         <div key={row.label} className="status-console__row">
           <span className={dotClass(row.tone)} aria-hidden="true" />
@@ -33,6 +46,24 @@ export default function StatusConsole({
           <span className="status-console__value">{row.value}</span>
         </div>
       ))}
+
+      {showDisposition && dispositions.length > 0 && (
+        <div
+          className="status-console__disposition"
+          role="group"
+          aria-label="Disposition: runtime, signal, and autonomous claims are blocked at this surface"
+        >
+          <span className="status-console__disp-label">Disposition</span>
+          <div className="status-console__disp-grid">
+            {dispositions.map((d) => (
+              <span key={d.label} className="status-console__disp-chip" title={`${d.label} disposition: ${d.state}`}>
+                <span className="status-console__disp-axis">{d.label}</span>
+                <span className="status-console__disp-state">{d.state}</span>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       {showLoop && (
         <>
