@@ -38,12 +38,14 @@ export const proofRecords: ProofRecord[] = [
       "A public website route can point reviewers to the proof record.",
       "A controlled-test validation boundary is stated.",
       "Platform runtime contract enforcement exists as a non-promotional guardrail.",
+      "The HO-DET-001 loop can be reviewed as a controlled-test SOCaaS pilot receipt candidate.",
     ],
     passed: [
       "The public ceiling is stated as CONTROLLED_TEST_VALIDATED.",
       "Blocked promotions are visible instead of hidden.",
       "Website rendering remains separated from evidence authority.",
       "The platform verifier preserves NOT_PUBLIC_SAFE and BLOCKED runtime promotion fields.",
+      "The pilot receipt chain exposes endpoint process facts, deterministic validation, support-only triage, and human claim boundaries.",
     ],
     notClaimed: [
       "Runtime activation is not claimed.",
@@ -52,6 +54,7 @@ export const proofRecords: ProofRecord[] = [
       "Live Splunk fired, Cribl-routed status, Wazuh-routed public proof, AWS-live status, production-ready status, fleet-wide coverage, autonomous SOC operation, AI-approved disposition, and analyst-approved disposition are not claimed.",
       "External-use approval is not claimed.",
       "Public-safe proof is not claimed.",
+      "SOCaaS readiness, customer deployment, and autonomous production alert resolution are not claimed.",
     ],
     remainingBlocked: [
       "Runtime evidence must be promoted separately.",
