@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type KeyboardEvent } from "react";
 import { artifactStages } from "@data/artifactMachine";
 
 /**
@@ -14,9 +14,33 @@ import { artifactStages } from "@data/artifactMachine";
  * Claim contract: reuses src/data/artifactMachine.ts only. No new claims.
  */
 export default function GovernedDetectionLoop() {
-  const [active, setActive] = useState(0);
+  const [activeId, setActiveId] = useState(artifactStages[0]?.id ?? "");
+  const active = Math.max(
+    artifactStages.findIndex((s) => s.id === activeId),
+    0,
+  );
   const stage = artifactStages[active];
   const total = artifactStages.length;
+
+  const setActiveByIndex = (index: number) => {
+    setActiveId(artifactStages[index].id);
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveByIndex((active + 1) % total);
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveByIndex((active - 1 + total) % total);
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      setActiveByIndex(0);
+    } else if (e.key === "End") {
+      e.preventDefault();
+      setActiveByIndex(total - 1);
+    }
+  };
 
   return (
     <div className="gdl" role="region" aria-label="Governed detection loop">
@@ -34,18 +58,10 @@ export default function GovernedDetectionLoop() {
               aria-controls="gdl-panel"
               tabIndex={isActive ? 0 : -1}
               className={`gdl__node${isActive ? " gdl__node--active" : ""}${isLast ? " gdl__node--boundary" : ""}`}
-              onClick={() => setActive(i)}
-              onFocus={() => setActive(i)}
-              onMouseEnter={() => setActive(i)}
-              onKeyDown={(e) => {
-                if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-                  e.preventDefault();
-                  setActive((i + 1) % total);
-                } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-                  e.preventDefault();
-                  setActive((i - 1 + total) % total);
-                }
-              }}
+              onClick={() => setActiveId(s.id)}
+              onFocus={() => setActiveId(s.id)}
+              onMouseEnter={() => setActiveId(s.id)}
+              onKeyDown={handleKeyDown}
             >
               <span className="gdl__node-n">{s.n}</span>
               <span className="gdl__node-name">{s.name}</span>
