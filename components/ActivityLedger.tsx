@@ -41,10 +41,11 @@ export default function ActivityLedger() {
           </h2>
           <p className="activity-ledger__sub">
             Hand-maintained snapshot of recently merged work across the HawkinsOperations organization.
-            This list is not auto-updated and does not claim runtime-active, signal-observed, public-safe
-            runtime proof, GPU CI proven, model execution in CI, AI-approved disposition, or
-            analyst-approved disposition. Claims remain bounded by the public ceiling
-            CONTROLLED_TEST_VALIDATED. Website rendering is not proof.
+            This snapshot is hand-maintained and may lag GitHub main; repo main remains source truth for
+            merged implementation. This list is not auto-updated and does not claim runtime-active,
+            signal-observed, public-safe runtime proof, GPU CI proven, model execution in CI,
+            AI-approved disposition, or analyst-approved disposition. Claims remain bounded by the public
+            ceiling CONTROLLED_TEST_VALIDATED. Website rendering is not proof.
           </p>
         </div>
         <span className="activity-ledger__snapshot">SNAPSHOT · {activityLedgerSnapshotDate}</span>

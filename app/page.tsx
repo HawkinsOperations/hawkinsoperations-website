@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ActivityLedger from "@components/ActivityLedger";
+import AttackCoverageMap from "@components/AttackCoverageMap";
 import ArtifactMachine from "@components/ArtifactMachine";
 import ClaimFirewallPanel from "@components/ClaimFirewallPanel";
 import FailureModeStrip from "@components/FailureModeStrip";
@@ -159,6 +160,35 @@ export default function HomePage() {
       <section id="failure-mode" className="cockpit-section--tight">
         <div className="container reveal reveal--up">
           <FailureModeStrip />
+        </div>
+      </section>
+
+      {/* ── 03b · MITRE ATT&CK-mapped detection coverage ─────────────── */}
+      <section id="attack-coverage" className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">MITRE ATT&CK-mapped detection coverage</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Detections carry an ATT&CK mapping, a proof ceiling, and a blocked runtime claim.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              Detection coverage is mapped to ATT&CK techniques with explicit validation state, proof
+              ceiling, and blocked runtime/customer claims. General reviewer value for detection
+              engineering, SOC operations, identity security, and validation coverage.
+            </p>
+          </div>
+          <div className="reveal reveal--up" data-delay="1">
+            <AttackCoverageMap />
+          </div>
+          <div className="biz-translate" role="note" aria-label="Business translation">
+            <span className="biz-translate__label">In plain English</span>
+            <span>
+              <span className="biz-translate__text">
+                Each detection says which ATT&CK behavior it targets, how far its proof reaches, and what
+                it does not claim. Mapping is intent and coverage — not live telemetry or deployment.
+              </span>
+            </span>
+          </div>
         </div>
       </section>
 

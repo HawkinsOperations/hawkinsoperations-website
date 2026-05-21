@@ -30,9 +30,9 @@ const entries = [
   },
   {
     label: "PR #7",
-    title: "Astro proof codex redesign",
+    title: "Astro proof codex redesign (historical · superseded)",
     detail:
-      "Converted the website into an Astro, Tailwind CSS, and TypeScript static proof codex for public inspection.",
+      "Historical milestone: an earlier iteration built the site on Astro, Tailwind CSS, and TypeScript. The current HawkinsOperations site is a React / Next.js App Router reviewer surface; the Astro stack is superseded and retained here only as a change record.",
   },
   {
     label: "PR #6",
