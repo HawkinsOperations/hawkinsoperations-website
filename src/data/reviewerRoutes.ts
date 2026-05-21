@@ -17,67 +17,72 @@ export type ReviewerRoute = {
   links: ReviewerRouteLink[];
 };
 
+/**
+ * Four reviewer routes, mapped to the four indexed visuals in
+ * ReviewRouteSelector (timeline, DAG, loop, split). The first link is the
+ * route's first action.
+ */
 export const reviewerRoutes: ReviewerRoute[] = [
   {
-    duration: "3 min",
-    audience: "Hiring manager",
-    title: "Executive scan",
-    purpose: "Confirm the public ceiling, the released reviewer package, and the flagship HO-DET-001 proof route.",
-    cares: "What is the system? What is the current public claim? What is blocked?",
-    doNotInfer: "Do not infer runtime-active, signal-observed, or public-safe runtime proof from the rendered page.",
-    items: ["Read the current proof ceiling.", "Open Proof Pack 001 release.", "Confirm the blocked claim list."],
-    links: [
-      { label: "Proof ledger", href: "/proof/" },
-      { label: "HO-DET-001 card", href: "/proof/ho-det-001/" },
-      { label: "Claim firewall", href: "/controls/" },
-    ],
-  },
-  {
-    duration: "10 min",
-    audience: "Detection engineering lead",
-    title: "Source and validation",
-    purpose: "Trace the HO-DET-001 detection rule, the controlled validation fixtures, and the case packet flow.",
-    cares: "Where is the rule? What does validation prove? What is the case packet?",
+    duration: "5 min",
+    audience: "Validation reviewer",
+    title: "Validation registry",
+    purpose: "Confirm controlled-test packages, fixture counts, and the blocked runtime / signal / public-safe states.",
+    cares: "What is validated? How many fixtures? What is blocked?",
     doNotInfer: "Do not infer runtime deployment or fleet coverage from a passing controlled-test validation.",
-    items: ["Open the detection rule.", "Read the validation result.", "Trace the case packet to the proof record."],
+    items: ["Open the validation registry.", "Filter by family.", "Inspect a package drawer."],
     links: [
-      { label: "Detection rule", href: externalLinks.hoDet001Rule, external: true },
-      { label: "Validation report", href: externalLinks.validationReportHo, external: true },
-      { label: "Proof record", href: externalLinks.proofRecord, external: true },
+      { label: "Validation registry", href: "/proof/#validation-registry" },
+      { label: "Pipeline registry", href: "/pipeline/#validation-registry" },
+      { label: "Validation repo", href: externalLinks.validation, external: true },
     ],
   },
   {
     duration: "10 min",
-    audience: "SOC automation lead",
-    title: "Case packet flow",
-    purpose: "Inspect deterministic checks, CI gates, and the internal/private runtime-contract separation.",
-    cares: "How is the loop gated? What does CI enforce? Where does the runtime contract live?",
-    doNotInfer: "Do not infer model execution in CI or live vendor pipeline proof from the proof-loop workflow.",
+    audience: "Proof / verifier reviewer",
+    title: "Proof / verifier",
+    purpose: "Trace Proof Pack 001, the included / excluded manifest, verifier routes, and the proof status index.",
+    cares: "What is in the pack? What is excluded? What do the verifiers check?",
+    doNotInfer: "Do not infer public-safe runtime proof from a released reviewer package.",
+    items: ["Open Proof Pack 001.", "Read the verifier cards.", "Confirm the proof status index."],
+    links: [
+      { label: "Proof Pack 001", href: "/proof/#proof-pack-001" },
+      { label: "Verifier cards", href: "/proof/#verifiers" },
+      { label: "Proof repo", href: externalLinks.proof, external: true },
+    ],
+  },
+  {
+    duration: "10 min",
+    audience: "Platform / SOAR reviewer",
+    title: "Platform contracts",
+    purpose: "Inspect SOAR packet, AutoSOC ledger, Detection Factory Controller, and the GPU / LLM support boundaries.",
+    cares: "What contracts exist? What authority is blocked on each?",
+    doNotInfer: "Do not infer live Torq / SOAR, response automation, or case closure from a contract blueprint.",
     items: [
-      "Open the proof-loop workflow.",
-      "Open the runtime contract on the platform plane.",
-      "Confirm the verifier preserves the public ceiling.",
+      "Open the platform contract blueprints.",
+      "Read the blocked-authority footer on each.",
+      "Confirm the AutoSOC ledger metrics.",
     ],
     links: [
-      { label: "Proof loop", href: "/proof-loop/" },
+      { label: "Platform contracts", href: "/pipeline/#platform-contracts" },
+      { label: "Receipt lane", href: "/pipeline/#receipt-lane" },
       { label: "Platform plane", href: externalLinks.platform, external: true },
-      { label: "Repository map", href: "/repos/" },
     ],
   },
   {
     duration: "Deep",
     audience: "AI governance reviewer",
-    title: "Authority chain",
+    title: "AI governance boundary",
     purpose: "Trace where AI is allowed as labor and where evidence and human review authorize claims.",
     cares: "What can AI do here? What can AI not do? Where is the authority gate?",
     doNotInfer: "Do not infer AI-approved disposition or analyst-approved disposition from any AI-assisted artifact.",
     items: [
-      "Read the AI support boundary.",
+      "Read the offline LLM support boundary.",
       "Read the claim firewall.",
       "Trace the human-review gate before public wording.",
     ],
     links: [
-      { label: "Truth surfaces", href: "/architecture/truth-surfaces/" },
+      { label: "LLM boundary", href: "/pipeline/#llm-boundary" },
       { label: "Claim firewall", href: "/controls/" },
       { label: "Control matrix", href: externalLinks.controlMatrix, external: true },
     ],

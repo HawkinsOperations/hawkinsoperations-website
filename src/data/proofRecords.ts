@@ -1,16 +1,30 @@
 import { blockedClaims, proofCeiling } from "./claims";
 import { externalLinks } from "./navigation";
 
+/**
+ * proofRecordState values:
+ *   PROOF_RECORD_PRESENT     a public proof record exists
+ *   PRIVATE_RUNTIME_BOUNDARY private runtime evidence excluded, not public-safe
+ *   NO_PROOF_RECORD          validation-only; no proof record exists yet
+ *   BOUNDARY_CONTRACT_ONLY   contract sample only; no fixtures, no proof record
+ */
+export type ProofRecordState =
+  | "PROOF_RECORD_PRESENT"
+  | "PRIVATE_RUNTIME_BOUNDARY"
+  | "NO_PROOF_RECORD"
+  | "BOUNDARY_CONTRACT_ONLY";
+
 export type ProofRecord = {
   detectionId: string;
   title: string;
   proofLevel: string;
+  proofRecordState: ProofRecordState;
   validationState: string;
   runtimeState: string;
   signalState: string;
   publicSafeState: string;
   sourceRepoLink: string;
-  proofRepoLink: string;
+  proofRepoLink?: string;
   caseFileHref?: string;
   blockedPromotions: string[];
   exists: string[];
@@ -25,6 +39,7 @@ export const proofRecords: ProofRecord[] = [
     detectionId: "HO-DET-001",
     title: "Controlled-test validation proof card",
     proofLevel: proofCeiling,
+    proofRecordState: "PROOF_RECORD_PRESENT",
     validationState: "controlled-test validation status",
     runtimeState: "not claimed from public website",
     signalState: "not claimed from public website",
@@ -74,6 +89,7 @@ export const proofRecords: ProofRecord[] = [
     detectionId: "AWS-DET-001",
     title: "CloudTrail-style IAM denial fixture proof card",
     proofLevel: proofCeiling,
+    proofRecordState: "PROOF_RECORD_PRESENT",
     validationState: "fixture-only controlled validation status",
     runtimeState: "not claimed from public website",
     signalState: "not claimed from public website",
@@ -110,6 +126,217 @@ export const proofRecords: ProofRecord[] = [
       "Cloud deployment evidence linking the rule to an enabled environment.",
       "Public wording reviewed against the blocked-claim list.",
       "Raylee approval after evidence and claim review.",
+    ],
+  },
+  {
+    detectionId: "HO-DET-011",
+    title: "Windows Service Creation / Binary Change · private-runtime boundary",
+    proofLevel: proofCeiling,
+    proofRecordState: "PRIVATE_RUNTIME_BOUNDARY",
+    validationState: "controlled-test validation · 17 fixtures · drift review required",
+    runtimeState: "not claimed from public website",
+    signalState: "not claimed from public website",
+    publicSafeState: "NOT_PUBLIC_SAFE · raw private runtime evidence excluded",
+    sourceRepoLink: externalLinks.validation,
+    blockedPromotions: blockedClaims,
+    exists: [
+      "A controlled-test validation package with 17 fixtures.",
+      "A private runtime evidence index, excluded from the public proof basis.",
+    ],
+    passed: [
+      "17 / 17 fixtures pass deterministically.",
+      "0 missed positives and 0 false-positive negatives.",
+    ],
+    notClaimed: [
+      "Public-safe state is NOT_PUBLIC_SAFE; raw private runtime evidence is excluded.",
+      "Runtime-active and signal-observed status are not claimed.",
+    ],
+    remainingBlocked: [
+      "Platform guardrail drift is unresolved; promotion is blocked until review clears.",
+      "Public-safe runtime proof requires evidence linkage and explicit promotion.",
+    ],
+    promotionRequirements: [
+      "Drift review resolved between case packet and validation state.",
+      "Evidence linkage reviewed independently before any promotion.",
+    ],
+  },
+  {
+    detectionId: "HO-DET-012",
+    title: "Suspicious Scheduled Task Creation · no proof record",
+    proofLevel: proofCeiling,
+    proofRecordState: "NO_PROOF_RECORD",
+    validationState: "controlled-test validation · 8 fixtures",
+    runtimeState: "not claimed from public website",
+    signalState: "not claimed from public website",
+    publicSafeState: "blocked until evidence linkage and explicit promotion",
+    sourceRepoLink: externalLinks.validation,
+    blockedPromotions: blockedClaims,
+    exists: [
+      "A controlled-test validation package with 8 fixtures.",
+      "No proof record exists yet; the row is validation-only.",
+    ],
+    passed: [
+      "8 / 8 fixtures pass deterministically.",
+      "0 missed positives and 0 false-positive negatives.",
+    ],
+    notClaimed: [
+      "No proof record exists, so public proof is not claimed.",
+      "Runtime-active and signal-observed status are not claimed.",
+    ],
+    remainingBlocked: [
+      "A proof record must be created and reviewed before public proof status.",
+    ],
+    promotionRequirements: [
+      "Proof record authored and linked to validation output.",
+    ],
+  },
+  {
+    detectionId: "ID-DET-001",
+    title: "Suspicious identity session context · no proof record",
+    proofLevel: proofCeiling,
+    proofRecordState: "NO_PROOF_RECORD",
+    validationState: "controlled-test validation · 10 fixtures",
+    runtimeState: "not claimed from public website",
+    signalState: "not claimed from public website",
+    publicSafeState: "blocked until evidence linkage and explicit promotion",
+    sourceRepoLink: externalLinks.validation,
+    blockedPromotions: blockedClaims,
+    exists: [
+      "A controlled-test validation package with 10 fixtures.",
+      "No proof record exists yet; the row is validation-only.",
+    ],
+    passed: [
+      "10 / 10 fixtures pass deterministically.",
+      "0 missed positives and 0 false-positive negatives.",
+    ],
+    notClaimed: [
+      "Live IdP / SIEM / NDR coverage is not claimed.",
+      "Production identity coverage and autonomous / AI disposition are not claimed.",
+    ],
+    remainingBlocked: [
+      "A proof record must be created before public proof status.",
+    ],
+    promotionRequirements: [
+      "Proof record authored and linked to validation output.",
+    ],
+  },
+  {
+    detectionId: "ID-DET-002",
+    title: "MFA fatigue / repeated MFA failure · no proof record",
+    proofLevel: proofCeiling,
+    proofRecordState: "NO_PROOF_RECORD",
+    validationState: "controlled-test validation · 10 fixtures",
+    runtimeState: "not claimed from public website",
+    signalState: "not claimed from public website",
+    publicSafeState: "blocked until evidence linkage and explicit promotion",
+    sourceRepoLink: externalLinks.validation,
+    blockedPromotions: blockedClaims,
+    exists: [
+      "A controlled-test validation package with 10 fixtures.",
+      "No proof record exists yet; the row is validation-only.",
+    ],
+    passed: [
+      "10 / 10 fixtures pass deterministically.",
+      "0 missed positives and 0 false-positive negatives.",
+    ],
+    notClaimed: [
+      "Live IdP and live SIEM / NDR are not claimed.",
+      "Proof promotion and public-safe state are not claimed.",
+    ],
+    remainingBlocked: [
+      "A proof record must be created before public proof status.",
+    ],
+    promotionRequirements: [
+      "Proof record authored and linked to validation output.",
+    ],
+  },
+  {
+    detectionId: "ID-DET-003",
+    title: "Privileged role / admin group change · no proof record",
+    proofLevel: proofCeiling,
+    proofRecordState: "NO_PROOF_RECORD",
+    validationState: "controlled-test validation · 10 fixtures",
+    runtimeState: "not claimed from public website",
+    signalState: "not claimed from public website",
+    publicSafeState: "blocked until evidence linkage and explicit promotion",
+    sourceRepoLink: externalLinks.validation,
+    blockedPromotions: blockedClaims,
+    exists: [
+      "A controlled-test validation package with 10 fixtures.",
+      "No proof record exists yet; the row is validation-only.",
+    ],
+    passed: [
+      "10 / 10 fixtures pass deterministically.",
+      "0 missed positives and 0 false-positive negatives.",
+    ],
+    notClaimed: [
+      "Live IdP / SIEM coverage is not claimed.",
+      "Production coverage and AI / analyst disposition are not claimed.",
+    ],
+    remainingBlocked: [
+      "A proof record must be created before public proof status.",
+    ],
+    promotionRequirements: [
+      "Proof record authored and linked to validation output.",
+    ],
+  },
+  {
+    detectionId: "ID-DET-004",
+    title: "Impossible travel / anomalous session · no proof record",
+    proofLevel: proofCeiling,
+    proofRecordState: "NO_PROOF_RECORD",
+    validationState: "controlled-test validation · 10 fixtures",
+    runtimeState: "not claimed from public website",
+    signalState: "not claimed from public website",
+    publicSafeState: "blocked until evidence linkage and explicit promotion",
+    sourceRepoLink: externalLinks.validation,
+    blockedPromotions: blockedClaims,
+    exists: [
+      "A controlled-test validation package with 10 fixtures.",
+      "No proof record exists yet; the row is validation-only.",
+    ],
+    passed: [
+      "10 / 10 fixtures pass deterministically.",
+      "0 missed positives and 0 false-positive negatives.",
+    ],
+    notClaimed: [
+      "Impossible-travel and session-hijacking completeness are not claimed.",
+      "Live IdP and public-safe state are not claimed.",
+    ],
+    remainingBlocked: [
+      "Completeness is blocked; a proof record must be created before public proof status.",
+    ],
+    promotionRequirements: [
+      "Proof record authored and linked to validation output.",
+    ],
+  },
+  {
+    detectionId: "HO-NDR-001",
+    title: "Security Onion visibility contract · boundary scaffold",
+    proofLevel: "BOUNDARY_CONTRACT_ONLY",
+    proofRecordState: "BOUNDARY_CONTRACT_ONLY",
+    validationState: "contract sample only · no fixtures",
+    runtimeState: "not claimed from public website",
+    signalState: "not claimed from public website",
+    publicSafeState: "blocked until evidence linkage and explicit promotion",
+    sourceRepoLink: externalLinks.validation,
+    blockedPromotions: blockedClaims,
+    exists: [
+      "A boundary contract sample for Security Onion visibility.",
+      "No fixtures and no proof record; the row is contract-only.",
+    ],
+    passed: [
+      "A cross-source corroboration contract is defined.",
+    ],
+    notClaimed: [
+      "Security Onion runtime, Splunk search, and Cribl / Wazuh routes are not claimed.",
+      "Zeek / Suricata quality and public-safe proof are not claimed.",
+    ],
+    remainingBlocked: [
+      "Cross-source corroboration contract is defined, not promoted to proof.",
+    ],
+    promotionRequirements: [
+      "Fixtures authored and validated before any proof record.",
     ],
   },
 ];
