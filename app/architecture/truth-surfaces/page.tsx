@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import PageHero from "@components/PageHero";
-import TruthSurfaceMap from "@components/TruthSurfaceMap";
+import TruthSurfaceBoard from "@components/TruthSurfaceBoard";
 import { ceiling } from "@config/site";
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export default function TruthSurfacesPage() {
         badges={[{ label: ceiling, tone: "warn" }, { label: "CLAIM_FIREWALL" }]}
       />
       <section className="container section">
-        <TruthSurfaceMap />
+        <TruthSurfaceBoard />
       </section>
     </>
   );

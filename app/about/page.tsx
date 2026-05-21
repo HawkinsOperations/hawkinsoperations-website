@@ -363,33 +363,43 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ── Methodology translation map (Manufacturing QC → DE) ─────── */}
+      {/* ── Manufacturing QC became detection governance · bridge ────── */}
       <section className="cockpit-section--tight">
-        <div className="container">
+        <div className="container reveal reveal--up">
           <div className="mb-6">
             <p className="cockpit-eyebrow">Methodology transfer</p>
-            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              Manufacturing QC → detection engineering.
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.7rem, 2.8vw, 2.4rem)" }}>
+              Manufacturing QC became detection governance.
             </h2>
             <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              The same discipline, mapped. Each row is a one-to-one translation, not a metaphor.
+              Not a metaphor. Each control I ran on a manufacturing line maps one-to-one to a control
+              in this detection-engineering system. The discipline transferred; only the artifacts changed.
             </p>
           </div>
 
-          <div className="translation-map">
-            <div className="translation-map__head">
-              <span className="translation-map__head-cell">Manufacturing QC</span>
-              <span className="translation-map__head-spacer" aria-hidden="true">→</span>
-              <span className="translation-map__head-cell">Detection engineering</span>
-              <span className="translation-map__head-cell">Practice outcome</span>
+          <div className="qc-bridge">
+            <div className="qc-bridge__rail" aria-hidden="true">
+              <span className="qc-bridge__rail-end qc-bridge__rail-end--qc">Manufacturing QC</span>
+              <span className="qc-bridge__rail-line" />
+              <span className="qc-bridge__rail-end qc-bridge__rail-end--de">Detection governance</span>
             </div>
+
             {transferRows.map((row) => (
-              <div key={row.left} className="translation-map__row">
-                <span className="translation-map__left">{row.left}</span>
-                <span className="translation-map__arrow" aria-hidden="true">→</span>
-                <span className="translation-map__right">{row.right}</span>
-                <span className="translation-map__note">{row.note}</span>
-              </div>
+              <article key={row.left} className="qc-bridge__span">
+                <div className="qc-bridge__node qc-bridge__node--qc">
+                  <span className="qc-bridge__node-tag">QC control</span>
+                  <span className="qc-bridge__node-label">{row.left}</span>
+                </div>
+                <div className="qc-bridge__connector" aria-hidden="true">
+                  <span className="qc-bridge__connector-line" />
+                  <span className="qc-bridge__connector-arrow">→</span>
+                </div>
+                <div className="qc-bridge__node qc-bridge__node--de">
+                  <span className="qc-bridge__node-tag">Detection control</span>
+                  <span className="qc-bridge__node-label">{row.right}</span>
+                </div>
+                <p className="qc-bridge__note">{row.note}</p>
+              </article>
             ))}
           </div>
         </div>

@@ -5,10 +5,11 @@ export type NavItem = {
 };
 
 export const primaryNavigation: NavItem[] = [
-  { label: "Home", href: "/", description: "Command surface" },
+  { label: "Start", href: "/start/", description: "Reviewer route" },
   { label: "Pipeline", href: "/pipeline/", description: "HO-DET-001 proof route" },
   { label: "Proof", href: "/proof/", description: "Proof ledger" },
-  { label: "Artifacts", href: "/artifacts/", description: "Evidence vault" },
+  { label: "Artifacts", href: "/artifacts/", description: "Evidence bay" },
+  { label: "Architecture", href: "/architecture/", description: "Plane separation map" },
   { label: "About", href: "/about/", description: "Operator profile" },
 ];
 
