@@ -6461,6 +6461,180 @@ body::after {
 }
 .truth-matrix__legend-item { display: inline-flex; align-items: center; gap: 0.4rem; }
 
+/* ── MITRE ATT&CK coverage map ─────────────────────────────────────── */
+.attack-map {
+  border: 1px solid var(--moon-border);
+  border-radius: 10px;
+  background: rgba(11, 17, 28, 0.6);
+  padding: 1.2rem 1.2rem 1.4rem;
+}
+.attack-map__why {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--muted);
+  margin-bottom: 1.2rem;
+  max-width: 64ch;
+}
+.attack-map__why strong { color: var(--ceiling-amber); }
+
+.attack-map__families {
+  display: grid;
+  gap: 0.9rem;
+}
+.attack-fam {
+  border: 1px solid var(--moon-border);
+  border-radius: 8px;
+  background: rgba(8, 13, 22, 0.5);
+  padding: 0.7rem 0.9rem 1rem;
+}
+.attack-fam__head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.8rem;
+}
+.attack-fam__rule {
+  width: 3px;
+  height: 0.95rem;
+  background: var(--electric-blue-bright);
+  border-radius: 2px;
+}
+.attack-fam__name {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ice-blue);
+  margin: 0;
+}
+.attack-fam__count {
+  margin-left: auto;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.66rem;
+  color: var(--muted);
+  border: 1px solid var(--moon-border);
+  border-radius: 999px;
+  padding: 0.05rem 0.5rem;
+}
+.attack-fam__nodes {
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.attack-node {
+  border: 1px solid var(--moon-border);
+  border-left: 3px solid var(--moon-border);
+  border-radius: 7px;
+  background: rgba(11, 17, 28, 0.75);
+  padding: 0.8rem 0.9rem;
+}
+.attack-node--validated { border-left-color: var(--electric-blue-bright); }
+.attack-node--fixture   { border-left-color: var(--ice-blue); }
+.attack-node--private   { border-left-color: var(--blocked-red-strong); }
+.attack-node--planned   { border-left-color: var(--ceiling-amber); }
+.attack-node--contract  { border-left-color: var(--muted); }
+
+.attack-node__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+.attack-node__id {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--silver-bright);
+}
+.attack-node__tone {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.attack-node__title {
+  margin: 0.35rem 0 0.6rem;
+  font-size: 0.86rem;
+  line-height: 1.35;
+  color: var(--silver);
+}
+.attack-node__rows {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+}
+.attack-node__row {
+  display: grid;
+  grid-template-columns: 5.2rem 1fr;
+  gap: 0.5rem;
+  font-size: 0.74rem;
+  line-height: 1.4;
+}
+.attack-node__row dt {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-top: 0.1rem;
+}
+.attack-node__row dd { margin: 0; color: var(--silver); }
+.attack-node__attack { color: var(--accent); }
+.attack-node__ceiling {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.68rem;
+  color: var(--ceiling-amber);
+  letter-spacing: 0.02em;
+}
+.attack-node__blocked {
+  margin: 0.7rem 0 0;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--moon-border);
+  font-size: 0.7rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.attack-node__blocked-tag {
+  display: inline-block;
+  margin-right: 0.45rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--blocked-red-strong);
+}
+
+.attack-map__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.3rem;
+  margin-top: 1.2rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--moon-border);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+.attack-map__legend-item { display: inline-flex; align-items: center; gap: 0.4rem; }
+.attack-dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.attack-dot--validated { background: var(--electric-blue-bright); }
+.attack-dot--fixture   { background: var(--ice-blue); }
+.attack-dot--private   { background: var(--blocked-red-strong); }
+.attack-dot--planned   { background: var(--ceiling-amber); }
+.attack-dot--contract  { background: var(--muted); }
+
+.attack-map__safe {
+  margin: 1rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--muted);
+  font-style: italic;
+}
+
 /* Activity Ledger */
 .activity-ledger {
   border: 1px solid var(--moon-border);
