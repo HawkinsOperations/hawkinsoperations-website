@@ -65,7 +65,7 @@ export const attackFamilies: AttackFamily[] = [
         id: "HO-DET-011",
         title: "Windows Service Creation / Binary Change",
         attack: "Persistence: service creation — ATT&CK mapping in source artifact",
-        ceiling: "PRIVATE_RUNTIME_EVIDENCE_CAPTURED · NOT_PUBLIC_SAFE",
+        ceiling: "private runtime evidence captured and excluded from public proof · NOT_PUBLIC_SAFE",
         tone: "private",
         validation: "17 controlled cases: 7 positive, 10 negative, 0 missed, 0 false-positive negatives",
         boundary:

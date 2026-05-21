@@ -76,8 +76,8 @@ export const matrixDetections: MatrixRow[] = [
     id: "HO-DET-011",
     cells: {
       "source-exists":        "supported",
-      "test-validated":       "gate-defined",
-      "evidence-linked":      "gate-defined",
+      "test-validated":       "supported",
+      "evidence-linked":      "at-ceiling",
       "bounded-public-claim": "gate-defined",
       "runtime-active":       "blocked",
       "signal-observed":      "blocked",
@@ -87,7 +87,51 @@ export const matrixDetections: MatrixRow[] = [
     id: "HO-DET-012",
     cells: {
       "source-exists":        "supported",
-      "test-validated":       "gate-defined",
+      "test-validated":       "supported",
+      "evidence-linked":      "na",
+      "bounded-public-claim": "gate-defined",
+      "runtime-active":       "blocked",
+      "signal-observed":      "blocked",
+    },
+  },
+  {
+    id: "ID-DET-001",
+    cells: {
+      "source-exists":        "supported",
+      "test-validated":       "supported",
+      "evidence-linked":      "na",
+      "bounded-public-claim": "gate-defined",
+      "runtime-active":       "blocked",
+      "signal-observed":      "blocked",
+    },
+  },
+  {
+    id: "ID-DET-002",
+    cells: {
+      "source-exists":        "supported",
+      "test-validated":       "supported",
+      "evidence-linked":      "na",
+      "bounded-public-claim": "gate-defined",
+      "runtime-active":       "blocked",
+      "signal-observed":      "blocked",
+    },
+  },
+  {
+    id: "ID-DET-003",
+    cells: {
+      "source-exists":        "supported",
+      "test-validated":       "supported",
+      "evidence-linked":      "na",
+      "bounded-public-claim": "gate-defined",
+      "runtime-active":       "blocked",
+      "signal-observed":      "blocked",
+    },
+  },
+  {
+    id: "ID-DET-004",
+    cells: {
+      "source-exists":        "supported",
+      "test-validated":       "supported",
       "evidence-linked":      "na",
       "bounded-public-claim": "gate-defined",
       "runtime-active":       "blocked",

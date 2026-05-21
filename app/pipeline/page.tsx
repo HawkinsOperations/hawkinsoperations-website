@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import GpuFactoryLane from "@components/GpuFactoryLane";
 import PipelineGateCards from "@components/PipelineGateCards";
 import PipelineGateFlow from "@components/PipelineGateFlow";
+import PlatformContractBlueprint from "@components/PlatformContractBlueprint";
+import ReceiptLedgerTimeline from "@components/ReceiptLedgerTimeline";
 import StatusConsole from "@components/StatusConsole";
 import StatusChip from "@components/StatusChip";
+import ValidationRegistryDashboard from "@components/ValidationRegistryDashboard";
 import { externalLinks } from "@data/navigation";
 
 export const metadata: Metadata = {
@@ -204,10 +207,86 @@ export default function PipelinePage() {
         </div>
       </section>
 
+      {/* ── Validation registry dashboard ───────────────────────────── */}
+      <section id="validation-registry" className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Validation registry</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Controlled-test packages · contract-enforced, human-review gated.
+            </h2>
+          </div>
+          <ValidationRegistryDashboard />
+        </div>
+      </section>
+
       {/* ── Local GPU Triage / Factory governed lane ────────────────── */}
       <section id="gpu-factory-lane" className="cockpit-section--tight">
         <div className="container reveal reveal--up">
           <GpuFactoryLane />
+        </div>
+      </section>
+
+      {/* ── Platform contract blueprints ────────────────────────────── */}
+      <section id="platform-contracts" className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Platform contracts</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Schema · example · verifier. Blocked authority on every panel.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              The SOAR packet models analyst support, not response authority. The AutoSOC case ledger
+              is append-only and human-review required. The controller reports state; it does not
+              promote proof.
+            </p>
+          </div>
+          <PlatformContractBlueprint
+            ids={[
+              "soar-case-packet-v0",
+              "autosoc-case-ledger-v0",
+              "detection-factory-controller-v0",
+              "ho-det-001-runtime-contract",
+              "ho-det-011-case-packet",
+            ]}
+          />
+        </div>
+      </section>
+
+      {/* ── AI / LLM support boundary ───────────────────────────────── */}
+      <section id="llm-boundary" className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">AI / LLM support boundary</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              AI is labor. Evidence and human review authorize claims.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              Offline LLM output may summarize sanitized facts and draft questions. It does not decide
+              disposition, approve proof, or close cases. Local GPU support is private support-only
+              infrastructure; the website describes the contract boundary, not public runtime proof.
+            </p>
+          </div>
+          <PlatformContractBlueprint
+            ids={[
+              "offline-llm-triage-support-contract",
+              "local-gpu-triage-gate",
+              "local-llm-runtime-receipt",
+            ]}
+          />
+        </div>
+      </section>
+
+      {/* ── Receipt / ledger timeline ───────────────────────────────── */}
+      <section id="receipt-lane" className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Receipt lane</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Append-only reviewer snapshot.
+            </h2>
+          </div>
+          <ReceiptLedgerTimeline />
         </div>
       </section>
 

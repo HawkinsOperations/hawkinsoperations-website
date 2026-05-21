@@ -11,6 +11,12 @@ export const metadata: Metadata = {
 
 const entries = [
   {
+    label: "2026-05-21",
+    title: "Validation Registry and Platform Contract reviewer layers added",
+    detail:
+      "Phase 2 added a Validation Registry dashboard, proof manifest console, verifier cards, platform contract blueprints, a receipt / ledger reviewer snapshot, and an expandable blocked-claim firewall. Rendering only — the website is not proof. Public ceiling remains CONTROLLED_TEST_VALIDATED; runtime, signal, and public-safe runtime proof remain blocked, and rows with no proof record stay marked NO_PROOF_RECORD.",
+  },
+  {
     label: "2026-05-17",
     title: "Proof Pack 001 official release routed",
     detail:

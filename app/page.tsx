@@ -189,6 +189,10 @@ export default function HomePage() {
               </span>
             </span>
           </div>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <a className="cta cta-quiet" href="/proof/#validation-registry">Validation registry →</a>
+            <a className="cta cta-quiet" href="/pipeline/#platform-contracts">Platform contracts →</a>
+          </div>
         </div>
       </section>
 

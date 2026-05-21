@@ -73,6 +73,10 @@ const blockedTerms = [
   'proofCeiling: "PROVEN_PRIVATE_INTERNAL"',
 ];
 
+const failClosedLiteralTerms = [
+  "PRIVATE_RUNTIME_EVIDENCE_CAPTURED",
+];
+
 const allowedContext = [
   /blocked/i,
   /not claimed/i,
@@ -116,8 +120,8 @@ const renderedArtifactBoundaryTerms = [
   'proofCeiling: "PROVEN_PRIVATE_INTERNAL"',
 ];
 
-const scanRoots = ["README.md", "SCOPE.md", "STATUS.md", "app", "components", "config", "src/data", "public"];
-const scanExtensions = new Set([".astro", ".ts", ".tsx", ".md", ".mjs", ".json", ".xml", ".txt", ".css"]);
+const scanRoots = ["README.md", "SCOPE.md", "STATUS.md", "app", "components", "config", "src/data", "public", "dist", "out"];
+const scanExtensions = new Set([".astro", ".ts", ".tsx", ".md", ".mjs", ".json", ".xml", ".txt", ".css", ".html", ".js"]);
 
 function collectFiles(target) {
   const absolute = join(root, target);
@@ -142,6 +146,12 @@ for (const file of scanRoots.flatMap(collectFiles)) {
   const lines = readFileSync(file, "utf8").split(/\r?\n/);
   lines.forEach((line, index) => {
     const normalizedLine = line.toLowerCase();
+    const failClosedTerm = failClosedLiteralTerms.find((term) => normalizedLine.includes(term.toLowerCase()));
+    if (failClosedTerm) {
+      failures.push(`${relative(root, file)}:${index + 1}: public output must not render private-runtime literal ${failClosedTerm}`);
+      return;
+    }
+
     const matchedTerm = blockedTerms.find((term) => normalizedLine.includes(term.toLowerCase()));
     if (!matchedTerm) return;
     if (matchedTerm === "public-safe" && isNeutralPublicSafeLabel(line)) return;

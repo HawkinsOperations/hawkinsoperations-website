@@ -41,6 +41,33 @@ const intakeRoutes = [
   },
 ];
 
+const phase2Routes = [
+  {
+    tag: "VALIDATION",
+    title: "Validation registry",
+    sub: "Controlled-test packages, fixture counts, and blocked runtime / signal / public-safe states.",
+    href: "/proof/#validation-registry",
+  },
+  {
+    tag: "PROOF / VERIFIER",
+    title: "Proof / verifier",
+    sub: "Proof Pack 001 manifest, included / excluded items, and verifier routes.",
+    href: "/proof/#proof-pack-001",
+  },
+  {
+    tag: "PLATFORM",
+    title: "Platform contracts",
+    sub: "SOAR packet, AutoSOC ledger, factory controller, and blocked authority footers.",
+    href: "/pipeline/#platform-contracts",
+  },
+  {
+    tag: "AI GOVERNANCE",
+    title: "AI governance boundary",
+    sub: "Offline LLM support is support-only labor; human review remains authority.",
+    href: "/pipeline/#llm-boundary",
+  },
+];
+
 export const metadata: Metadata = {
   title: "Start | HawkinsOps",
   description:
@@ -84,6 +111,26 @@ export default function StartPage() {
                 <h3 className="start-routes__title">{r.title}</h3>
                 <p className="start-routes__sub">{r.sub}</p>
                 <p className="start-routes__arrow">{r.external ? "Open ↗" : "Open →"}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
+          <SectionHeader title="Phase 2 reviewer layers" eyebrow="Direct routes" />
+          <p className="muted mt-3 max-w-3xl text-sm leading-6">
+            Four direct entries into the Phase 2 cockpit layers. Each opens a bounded reviewer
+            surface — none promotes a stronger claim than the public ceiling allows.
+          </p>
+          <div className="start-routes mt-6">
+            {phase2Routes.map((r) => (
+              <a key={r.title} className="start-routes__card spotlight" href={r.href}>
+                <span className="start-routes__num">{r.tag}</span>
+                <h3 className="start-routes__title">{r.title}</h3>
+                <p className="start-routes__sub">{r.sub}</p>
+                <p className="start-routes__arrow">Open →</p>
               </a>
             ))}
           </div>

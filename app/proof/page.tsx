@@ -1,15 +1,29 @@
 import type { Metadata } from "next";
 import ArtifactFamilyMatrix from "@components/ArtifactFamilyMatrix";
+import BlockedClaimFirewall from "@components/BlockedClaimFirewall";
 import RecentGovernedArtifacts from "@components/RecentGovernedArtifacts";
 import ClaimFirewallPanel from "@components/ClaimFirewallPanel";
+import PlatformContractBlueprint from "@components/PlatformContractBlueprint";
+import ProofManifestConsole from "@components/ProofManifestConsole";
 import PromotionGateLadder from "@components/PromotionGateLadder";
 import ProofPathTimeline, { type ProofPathStep } from "@components/ProofPathTimeline";
 import StatusConsole from "@components/StatusConsole";
+import ValidationRegistryDashboard from "@components/ValidationRegistryDashboard";
+import VerifierCheckCards from "@components/VerifierCheckCards";
 import { allowedClaims, promotionRequirements } from "@data/claims";
 import { blockedClaims } from "@config/blocked-claims";
 import { proofRecords } from "@data/proofRecords";
+import { proofStatusIndex } from "@data/proofPackManifest";
+import { reviewerPacket, checksumManifest } from "@data/proofPackManifest";
 import { externalLinks } from "@data/navigation";
 import { ceiling, publicSafe } from "@config/site";
+
+const proofStateBadge: Record<string, { label: string; tone: string }> = {
+  PROOF_RECORD_PRESENT: { label: "PROOF_RECORD_PRESENT", tone: "p2-badge p2-badge--ceiling" },
+  PRIVATE_RUNTIME_BOUNDARY: { label: "NOT_PUBLIC_SAFE", tone: "p2-badge p2-badge--block" },
+  NO_PROOF_RECORD: { label: "NO_PROOF_RECORD", tone: "p2-badge p2-badge--warn" },
+  BOUNDARY_CONTRACT_ONLY: { label: "BOUNDARY_CONTRACT_ONLY", tone: "p2-badge p2-badge--warn" },
+};
 
 export const metadata: Metadata = {
   title: "Proof | HawkinsOps",
@@ -206,6 +220,49 @@ export default function ProofIndexPage() {
         </div>
       </section>
 
+      {/* ── Validation registry dashboard ─────────────────────────────── */}
+      <section id="validation-registry" className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Validation registry</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Controlled-test packages, fixture counts, blocked runtime states.
+            </h2>
+          </div>
+          <ValidationRegistryDashboard />
+        </div>
+      </section>
+
+      {/* ── Proof status index ────────────────────────────────────────── */}
+      <section id="proof-status-index" className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Proof status index</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Per-detection proof status · human review required.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              Index source · <span className="mono">{proofStatusIndex.path}</span>. Website status is{" "}
+              <span className="mono">{proofStatusIndex.websiteStatus}</span>. Some rows hold{" "}
+              <span className="mono">NO_PROOF_RECORD</span> where no proof record exists.
+            </p>
+          </div>
+          <div className="grid gap-2">
+            {proofStatusIndex.rows.map((row) => (
+              <div
+                key={row.id}
+                className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-[var(--moon-border)] bg-[rgba(8,13,22,0.5)] px-4 py-3"
+              >
+                <span className="mono text-sm text-[var(--silver-bright)]">{row.id}</span>
+                <span className="muted flex-1 text-sm">{row.note}</span>
+                <span className={`p2-badge p2-badge--${row.tone}`}>{row.status}</span>
+              </div>
+            ))}
+          </div>
+          <p className="muted mt-3 text-xs leading-5">{proofStatusIndex.humanReview} · website rendering is not proof.</p>
+        </div>
+      </section>
+
       {/* ── Supported claim routes ────────────────────────────────────── */}
       <section className="cockpit-section--tight">
         <div className="container">
@@ -255,6 +312,10 @@ export default function ProofIndexPage() {
           </div>
 
           <ClaimFirewallPanel />
+
+          <div className="mt-7">
+            <BlockedClaimFirewall />
+          </div>
 
           <div className="blocked-category-grid mt-7" data-ci-target="blocked-claims">
             {blockedCategories.map((cat) => (
@@ -336,6 +397,9 @@ export default function ProofIndexPage() {
                   <div className="proof-receipt-panel__head-right">
                     <span className="mono text-[0.6rem] tracking-[0.2em] uppercase text-[var(--silver)]">Ceiling</span>
                     <span className="proof-receipt-panel__ceiling mono">{record.proofLevel}</span>
+                    <span className={`mt-2 ${proofStateBadge[record.proofRecordState]?.tone ?? "p2-badge"}`}>
+                      {proofStateBadge[record.proofRecordState]?.label ?? record.proofRecordState}
+                    </span>
                   </div>
                 </header>
 
@@ -364,14 +428,20 @@ export default function ProofIndexPage() {
                       Open case file →
                     </a>
                   )}
-                  <a
-                    className={record.caseFileHref ? "cta cta-quiet" : "cta cta-primary"}
-                    href={record.proofRepoLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Proof repo record ↗
-                  </a>
+                  {record.proofRepoLink ? (
+                    <a
+                      className={record.caseFileHref ? "cta cta-quiet" : "cta cta-primary"}
+                      href={record.proofRepoLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Proof repo record ↗
+                    </a>
+                  ) : (
+                    <span className="cta cta-quiet" aria-disabled="true" style={{ opacity: 0.6, pointerEvents: "none" }}>
+                      No proof record
+                    </span>
+                  )}
                   <a className="cta cta-quiet" href={record.sourceRepoLink} target="_blank" rel="noopener noreferrer">
                     Source repo ↗
                   </a>
@@ -382,7 +452,71 @@ export default function ProofIndexPage() {
         </div>
       </section>
 
-      {/* ── Proof Pack 001 receipt console ─────────────────────────────── */}
+      {/* ── Proof Pack 001 manifest console ───────────────────────────── */}
+      <section id="proof-pack-001" className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Proof pack · manifest</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Proof Pack 001 · included, excluded, and what it does not prove.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              Proof Pack 001 routes a bounded HO-DET-001 reviewer packet at CONTROLLED_TEST_VALIDATED;
+              raw / private runtime evidence is excluded and remains NOT_PUBLIC_SAFE.
+            </p>
+          </div>
+          <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr] items-start">
+            <ProofManifestConsole />
+            <div className="grid gap-3">
+              <div className="rounded-md border border-[var(--moon-border)] bg-[rgba(8,13,22,0.5)] p-4">
+                <p className="mono text-[0.62rem] tracking-[0.14em] uppercase text-[var(--ice-blue)]">{reviewerPacket.name}</p>
+                <p className="muted mt-1 text-sm leading-6">{reviewerPacket.scope}</p>
+                <p className="mono mt-3 text-[0.6rem] tracking-[0.12em] uppercase text-[var(--silver)]">Evidence chain</p>
+                <div className="mt-1 flex flex-wrap gap-1.5">
+                  {reviewerPacket.evidenceChain.map((link) => (
+                    <span key={link} className="p2-badge">{link}</span>
+                  ))}
+                </div>
+              </div>
+              <div className="rounded-md border border-[var(--moon-border)] bg-[rgba(8,13,22,0.5)] p-4">
+                <p className="mono text-[0.62rem] tracking-[0.14em] uppercase text-[var(--ice-blue)]">{checksumManifest.name}</p>
+                <p className="muted mt-1 text-sm leading-6">{checksumManifest.scope}</p>
+                <p className="muted mt-2 text-xs leading-5">{checksumManifest.doesNotProve}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Verifier check cards ──────────────────────────────────────── */}
+      <section id="verifiers" className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Verifiers</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Verifier routes · structure, parity, boundaries, contracts.
+            </h2>
+          </div>
+          <VerifierCheckCards />
+        </div>
+      </section>
+
+      {/* ── Platform boundaries ───────────────────────────────────────── */}
+      <section id="platform-boundaries" className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Platform boundaries</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Non-promotional guardrails · drift surfaced, not normalized.
+            </h2>
+          </div>
+          <PlatformContractBlueprint
+            ids={["ho-det-001-runtime-contract", "ho-det-011-case-packet", "local-llm-runtime-receipt"]}
+          />
+        </div>
+      </section>
+
+      {/* ── Proof Pack 001 release receipt console ─────────────────────── */}
       <section className="cockpit-section--tight">
         <div className="container">
           <div className="mb-6">
