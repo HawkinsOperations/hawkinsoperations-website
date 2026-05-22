@@ -154,15 +154,16 @@ export default function HomePage() {
       <section id="attack-coverage" className="cockpit-section--tight">
         <div className="container">
           <div className="mb-6">
-            <p className="cockpit-eyebrow">MITRE ATT&CK-mapped coverage</p>
+            <p className="cockpit-eyebrow">Cyber Kill Chain -&gt; MITRE ATT&CK</p>
             <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              Each detection carries an ATT&CK mapping, a proof ceiling, and a blocked runtime claim.
+              Lifecycle stage, ATT&CK mapping, source, validation, proof boundary.
             </h2>
           </div>
           <div className="reveal reveal--up" data-delay="1">
             <AttackCoverageMap />
           </div>
           <div className="mt-4 flex flex-wrap items-center gap-3">
+            <a className="cta cta-quiet" href={externalLinks.cyberKillChainCoverage} target="_blank" rel="noopener noreferrer">Cyber Kill Chain map ↗</a>
             <a className="cta cta-quiet" href="/proof/#validation-registry">Validation registry →</a>
             <a className="cta cta-quiet" href="/pipeline/#platform-contracts">Platform contracts →</a>
           </div>

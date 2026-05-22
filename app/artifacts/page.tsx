@@ -270,8 +270,8 @@ export default function ArtifactsIndexPage() {
                 cells: ["private", "—", "reference", "reference", "private", "unpublished"],
               },
               {
-                family: "ATT&CK alignment matrix",
-                cells: ["pending", "—", "—", "pending", "—", "pending"],
+                family: "Cyber Kill Chain / ATT&CK reviewer map",
+                cells: ["present", "present", "routed", "routed", "—", "rendering"],
               },
               {
                 family: "Governance · review authority",

@@ -125,7 +125,7 @@ export const proofStatusIndex = {
   rows: [
     { id: "HO-DET-001", status: "PROOF_RECORD_PRESENT", tone: "ceiling", note: "Controlled-test proof record and card." },
     { id: "HO-DET-011", status: "NOT_PUBLIC_SAFE", tone: "block", note: "Private runtime evidence captured and excluded; drift review required." },
-    { id: "HO-DET-012", status: "NO_PROOF_RECORD", tone: "warn", note: "Validation-only; no proof record." },
+    { id: "HO-DET-012", status: "PROOF_RECORD_PRESENT", tone: "ceiling", note: "Controlled-test proof record and card; runtime, signal, and public-safe runtime proof remain blocked." },
     { id: "AWS-DET-001", status: "PROOF_RECORD_PRESENT", tone: "ceiling", note: "Cloud validation card; live AWS blocked." },
     { id: "ID-DET-001", status: "NO_PROOF_RECORD", tone: "warn", note: "Validation-only; no proof record." },
     { id: "ID-DET-002", status: "NO_PROOF_RECORD", tone: "warn", note: "Validation-only; no proof record." },

@@ -88,8 +88,8 @@ export const matrixDetections: MatrixRow[] = [
     cells: {
       "source-exists":        "supported",
       "test-validated":       "supported",
-      "evidence-linked":      "na",
-      "bounded-public-claim": "gate-defined",
+      "evidence-linked":      "at-ceiling",
+      "bounded-public-claim": "at-ceiling",
       "runtime-active":       "blocked",
       "signal-observed":      "blocked",
     },

@@ -13,7 +13,13 @@
  *  - Data lives in src/data/attackCoverage.ts.
  */
 
-import { attackFamilies, attackMapSafeCopy, type AttackTone } from "@data/attackCoverage";
+import {
+  attackFamilies,
+  attackMapSafeCopy,
+  cyberKillChainBoundary,
+  cyberKillChainStages,
+  type AttackTone,
+} from "@data/attackCoverage";
 
 const toneClass: Record<AttackTone, string> = {
   validated: "attack-node--validated",
@@ -33,7 +39,7 @@ const toneLabel: Record<AttackTone, string> = {
 
 export default function AttackCoverageMap() {
   return (
-    <div className="attack-map" role="region" aria-label="MITRE ATT&CK-mapped detection coverage">
+    <div className="attack-map" role="region" aria-label="Cyber Kill Chain and MITRE ATT&CK reviewer coverage">
       <p className="attack-map__why">
         <strong>Why this matters · </strong>
         Reviewers in detection engineering, SOC operations, identity security, and validation can read
@@ -41,6 +47,49 @@ export default function AttackCoverageMap() {
         a validation state, and a blocked runtime/signal boundary. The map is general reviewer value,
         not a deployment claim.
       </p>
+
+      <div className="kill-chain-route" role="note" aria-label="Reviewer route from lifecycle map to proof boundary">
+        <span>Cyber Kill Chain</span>
+        <span aria-hidden="true">-&gt;</span>
+        <span>MITRE ATT&amp;CK</span>
+        <span aria-hidden="true">-&gt;</span>
+        <span>detection source</span>
+        <span aria-hidden="true">-&gt;</span>
+        <span>validation</span>
+        <span aria-hidden="true">-&gt;</span>
+        <span>proof boundary</span>
+      </div>
+
+      <div className="kill-chain-stages" aria-label="Cyber Kill Chain reviewer navigation stages">
+        {cyberKillChainStages.map((stage) => (
+          <article key={stage.stage} className="kill-chain-stage">
+            <header className="kill-chain-stage__head">
+              <h3 className="kill-chain-stage__title">{stage.stage}</h3>
+              <span className="kill-chain-stage__state">{stage.currentState}</span>
+            </header>
+            <dl className="kill-chain-stage__rows">
+              <div>
+                <dt>Mapped artifacts</dt>
+                <dd>{stage.mappedArtifacts.join(", ")}</dd>
+              </div>
+              <div>
+                <dt>Strongest artifact</dt>
+                <dd>{stage.strongestArtifact}</dd>
+              </div>
+              <div>
+                <dt>Reviewer interpretation</dt>
+                <dd>{stage.reviewerInterpretation}</dd>
+              </div>
+            </dl>
+            <p className="kill-chain-stage__blocked">
+              <span>Blocked claims</span>
+              {stage.blockedClaims.join(", ")}
+            </p>
+          </article>
+        ))}
+      </div>
+
+      <p className="attack-map__safe attack-map__safe--route">{cyberKillChainBoundary}</p>
 
       <div className="attack-map__families">
         {attackFamilies.map((fam) => (

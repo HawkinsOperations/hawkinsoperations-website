@@ -71,7 +71,7 @@ const phase2Routes = [
 export const metadata: Metadata = {
   title: "Start | HawkinsOps",
   description:
-    "Reviewer routes for the HawkinsOperations public proof ceiling: hiring manager, security engineer, research partner.",
+    "Reviewer routes for the HawkinsOperations public proof ceiling: proof system, artifacts, detection trace, and GitHub organization.",
 };
 
 export default function StartPage() {
@@ -79,8 +79,8 @@ export default function StartPage() {
     <>
       <PageHero
         title="Reviewer route"
-        subtitle="Three reviewers. Three inspection paths."
-        description="Each route reads the same system at a different speed. The underlying proof state is the same."
+        subtitle="Four routes. One proof ceiling."
+        description="Each route reads the same system from a different angle. The underlying proof state is the same."
         badges={[{ label: ceiling, tone: "warn" }, { label: "RENDERING_ONLY" }]}
       />
 
@@ -167,6 +167,7 @@ export default function StartPage() {
             <LinkCard href={externalLinks.githubOrg} title="GitHub organization" description="Organization front door for HawkinsOperations." external />
             <LinkCard href={externalLinks.proof} title="Proof repo" description="Proof records and promotion-state documentation." external />
             <LinkCard href={externalLinks.detections} title="Detection repo" description="Detection source candidates. Source does not prove runtime." external />
+            <LinkCard href={externalLinks.cyberKillChainCoverage} title="Cyber Kill Chain map" description="Reviewer navigation across lifecycle stage, ATT&CK mapping, validation, and proof boundary." external />
             <LinkCard href={externalLinks.controlMatrix} title="Control matrix" description="Current control routing when available." external />
             <LinkCard href={externalLinks.repoAuthorityMap} title="Repository authority map" description="Repo plane separation and authority boundaries." external />
           </div>
