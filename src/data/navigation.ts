@@ -34,6 +34,7 @@ export const externalLinks = {
   platform: "https://github.com/HawkinsOperations/hawkinsoperations-platform",
   proof: "https://github.com/HawkinsOperations/hawkinsoperations-proof",
   proofRecord: "https://github.com/HawkinsOperations/hawkinsoperations-proof/blob/main/proof/records/HO-DET-001.md",
+  cyberKillChainCoverage: "https://github.com/HawkinsOperations/hawkinsoperations-proof/blob/main/docs/mappings/CYBER_KILL_CHAIN_COVERAGE.md",
   proofPack001Release: "https://github.com/HawkinsOperations/hawkinsoperations-proof/releases/tag/hawkinsoperations-proof-pack-001",
   proofPack001Discussion: "https://github.com/orgs/HawkinsOperations/discussions/32",
   proofRecordAws: "https://github.com/HawkinsOperations/hawkinsoperations-proof/blob/main/proof/records/AWS-DET-001.md",

@@ -7050,6 +7050,112 @@ body::after {
 }
 .attack-map__why strong { color: var(--ceiling-amber); }
 
+.kill-chain-route {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--moon-border);
+  border-radius: 6px;
+  background: rgba(8, 13, 22, 0.52);
+  color: var(--silver-bright);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.68rem;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.kill-chain-route span[aria-hidden="true"] {
+  color: var(--electric-blue-bright);
+}
+
+.kill-chain-stages {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 980px) {
+  .kill-chain-stages {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.kill-chain-stage {
+  border: 1px solid var(--moon-border);
+  border-left: 3px solid var(--electric-blue-bright);
+  border-radius: 7px;
+  background: rgba(8, 13, 22, 0.48);
+  padding: 0.85rem;
+}
+
+.kill-chain-stage__head {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 0.65rem;
+}
+
+.kill-chain-stage__title {
+  margin: 0;
+  color: var(--silver-bright);
+  font-size: 0.95rem;
+}
+
+.kill-chain-stage__state {
+  color: var(--ceiling-amber);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.kill-chain-stage__rows {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+}
+
+.kill-chain-stage__rows div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.kill-chain-stage__rows dt {
+  color: var(--muted);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.kill-chain-stage__rows dd {
+  margin: 0;
+  color: var(--silver);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.kill-chain-stage__blocked {
+  margin: 0.7rem 0 0;
+  color: var(--silver);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.kill-chain-stage__blocked span {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: var(--blocked-red);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.attack-map__safe--route {
+  margin-bottom: 1rem;
+}
+
 .attack-map__families {
   display: grid;
   gap: 0.9rem;
