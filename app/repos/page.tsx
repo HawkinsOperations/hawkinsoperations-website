@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   title: "Repository Map | HawkinsOperations",
   description:
     "Repository map for HawkinsOperations source, validation, platform, proof, and website rendering surfaces.",
+  alternates: {
+    canonical: "/repos/",
+  },
 };
 
 export default function ReposPage() {

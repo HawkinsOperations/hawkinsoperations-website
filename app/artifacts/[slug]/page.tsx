@@ -43,6 +43,9 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   return {
     title: `${short} | HawkinsOps`,
     description: `${a.summary} Snapshot as of ${recentGovernedArtifactsSnapshotDate}. Website rendering is not proof.`,
+    alternates: {
+      canonical: `/artifacts/${a.slug}/`,
+    },
   };
 }
 

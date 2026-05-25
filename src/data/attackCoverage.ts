@@ -95,11 +95,11 @@ export const cyberKillChainStages: KillChainStage[] = [
     stage: "Installation",
     mappedArtifacts: ["HO-DET-011", "HO-DET-012"],
     currentState:
-      "HO-DET-011 has private runtime evidence captured and excluded; HO-DET-012 has a CONTROLLED_TEST_VALIDATED proof record.",
-    strongestArtifact: "HO-DET-012 proof record, proof card, validation report, and proof index boundary.",
-    blockedClaims: ["public-safe proof", "signal-observed", "production deployment", "scheduled-task coverage completeness"],
+      "HO-DET-011 and HO-DET-012 have bounded Runtime Proof Factory summaries; raw evidence remains private.",
+    strongestArtifact: "HO-DET-012 bounded summary, proof record, validation report, and proof boundary.",
+    blockedClaims: ["public runtime proof", "signal-observed", "production deployment", "scheduled-task coverage completeness"],
     reviewerInterpretation:
-      "Use this stage for persistence review; HO-DET-012 is no longer validation-only, but it remains runtime/signal/public-safe blocked.",
+      "Use this stage for persistence review; bounded summary wording is approved, but public runtime and signal proof remain blocked.",
   },
   {
     stage: "Command & Control",

@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   title: "HO-DET-001 | HawkinsOps",
   description:
     "HO-DET-001 case file preserving the CONTROLLED_TEST_VALIDATED proof ceiling and public claim boundary.",
+  alternates: {
+    canonical: "/proof/ho-det-001/",
+  },
 };
 
 const traceSteps: ProofPathStep[] = [

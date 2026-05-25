@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   title: "Legacy Boundary | HawkinsOperations",
   description:
     "Legacy boundary explaining HawkinsOps as reference material and HawkinsOperations as the current governed rebuild.",
+  alternates: {
+    canonical: "/legacy/",
+  },
 };
 
 export default function LegacyPage() {

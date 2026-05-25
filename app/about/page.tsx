@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: "About | HawkinsOps",
   description:
     "Operator methodology for HawkinsOperations: governed detection engineering, AI-assisted security work bounded by gates, evidence, and human review. HawkinsOps v1 → HawkinsOperations successor framing.",
+  alternates: {
+    canonical: "/about/",
+  },
 };
 
 type Lane = {

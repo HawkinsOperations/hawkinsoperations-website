@@ -7,6 +7,9 @@ import { ceiling } from "@config/site";
 export const metadata: Metadata = {
   title: "System History | HawkinsOperations",
   description: "Conservative HawkinsOperations system history for website governance and proof-codex changes.",
+  alternates: {
+    canonical: "/changelog/",
+  },
 };
 
 const entries = [

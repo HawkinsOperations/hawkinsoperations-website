@@ -71,7 +71,10 @@ const phase2Routes = [
 export const metadata: Metadata = {
   title: "Start | HawkinsOps",
   description:
-    "Reviewer routes for the HawkinsOperations public proof ceiling: proof system, artifacts, detection trace, and GitHub organization.",
+    "Reviewer routes for the HawkinsOperations public proof ceiling: proof system, artifacts, detection trace, GitHub organization, and audience-specific routes.",
+  alternates: {
+    canonical: "/start/",
+  },
 };
 
 export default function StartPage() {

@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   title: "Claim Firewall | HawkinsOperations",
   description:
     "HawkinsOperations claim firewall for allowed wording, blocked wording, and proof promotion requirements.",
+  alternates: {
+    canonical: "/controls/",
+  },
 };
 
 export default function ControlsPage() {
