@@ -20,6 +20,9 @@ export function generateMetadata({ params }: PageProps): Metadata {
   return {
     title: `${note.title} | HawkinsOperations Field Notes`,
     description: note.summary,
+    alternates: {
+      canonical: `/field-notes/${note.slug}/`,
+    },
   };
 }
 

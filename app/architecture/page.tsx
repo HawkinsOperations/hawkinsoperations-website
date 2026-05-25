@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   title: "System Architecture | HawkinsOperations",
   description:
     "System architecture map for HawkinsOperations proof planes, repository separation, and claim promotion boundaries.",
+  alternates: {
+    canonical: "/architecture/",
+  },
 };
 
 export default function ArchitecturePage() {

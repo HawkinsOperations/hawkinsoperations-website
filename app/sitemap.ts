@@ -18,6 +18,7 @@ const staticRoutes = [
   "/proof-loop/",
   "/repos/",
   "/field-notes/",
+  "/changelog/",
 ];
 
 const route = (path: string): MetadataRoute.Sitemap[number] => ({

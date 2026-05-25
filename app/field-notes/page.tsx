@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   title: "Field Notes | HawkinsOperations",
   description:
     "Technical field notes explaining HawkinsOperations proof boundaries, truth surfaces, and claim controls.",
+  alternates: {
+    canonical: "/field-notes/",
+  },
 };
 
 export default function FieldNotesIndexPage() {
