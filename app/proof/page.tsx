@@ -29,6 +29,9 @@ export const metadata: Metadata = {
   title: "Proof | HawkinsOps",
   description:
     "HawkinsOperations proof authority console: public ceiling, supported claim routes, blocked claim firewall, proof records, and promotion gates.",
+  alternates: {
+    canonical: "/proof/",
+  },
 };
 
 type ClaimRow = { id: string; scope: string; text: string; gate: string };

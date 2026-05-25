@@ -72,6 +72,9 @@ export const metadata: Metadata = {
   title: "Start | HawkinsOps",
   description:
     "Reviewer routes for the HawkinsOperations public proof ceiling: hiring manager, security engineer, research partner.",
+  alternates: {
+    canonical: "/start/",
+  },
 };
 
 export default function StartPage() {

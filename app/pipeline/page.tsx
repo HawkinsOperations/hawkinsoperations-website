@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   title: "Pipeline | HawkinsOps",
   description:
     "How a change becomes public wording: GitHub Actions, controlled fixtures, deterministic validators, blocked-claim scanner, proof record, website rendering. HO-DET-001 + Local GPU Triage / Factory governed lane.",
+  alternates: {
+    canonical: "/pipeline/",
+  },
 };
 
 type Cluster = {

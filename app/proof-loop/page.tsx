@@ -11,6 +11,9 @@ export const metadata: Metadata = {
   title: "Proof Loop | HawkinsOperations",
   description:
     "Six-phase Proof Loop — Generate, Constrain, Validate, Capture, Review, Publish — mapped over the underlying detection-engineering steps that bound every public claim.",
+  alternates: {
+    canonical: "/proof-loop/",
+  },
 };
 
 export default function ProofLoopPage() {

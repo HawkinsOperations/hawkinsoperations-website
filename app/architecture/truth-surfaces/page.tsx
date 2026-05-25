@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   title: "Truth Surface Model | HawkinsOperations",
   description:
     "Truth surface model separating source, validation, runtime, signal, evidence, and public proof for HawkinsOperations.",
+  alternates: {
+    canonical: "/architecture/truth-surfaces/",
+  },
 };
 
 export default function TruthSurfacesPage() {

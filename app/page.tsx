@@ -23,6 +23,9 @@ export const metadata: Metadata = {
   title: "HawkinsOperations",
   description:
     "HawkinsOperations is a detection engineering proof system: detections, validation cases, proof records, and reviewer artifacts shipped with claim boundaries attached. Website rendering is not proof.",
+  alternates: {
+    canonical: "/",
+  },
 };
 
 export default function HomePage() {
