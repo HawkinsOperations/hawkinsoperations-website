@@ -24,7 +24,7 @@ export default function Footer() {
         </div>
 
         <div>
-          <p className="site-footer__heading mono">Primary surface</p>
+          <p className="site-footer__heading mono">Primary</p>
           <ul className="site-footer__list mt-4">
             {primaryNavigation.map((item) => (
               <li key={item.href}>
@@ -32,23 +32,10 @@ export default function Footer() {
               </li>
             ))}
           </ul>
-          <p className="site-footer__heading mono mt-7">Operator</p>
-          <ul className="site-footer__list mt-4">
-            <li>
-              <a href={externalLinks.rayleeGithub} target="_blank" rel="noopener noreferrer">
-                GitHub ↗
-              </a>
-            </li>
-            <li>
-              <a href={externalLinks.rayleeLinkedIn} target="_blank" rel="noopener noreferrer">
-                LinkedIn ↗
-              </a>
-            </li>
-          </ul>
         </div>
 
         <div>
-          <p className="site-footer__heading mono">Reviewer routes</p>
+          <p className="site-footer__heading mono">Reviewer support</p>
           <ul className="site-footer__list mt-4">
             {reviewerLinks.map((item) => (
               <li key={item.href}>
@@ -82,18 +69,18 @@ export default function Footer() {
               </a>
             </li>
             <li>
-              <a href={externalLinks.controlMatrix} target="_blank" rel="noopener noreferrer">
-                Control matrix ↗
+              <a href={externalLinks.platform} target="_blank" rel="noopener noreferrer">
+                Platform ↗
               </a>
             </li>
             <li>
-              <a href={externalLinks.repoAuthorityMap} target="_blank" rel="noopener noreferrer">
-                Repo authority map ↗
+              <a href={externalLinks.rayleeGithub} target="_blank" rel="noopener noreferrer">
+                Raylee Hawkins ↗
               </a>
             </li>
             <li>
-              <a href={externalLinks.legacyHawkinsOps} target="_blank" rel="noopener noreferrer">
-                Legacy HawkinsOps ↗
+              <a href={externalLinks.website} target="_blank" rel="noopener noreferrer">
+                Website repo ↗
               </a>
             </li>
           </ul>
