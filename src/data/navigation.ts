@@ -5,29 +5,22 @@ export type NavItem = {
 };
 
 export const primaryNavigation: NavItem[] = [
-  { label: "Start", href: "/start/", description: "Reviewer route" },
-  { label: "Pipeline", href: "/pipeline/", description: "HO-DET-001 proof route" },
-  { label: "Proof", href: "/proof/", description: "Proof ledger" },
-  { label: "SOCaaS", href: "/socaas-ai-security-operations/", description: "Transferable implementation model" },
-  { label: "Artifacts", href: "/artifacts/", description: "Evidence bay" },
-  { label: "Architecture", href: "/architecture/", description: "Plane separation map" },
-  { label: "About", href: "/about/", description: "Operator profile" },
+  { label: "Home", href: "/", description: "Reviewer cockpit" },
+  { label: "Proof", href: "/proof/", description: "Claim authority" },
+  { label: "Artifacts", href: "/artifacts/", description: "Reviewer receipts" },
+  { label: "Detections", href: "/detections/", description: "Detection engineering" },
+  { label: "AI Security", href: "/ai-security/", description: "AI-assisted SOC model" },
+  { label: "About", href: "/about/", description: "Mission and archive boundary" },
 ];
 
 export const reviewerLinks: NavItem[] = [
-  { label: "Reviewer route", href: "/start/", description: "Three-speed inspection path" },
-  { label: "System architecture", href: "/architecture/", description: "Plane separation map" },
-  { label: "Truth surface model", href: "/architecture/truth-surfaces/", description: "Six surfaces, six meanings" },
-  { label: "SOCaaS / AI Security Operations", href: "/socaas-ai-security-operations/", description: "Transferable implementation model" },
+  { label: "Governance Saves", href: "/proof/governance-saves/", description: "Controls that fired" },
   { label: "Proof Pack 001", href: "/proof/proof-pack-001/", description: "Bounded reviewer package" },
-  { label: "Governance Saves", href: "/proof/governance-saves/", description: "Public-backed saves and blocked claims" },
-  { label: "Platform contracts", href: "/platform/contracts/", description: "Support-only contract wall" },
+  { label: "Runtime boundary", href: "/proof/runtime-proof-factory/", description: "Bounded runtime summaries" },
+  { label: "Architecture", href: "/architecture/", description: "Truth-plane separation" },
   { label: "Validation registry", href: "/validation/", description: "Controlled-test packages" },
-  { label: "Repository map", href: "/repos/", description: "Where each plane lives" },
-  { label: "Claim firewall", href: "/controls/", description: "Allowed and blocked wording" },
-  { label: "Field notes", href: "/field-notes/", description: "Boundary notes" },
-  { label: "Legacy boundary", href: "/legacy/", description: "Reference material rules" },
-  { label: "System history", href: "/changelog/", description: "Codex changelog" },
+  { label: "Platform contracts", href: "/platform/contracts/", description: "Support-only contract wall" },
+  { label: "Archive", href: "/about/#archive", description: "Legacy/current boundary" },
 ];
 
 export const externalLinks = {

@@ -5,7 +5,7 @@ import PortraitCommandFrame from "@components/PortraitCommandFrame";
 import { externalLinks } from "@data/navigation";
 
 export const metadata: Metadata = {
-  title: "About | HawkinsOps",
+  title: "About | HawkinsOperations",
   description:
     "Operator methodology for HawkinsOperations: governed detection engineering, AI-assisted security work bounded by gates, evidence, and human review. HawkinsOps v1 → HawkinsOperations successor framing.",
   alternates: {
@@ -495,6 +495,38 @@ export default function AboutPage() {
                 ))}
               </ul>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="archive" className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Archive boundary</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              HawkinsOperations is the current governed system.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              HawkinsOps and older surfaces are legacy, archive, or reference material unless explicitly promoted.
+              Legacy material is historical context, not current proof authority.
+            </p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            <article className="card p-5">
+              <p className="mono text-xs uppercase text-blue-100">Current</p>
+              <h3 className="mt-3 text-lg font-semibold text-slate-50">HawkinsOperations</h3>
+              <p className="mt-3 text-sm leading-6 text-slate-300">Current governed detection engineering and AI Security Operations surface.</p>
+            </article>
+            <article className="card p-5">
+              <p className="mono text-xs uppercase text-blue-100">Archive</p>
+              <h3 className="mt-3 text-lg font-semibold text-slate-50">HawkinsOps</h3>
+              <p className="mt-3 text-sm leading-6 text-slate-300">Historical context only unless a current HawkinsOperations route promotes a bounded claim.</p>
+            </article>
+            <article className="card p-5">
+              <p className="mono text-xs uppercase text-blue-100">Authority</p>
+              <h3 className="mt-3 text-lg font-semibold text-slate-50">Current proof wins</h3>
+              <p className="mt-3 text-sm leading-6 text-slate-300">Proof records, validation, Governance Saves, and human review gates define current public truth.</p>
+            </article>
           </div>
         </div>
       </section>

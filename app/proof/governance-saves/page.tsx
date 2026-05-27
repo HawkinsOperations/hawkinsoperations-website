@@ -77,7 +77,7 @@ export default function GovernanceSavesPage() {
           <SectionHeader title="Continue inspection" eyebrow="Routes" />
           <div className="grid gap-4 md:grid-cols-4">
             <LinkCard href="/proof/" title="Proof ledger" description="Return to proof authority and current promotion gates." />
-            <LinkCard href="/socaas-ai-security-operations/" title="SOCaaS model" description="See how governance saves map to AI Security Operations." />
+            <LinkCard href="/ai-security/" title="AI Security model" description="See how governance saves map to AI Security Operations." />
             <LinkCard href="/controls/" title="Claim firewall" description="Inspect the control surface for blocked wording." />
             <LinkCard href={externalLinks.governanceSavesCandidates} title="Governance saves source" description="Open the source-controlled candidate ledger." external />
           </div>

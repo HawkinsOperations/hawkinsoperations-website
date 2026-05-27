@@ -6,7 +6,7 @@ import StatusConsole from "@components/StatusConsole";
 import { flagshipArtifacts } from "@data/artifacts";
 
 export const metadata: Metadata = {
-  title: "Artifacts | HawkinsOps",
+  title: "Artifacts | HawkinsOperations",
   description:
     "Reviewer evidence bay: proof records, validation outputs, CI receipts, case files, and reviewer-safe packets — filterable by family and separated by what each one can prove.",
   alternates: {

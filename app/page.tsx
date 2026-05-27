@@ -1,115 +1,82 @@
 import type { Metadata } from "next";
 import GovernanceSavesCockpit from "@components/GovernanceSavesCockpit";
 import LinkCard from "@components/LinkCard";
-import StatusConsole from "@components/StatusConsole";
-import WorkDashboard from "@components/WorkDashboard";
-import { ceiling } from "@config/site";
-import { governanceSavesSummary, publicGovernanceSaves } from "@data/governanceSaves";
-import { registryStats, validationRows } from "@data/validationRegistry";
-import { proofPack } from "@data/proofPackManifest";
 import { externalLinks } from "@data/navigation";
+import { governanceSavesSummary } from "@data/governanceSaves";
 
 export const metadata: Metadata = {
   title: "HawkinsOperations",
   description:
-    "HawkinsOperations is governed detection engineering and AI Security Operations that turns AI-assisted security work into controlled, reviewable proof.",
+    "HawkinsOperations is a governed AI Security Operations and detection engineering control plane that turns fast security work into evidence-bounded, reviewer-inspectable output.",
   alternates: {
     canonical: "/",
   },
 };
 
-const cockpitMetrics = [
-  { label: "Public ceiling", value: ceiling, note: "Current public claim ceiling." },
-  { label: "Validation packages", value: String(registryStats.passedPackages), note: "Controlled-test packages only." },
-  { label: "Controlled fixtures", value: String(registryStats.totalFixtures), note: "Positive and negative fixtures." },
-  {
-    label: "Governance Saves",
-    value: `${publicGovernanceSaves.length} / ${governanceSavesSummary.ledgerRangeTotal}`,
-    note: "Public-facing subset; private-only rows excluded.",
-  },
-  { label: "Proof pack", value: proofPack.id.replace("HAWKINSOPERATIONS_", ""), note: "Released reviewer package route." },
+const statusChips = [
+  "Controls fired before public truth",
+  `${governanceSavesSummary.publicRenderedCount} public-facing governance examples`,
+  "Private-only records excluded",
+  "AI support-only",
+  "Runtime claims bounded",
+  "Proof Pack 001 available",
 ];
 
-type RouteGroup = {
-  label: string;
-  routes: { href: string; title: string; description: string }[];
-};
+const publicDoors = [
+  {
+    href: "/proof/",
+    title: "Proof",
+    description:
+      "Claim authority, Governance Saves, Proof Pack 001, runtime boundaries, validation ceilings, and blocked claims.",
+  },
+  {
+    href: "/artifacts/",
+    title: "Artifacts",
+    description:
+      "Reviewer receipts, proof packages, evidence cards, release artifacts, and does-prove / does-not-prove boundaries.",
+  },
+  {
+    href: "/detections/",
+    title: "Detections",
+    description:
+      "Detection engineering portfolio with validation status, ATT&CK mapping, proof ceilings, and runtime boundaries.",
+  },
+  {
+    href: "/ai-security/",
+    title: "AI Security",
+    description:
+      "SOCaaS-style implementation model for AI-assisted triage, deterministic verification, and human authority.",
+  },
+  {
+    href: "/about/",
+    title: "About",
+    description:
+      "Mission, operating thesis, current HawkinsOperations boundary, and archive / legacy context.",
+  },
+  {
+    href: externalLinks.githubOrg,
+    title: "Inspect Source",
+    description:
+      "Open the HawkinsOperations GitHub organization. Repos carry the evidence; the website routes reviewers.",
+    external: true,
+  },
+];
 
-const routeGroups: RouteGroup[] = [
+const reviewerProofs = [
   {
-    label: "Reviewer-grade proof surfaces",
-    routes: [
-      {
-        href: "/proof/",
-        title: "Proof authority",
-        description: "Claim ceiling, proof records, blocked claim ledger, and promotion gates.",
-      },
-      {
-        href: "/proof/proof-pack-001/",
-        title: "Proof Pack 001",
-        description: "Bounded HO-DET-001 reviewer package, manifest, checksum route, and proof ceiling.",
-      },
-      {
-        href: "/proof/governance-saves/",
-        title: "Governance Saves explorer",
-        description: "Public-facing Governance Saves subset across nine categories of controls that fired.",
-      },
-      {
-        href: "/socaas-ai-security-operations/",
-        title: "SOCaaS / AI Security Operations",
-        description: "Transferable implementation model with AI support-only and human authority boundaries.",
-      },
-    ],
+    label: "Governance Saves",
+    value: `${governanceSavesSummary.publicRenderedCount} public-facing examples`,
+    detail: "Controls that blocked unsafe claims, stale truth, bad merge risk, and private-evidence leakage.",
   },
   {
-    label: "Source · validation · platform",
-    routes: [
-      {
-        href: "/validation/",
-        title: "Validation registry",
-        description: `${validationRows.length} validation rows with fixture counts and blocked runtime / signal states.`,
-      },
-      {
-        href: "/pipeline/",
-        title: "Pipeline",
-        description: "Source-to-rendered-route flow with gates, verifier responsibilities, and receipt dependencies.",
-      },
-      {
-        href: "/platform/contracts/",
-        title: "Platform contracts",
-        description: "Factory/controller, SOAR case packet, AI support-only, and blocked authority footers.",
-      },
-      {
-        href: "/proof/runtime-proof-factory/",
-        title: "Runtime boundary",
-        description: "Bounded Runtime Proof Factory summaries with raw evidence private and public runtime proof blocked.",
-      },
-    ],
+    label: "Proof Pack 001",
+    value: "Reviewer package available",
+    detail: "Bounded HO-DET-001 package route with release, manifest, checksum, and proof ceiling boundaries.",
   },
   {
-    label: "Maps · artifacts · controls",
-    routes: [
-      {
-        href: "/artifacts/",
-        title: "Artifact inventory",
-        description: "Filterable reviewer receipts and artifact cards with does-not-prove boundaries.",
-      },
-      {
-        href: "/architecture/",
-        title: "System map",
-        description: "Repository authority, truth surfaces, and control-plane separation.",
-      },
-      {
-        href: "/controls/",
-        title: "Claim firewall",
-        description: "Allowed wording and blocked wording across runtime, signal, public-safe, and authority claims.",
-      },
-      {
-        href: "/architecture/repo-authority-map/",
-        title: "Repo authority map",
-        description: "Six-repo authority model and truth-plane ownership.",
-      },
-    ],
+    label: "AI boundary",
+    value: "Support-only",
+    detail: "AI can summarize and assist; it does not approve disposition, promote proof, or own authority.",
   },
 ];
 
@@ -118,73 +85,64 @@ export default function HomePage() {
     <>
       <section className="relative overflow-hidden cockpit-section hero-cockpit">
         <div className="hero-backdrop" aria-hidden="true" />
-        <div className="container grid gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 items-start">
-          <div className="reveal reveal--up">
+        <div className="container">
+          <div className="reveal reveal--up max-w-5xl">
             <p className="hero-cockpit__eyebrow">Reviewer cockpit</p>
             <h1 className="hero-cockpit__headline">
-              HawkinsOperations.
-              <span className="hero-cockpit__headline-emph">
-                Governed detection engineering and AI Security Operations.
-              </span>
+              Governance that catches bad security truth before it ships.
             </h1>
             <p className="hero-cockpit__lede">
-              HawkinsOperations turns AI-assisted security work into controlled, reviewable proof.
-              Detections, validation cases, proof records, and reviewer artifacts route through claim
-              boundaries — AI supports the labor; evidence and human review authorize claims.
+              HawkinsOperations is a governed AI Security Operations and detection engineering control plane.
+              It turns fast AI-assisted security work into evidence-bounded, reviewer-inspectable output.
+            </p>
+            <p className="hero-cockpit__lede mt-5">
+              The proof is not that a website renders. The proof is that controls fired: unsafe claims were
+              blocked, stale truth was corrected, private evidence stayed private, and AI stayed support-only.
             </p>
 
-            <div className="hero-status" role="note" aria-label="Public ceiling and top receipt status">
-              <span className="hero-status__chip hero-status__chip--released">Proof Pack 001 route</span>
-              <span className="hero-status__chip hero-status__chip--det">HO-DET-001 case file</span>
-              <span className="hero-status__chip hero-status__chip--det">{registryStats.totalFixtures} controlled fixtures</span>
-              <span className="hero-status__chip hero-status__chip--det">GS-001-GS-080 subset</span>
-              <span className="hero-status__chip hero-status__chip--ceiling">{ceiling}</span>
-              <span className="hero-status__chip hero-status__chip--blocked">Runtime / signal blocked</span>
+            <div className="hero-status" role="note" aria-label="Reviewer status">
+              {statusChips.map((chip) => (
+                <span key={chip} className="hero-status__chip hero-status__chip--det">
+                  {chip}
+                </span>
+              ))}
             </div>
 
             <div className="hero-cockpit__ctas">
               <a className="hero-cockpit__primary" href="/proof/">
-                Open proof authority
+                See Proof
               </a>
-              <a className="hero-cockpit__secondary" href="/proof/governance-saves/">
-                Governance Saves
+              <a className="hero-cockpit__secondary" href="/artifacts/">
+                Inspect Artifacts
               </a>
-              <a className="hero-cockpit__secondary" href="/socaas-ai-security-operations/">
-                SOCaaS model
-              </a>
-              <a className="hero-cockpit__secondary" href="/proof/proof-pack-001/">
-                Proof Pack 001
-              </a>
-              <a className="hero-cockpit__tertiary" href={externalLinks.githubOrg} target="_blank" rel="noopener noreferrer">
-                GitHub org
+              <a className="hero-cockpit__secondary" href="/ai-security/">
+                View AI Security Model
               </a>
             </div>
-          </div>
-
-          <div className="lg:pt-2 reveal reveal--up" data-delay="2">
-            <StatusConsole showLoop={false} />
           </div>
         </div>
       </section>
 
-      <section id="cockpit-metrics" className="cockpit-section--tight">
+      <section id="six-doors" className="cockpit-section--tight">
         <div className="container reveal reveal--up">
           <div className="mb-6">
-            <p className="cockpit-eyebrow">What has shipped</p>
-            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              Compact receipts at the current ceiling.
+            <p className="cockpit-eyebrow">Six public doors</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.7rem, 2.8vw, 2.4rem)" }}>
+              Pick the surface you want to inspect.
             </h2>
             <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              The homepage shows the reviewer cockpit. Full registries and detailed proof pages live on their owner routes.
+              The public site now routes through six primary pages. Support routes still exist, but they serve these doors.
             </p>
           </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-            {cockpitMetrics.map((metric) => (
-              <article key={metric.label} className="card p-5">
-                <p className="mono text-xs uppercase text-blue-100">{metric.label}</p>
-                <p className="mt-3 break-words text-2xl font-semibold text-slate-50">{metric.value}</p>
-                <p className="mt-3 text-sm leading-6 text-slate-400">{metric.note}</p>
-              </article>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {publicDoors.map((door) => (
+              <LinkCard
+                key={door.href}
+                href={door.href}
+                title={door.title}
+                description={door.description}
+                external={door.external}
+              />
             ))}
           </div>
         </div>
@@ -193,53 +151,34 @@ export default function HomePage() {
       <section id="governance-saves-cockpit" className="cockpit-section--tight">
         <div className="container reveal reveal--up">
           <div className="mb-6">
-            <p className="cockpit-eyebrow">Governance Saves snapshot</p>
-            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              Where controls fired — by category.
+            <p className="cockpit-eyebrow">Proof of value</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.7rem, 2.8vw, 2.4rem)" }}>
+              Controls that fired before bad truth shipped.
             </h2>
             <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              Public-facing Governance Saves are organized by the failure mode they blocked. Open the explorer to
-              filter, search, and inspect rendered records.
+              Governance Saves are the clearest public signal of the system: the site shows examples where
+              unsupported public claims, stale state, private evidence, or AI-authority drift were blocked or corrected.
             </p>
           </div>
           <GovernanceSavesCockpit />
         </div>
       </section>
 
-      <section id="work-shipped" className="cockpit-section--tight">
-        <div className="container reveal reveal--up">
-          <WorkDashboard />
-        </div>
-      </section>
-
-      <section id="inspect-next" className="cockpit-section--tight pb-24">
+      <section id="reviewer-proof" className="cockpit-section--tight pb-24">
         <div className="container reveal reveal--up">
           <div className="mb-6">
-            <p className="cockpit-eyebrow">Inspect next</p>
-            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              Choose the owner route.
+            <p className="cockpit-eyebrow">Reviewer proof path</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.7rem, 2.8vw, 2.4rem)" }}>
+              What matters first.
             </h2>
-            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              Parent pages summarize. Child and owner routes explain. Website rendering is not proof.
-            </p>
           </div>
-          <div className="grid gap-10">
-            {routeGroups.map((group) => (
-              <div key={group.label}>
-                <h3 className="mono text-[0.65rem] tracking-[0.18em] uppercase text-blue-100 mb-3">
-                  {group.label}
-                </h3>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                  {group.routes.map((route) => (
-                    <LinkCard
-                      key={route.href}
-                      href={route.href}
-                      title={route.title}
-                      description={route.description}
-                    />
-                  ))}
-                </div>
-              </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {reviewerProofs.map((item) => (
+              <article key={item.label} className="card p-5">
+                <p className="mono text-xs uppercase text-blue-100">{item.label}</p>
+                <h3 className="mt-3 text-lg font-semibold text-slate-50">{item.value}</h3>
+                <p className="mt-3 text-sm leading-6 text-slate-300">{item.detail}</p>
+              </article>
             ))}
           </div>
         </div>

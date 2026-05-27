@@ -8,6 +8,8 @@ const requiredFiles = [
   "app/page.tsx",
   "app/start/page.tsx",
   "app/proof/page.tsx",
+  "app/ai-security/page.tsx",
+  "app/detections/page.tsx",
   "app/proof/ho-det-001/page.tsx",
   "app/proof-loop/page.tsx",
   "app/artifacts/page.tsx",
@@ -48,10 +50,46 @@ if (missing.length > 0) {
   process.exit(1);
 }
 
+const navigationData = readFileSync(join(root, "src/data/navigation.ts"), "utf8");
+const primaryNavMatch = navigationData.match(/export const primaryNavigation: NavItem\[] = \[([\s\S]*?)\];/);
+const expectedPrimaryNav = [
+  { label: "Home", href: "/" },
+  { label: "Proof", href: "/proof/" },
+  { label: "Artifacts", href: "/artifacts/" },
+  { label: "Detections", href: "/detections/" },
+  { label: "AI Security", href: "/ai-security/" },
+  { label: "About", href: "/about/" },
+];
+const navFailures = [];
+if (!primaryNavMatch) {
+  navFailures.push("src/data/navigation.ts must export primaryNavigation.");
+} else {
+  const navBlock = primaryNavMatch[1];
+  const entries = [...navBlock.matchAll(/\{\s*label:\s*"([^"]+)",\s*href:\s*"([^"]+)"/g)].map((match) => ({
+    label: match[1],
+    href: match[2],
+  }));
+  if (entries.length !== expectedPrimaryNav.length) {
+    navFailures.push(`primaryNavigation must contain exactly ${expectedPrimaryNav.length} entries; found ${entries.length}.`);
+  }
+  expectedPrimaryNav.forEach((expected, index) => {
+    const actual = entries[index];
+    if (!actual || actual.label !== expected.label || actual.href !== expected.href) {
+      navFailures.push(`primaryNavigation[${index}] must be ${expected.label} -> ${expected.href}.`);
+    }
+  });
+}
+
+if (navFailures.length > 0) {
+  console.error(`Primary navigation invariant failed:\n${navFailures.map((line) => `- ${line}`).join("\n")}`);
+  process.exit(1);
+}
+
 const governanceSavesData = readFileSync(join(root, "src/data/governanceSaves.ts"), "utf8");
 const governanceSavesExplorer = readFileSync(join(root, "components/GovernanceSavesExplorer.tsx"), "utf8");
 const governanceSavesCockpit = readFileSync(join(root, "components/GovernanceSavesCockpit.tsx"), "utf8");
 const governanceSavesPage = readFileSync(join(root, "app/proof/governance-saves/page.tsx"), "utf8");
+const homePage = readFileSync(join(root, "app/page.tsx"), "utf8");
 
 const governanceFailures = [];
 if (!/export const publicGovernanceSaves = governanceSaves\.filter\(\s*\(save\) => save\.publicSafety !== "PRIVATE_ONLY",\s*\);/s.test(governanceSavesData)) {
@@ -77,6 +115,18 @@ if (/all\s+GS-001\s+(?:through|→|-)\s+GS-080/i.test(governanceSavesPage) || /\
 
 if (governanceFailures.length > 0) {
   console.error(`Governance Saves public-rendering invariant failed:\n${governanceFailures.map((line) => `- ${line}`).join("\n")}`);
+  process.exit(1);
+}
+
+const homepageInternalLabels = [
+  "GS-001-GS-080 subset",
+  "CONTROLLED_TEST_VALIDATED",
+  "NOT_PUBLIC_SAFE",
+  "RENDERING_ONLY",
+];
+const homepageLabelFailures = homepageInternalLabels.filter((term) => homePage.includes(term));
+if (homepageLabelFailures.length > 0) {
+  console.error(`Homepage public-value invariant failed:\n${homepageLabelFailures.map((term) => `- app/page.tsx must not lead with internal label ${term}`).join("\n")}`);
   process.exit(1);
 }
 

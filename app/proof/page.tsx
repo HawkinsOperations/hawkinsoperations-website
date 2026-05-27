@@ -3,6 +3,7 @@ import ArtifactFamilyMatrix from "@components/ArtifactFamilyMatrix";
 import BlockedClaimFirewall from "@components/BlockedClaimFirewall";
 import RecentGovernedArtifacts from "@components/RecentGovernedArtifacts";
 import ClaimFirewallPanel from "@components/ClaimFirewallPanel";
+import LinkCard from "@components/LinkCard";
 import PlatformContractBlueprint from "@components/PlatformContractBlueprint";
 import ProofManifestConsole from "@components/ProofManifestConsole";
 import PromotionGateLadder from "@components/PromotionGateLadder";
@@ -159,6 +160,26 @@ export default function ProofIndexPage() {
       </section>
 
       {/* ── Ceiling authority console ─────────────────────────────────── */}
+      <section id="proof-owner-routes" className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Proof owns these surfaces</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.7rem, 2.8vw, 2.4rem)" }}>
+              Controls that fired before bad truth shipped.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              Proof is the authority surface for Governance Saves, Proof Pack 001, runtime boundaries,
+              claim ceilings, blocked claims, human review authority, and the rule that website rendering is not proof.
+            </p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            <LinkCard href="/proof/governance-saves/" title="Governance Saves" description="Public-facing examples where controls blocked unsafe public truth, stale state, private-evidence drift, or AI authority drift." />
+            <LinkCard href="/proof/proof-pack-001/" title="Proof Pack 001" description="Bounded reviewer package with included/excluded contents, checksum route, and proof ceiling." />
+            <LinkCard href="/proof/runtime-proof-factory/" title="Runtime Boundary" description="Bounded runtime summaries with raw evidence private and public runtime proof still gated." />
+          </div>
+        </div>
+      </section>
+
       <section id="recent-governed-proof-work" className="cockpit-section--tight">
         <div className="container reveal reveal--up">
           <RecentGovernedArtifacts
