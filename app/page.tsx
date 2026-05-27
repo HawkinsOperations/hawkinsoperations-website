@@ -1,301 +1,246 @@
 import type { Metadata } from "next";
-import ActivityLedger from "@components/ActivityLedger";
-import AttackCoverageMap from "@components/AttackCoverageMap";
-import ClaimFirewallPanel from "@components/ClaimFirewallPanel";
-import FailureModeStrip from "@components/FailureModeStrip";
-import FeaturedWork from "@components/FeaturedWork";
-import GovernedDetectionLoop from "@components/GovernedDetectionLoop";
-import HeroControlConsole from "@components/HeroControlConsole";
-import ProofPackReceipt from "@components/ProofPackReceipt";
-import PromotionLadderHomepage from "@components/PromotionLadderHomepage";
-import RepoAuthorityDAG from "@components/RepoAuthorityDAG";
+import GovernanceSavesCockpit from "@components/GovernanceSavesCockpit";
+import LinkCard from "@components/LinkCard";
 import StatusConsole from "@components/StatusConsole";
-import TruthSurfaceInfographic from "@components/TruthSurfaceInfographic";
-import TruthTelemetryMatrix from "@components/TruthTelemetryMatrix";
 import WorkDashboard from "@components/WorkDashboard";
+import { ceiling } from "@config/site";
+import { governanceSavesSummary, publicGovernanceSaves } from "@data/governanceSaves";
 import { registryStats, validationRows } from "@data/validationRegistry";
+import { proofPack } from "@data/proofPackManifest";
 import { externalLinks } from "@data/navigation";
-
-const detectionCount = validationRows.length;
-const fixtureCount = registryStats.totalFixtures;
 
 export const metadata: Metadata = {
   title: "HawkinsOperations",
   description:
-    "HawkinsOperations is a detection engineering proof system: detections, validation cases, proof records, and reviewer artifacts shipped with claim boundaries attached. Website rendering is not proof.",
+    "HawkinsOperations is governed detection engineering and AI Security Operations that turns AI-assisted security work into controlled, reviewable proof.",
   alternates: {
     canonical: "/",
   },
 };
 
+const cockpitMetrics = [
+  { label: "Public ceiling", value: ceiling, note: "Current public claim ceiling." },
+  { label: "Validation packages", value: String(registryStats.passedPackages), note: "Controlled-test packages only." },
+  { label: "Controlled fixtures", value: String(registryStats.totalFixtures), note: "Positive and negative fixtures." },
+  {
+    label: "Governance Saves",
+    value: `${publicGovernanceSaves.length} / ${governanceSavesSummary.ledgerRangeTotal}`,
+    note: "Public-facing subset; private-only rows excluded.",
+  },
+  { label: "Proof pack", value: proofPack.id.replace("HAWKINSOPERATIONS_", ""), note: "Released reviewer package route." },
+];
+
+type RouteGroup = {
+  label: string;
+  routes: { href: string; title: string; description: string }[];
+};
+
+const routeGroups: RouteGroup[] = [
+  {
+    label: "Reviewer-grade proof surfaces",
+    routes: [
+      {
+        href: "/proof/",
+        title: "Proof authority",
+        description: "Claim ceiling, proof records, blocked claim ledger, and promotion gates.",
+      },
+      {
+        href: "/proof/proof-pack-001/",
+        title: "Proof Pack 001",
+        description: "Bounded HO-DET-001 reviewer package, manifest, checksum route, and proof ceiling.",
+      },
+      {
+        href: "/proof/governance-saves/",
+        title: "Governance Saves explorer",
+        description: "Public-facing Governance Saves subset across nine categories of controls that fired.",
+      },
+      {
+        href: "/socaas-ai-security-operations/",
+        title: "SOCaaS / AI Security Operations",
+        description: "Transferable implementation model with AI support-only and human authority boundaries.",
+      },
+    ],
+  },
+  {
+    label: "Source · validation · platform",
+    routes: [
+      {
+        href: "/validation/",
+        title: "Validation registry",
+        description: `${validationRows.length} validation rows with fixture counts and blocked runtime / signal states.`,
+      },
+      {
+        href: "/pipeline/",
+        title: "Pipeline",
+        description: "Source-to-rendered-route flow with gates, verifier responsibilities, and receipt dependencies.",
+      },
+      {
+        href: "/platform/contracts/",
+        title: "Platform contracts",
+        description: "Factory/controller, SOAR case packet, AI support-only, and blocked authority footers.",
+      },
+      {
+        href: "/proof/runtime-proof-factory/",
+        title: "Runtime boundary",
+        description: "Bounded Runtime Proof Factory summaries with raw evidence private and public runtime proof blocked.",
+      },
+    ],
+  },
+  {
+    label: "Maps · artifacts · controls",
+    routes: [
+      {
+        href: "/artifacts/",
+        title: "Artifact inventory",
+        description: "Filterable reviewer receipts and artifact cards with does-not-prove boundaries.",
+      },
+      {
+        href: "/architecture/",
+        title: "System map",
+        description: "Repository authority, truth surfaces, and control-plane separation.",
+      },
+      {
+        href: "/controls/",
+        title: "Claim firewall",
+        description: "Allowed wording and blocked wording across runtime, signal, public-safe, and authority claims.",
+      },
+      {
+        href: "/architecture/repo-authority-map/",
+        title: "Repo authority map",
+        description: "Six-repo authority model and truth-plane ownership.",
+      },
+    ],
+  },
+];
+
 export default function HomePage() {
   return (
     <>
-      {/* ── 01 · Hero · shipped work first ───────────────────────────── */}
       <section className="relative overflow-hidden cockpit-section hero-cockpit">
         <div className="hero-backdrop" aria-hidden="true" />
         <div className="container grid gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 items-start">
           <div className="reveal reveal--up">
-            <p className="hero-cockpit__eyebrow">Detection engineering · shipped with receipts</p>
+            <p className="hero-cockpit__eyebrow">Reviewer cockpit</p>
             <h1 className="hero-cockpit__headline">
-              Governed detection engineering,
-              <span className="hero-cockpit__headline-emph">shipped with receipts.</span>
+              HawkinsOperations.
+              <span className="hero-cockpit__headline-emph">
+                Governed detection engineering and AI Security Operations.
+              </span>
             </h1>
             <p className="hero-cockpit__lede">
-              Detections, validation cases, proof records, and reviewer artifacts — shipped with claim
-              boundaries attached. AI helps produce the work; evidence and human review decide what can
-              be claimed.
+              HawkinsOperations turns AI-assisted security work into controlled, reviewable proof.
+              Detections, validation cases, proof records, and reviewer artifacts route through claim
+              boundaries — AI supports the labor; evidence and human review authorize claims.
             </p>
 
-            <div className="hero-status" role="note" aria-label="Shipped-work and ceiling status">
-              <span className="hero-status__chip hero-status__chip--released">
-                <span className="hero-status__dot" aria-hidden="true" />
-                Proof Pack 001 · released
-              </span>
-              <span className="hero-status__chip hero-status__chip--det">HO-DET-001</span>
-              <span className="hero-status__chip hero-status__chip--det">{detectionCount} detections validated</span>
-              <span className="hero-status__chip hero-status__chip--det">{fixtureCount} controlled fixtures</span>
-              <span className="hero-status__chip hero-status__chip--ceiling">CONTROLLED_TEST_VALIDATED</span>
-              <span className="hero-status__chip hero-status__chip--blocked">Runtime / signal · BLOCKED</span>
+            <div className="hero-status" role="note" aria-label="Public ceiling and top receipt status">
+              <span className="hero-status__chip hero-status__chip--released">Proof Pack 001 route</span>
+              <span className="hero-status__chip hero-status__chip--det">HO-DET-001 case file</span>
+              <span className="hero-status__chip hero-status__chip--det">{registryStats.totalFixtures} controlled fixtures</span>
+              <span className="hero-status__chip hero-status__chip--det">GS-001-GS-080 subset</span>
+              <span className="hero-status__chip hero-status__chip--ceiling">{ceiling}</span>
+              <span className="hero-status__chip hero-status__chip--blocked">Runtime / signal blocked</span>
             </div>
 
             <div className="hero-cockpit__ctas">
-              <a
-                className="hero-cockpit__primary"
-                href={externalLinks.proofPack001Release}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Open GitHub Release ↗
+              <a className="hero-cockpit__primary" href="/proof/">
+                Open proof authority
               </a>
-              <a className="hero-cockpit__secondary" href="/artifacts/#evidence-bay">
-                Open the Evidence Bay →
+              <a className="hero-cockpit__secondary" href="/proof/governance-saves/">
+                Governance Saves
               </a>
-              <a className="hero-cockpit__secondary" href="/proof/ho-det-001/">
-                Inspect proof route →
+              <a className="hero-cockpit__secondary" href="/socaas-ai-security-operations/">
+                SOCaaS model
               </a>
-              <a
-                className="hero-cockpit__tertiary"
-                href={externalLinks.githubOrg}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                GitHub org ↗
+              <a className="hero-cockpit__secondary" href="/proof/proof-pack-001/">
+                Proof Pack 001
+              </a>
+              <a className="hero-cockpit__tertiary" href={externalLinks.githubOrg} target="_blank" rel="noopener noreferrer">
+                GitHub org
               </a>
             </div>
           </div>
 
           <div className="lg:pt-2 reveal reveal--up" data-delay="2">
-            <HeroControlConsole />
+            <StatusConsole showLoop={false} />
           </div>
         </div>
       </section>
 
-      {/* ── 02 · Work shipped · dashboard ────────────────────────────── */}
-      <section id="work-shipped" className="cockpit-section--tight">
+      <section id="cockpit-metrics" className="cockpit-section--tight">
         <div className="container reveal reveal--up">
           <div className="mb-6">
-            <p className="cockpit-eyebrow">Work shipped</p>
+            <p className="cockpit-eyebrow">What has shipped</p>
             <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              What's been built, validated, and recorded.
+              Compact receipts at the current ceiling.
             </h2>
             <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              Every number is counted from the site's own data. Each card opens the receipt.
+              The homepage shows the reviewer cockpit. Full registries and detailed proof pages live on their owner routes.
             </p>
           </div>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+            {cockpitMetrics.map((metric) => (
+              <article key={metric.label} className="card p-5">
+                <p className="mono text-xs uppercase text-blue-100">{metric.label}</p>
+                <p className="mt-3 break-words text-2xl font-semibold text-slate-50">{metric.value}</p>
+                <p className="mt-3 text-sm leading-6 text-slate-400">{metric.note}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="governance-saves-cockpit" className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Governance Saves snapshot</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Where controls fired — by category.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              Public-facing Governance Saves are organized by the failure mode they blocked. Open the explorer to
+              filter, search, and inspect rendered records.
+            </p>
+          </div>
+          <GovernanceSavesCockpit />
+        </div>
+      </section>
+
+      <section id="work-shipped" className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
           <WorkDashboard />
         </div>
       </section>
 
-      {/* ── 03 · Featured work units ─────────────────────────────────── */}
-      <section id="featured-work" className="cockpit-section--tight">
+      <section id="inspect-next" className="cockpit-section--tight pb-24">
         <div className="container reveal reveal--up">
           <div className="mb-6">
-            <p className="cockpit-eyebrow">Featured work</p>
+            <p className="cockpit-eyebrow">Inspect next</p>
             <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              Detections and the proof pack you can inspect.
-            </h2>
-          </div>
-          <FeaturedWork />
-        </div>
-      </section>
-
-      {/* ── 04 · Proof Pack 001 release receipt ──────────────────────── */}
-      <section id="release-001" className="cockpit-section--tight">
-        <div className="container reveal reveal--up">
-          <ProofPackReceipt />
-        </div>
-      </section>
-
-      {/* ── 05 · Recent governed work ────────────────────────────────── */}
-      <section id="release-sprint" className="cockpit-section--tight">
-        <div className="container">
-          <ActivityLedger />
-        </div>
-      </section>
-
-      {/* ── 06 · Evidence Bay CTA ────────────────────────────────────── */}
-      <section id="evidence-bay-cta" className="cockpit-section--tight">
-        <div className="container reveal reveal--up">
-          <div className="evbay-cta">
-            <div>
-              <p className="cockpit-eyebrow">Evidence Bay</p>
-              <h2 className="evbay-cta__title">The full library of shipped work and receipts.</h2>
-              <p className="evbay-cta__sub">
-                Filter proof records, validation outputs, CI receipts, and reviewer packets. Each card
-                routes to the evidence and states what it does not prove.
-              </p>
-            </div>
-            <a className="cta cta-primary evbay-cta__btn" href="/artifacts/#evidence-bay">
-              Open the Evidence Bay →
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* ── 07 · ATT&CK-mapped detection coverage ────────────────────── */}
-      <section id="attack-coverage" className="cockpit-section--tight">
-        <div className="container">
-          <div className="mb-6">
-            <p className="cockpit-eyebrow">Cyber Kill Chain -&gt; MITRE ATT&CK</p>
-            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              Lifecycle stage, ATT&CK mapping, source, validation, proof boundary.
-            </h2>
-          </div>
-          <div className="reveal reveal--up" data-delay="1">
-            <AttackCoverageMap />
-          </div>
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            <a className="cta cta-quiet" href={externalLinks.cyberKillChainCoverage} target="_blank" rel="noopener noreferrer">Cyber Kill Chain map ↗</a>
-            <a className="cta cta-quiet" href="/proof/#validation-registry">Validation registry →</a>
-            <a className="cta cta-quiet" href="/pipeline/#platform-contracts">Platform contracts →</a>
-          </div>
-        </div>
-      </section>
-
-      {/* ── 08 · How the work is controlled · interactive loop ───────── */}
-      <section id="detection-loop" className="cockpit-section--tight">
-        <div className="container">
-          <div className="flex flex-wrap items-baseline justify-between gap-3 mb-6">
-            <div>
-              <p className="cockpit-eyebrow">How the work is controlled</p>
-              <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-                Source to public boundary, in eight gated stages.
-              </h2>
-            </div>
-            <p className="muted max-w-md text-sm leading-6">
-              Select a stage to see what it produces, what it supports, and what it does not prove.
-            </p>
-          </div>
-          <GovernedDetectionLoop />
-        </div>
-      </section>
-
-      {/* ════ Control layer · the framework behind the work ════════════ */}
-
-      {/* ── 09 · What this work prevents ─────────────────────────────── */}
-      <section id="failure-mode" className="cockpit-section--tight">
-        <div className="container reveal reveal--up">
-          <FailureModeStrip />
-        </div>
-      </section>
-
-      {/* ── 10 · How work becomes a public-safe claim ────────────────── */}
-      <section id="control-route" className="cockpit-section--tight">
-        <div className="container">
-          <div className="mb-6">
-            <p className="cockpit-eyebrow">Control layer</p>
-            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              How work becomes a public-safe claim.
+              Choose the owner route.
             </h2>
             <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              Promotion is upward and gated; public claims stay capped at CONTROLLED_TEST_VALIDATED
-              until stronger evidence is separately promoted.
+              Parent pages summarize. Child and owner routes explain. Website rendering is not proof.
             </p>
           </div>
-          <div className="reveal reveal--up" data-delay="1">
-            <PromotionLadderHomepage />
-          </div>
-        </div>
-      </section>
-
-      {/* ── 11 · Proof ceiling matrix ────────────────────────────────── */}
-      <section id="proof-ceiling" className="cockpit-section--tight">
-        <div className="container">
-          <div className="mb-6">
-            <p className="cockpit-eyebrow">Proof ceiling</p>
-            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              Supported lanes are filled. Blocked lanes stay blocked.
-            </h2>
-          </div>
-          <TruthTelemetryMatrix />
-        </div>
-      </section>
-
-      {/* ── 12 · Repository authority ────────────────────────────────── */}
-      <section id="repo-authority" className="cockpit-section--tight">
-        <div className="container">
-          <div className="mb-6">
-            <p className="cockpit-eyebrow">Repository authority</p>
-            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              Six repositories. Authority flows down only.
-            </h2>
-            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              detections → validation → proof feeds the chain. website renders the receipts; it does not author them.
-            </p>
-          </div>
-          <RepoAuthorityDAG />
-        </div>
-      </section>
-
-      {/* ── 13 · Truth surfaces ──────────────────────────────────────── */}
-      <section id="truth-surfaces" className="cockpit-section--tight">
-        <div className="container">
-          <div className="mb-6">
-            <p className="cockpit-eyebrow">Truth surfaces</p>
-            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
-              Six surfaces. Each supports its own claims, nothing more.
-            </h2>
-          </div>
-          <TruthSurfaceInfographic />
-        </div>
-      </section>
-
-      {/* ── 14 · Claim firewall ──────────────────────────────────────── */}
-      <section id="claim-firewall" className="cockpit-section--tight">
-        <div className="container">
-          <ClaimFirewallPanel />
-        </div>
-      </section>
-
-      {/* ── 15 · Boundary closer · console + motto ───────────────────── */}
-      <section className="cockpit-section">
-        <div className="container">
-          <div className="grid gap-8 md:grid-cols-[1fr_0.8fr] md:items-center">
-            <div>
-              <p className="cockpit-eyebrow">The boundary, in one panel</p>
-              <h2 className="cockpit-headline mt-3" style={{ fontSize: "clamp(1.5rem, 2.4vw, 2rem)" }}>
-                AI is labor. Evidence and human review authorize claims.
-              </h2>
-              <div className="mt-6 flex flex-wrap items-center gap-3">
-                <a className="cta cta-primary" href="/proof/">Proof ledger →</a>
-                <a className="cta cta-quiet" href="/about/">Operator profile</a>
-              </div>
-              <div className="mt-8">
-                <div className="receipt-strip" aria-label="Doctrine motto">
-                  <span>Build loud</span>
-                  <span className="receipt-strip__sep">·</span>
-                  <span>Verify hard</span>
-                  <span className="receipt-strip__sep">·</span>
-                  <span>Claim tight</span>
-                  <span className="receipt-strip__sep">·</span>
-                  <span>Ship receipts</span>
+          <div className="grid gap-10">
+            {routeGroups.map((group) => (
+              <div key={group.label}>
+                <h3 className="mono text-[0.65rem] tracking-[0.18em] uppercase text-blue-100 mb-3">
+                  {group.label}
+                </h3>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                  {group.routes.map((route) => (
+                    <LinkCard
+                      key={route.href}
+                      href={route.href}
+                      title={route.title}
+                      description={route.description}
+                    />
+                  ))}
                 </div>
               </div>
-            </div>
-            <div>
-              <StatusConsole showLoop={false} />
-            </div>
+            ))}
           </div>
         </div>
       </section>

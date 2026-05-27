@@ -48,6 +48,38 @@ if (missing.length > 0) {
   process.exit(1);
 }
 
+const governanceSavesData = readFileSync(join(root, "src/data/governanceSaves.ts"), "utf8");
+const governanceSavesExplorer = readFileSync(join(root, "components/GovernanceSavesExplorer.tsx"), "utf8");
+const governanceSavesCockpit = readFileSync(join(root, "components/GovernanceSavesCockpit.tsx"), "utf8");
+const governanceSavesPage = readFileSync(join(root, "app/proof/governance-saves/page.tsx"), "utf8");
+
+const governanceFailures = [];
+if (!/export const publicGovernanceSaves = governanceSaves\.filter\(\s*\(save\) => save\.publicSafety !== "PRIVATE_ONLY",\s*\);/s.test(governanceSavesData)) {
+  governanceFailures.push("src/data/governanceSaves.ts must export publicGovernanceSaves filtered to exclude PRIVATE_ONLY records.");
+}
+
+for (const [file, source] of [
+  ["components/GovernanceSavesExplorer.tsx", governanceSavesExplorer],
+  ["components/GovernanceSavesCockpit.tsx", governanceSavesCockpit],
+]) {
+  if (/\bgovernanceSaves\.(filter|map|length)\b/.test(source)) {
+    governanceFailures.push(`${file} must render from publicGovernanceSaves, not the full governanceSaves source array.`);
+  }
+}
+
+if (!/public-facing subset/i.test(governanceSavesPage) || !/not rendered/i.test(governanceSavesPage)) {
+  governanceFailures.push("app/proof/governance-saves/page.tsx must describe Governance Saves as a public-facing subset and state that excluded records are not rendered.");
+}
+
+if (/all\s+GS-001\s+(?:through|→|-)\s+GS-080/i.test(governanceSavesPage) || /\b80\s+public/i.test(governanceSavesPage)) {
+  governanceFailures.push("app/proof/governance-saves/page.tsx must not imply that all GS-001 through GS-080 records are public examples.");
+}
+
+if (governanceFailures.length > 0) {
+  console.error(`Governance Saves public-rendering invariant failed:\n${governanceFailures.map((line) => `- ${line}`).join("\n")}`);
+  process.exit(1);
+}
+
 const blockedTerms = [
   "runtime-active",
   "signal-observed",
