@@ -9842,3 +9842,139 @@ body::after {
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 0.7rem; letter-spacing: 0.05em; color: var(--silver-bright);
 }
+
+/* ── Visual polish layer (2026-05-27) ─────────────────────────────────
+   Scoped tweaks: hero spacing rhythm, premium card hover, tighter mobile
+   section padding, refined explorer detail panel, sharper status chips. */
+
+@media (max-width: 720px) {
+  .cockpit-section--tight { padding-top: 2.6rem; padding-bottom: 2.6rem; }
+  .cockpit-headline { font-size: clamp(1.45rem, 5.8vw, 1.85rem); line-height: 1.2; }
+  .hero-cockpit__lede { font-size: 1.02rem; }
+}
+
+/* Reviewer status row breathes more on mobile, denser on desktop */
+.hero-status {
+  gap: 8px 10px;
+}
+.hero-status__chip {
+  transition: border-color 160ms ease, transform 160ms ease, color 160ms ease;
+}
+.hero-status__chip:hover {
+  transform: translateY(-1px);
+}
+.hero-status__chip--ceiling { background: rgba(96, 165, 250, 0.08); }
+.hero-status__chip--blocked { background: rgba(255, 107, 129, 0.06); }
+.hero-status__chip--released { background: rgba(96, 165, 250, 0.1); }
+
+/* Card hover lift: applies to base .card so home + sub-pages feel premium */
+.card {
+  transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+.card:hover {
+  border-color: rgba(143, 216, 255, 0.42);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
+/* GSE detail panel: drop dashed border for premium card-inside-card look */
+.gse__detail {
+  background: rgba(8, 13, 22, 0.65);
+  border: 1px solid rgba(143, 216, 255, 0.18);
+  border-top: 2px solid var(--ice-blue);
+  border-radius: 8px;
+}
+.gse__card { box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18); }
+.gse__card--open {
+  border-color: var(--ice-blue);
+  box-shadow: 0 10px 26px rgba(143, 216, 255, 0.08);
+}
+.gse__expand {
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+.gse__expand:hover { background: rgba(143, 216, 255, 0.06); }
+.gse__metric {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.6), rgba(8, 13, 22, 0.45));
+}
+
+/* GSC cockpit card on homepage: slightly larger CTA, sharper hover */
+.gsc {
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28);
+}
+.gsc__cat {
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+.gsc__cat:hover {
+  border-color: var(--ice-blue);
+  background: rgba(143, 216, 255, 0.06);
+  transform: translateY(-1px);
+}
+
+/* Runtime Boundary Ladder: clearer accent + breathing space */
+.rbl__step {
+  padding: 16px 18px 16px 22px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
+}
+.rbl__step--supported { background: linear-gradient(90deg, rgba(143, 216, 255, 0.08), rgba(15, 23, 42, 0.55) 45%); }
+.rbl__step--partial { background: linear-gradient(90deg, rgba(250, 204, 21, 0.07), rgba(15, 23, 42, 0.55) 45%); }
+.rbl__step--blocked { background: linear-gradient(90deg, rgba(252, 165, 165, 0.07), rgba(15, 23, 42, 0.55) 45%); }
+.rbl__label { font-size: 1.02rem; }
+@media (max-width: 560px) {
+  .rbl__step-head { gap: 6px; }
+  .rbl__label { min-width: 0; }
+}
+
+/* SOCaaS workflow flow: connector visible on more breakpoints */
+.swf__stage {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+.swf__stage:hover {
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28);
+}
+.swf__connector {
+  /* Existing rule hides until ≥720px; we keep that but boost the styling. */
+  font-weight: 700;
+}
+
+/* Closed-loop boundary footer: more premium ribbon */
+.clf__boundary {
+  background: linear-gradient(180deg, rgba(252, 165, 165, 0.04), rgba(8, 13, 22, 0.5));
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Detections card hierarchy: stronger ID + lift */
+.cockpit-section--tight .grid .card {
+  transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+/* About page: slightly more generous hero rhythm */
+@media (min-width: 980px) {
+  .hero-cockpit { padding-top: 4.5rem; padding-bottom: 3rem; }
+}
+
+/* LinkCard: stronger hover signal, "Open route" eyebrow gets accent */
+a.card.group:hover .mono { color: var(--ice-blue); }
+a.card.group:hover { border-color: rgba(143, 216, 255, 0.45); }
+
+/* Boundary notice: subtle warning rail */
+.bcf__chip:focus-within { outline: 2px solid var(--ice-blue); outline-offset: 1px; }
+
+/* Section dividers between groups on home (visual rhythm only) */
+.cockpit-section--tight + .cockpit-section--tight > .container > .reveal:first-child {
+  position: relative;
+}
+
+/* Reduce motion respected */
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .hero-status__chip,
+  .gse__card,
+  .gse__expand,
+  .gsc__cat,
+  .rbl__step,
+  .swf__stage {
+    transition: none !important;
+    transform: none !important;
+  }
+}

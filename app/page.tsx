@@ -13,13 +13,14 @@ export const metadata: Metadata = {
   },
 };
 
-const statusChips = [
-  "Controls fired before public truth",
-  `${governanceSavesSummary.publicRenderedCount} public-facing governance examples`,
-  "Private-only records excluded",
-  "AI support-only",
-  "Runtime claims bounded",
-  "Proof Pack 001 available",
+type StatusChipTone = "det" | "ceiling" | "blocked" | "released";
+const statusChips: { label: string; tone: StatusChipTone }[] = [
+  { label: "Controls fired before public truth", tone: "ceiling" },
+  { label: `${governanceSavesSummary.publicRenderedCount} public-facing governance examples`, tone: "det" },
+  { label: "Proof Pack 001 available", tone: "released" },
+  { label: "AI support-only", tone: "det" },
+  { label: "Runtime claims bounded", tone: "blocked" },
+  { label: "Private-only records excluded", tone: "blocked" },
 ];
 
 const publicDoors = [
@@ -102,8 +103,8 @@ export default function HomePage() {
 
             <div className="hero-status" role="note" aria-label="Reviewer status">
               {statusChips.map((chip) => (
-                <span key={chip} className="hero-status__chip hero-status__chip--det">
-                  {chip}
+                <span key={chip.label} className={`hero-status__chip hero-status__chip--${chip.tone}`}>
+                  {chip.label}
                 </span>
               ))}
             </div>
@@ -156,7 +157,7 @@ export default function HomePage() {
               Controls that fired before bad truth shipped.
             </h2>
             <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              Governance Saves are the clearest public signal of the system: the site shows examples where
+              Governance Saves are the clearest public indicator of the system: the site shows examples where
               unsupported public claims, stale state, private evidence, or AI-authority drift were blocked or corrected.
             </p>
           </div>
