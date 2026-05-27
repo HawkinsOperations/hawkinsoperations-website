@@ -31,7 +31,7 @@ export default function Header() {
           </span>
         </a>
 
-        <nav className="hidden items-center gap-7 md:flex" aria-label="Primary navigation">
+        <nav className="hidden items-center gap-4 lg:gap-7 md:flex" aria-label="Primary navigation">
           {primaryNavigation.map((item) => (
             <a
               key={item.href}
@@ -46,7 +46,7 @@ export default function Header() {
 
         <div className="flex items-center gap-3">
           <a
-            className="hidden md:inline-flex cta cta-quiet"
+            className="hidden xl:inline-flex cta cta-quiet"
             href={externalLinks.githubOrg}
             target="_blank"
             rel="noopener noreferrer"

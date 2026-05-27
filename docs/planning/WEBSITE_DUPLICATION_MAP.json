@@ -1,0 +1,163 @@
+{
+  "status": "planning_only",
+  "duplicateSeverityScale": {
+    "P0": "Damages reviewer clarity. Move detail off parent pages or delete duplicate parent rendering.",
+    "P1": "Creates density or scanning failure. Compress to summary, link card, or child route.",
+    "P2": "Acceptable repetition but should be compressed.",
+    "P3": "Keep as global badge only."
+  },
+  "blockedClaimsToPreserve": [
+    "runtime-active public proof is blocked",
+    "signal-observed public proof is blocked",
+    "public-safe runtime proof is blocked",
+    "production-ready is blocked",
+    "autonomous SOC is blocked",
+    "AI-approved disposition is blocked",
+    "analyst-approved disposition is blocked",
+    "fleet-wide coverage is blocked",
+    "customer deployment is blocked",
+    "live Splunk proof is blocked",
+    "live Wazuh proof is blocked",
+    "live AWS proof is blocked",
+    "Cribl-routed or Wazuh-routed public proof is blocked unless separately repo-backed and promoted",
+    "website rendering as proof is blocked",
+    "green CI as merge or proof authority is blocked",
+    "source presence as runtime truth is blocked",
+    "validation truth as signal truth is blocked",
+    "private runtime evidence as public-safe material is blocked"
+  ],
+  "duplicates": [
+    {
+      "id": "public-ceiling-status-strip",
+      "title": "Public ceiling and blocked runtime/signal/public-safe status",
+      "severity": "P0",
+      "currentRoutes": ["/", "/start/", "/pipeline/", "/proof/", "/artifacts/", "/about/", "/controls/", "/proof/ho-det-001/"],
+      "sourceFiles": ["app/page.tsx", "app/start/page.tsx", "app/pipeline/page.tsx", "app/proof/page.tsx", "app/artifacts/page.tsx", "app/about/page.tsx", "app/controls/page.tsx", "app/proof/ho-det-001/page.tsx", "config/site.ts", "src/data/claims.ts"],
+      "classification": "KEEP_GLOBAL_SHORT",
+      "destination": "/proof/",
+      "parentReplacement": "Current ceiling: CONTROLLED_TEST_VALIDATED. Runtime and signal claims remain blocked.",
+      "proofBoundary": "Website rendering is not proof. The ceiling is claim guidance, not runtime or signal evidence."
+    },
+    {
+      "id": "validation-registry",
+      "title": "Validation registry and fixture summaries",
+      "severity": "P0",
+      "currentRoutes": ["/pipeline/", "/proof/", "/", "/start/"],
+      "sourceFiles": ["app/pipeline/page.tsx", "app/proof/page.tsx", "app/page.tsx", "app/start/page.tsx", "components/ValidationRegistryDashboard.tsx", "src/data/validationRegistry.ts"],
+      "classification": "MOVE_TO_CHILD_ROUTE",
+      "destination": "/validation/",
+      "parentReplacement": "Validation registry: controlled packages and fixture counts. Open validation detail.",
+      "proofBoundary": "Validation truth supports controlled-test results only. It does not prove runtime or signal truth."
+    },
+    {
+      "id": "proof-pack-001",
+      "title": "Proof Pack 001 release, manifest, and receipt",
+      "severity": "P0",
+      "currentRoutes": ["/", "/proof/", "/start/", "/artifacts/"],
+      "sourceFiles": ["app/page.tsx", "app/proof/page.tsx", "app/start/page.tsx", "app/artifacts/page.tsx", "components/ProofPackReceipt.tsx", "components/ProofManifestConsole.tsx", "src/data/proofPackManifest.ts"],
+      "classification": "MOVE_TO_CHILD_ROUTE",
+      "destination": "/proof/proof-pack-001/",
+      "parentReplacement": "Proof Pack 001: released reviewer package at the current ceiling. Open pack details.",
+      "proofBoundary": "The release route does not promote runtime, signal, production, or public-safe runtime proof."
+    },
+    {
+      "id": "claim-firewall",
+      "title": "Claim firewall and blocked public wording",
+      "severity": "P1",
+      "currentRoutes": ["/", "/proof/", "/controls/", "/start/", "/proof/ho-det-001/", "/field-notes/", "/artifacts/"],
+      "sourceFiles": ["app/page.tsx", "app/proof/page.tsx", "app/controls/page.tsx", "app/start/page.tsx", "app/proof/ho-det-001/page.tsx", "components/ClaimFirewallPanel.tsx", "components/ClaimFirewall.tsx", "src/data/blockedClaimFirewall.ts"],
+      "classification": "KEEP_ON_ONE_PARENT_PAGE",
+      "destination": "/controls/",
+      "parentReplacement": "Blocked claims remain visible. Open the control surface.",
+      "proofBoundary": "Blocked wording stays blocked until a separate evidence-backed promotion changes state."
+    },
+    {
+      "id": "platform-contracts",
+      "title": "Platform contracts, SOAR, AutoSOC, LLM/GPU, and factory boundaries",
+      "severity": "P1",
+      "currentRoutes": ["/pipeline/", "/proof/", "/artifacts/", "/start/"],
+      "sourceFiles": ["app/pipeline/page.tsx", "app/proof/page.tsx", "app/artifacts/page.tsx", "app/start/page.tsx", "components/PlatformContractBlueprint.tsx", "components/GpuFactoryLane.tsx", "src/data/platformContracts.ts"],
+      "classification": "MOVE_TO_CHILD_ROUTE",
+      "destination": "/platform/contracts/",
+      "parentReplacement": "Platform contracts: support-only structure and blocked authority footers. Open contract details.",
+      "proofBoundary": "Contracts define structure and gates. They do not prove live SOAR, runtime activity, model execution, or disposition authority."
+    },
+    {
+      "id": "evidence-bay",
+      "title": "Evidence Bay and artifact inventory",
+      "severity": "P1",
+      "currentRoutes": ["/artifacts/", "/", "/start/", "/proof/"],
+      "sourceFiles": ["app/artifacts/page.tsx", "app/page.tsx", "app/start/page.tsx", "app/proof/page.tsx", "components/EvidenceBay.tsx", "src/data/artifacts.ts", "src/data/recentGovernedArtifacts.ts"],
+      "classification": "KEEP_ON_ONE_PARENT_PAGE",
+      "destination": "/artifacts/",
+      "parentReplacement": "Artifact inventory: filterable receipts and reviewer cards. Open Evidence Bay.",
+      "proofBoundary": "Artifact cards route to receipts; cards are not proof by themselves."
+    },
+    {
+      "id": "ai-labor-governance-authority",
+      "title": "AI is labor, governance is authority",
+      "severity": "P2",
+      "currentRoutes": ["/", "/about/", "/proof/", "/controls/", "/proof-loop/", "/field-notes/"],
+      "sourceFiles": ["app/page.tsx", "app/about/page.tsx", "app/proof/page.tsx", "app/controls/page.tsx", "app/proof-loop/page.tsx", "src/data/fieldNotes.ts", "src/data/artifacts.ts"],
+      "classification": "KEEP_GLOBAL_SHORT",
+      "destination": "/about/",
+      "parentReplacement": "AI supports labor. Human governance authorizes claims.",
+      "proofBoundary": "AI output cannot approve, promote, close, contain, suppress, or authorize a claim."
+    },
+    {
+      "id": "cyber-kill-chain-attack-map",
+      "title": "Cyber Kill Chain and MITRE ATT&CK coverage map",
+      "severity": "P2",
+      "currentRoutes": ["/", "/start/"],
+      "sourceFiles": ["app/page.tsx", "app/start/page.tsx", "components/AttackCoverageMap.tsx", "src/data/attackCoverage.ts"],
+      "classification": "MOVE_TO_CHILD_ROUTE",
+      "destination": "/detections/",
+      "parentReplacement": "Detection coverage map: lifecycle stage, ATT&CK mapping, validation, and proof boundary.",
+      "proofBoundary": "Mapping is reviewer navigation and coverage intent. It does not prove live telemetry, deployment, or customer use."
+    },
+    {
+      "id": "repo-authority-map",
+      "title": "Repository authority map and repo DAG",
+      "severity": "P2",
+      "currentRoutes": ["/", "/repos/", "/architecture/"],
+      "sourceFiles": ["app/page.tsx", "app/repos/page.tsx", "app/architecture/page.tsx", "components/RepoAuthorityDAG.tsx", "config/repo-authority.ts"],
+      "classification": "MOVE_TO_CHILD_ROUTE",
+      "destination": "/architecture/repo-authority-map/",
+      "parentReplacement": "Repo authority map: where each truth surface lives.",
+      "proofBoundary": "Repo source truth does not prove runtime truth."
+    },
+    {
+      "id": "truth-surfaces",
+      "title": "Truth surfaces and proof plane separation",
+      "severity": "P2",
+      "currentRoutes": ["/", "/architecture/", "/architecture/truth-surfaces/", "/proof-loop/"],
+      "sourceFiles": ["app/page.tsx", "app/architecture/page.tsx", "app/architecture/truth-surfaces/page.tsx", "app/proof-loop/page.tsx", "components/TruthSurfaceInfographic.tsx", "components/TruthSurfaceSeparation.tsx", "components/TruthSurfaceBoard.tsx"],
+      "classification": "KEEP_ON_ONE_PARENT_PAGE",
+      "destination": "/architecture/truth-surfaces/",
+      "parentReplacement": "Truth surfaces: six surfaces, six proof meanings.",
+      "proofBoundary": "No surface inherits proof from another by presentation."
+    },
+    {
+      "id": "legacy-boundary",
+      "title": "HawkinsOps legacy boundary",
+      "severity": "P2",
+      "currentRoutes": ["/about/", "/legacy/", "/artifacts/"],
+      "sourceFiles": ["app/about/page.tsx", "app/legacy/page.tsx", "src/data/artifacts.ts"],
+      "classification": "KEEP_ON_ONE_PARENT_PAGE",
+      "destination": "/legacy/",
+      "parentReplacement": "Legacy context exists. Current claims require current evidence.",
+      "proofBoundary": "Legacy material does not automatically promote current HawkinsOperations claims."
+    },
+    {
+      "id": "website-rendering-not-proof",
+      "title": "Website rendering is not proof",
+      "severity": "P3",
+      "currentRoutes": ["/", "/start/", "/pipeline/", "/proof/", "/artifacts/", "/about/", "/controls/", "/architecture/", "/proof-loop/", "/proof/ho-det-001/"],
+      "sourceFiles": ["config/site.ts", "src/data/claims.ts", "components/BoundaryNotice.tsx", "components/Footer.tsx"],
+      "classification": "KEEP_GLOBAL_SHORT",
+      "destination": "global status/footer badge",
+      "parentReplacement": "Rendering only.",
+      "proofBoundary": "The website explains and routes. It does not author proof."
+    }
+  ]
+}

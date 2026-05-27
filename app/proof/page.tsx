@@ -26,7 +26,7 @@ const proofStateBadge: Record<string, { label: string; tone: string }> = {
 };
 
 export const metadata: Metadata = {
-  title: "Proof | HawkinsOps",
+  title: "Proof | HawkinsOperations",
   description:
     "HawkinsOperations proof authority console: public ceiling, supported claim routes, blocked claim firewall, proof records, and promotion gates.",
   alternates: {
@@ -651,6 +651,14 @@ export default function ProofIndexPage() {
             </h2>
           </div>
           <div className="grid gap-3 md:grid-cols-3">
+            <a className="artifact-tile" href="/proof/governance-saves/">
+              <span className="artifact-tile__cat">GOVERNANCE SAVES</span>
+              <span className="artifact-tile__title">Controls that prevented unsafe truth</span>
+              <span className="artifact-tile__desc">
+                Public-backed examples where review, verifiers, branch hygiene, and claim ceilings blocked drift.
+              </span>
+              <span className="artifact-tile__link">Open →</span>
+            </a>
             <a className="artifact-tile" href="/controls/">
               <span className="artifact-tile__cat">CLAIM FIREWALL</span>
               <span className="artifact-tile__title">Allowed and blocked wording</span>
