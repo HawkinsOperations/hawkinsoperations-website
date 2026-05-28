@@ -45,6 +45,7 @@ export default function ProofIndexPage() {
       </section>
 
       {/* ── Claim firewall ───────────────────────────────────────────── */}
+      <div id="verifiers" className="legacy-anchor-target" aria-hidden="true" />
       <section id="claim-firewall" className="cockpit-section--tight">
         <div className="container">
           <ClaimFirewallSplitPane />
@@ -72,6 +73,7 @@ export default function ProofIndexPage() {
       </section>
 
       {/* ── Runtime boundary tower ───────────────────────────────────── */}
+      <div id="validation-registry" className="legacy-anchor-target" aria-hidden="true" />
       <section id="runtime-boundary" className="cockpit-section--tight">
         <div className="container">
           <RuntimeBoundaryVisual />
