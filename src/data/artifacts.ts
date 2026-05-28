@@ -182,23 +182,42 @@ export const artifacts: Artifact[] = [
     tags: ["HO-DET-012", "runtime-boundary", "controlled-validation"],
   },
   {
-    slug: "ho-pipe-001-ho-ndr-001-telemetry-contract-lane",
-    title: "HO-PIPE-001 + HO-NDR-001 Telemetry Contract Lane",
+    slug: "ho-pipe-001-telemetry-route-boundary",
+    title: "HO-PIPE-001 Telemetry Route Boundary",
     category: "architecture",
-    truthSurface: "Contract boundary",
+    truthSurface: "Telemetry route boundary",
+    status: "reference",
+    proofCeiling: "SOURCE_EXISTS_VALIDATION_PLANNED",
+    description: "Telemetry route-boundary artifact for reviewer inspection of HO-PIPE-001 route-integrity thinking before validation is promoted.",
+    proves: "HO-PIPE-001 is represented in the public detection map as a source-existing telemetry route boundary with validation planned.",
+    doesNotProve: "Live route validation, Cribl reduction proof, runtime-active public proof, public-safe proof, or production telemetry routing.",
+    primary: { label: "Open detections map", href: "/detections/" },
+    secondary: { label: "Platform contracts", href: "/platform/contracts/" },
+    sourceRoute: { label: "Detections map", href: "/detections/" },
+    publicSafeStatus: "PUBLIC_ROUTE_BOUNDARY_SUMMARY",
+    reviewerAction: "Inspect HO-PIPE-001 on the detections map as source-existing boundary work; do not read it as validation enforcement.",
+    relatedSurface: "Detections / Platform contracts",
+    proofBoundaryNote: "SOURCE_EXISTS / VALIDATION_PLANNED is not route proof and does not promote telemetry runtime claims.",
+    tags: ["HO-PIPE-001", "telemetry", "route-boundary"],
+  },
+  {
+    slug: "ho-ndr-001-security-onion-visibility-contract",
+    title: "HO-NDR-001 Security Onion Visibility Contract",
+    category: "architecture",
+    truthSurface: "NDR visibility contract",
     status: "reference",
     proofCeiling: "BOUNDARY_CONTRACT_ONLY",
-    description: "Telemetry route and NDR boundary contract lane for reviewer inspection of route-integrity and visibility-contract thinking.",
-    proves: "A public boundary-contract concept is represented for telemetry route integrity and NDR visibility review.",
-    doesNotProve: "Live SIEM/NDR coverage, public-safe runtime proof, production NDR, permanent SPAN, route-proof, or cross-source corroboration as public proof.",
-    primary: { label: "Open platform contracts", href: "/platform/contracts/" },
-    secondary: { label: "Validation registry", href: externalLinks.validationRegistry, external: true },
+    description: "Security Onion / NDR visibility contract artifact for reviewer inspection of boundary-only corroboration thinking.",
+    proves: "HO-NDR-001 is represented as a contract-only visibility boundary with no fixtures and no proof record.",
+    doesNotProve: "Production NDR, permanent SPAN, public-safe NDR proof, live NDR coverage, or cross-source corroboration as public proof.",
+    primary: { label: "Open validation registry", href: externalLinks.validationRegistry, external: true },
+    secondary: { label: "Open platform contracts", href: "/platform/contracts/" },
     sourceRoute: { label: "Validation registry", href: externalLinks.validationRegistry, external: true },
     publicSafeStatus: "PUBLIC_BOUNDARY_CONTRACT_SUMMARY",
-    reviewerAction: "Read the contract lane as a boundary model, then check the validation registry for contract-only status.",
-    relatedSurface: "Platform contracts / Validation registry / Detections",
-    proofBoundaryNote: "Contract shape is not telemetry proof; route and NDR claims require separate promoted evidence.",
-    tags: ["HO-PIPE-001", "HO-NDR-001", "telemetry", "contract"],
+    reviewerAction: "Read the validation-registry row as contract-only; do not promote it into observed Security Onion proof.",
+    relatedSurface: "Validation registry / Platform contracts / Detections",
+    proofBoundaryNote: "A visibility contract is not NDR proof; runtime, signal, and corroboration claims require separate promoted evidence.",
+    tags: ["HO-NDR-001", "Security Onion", "NDR", "visibility-contract"],
   },
   {
     slug: "proof-loop-reviewer-brief-review-zip-standard",
@@ -414,3 +433,44 @@ export function artifactsByCategory(category: ArtifactCategory): Artifact[] {
 export const flagshipArtifacts = artifacts.filter((a) => a.flagship);
 export const legacyArtifacts = artifacts.filter((a) => a.legacy);
 export const nonFlagshipArtifacts = artifacts.filter((a) => !a.flagship && !a.legacy);
+
+export const highRoiArtifactGroups: {
+  title: string;
+  description: string;
+  slugs: string[];
+  artifacts: Artifact[];
+}[] = [
+  {
+    title: "Framework & Map",
+    description: "Reviewer navigation artifacts that orient lifecycle, framework, and controlled workflow inspection.",
+    slugs: [
+      "cyber-kill-chain-attack-coverage-map",
+      "detection-factory-validation-factory-controller",
+    ],
+    artifacts: [],
+  },
+  {
+    title: "Validation & Proof Boundary",
+    description: "Receipts that keep controlled validation, runtime boundaries, and reviewer packets separated from proof promotion.",
+    slugs: [
+      "ho-det-012-controlled-validation-runtime-boundary",
+      "proof-loop-reviewer-brief-review-zip-standard",
+    ],
+    artifacts: [],
+  },
+  {
+    title: "Telemetry & AI Boundary",
+    description: "Boundary cards for telemetry routes, NDR visibility contracts, and support-only AI triage authority.",
+    slugs: [
+      "ho-pipe-001-telemetry-route-boundary",
+      "ho-ndr-001-security-onion-visibility-contract",
+      "ho-lab-auto-support-only-ai-triage-boundary",
+    ],
+    artifacts: [],
+  },
+].map((group) => ({
+  ...group,
+  artifacts: group.slugs
+    .map((slug) => artifacts.find((artifact) => artifact.slug === slug))
+    .filter((artifact): artifact is Artifact => Boolean(artifact)),
+}));
