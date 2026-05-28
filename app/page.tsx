@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import GovernanceSavesCockpit from "@components/GovernanceSavesCockpit";
+import ControlsFiredGraph from "@components/ControlsFiredGraph";
+import HomeTrustBoundaryPanel from "@components/HomeTrustBoundaryPanel";
 import OrbitalHawkHero from "@components/OrbitalHawkHero";
 import ProofLoopRail from "@components/ProofLoopRail";
 import ReviewerModeSelector from "@components/ReviewerModeSelector";
 import SixDoorCockpit from "@components/SixDoorCockpit";
-import TrustBoundaryPanel from "@components/TrustBoundaryPanel";
 
 export const metadata: Metadata = {
   title: "HawkinsOperations",
@@ -21,7 +21,7 @@ export default function HomePage() {
       <OrbitalHawkHero />
 
       <section id="proof-loop" className="cockpit-section--tight">
-        <div className="container reveal reveal--up">
+        <div className="container">
           <div className="home-section__head mb-6">
             <p className="cockpit-eyebrow">Proof loop</p>
             <h2
@@ -40,7 +40,7 @@ export default function HomePage() {
       </section>
 
       <section id="reviewer-mode" className="cockpit-section--tight">
-        <div className="container reveal reveal--up">
+        <div className="container">
           <div className="home-section__head mb-6">
             <p className="cockpit-eyebrow">Reviewer mode</p>
             <h2
@@ -59,7 +59,7 @@ export default function HomePage() {
       </section>
 
       <section id="six-doors" className="cockpit-section--tight">
-        <div className="container reveal reveal--up">
+        <div className="container">
           <div className="home-section__head mb-6">
             <p className="cockpit-eyebrow">Six public doors</p>
             <h2
@@ -77,29 +77,15 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="governance-saves-cockpit" className="cockpit-section--tight">
-        <div className="container reveal reveal--up">
-          <div className="home-section__head mb-6">
-            <p className="cockpit-eyebrow">Proof of value</p>
-            <h2
-              className="cockpit-headline mt-2"
-              style={{ fontSize: "clamp(1.7rem, 2.8vw, 2.4rem)" }}
-            >
-              Controls that fired before bad truth shipped.
-            </h2>
-            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              Governance Saves are the clearest public indicator of the system: examples where
-              unsupported public claims, stale state, private evidence, or AI-authority drift
-              were blocked or corrected. Private-only records are not rendered.
-            </p>
-          </div>
-          <GovernanceSavesCockpit />
+      <section id="controls-fired" className="cockpit-section--tight">
+        <div className="container">
+          <ControlsFiredGraph />
         </div>
       </section>
 
       <section id="trust-boundary" className="cockpit-section--tight pb-24">
-        <div className="container reveal reveal--up">
-          <TrustBoundaryPanel />
+        <div className="container">
+          <HomeTrustBoundaryPanel />
         </div>
       </section>
     </>
