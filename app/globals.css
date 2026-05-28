@@ -11118,6 +11118,12 @@ body::after {
    ════════════════════════════════════════════════════════════════════ */
 
 /* ── ProofVaultHero ─────────────────────────────────────────────────── */
+.legacy-anchor-target {
+  display: block;
+  height: 0;
+  scroll-margin-top: 96px;
+}
+
 .pvh {
   position: relative;
   overflow: hidden;
