@@ -9875,22 +9875,23 @@ body::after {
   overflow: hidden;
   display: flex;
   align-items: center;
-  min-height: clamp(720px, 86vh, 940px);
-  padding: clamp(5rem, 11vw, 9rem) 0 clamp(4rem, 8vw, 6.5rem);
-  background: #02060e;
+  min-height: clamp(700px, 84vh, 920px);
+  padding: clamp(4.5rem, 10vw, 8rem) 0 clamp(4rem, 8vw, 6.5rem);
+  background:
+    radial-gradient(120% 90% at 78% 28%, rgba(20, 46, 78, 0.55) 0%, rgba(2, 6, 14, 0) 60%),
+    linear-gradient(180deg, #040a16 0%, #02060e 60%, #01040a 100%);
 }
-.ohh__image {
+.ohh__glow {
   position: absolute;
-  inset: 0;
-  z-index: -2;
-  background-image:
-    linear-gradient(90deg, rgba(2, 6, 14, 0.94) 0%, rgba(2, 6, 14, 0.82) 24%, rgba(2, 6, 14, 0.28) 54%, rgba(2, 6, 14, 0.5) 100%),
-    linear-gradient(180deg, rgba(2, 6, 14, 0.2) 0%, rgba(2, 6, 14, 0.08) 42%, rgba(2, 6, 14, 0.94) 100%),
-    url("/brand/hawkinsoperations-hero-primary.png");
-  background-size: cover;
-  background-position: center;
-  opacity: 0.98;
-  transform: scale(1.01);
+  z-index: 0;
+  top: 50%;
+  right: clamp(-6%, 4vw, 8%);
+  width: min(640px, 52vw);
+  height: min(640px, 52vw);
+  transform: translateY(-50%);
+  background: radial-gradient(circle, rgba(143, 216, 255, 0.18) 0%, rgba(95, 191, 255, 0.06) 38%, rgba(2, 6, 14, 0) 70%);
+  filter: blur(12px);
+  pointer-events: none;
 }
 .ohh::before {
   content: "";
@@ -9932,72 +9933,74 @@ body::after {
   50%      { opacity: 1;    transform: scale(1.35); }
 }
 
-.ohh__core {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.18;
-}
-.ohh__ring {
-  position: absolute;
-  border-radius: 50%;
-  border: 1px solid rgba(143, 216, 255, 0.18);
-  box-shadow:
-    inset 0 0 30px rgba(143, 216, 255, 0.06),
-    0 0 30px rgba(143, 216, 255, 0.04);
-}
-.ohh__ring--xl { width: min(1100px, 130vw); height: min(1100px, 130vw); animation: ohhRingDrift 60s linear infinite; }
-.ohh__ring--lg { width: min(820px, 95vw);   height: min(820px, 95vw);   border-color: rgba(143,216,255,0.22); animation: ohhRingDrift 45s linear infinite reverse; }
-.ohh__ring--md { width: min(560px, 70vw);   height: min(560px, 70vw);   border-color: rgba(143,216,255,0.28); animation: ohhRingDrift 32s linear infinite; }
-.ohh__ring--sm { width: min(360px, 50vw);   height: min(360px, 50vw);   border-color: rgba(143,216,255,0.34); animation: ohhRingDrift 22s linear infinite reverse; }
-@keyframes ohhRingDrift {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-.ohh__pulse {
-  position: absolute;
-  width: 220px; height: 220px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(143, 216, 255, 0.35) 0%, rgba(143, 216, 255, 0) 70%);
-  filter: blur(6px);
-  animation: ohhPulse 5.5s ease-in-out infinite;
-}
 @keyframes ohhPulse {
   0%, 100% { opacity: 0.55; transform: scale(1); }
   50%      { opacity: 0.95; transform: scale(1.18); }
 }
 
-.ohh__monogram {
+.ohh__grid {
   position: relative;
-  width: clamp(160px, 28vw, 280px);
-  height: auto;
-  filter:
-    drop-shadow(0 0 28px rgba(143, 216, 255, 0.35))
-    drop-shadow(0 0 1px rgba(255, 255, 255, 0.6));
-  opacity: 0.85;
-}
-.ohh__monogram svg { width: 100%; height: auto; display: block; }
-
-.ohh__veil {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(to bottom, rgba(2,6,14,0.06) 0%, rgba(2,6,14,0.44) 58%, rgba(2,6,14,0.96) 100%),
-    radial-gradient(80% 70% at 22% 45%, rgba(2,6,14,0.78), rgba(2,6,14,0.2) 55%, rgba(2,6,14,0.72) 100%);
-  pointer-events: none;
-  z-index: 1;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 4.5rem);
 }
 
 .ohh__content {
   position: relative;
   z-index: 2;
+  max-width: 640px;
 }
-.ohh__content .max-w-5xl { max-width: 760px; }
+
+.ohh__stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  align-items: stretch;
+}
+.ohh__frame {
+  position: relative;
+  border-radius: 18px;
+  padding: 14px;
+  background:
+    linear-gradient(160deg, rgba(16, 30, 52, 0.85) 0%, rgba(6, 12, 24, 0.92) 100%);
+  border: 1px solid rgba(143, 216, 255, 0.28);
+  box-shadow:
+    0 30px 80px -28px rgba(3, 10, 24, 0.9),
+    0 0 50px -12px rgba(95, 191, 255, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.ohh__brand-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  opacity: 1;
+}
+.ohh__frame-corner {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--ice-blue);
+  opacity: 0.85;
+  pointer-events: none;
+}
+.ohh__frame-corner--tl { top: 6px;    left: 6px;    border-right: none; border-bottom: none; border-radius: 6px 0 0 0; }
+.ohh__frame-corner--tr { top: 6px;    right: 6px;   border-left: none;  border-bottom: none; border-radius: 0 6px 0 0; }
+.ohh__frame-corner--bl { bottom: 6px; left: 6px;    border-right: none; border-top: none;    border-radius: 0 0 0 6px; }
+.ohh__frame-corner--br { bottom: 6px; right: 6px;   border-left: none;  border-top: none;    border-radius: 0 0 6px 0; }
+.ohh__stage-caption {
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8FD8FF;
+  text-align: center;
+  margin: 0;
+  opacity: 0.85;
+}
 
 .ohh__eyebrow {
   display: inline-flex;
@@ -10140,20 +10143,23 @@ body::after {
 }
 .ohh__boundary strong { color: var(--ice-blue); font-weight: 700; letter-spacing: 0.02em; }
 
-@media (max-width: 720px) {
-  .ohh { min-height: 760px; padding: 4.5rem 0 3.5rem; }
-  .ohh__image {
-    background-position: center top;
-    opacity: 0.82;
+@media (max-width: 980px) {
+  .ohh__grid {
+    grid-template-columns: 1fr;
+    gap: clamp(1.75rem, 6vw, 2.75rem);
   }
-  .ohh__monogram { width: clamp(140px, 50vw, 220px); opacity: 0.35; }
-  .ohh__ring--xl, .ohh__ring--lg { opacity: 0.55; }
+  .ohh__stage { order: -1; }
+  .ohh__content { max-width: 100%; }
+  .ohh__frame { max-width: 360px; margin: 0 auto; }
+}
+
+@media (max-width: 720px) {
+  .ohh { min-height: auto; padding: 4.5rem 0 3.5rem; }
+  .ohh__frame { max-width: 300px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ohh__ring,
   .ohh__net-node,
-  .ohh__pulse,
   .ohh__eyebrow-dot,
   .ohh__cta,
   .ohh__cta-arrow,

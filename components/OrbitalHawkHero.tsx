@@ -36,8 +36,6 @@ const constellationLines = [
 export default function OrbitalHawkHero() {
   return (
     <section className="ohh" aria-labelledby="ohh-headline">
-      <div className="ohh__image" aria-hidden="true" />
-
       <div className="ohh__sky" aria-hidden="true">
         <svg
           className="ohh__constellation"
@@ -68,41 +66,10 @@ export default function OrbitalHawkHero() {
         </svg>
       </div>
 
-      <div className="ohh__core" aria-hidden="true">
-        <div className="ohh__ring ohh__ring--xl" />
-        <div className="ohh__ring ohh__ring--lg" />
-        <div className="ohh__ring ohh__ring--md" />
-        <div className="ohh__ring ohh__ring--sm" />
-        <div className="ohh__pulse" />
-        <div className="ohh__monogram">
-          <svg viewBox="0 0 100 120" role="presentation">
-            <defs>
-              <linearGradient id="ohhSteel" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#E7EEF7" />
-                <stop offset="50%" stopColor="#8A96A7" />
-                <stop offset="100%" stopColor="#2A3340" />
-              </linearGradient>
-              <linearGradient id="ohhEdge" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="#5FBFFF" stopOpacity="0.0" />
-                <stop offset="50%" stopColor="#8FD8FF" stopOpacity="0.85" />
-                <stop offset="100%" stopColor="#5FBFFF" stopOpacity="0.0" />
-              </linearGradient>
-            </defs>
-            <path
-              d="M14 8 L34 8 L34 50 L66 50 L66 8 L86 8 L86 112 L66 112 L66 70 L34 70 L34 112 L14 112 Z"
-              fill="url(#ohhSteel)"
-              stroke="url(#ohhEdge)"
-              strokeWidth="0.8"
-            />
-            <circle cx="50" cy="60" r="3.6" fill="#8FD8FF" opacity="0.95" />
-          </svg>
-        </div>
-      </div>
+      <div className="ohh__glow" aria-hidden="true" />
 
-      <div className="ohh__veil" aria-hidden="true" />
-
-      <div className="container ohh__content">
-        <div className="max-w-5xl">
+      <div className="container ohh__grid">
+        <div className="ohh__content">
           <p className="ohh__eyebrow">
             <span className="ohh__eyebrow-dot" />
             AI Security Operations · Reviewer cockpit
@@ -146,6 +113,29 @@ export default function OrbitalHawkHero() {
             <strong>Trust boundary.</strong> Website rendering is not proof.
             Evidence, validators, and human review authorize claims.
           </p>
+        </div>
+
+        <div className="ohh__stage">
+          <div className="ohh__frame">
+            <span className="ohh__frame-corner ohh__frame-corner--tl" aria-hidden="true" />
+            <span className="ohh__frame-corner ohh__frame-corner--tr" aria-hidden="true" />
+            <span className="ohh__frame-corner ohh__frame-corner--bl" aria-hidden="true" />
+            <span className="ohh__frame-corner ohh__frame-corner--br" aria-hidden="true" />
+            <picture>
+              <source
+                media="(max-width: 720px)"
+                srcSet="/brand/hawkinsoperations-hero-mobile.png"
+              />
+              <img
+                className="ohh__brand-img"
+                src="/brand/hawkinsoperations-hero-wide.png"
+                alt="HawkinsOperations — Detection Engineering SOC. Proof. Truth. Authority."
+                loading="eager"
+                decoding="async"
+              />
+            </picture>
+          </div>
+          <p className="ohh__stage-caption">Detection Engineering SOC · Proof &gt; Truth &gt; Authority</p>
         </div>
       </div>
     </section>
