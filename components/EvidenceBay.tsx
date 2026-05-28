@@ -99,6 +99,43 @@ export default function EvidenceBay() {
                 </div>
               </dl>
 
+              {(a.sourceRoute || a.publicSafeStatus || a.reviewerAction || a.relatedSurface || a.proofBoundaryNote) && (
+                <dl className="evbay__review-fields" aria-label={`${a.title} reviewer fields`}>
+                  <div>
+                    <dt>Source route</dt>
+                    <dd>
+                      {a.sourceRoute ? (
+                        <a
+                          href={a.sourceRoute.href}
+                          target={a.sourceRoute.external ? "_blank" : undefined}
+                          rel={a.sourceRoute.external ? "noopener noreferrer" : undefined}
+                        >
+                          {a.sourceRoute.label} {a.sourceRoute.external ? "↗" : "→"}
+                        </a>
+                      ) : (
+                        "UNKNOWN_NOT_IN_SOURCE"
+                      )}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Public-safe status</dt>
+                    <dd>{a.publicSafeStatus ?? "UNKNOWN_NOT_IN_SOURCE"}</dd>
+                  </div>
+                  <div>
+                    <dt>Reviewer action</dt>
+                    <dd>{a.reviewerAction ?? "UNKNOWN_NOT_IN_SOURCE"}</dd>
+                  </div>
+                  <div>
+                    <dt>Related surface / repo</dt>
+                    <dd>{a.relatedSurface ?? "UNKNOWN_NOT_IN_SOURCE"}</dd>
+                  </div>
+                  <div>
+                    <dt>Proof boundary note</dt>
+                    <dd>{a.proofBoundaryNote ?? "UNKNOWN_NOT_IN_SOURCE"}</dd>
+                  </div>
+                </dl>
+              )}
+
               <a
                 className="evbay__inspect"
                 href={a.primary.href}

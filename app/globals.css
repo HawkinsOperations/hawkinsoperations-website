@@ -5409,6 +5409,31 @@ body::after {
 }
 .evbay__facts dd { margin: 2px 0 0; font-size: 0.8rem; line-height: 1.45; color: var(--silver); }
 .evbay__fact--blocked dt { color: var(--blocked-red); }
+.evbay__review-fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid rgba(143, 216, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(6, 12, 22, 0.58);
+}
+.evbay__review-fields dt {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.54rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--electric-blue-bright);
+}
+.evbay__review-fields dd {
+  margin: 2px 0 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--silver);
+}
+.evbay__review-fields a { color: var(--ice-blue); text-decoration: none; }
+.evbay__review-fields a:hover { text-decoration: underline; }
 .evbay__inspect {
   margin-top: auto;
   font-family: "JetBrains Mono", monospace;
