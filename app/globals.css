@@ -9544,6 +9544,17 @@ body::after {
   border-left: 2px solid var(--ice-blue-soft);
   padding-left: 12px;
 }
+.gse__source-boundary {
+  margin: 0;
+  border: 1px solid rgba(143, 216, 255, 0.18);
+  border-left: 2px solid var(--ice-blue);
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: rgba(8, 13, 22, 0.62);
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
 .gse__status {
   margin: 0;
   font-family: "JetBrains Mono", ui-monospace, monospace;
@@ -9646,9 +9657,21 @@ body::after {
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ice-blue);
 }
-.gse__detail dd { margin: 0; font-size: 0.83rem; color: #d3dce8; line-height: 1.55; }
+.gse__detail dd {
+  margin: 0;
+  font-size: 0.83rem;
+  color: #d3dce8;
+  line-height: 1.55;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
 .gse__detail .mono { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 0.74rem; color: var(--silver-bright); }
-.gse__source { color: var(--ice-blue); text-decoration: none; font-size: 0.82rem; }
+.gse__unknown {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.72rem !important;
+  color: var(--ceiling-amber, #f0b85f) !important;
+}
+.gse__source { color: var(--ice-blue); text-decoration: none; font-size: 0.82rem; overflow-wrap: anywhere; }
 .gse__source:hover { text-decoration: underline; }
 
 .gse__empty {
@@ -9850,11 +9873,24 @@ body::after {
   position: relative;
   isolation: isolate;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  min-height: clamp(720px, 86vh, 940px);
   padding: clamp(5rem, 11vw, 9rem) 0 clamp(4rem, 8vw, 6.5rem);
-  background:
-    radial-gradient(120% 80% at 50% 110%, rgba(8, 18, 36, 0.95) 0%, rgba(2, 6, 14, 1) 60%),
-    radial-gradient(60% 50% at 50% 30%, rgba(20, 70, 140, 0.35) 0%, rgba(0, 0, 0, 0) 65%),
-    #02060e;
+  background: #02060e;
+}
+.ohh__image {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image:
+    linear-gradient(90deg, rgba(2, 6, 14, 0.94) 0%, rgba(2, 6, 14, 0.82) 24%, rgba(2, 6, 14, 0.28) 54%, rgba(2, 6, 14, 0.5) 100%),
+    linear-gradient(180deg, rgba(2, 6, 14, 0.2) 0%, rgba(2, 6, 14, 0.08) 42%, rgba(2, 6, 14, 0.94) 100%),
+    url("/brand/hawkinsoperations-hero-primary.png");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.98;
+  transform: scale(1.01);
 }
 .ohh::before {
   content: "";
@@ -9866,7 +9902,7 @@ body::after {
     radial-gradient(2px 2px at 88% 82%, rgba(255,255,255,0.4) 50%, transparent 51%),
     radial-gradient(1px 1px at 60% 60%, rgba(255,255,255,0.4) 50%, transparent 51%),
     radial-gradient(1.5px 1.5px at 20% 50%, rgba(255,255,255,0.4) 50%, transparent 51%);
-  opacity: 0.55;
+  opacity: 0.18;
   pointer-events: none;
 }
 
@@ -9875,6 +9911,7 @@ body::after {
   inset: 0;
   pointer-events: none;
   z-index: 0;
+  opacity: 0.14;
 }
 .ohh__constellation {
   position: absolute; inset: 0;
@@ -9903,6 +9940,7 @@ body::after {
   justify-content: center;
   pointer-events: none;
   z-index: 0;
+  opacity: 0.18;
 }
 .ohh__ring {
   position: absolute;
@@ -9949,8 +9987,8 @@ body::after {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(to bottom, rgba(2,6,14,0.0) 35%, rgba(2,6,14,0.65) 70%, rgba(2,6,14,0.9) 100%),
-    linear-gradient(to right, rgba(2,6,14,0.55) 0%, rgba(2,6,14,0) 30%, rgba(2,6,14,0) 70%, rgba(2,6,14,0.55) 100%);
+    linear-gradient(to bottom, rgba(2,6,14,0.06) 0%, rgba(2,6,14,0.44) 58%, rgba(2,6,14,0.96) 100%),
+    radial-gradient(80% 70% at 22% 45%, rgba(2,6,14,0.78), rgba(2,6,14,0.2) 55%, rgba(2,6,14,0.72) 100%);
   pointer-events: none;
   z-index: 1;
 }
@@ -9959,6 +9997,7 @@ body::after {
   position: relative;
   z-index: 2;
 }
+.ohh__content .max-w-5xl { max-width: 760px; }
 
 .ohh__eyebrow {
   display: inline-flex;
@@ -10102,8 +10141,12 @@ body::after {
 .ohh__boundary strong { color: var(--ice-blue); font-weight: 700; letter-spacing: 0.02em; }
 
 @media (max-width: 720px) {
-  .ohh { padding: 4.5rem 0 3.5rem; }
-  .ohh__monogram { width: clamp(140px, 50vw, 220px); opacity: 0.55; }
+  .ohh { min-height: 760px; padding: 4.5rem 0 3.5rem; }
+  .ohh__image {
+    background-position: center top;
+    opacity: 0.82;
+  }
+  .ohh__monogram { width: clamp(140px, 50vw, 220px); opacity: 0.35; }
   .ohh__ring--xl, .ohh__ring--lg { opacity: 0.55; }
 }
 

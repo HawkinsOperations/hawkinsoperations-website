@@ -36,6 +36,8 @@ const constellationLines = [
 export default function OrbitalHawkHero() {
   return (
     <section className="ohh" aria-labelledby="ohh-headline">
+      <div className="ohh__image" aria-hidden="true" />
+
       <div className="ohh__sky" aria-hidden="true">
         <svg
           className="ohh__constellation"

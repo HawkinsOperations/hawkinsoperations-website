@@ -6,12 +6,16 @@ import {
   governanceSavesSummary,
   governanceCategoryLabels,
   governanceCategoryDescriptions,
+  type GovernanceSave,
   type GovernanceSaveCategory,
   type GovernanceSavePublicSafety,
   type GovernanceSaveOutcome,
 } from "@data/governanceSaves";
 
 type Filter = "all" | GovernanceSaveCategory;
+type DetailRow = { label: string; value: string; href?: string };
+
+const UNKNOWN_NOT_IN_SOURCE = "UNKNOWN_NOT_IN_SOURCE";
 
 const safetyToneClass: Record<GovernanceSavePublicSafety, string> = {
   PUBLIC_BACKED: "gse__safety gse__safety--public",
@@ -49,6 +53,49 @@ const categoryOrder: GovernanceSaveCategory[] = [
   "release-gate",
   "workflow-hardening",
 ];
+
+function valueOrUnknown(value?: string | null) {
+  return value && value.trim().length > 0 ? value : UNKNOWN_NOT_IN_SOURCE;
+}
+
+function formatCandidateDateTime(value: string) {
+  if (!/[T ]\d{1,2}:\d{2}/.test(value)) return UNKNOWN_NOT_IN_SOURCE;
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return UNKNOWN_NOT_IN_SOURCE;
+
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${pad(date.getMonth() + 1)}-${pad(date.getDate())}-${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function detailRowsFor(save: GovernanceSave): DetailRow[] {
+  return [
+    { label: "Candidate ID", value: save.id },
+    { label: "Candidate Title", value: save.title },
+    { label: "Date/Time", value: formatCandidateDateTime(save.date) },
+    { label: "Source Window", value: UNKNOWN_NOT_IN_SOURCE },
+    { label: "Repo / Surface", value: valueOrUnknown(save.surface) },
+    {
+      label: "Artifact / File / PR / Check / Log Location",
+      value: valueOrUnknown(save.sourceHref),
+      href: save.sourceHref,
+    },
+    { label: "Save Type", value: valueOrUnknown(save.saveType) },
+    { label: "Control That Fired", value: valueOrUnknown(save.control) },
+    { label: "Where It Was Blocked / Found", value: UNKNOWN_NOT_IN_SOURCE },
+    { label: "Risk Caught", value: valueOrUnknown(save.drift) },
+    { label: "Failure Prevented", value: UNKNOWN_NOT_IN_SOURCE },
+    { label: "Outcome", value: valueOrUnknown(save.outcome) },
+    { label: "Why This Is High ROI", value: valueOrUnknown(save.matters) },
+    { label: "Evidence Source", value: valueOrUnknown(save.sourceHref), href: save.sourceHref },
+    { label: "Evidence Confidence", value: UNKNOWN_NOT_IN_SOURCE },
+    { label: "Public Safety", value: valueOrUnknown(save.publicSafety) },
+    { label: "Countability", value: UNKNOWN_NOT_IN_SOURCE },
+    { label: "Website Readiness", value: UNKNOWN_NOT_IN_SOURCE },
+    { label: "Follow-Up Needed", value: UNKNOWN_NOT_IN_SOURCE },
+    { label: "Proof Boundary Notes", value: UNKNOWN_NOT_IN_SOURCE },
+  ];
+}
 
 export default function GovernanceSavesExplorer() {
   const [filter, setFilter] = useState<Filter>("all");
@@ -149,6 +196,13 @@ export default function GovernanceSavesExplorer() {
         {activeDescription}
       </p>
 
+      <p className="gse__source-boundary">
+        This explorer renders a public-safe/source-backed subset of the governance-saves range.
+        Private-only records are excluded. Internal/local evidence is summarized only where
+        public-safe wording exists, and these records are governance evidence, not production
+        incident-prevention metrics.
+      </p>
+
       <p className="gse__status" aria-live="polite">
         {shown.length} {shown.length === 1 ? "record" : "records"}
         {filter !== "all" ? ` · ${governanceCategoryLabels[filter]}` : ""}
@@ -188,32 +242,20 @@ export default function GovernanceSavesExplorer() {
 
               {isOpen && (
                 <dl id={`gse-details-${save.id}`} className="gse__detail">
-                  <div>
-                    <dt>Attempted drift</dt>
-                    <dd>{save.drift}</dd>
-                  </div>
-                  <div>
-                    <dt>Control that fired</dt>
-                    <dd>{save.control}</dd>
-                  </div>
-                  <div>
-                    <dt>Why it matters</dt>
-                    <dd>{save.matters}</dd>
-                  </div>
-                  <div>
-                    <dt>Save type</dt>
-                    <dd className="mono">{save.saveType}</dd>
-                  </div>
-                  {save.sourceHref && (
-                    <div>
-                      <dt>Source route</dt>
-                      <dd>
-                        <a className="gse__source" href={save.sourceHref} target="_blank" rel="noopener noreferrer">
-                          Open public source ↗
-                        </a>
+                  {detailRowsFor(save).map((row) => (
+                    <div key={row.label}>
+                      <dt>{row.label}</dt>
+                      <dd className={row.value === UNKNOWN_NOT_IN_SOURCE ? "gse__unknown" : undefined}>
+                        {row.href ? (
+                          <a className="gse__source" href={row.href} target="_blank" rel="noopener noreferrer">
+                            {row.value} ↗
+                          </a>
+                        ) : (
+                          row.value
+                        )}
                       </dd>
                     </div>
-                  )}
+                  ))}
                 </dl>
               )}
             </article>
