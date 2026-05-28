@@ -69,6 +69,29 @@ export default function OrbitalHawkHero() {
       <div className="ohh__glow" aria-hidden="true" />
 
       <div className="container ohh__grid">
+        <div className="ohh__stage">
+          <div className="ohh__frame">
+            <span className="ohh__frame-corner ohh__frame-corner--tl" aria-hidden="true" />
+            <span className="ohh__frame-corner ohh__frame-corner--tr" aria-hidden="true" />
+            <span className="ohh__frame-corner ohh__frame-corner--bl" aria-hidden="true" />
+            <span className="ohh__frame-corner ohh__frame-corner--br" aria-hidden="true" />
+            <picture>
+              <source
+                media="(max-width: 720px)"
+                srcSet="/brand/hawkinsoperations-hero-mobile.png"
+              />
+              <img
+                className="ohh__brand-img"
+                src="/brand/hawkinsoperations-hero-wide.png"
+                alt="HawkinsOperations — Detection Engineering SOC. Proof. Truth. Authority."
+                loading="eager"
+                decoding="async"
+              />
+            </picture>
+          </div>
+          <p className="ohh__stage-caption">Detection Engineering SOC · Proof &gt; Truth &gt; Authority</p>
+        </div>
+
         <div className="ohh__content">
           <p className="ohh__eyebrow">
             <span className="ohh__eyebrow-dot" />
@@ -113,29 +136,6 @@ export default function OrbitalHawkHero() {
             <strong>Trust boundary.</strong> Website rendering is not proof.
             Evidence, validators, and human review authorize claims.
           </p>
-        </div>
-
-        <div className="ohh__stage">
-          <div className="ohh__frame">
-            <span className="ohh__frame-corner ohh__frame-corner--tl" aria-hidden="true" />
-            <span className="ohh__frame-corner ohh__frame-corner--tr" aria-hidden="true" />
-            <span className="ohh__frame-corner ohh__frame-corner--bl" aria-hidden="true" />
-            <span className="ohh__frame-corner ohh__frame-corner--br" aria-hidden="true" />
-            <picture>
-              <source
-                media="(max-width: 720px)"
-                srcSet="/brand/hawkinsoperations-hero-mobile.png"
-              />
-              <img
-                className="ohh__brand-img"
-                src="/brand/hawkinsoperations-hero-wide.png"
-                alt="HawkinsOperations — Detection Engineering SOC. Proof. Truth. Authority."
-                loading="eager"
-                decoding="async"
-              />
-            </picture>
-          </div>
-          <p className="ohh__stage-caption">Detection Engineering SOC · Proof &gt; Truth &gt; Authority</p>
         </div>
       </div>
     </section>
