@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import ArtifactCoverageHeatmap from "@components/ArtifactCoverageHeatmap";
+import ArtifactReviewerPaths from "@components/ArtifactReviewerPaths";
 import EvidenceBay from "@components/EvidenceBay";
 import GpuFactoryLane from "@components/GpuFactoryLane";
 import RecentGovernedArtifacts from "@components/RecentGovernedArtifacts";
@@ -56,8 +58,18 @@ export default function ArtifactsIndexPage() {
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-3">
               <a className="cta cta-primary" href="#evidence-bay">Open the evidence bay →</a>
+              <a className="cta cta-quiet" href="#reviewer-paths">Reviewer paths</a>
               <a className="cta cta-quiet" href="#anchors">Anchor artifacts</a>
               <a className="cta cta-quiet" href="/proof/">Proof ledger</a>
+            </div>
+
+            <div className="artifact-receipt-room" role="note" aria-label="What the evidence bay is">
+              <span className="artifact-receipt-room__tag">Receipts, not vibes</span>
+              <p className="artifact-receipt-room__line">
+                This is a receipt room: every artifact carries its own ceiling, a
+                supports / does-not-prove split, and a route to the evidence. Private
+                evidence is excluded and website rendering is not proof.
+              </p>
             </div>
           </div>
 
@@ -68,6 +80,13 @@ export default function ArtifactsIndexPage() {
 
         <div className="container mt-12">
           <hr className="cockpit-rule" />
+        </div>
+      </section>
+
+      {/* ── Reviewer paths ───────────────────────────────────────────── */}
+      <section id="reviewer-paths" className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
+          <ArtifactReviewerPaths />
         </div>
       </section>
 
@@ -214,6 +233,13 @@ export default function ArtifactsIndexPage() {
             </p>
             <RecentGovernedArtifacts surface="website" heading="Website / public rendering artifacts" eyebrow="Website surface" sub="Public rendering updates only." />
           </div>
+        </div>
+      </section>
+
+      {/* ── Artifact family coverage heatmap (additive visual layer) ──── */}
+      <section id="family-coverage" className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
+          <ArtifactCoverageHeatmap />
         </div>
       </section>
 
