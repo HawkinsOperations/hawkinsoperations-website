@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ProofVaultHero from "@components/ProofVaultHero";
+import BlockedClaimStrip from "@components/BlockedClaimStrip";
 import ControlsFiredGraph from "@components/ControlsFiredGraph";
 import ClaimFirewallSplitPane from "@components/ClaimFirewallSplitPane";
 import ProofPackReceipt from "@components/ProofPackReceipt";
@@ -49,6 +50,9 @@ export default function ProofIndexPage() {
       <section id="claim-firewall" className="cockpit-section--tight">
         <div className="container">
           <ClaimFirewallSplitPane />
+          <div className="mt-6">
+            <BlockedClaimStrip variant="compact" />
+          </div>
         </div>
       </section>
 

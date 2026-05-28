@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ControlsFiredGraph from "@components/ControlsFiredGraph";
+import HomeReviewerBridgeToArtifacts from "@components/HomeReviewerBridgeToArtifacts";
 import HomeTrustBoundaryPanel from "@components/HomeTrustBoundaryPanel";
 import OrbitalHawkHero from "@components/OrbitalHawkHero";
 import ProofLoopRail from "@components/ProofLoopRail";
@@ -80,6 +81,12 @@ export default function HomePage() {
       <section id="controls-fired" className="cockpit-section--tight">
         <div className="container">
           <ControlsFiredGraph />
+        </div>
+      </section>
+
+      <section id="reviewer-bridge" className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
+          <HomeReviewerBridgeToArtifacts />
         </div>
       </section>
 
