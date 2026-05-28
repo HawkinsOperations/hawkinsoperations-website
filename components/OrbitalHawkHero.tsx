@@ -100,7 +100,7 @@ export default function OrbitalHawkHero() {
       <div className="ohh__veil" aria-hidden="true" />
 
       <div className="container ohh__content">
-        <div className="reveal reveal--up max-w-5xl">
+        <div className="max-w-5xl">
           <p className="ohh__eyebrow">
             <span className="ohh__eyebrow-dot" />
             AI Security Operations · Reviewer cockpit
