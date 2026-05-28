@@ -121,11 +121,11 @@ export default function SixDoorCockpit() {
           <span className="sdc__door-icon" aria-hidden="true">
             <Glyph icon={door.icon} />
           </span>
-          <span className="sdc__door-meta">
+          <div className="sdc__door-meta">
             <span className="sdc__door-eyebrow">{door.external ? "External" : "Public door"}</span>
             <h3 className="sdc__door-title">{door.title}</h3>
             <p className="sdc__door-desc">{door.description}</p>
-          </span>
+          </div>
           <span className="sdc__door-arrow" aria-hidden="true">
             →
           </span>
