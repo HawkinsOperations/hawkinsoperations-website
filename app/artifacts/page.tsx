@@ -5,7 +5,7 @@ import EvidenceBay from "@components/EvidenceBay";
 import GpuFactoryLane from "@components/GpuFactoryLane";
 import RecentGovernedArtifacts from "@components/RecentGovernedArtifacts";
 import StatusConsole from "@components/StatusConsole";
-import { flagshipArtifacts } from "@data/artifacts";
+import { flagshipArtifacts, highRoiArtifactGroups, type Artifact } from "@data/artifacts";
 
 export const metadata: Metadata = {
   title: "Artifacts | HawkinsOperations",
@@ -38,9 +38,90 @@ const statusLabel = (status: string): string => {
   }
 };
 
+function HighRoiArtifactCard({ artifact }: { artifact: Artifact }) {
+  const isExternal = artifact.primary.external === true;
+  const sourceExternal = artifact.sourceRoute?.external === true;
+
+  return (
+    <article className="artifact-feature-card">
+      <header className="artifact-feature-card__head">
+        <span className="artifact-feature-card__cat">{catLabel[artifact.category] ?? artifact.category}</span>
+        <span className="artifact-feature-card__state">{statusLabel(artifact.status)}</span>
+      </header>
+
+      <h3 className="artifact-feature-card__title">{artifact.title}</h3>
+
+      <div className="artifact-feature-card__rail" aria-label="Artifact ceiling">
+        <span>{artifact.truthSurface}</span>
+        {artifact.proofCeiling && <span>{artifact.proofCeiling}</span>}
+      </div>
+
+      <dl className="artifact-feature-card__claims">
+        <div>
+          <dt>Supports</dt>
+          <dd>{artifact.proves}</dd>
+        </div>
+        <div className="artifact-feature-card__blocked">
+          <dt>Does not prove</dt>
+          <dd>{artifact.doesNotProve}</dd>
+        </div>
+      </dl>
+
+      <details className="artifact-feature-card__meta">
+        <summary>Reviewer metadata</summary>
+        <dl>
+          <div>
+            <dt>Source route</dt>
+            <dd>
+              {artifact.sourceRoute ? (
+                <a
+                  href={artifact.sourceRoute.href}
+                  target={sourceExternal ? "_blank" : undefined}
+                  rel={sourceExternal ? "noopener noreferrer" : undefined}
+                >
+                  {artifact.sourceRoute.label} {sourceExternal ? "↗" : "→"}
+                </a>
+              ) : (
+                "UNKNOWN_NOT_IN_SOURCE"
+              )}
+            </dd>
+          </div>
+          <div>
+            <dt>Public-safe status</dt>
+            <dd>{artifact.publicSafeStatus ?? "UNKNOWN_NOT_IN_SOURCE"}</dd>
+          </div>
+          <div>
+            <dt>Reviewer action</dt>
+            <dd>{artifact.reviewerAction ?? "UNKNOWN_NOT_IN_SOURCE"}</dd>
+          </div>
+          <div>
+            <dt>Related surface / repo</dt>
+            <dd>{artifact.relatedSurface ?? "UNKNOWN_NOT_IN_SOURCE"}</dd>
+          </div>
+          <div>
+            <dt>Proof boundary note</dt>
+            <dd>{artifact.proofBoundaryNote ?? "UNKNOWN_NOT_IN_SOURCE"}</dd>
+          </div>
+        </dl>
+      </details>
+
+      <a
+        className="artifact-feature-card__cta"
+        href={artifact.primary.href}
+        target={isExternal ? "_blank" : undefined}
+        rel={isExternal ? "noopener noreferrer" : undefined}
+        aria-label={`${artifact.primary.label}: ${artifact.title}`}
+      >
+        <span>{artifact.primary.label}</span>
+        <span className="artifact-feature-card__cta-arrow" aria-hidden="true">{isExternal ? "↗" : "→"}</span>
+      </a>
+    </article>
+  );
+}
+
 export default function ArtifactsIndexPage() {
   return (
-    <>
+    <div className="artifacts-page">
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden cockpit-section">
         <div className="container grid gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 items-start">
@@ -87,6 +168,40 @@ export default function ArtifactsIndexPage() {
       <section id="reviewer-paths" className="cockpit-section--tight">
         <div className="container reveal reveal--up">
           <ArtifactReviewerPaths />
+        </div>
+      </section>
+
+      {/* ── High-ROI reviewer receipts ──────────────────────────────── */}
+      <section id="high-roi-receipts" className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
+          <div className="artifact-feature">
+            <div className="artifact-feature__intro">
+              <p className="cockpit-eyebrow">New high-ROI reviewer receipts</p>
+              <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+                Start with the newest bounded receipts, then inspect the full bay.
+              </h2>
+              <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+                These cards surface the newest reviewer routes first. They still keep source route,
+                support, does-not-prove, and proof-boundary notes attached to each artifact.
+              </p>
+            </div>
+
+            <div className="artifact-feature__groups">
+              {highRoiArtifactGroups.map((group) => (
+                <section key={group.title} className="artifact-feature-group" aria-labelledby={`high-roi-${group.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}>
+                  <header className="artifact-feature-group__head">
+                    <h3 id={`high-roi-${group.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}>{group.title}</h3>
+                    <p>{group.description}</p>
+                  </header>
+                  <div className="artifact-feature-group__grid">
+                    {group.artifacts.map((artifact) => (
+                      <HighRoiArtifactCard key={artifact.slug} artifact={artifact} />
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -338,6 +453,6 @@ export default function ArtifactsIndexPage() {
           </p>
         </div>
       </section>
-    </>
+    </div>
   );
 }
