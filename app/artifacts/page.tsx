@@ -110,8 +110,10 @@ function HighRoiArtifactCard({ artifact }: { artifact: Artifact }) {
         href={artifact.primary.href}
         target={isExternal ? "_blank" : undefined}
         rel={isExternal ? "noopener noreferrer" : undefined}
+        aria-label={`${artifact.primary.label}: ${artifact.title}`}
       >
-        {artifact.primary.label} {isExternal ? "↗" : "→"}
+        <span>{artifact.primary.label}</span>
+        <span className="artifact-feature-card__cta-arrow" aria-hidden="true">{isExternal ? "↗" : "→"}</span>
       </a>
     </article>
   );
@@ -119,7 +121,7 @@ function HighRoiArtifactCard({ artifact }: { artifact: Artifact }) {
 
 export default function ArtifactsIndexPage() {
   return (
-    <>
+    <div className="artifacts-page">
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden cockpit-section">
         <div className="container grid gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 items-start">
@@ -451,6 +453,6 @@ export default function ArtifactsIndexPage() {
           </p>
         </div>
       </section>
-    </>
+    </div>
   );
 }

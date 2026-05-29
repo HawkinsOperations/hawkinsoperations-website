@@ -144,8 +144,10 @@ export default function EvidenceBay() {
                 href={a.primary.href}
                 target={isExternal ? "_blank" : undefined}
                 rel={isExternal ? "noopener noreferrer" : undefined}
+                aria-label={`${a.primary.label}: ${a.title}`}
               >
-                {a.primary.label} {isExternal ? "↗" : "→"}
+                <span>{a.primary.label}</span>
+                <span className="evbay__inspect-arrow" aria-hidden="true">{isExternal ? "↗" : "→"}</span>
               </a>
             </article>
           );

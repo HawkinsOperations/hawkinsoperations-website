@@ -144,25 +144,6 @@ export const artifacts: Artifact[] = [
     tags: ["validation", "controlled-test"],
   },
   {
-    slug: "cyber-kill-chain-attack-coverage-map",
-    title: "Cyber Kill Chain / ATT&CK Coverage Map",
-    category: "architecture",
-    truthSurface: "Reviewer navigation",
-    status: "rendering-only",
-    proofCeiling: "MAPPING_NOT_PROOF",
-    description: "Reviewer navigation from Cyber Kill Chain stage to ATT&CK mapping, detection source, validation route, and proof boundary.",
-    proves: "A public reviewer map exists for moving from lifecycle stage to ATT&CK context, source, validation, and proof-boundary inspection.",
-    doesNotProve: "Live coverage, production coverage, runtime-active detection, signal-observed proof, or public-safe runtime proof.",
-    primary: { label: "Open detection map", href: "/detections/" },
-    secondary: { label: "Coverage source", href: externalLinks.cyberKillChainCoverage, external: true },
-    sourceRoute: { label: "Public mapping doc", href: externalLinks.cyberKillChainCoverage, external: true },
-    publicSafeStatus: "PUBLIC_ROUTE_SAFE_SUMMARY",
-    reviewerAction: "Use the map to choose a detection family, then inspect the validation and proof-boundary route.",
-    relatedSurface: "Detections / Proof / hawkinsoperations-proof mapping docs",
-    proofBoundaryNote: "Mapping is reviewer navigation only; proof authority remains with validation records and proof boundaries.",
-    tags: ["Cyber Kill Chain", "ATT&CK", "mapping", "reviewer-navigation"],
-  },
-  {
     slug: "ho-det-012-controlled-validation-runtime-boundary",
     title: "HO-DET-012 Controlled Validation / Runtime Boundary",
     category: "validation",
@@ -441,10 +422,9 @@ export const highRoiArtifactGroups: {
   artifacts: Artifact[];
 }[] = [
   {
-    title: "Framework & Map",
-    description: "Reviewer navigation artifacts that orient lifecycle, framework, and controlled workflow inspection.",
+    title: "Control Plane & Workflow",
+    description: "Source-backed receipts that expose the detection-to-validation-to-proof workflow structure reviewers can inspect.",
     slugs: [
-      "cyber-kill-chain-attack-coverage-map",
       "detection-factory-validation-factory-controller",
     ],
     artifacts: [],
