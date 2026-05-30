@@ -54,18 +54,22 @@ export const validationRows: ValidationRow[] = [
     contractOnly: false,
     publicRuntimeBlocked: true,
     exists: [
+      "A source-controlled Suspicious PowerShell EncodedCommand detection route.",
       "A controlled-test validation package with 14 fixtures.",
       "A public proof record and reviewer release route.",
+      "A case-packet workflow contract for support-only reviewer routing.",
     ],
     proves: [
       "14 / 14 fixtures pass deterministically.",
       "0 missed positives and 0 false-positive negatives.",
+      "The alert shape can be reviewed as fixture-backed endpoint process context.",
     ],
     doesNotProve: [
       "Runtime-active status is blocked from this surface.",
       "Signal-observed status is not claimed.",
       "Live Splunk, Cribl/Wazuh routing, production, fleet, and public-safe runtime proof are blocked.",
       "AI / analyst disposition is not claimed.",
+      "Production/customer/SOCaaS deployment, SOCaaS-ready status, and FortiSIEM integration proven status are blocked.",
     ],
     sourceLink: externalLinks.validationReportHo,
   },

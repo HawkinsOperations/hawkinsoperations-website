@@ -200,7 +200,7 @@ export const governanceSaves: GovernanceSave[] = [
     category: "ai-authority",
     saveType: "AI_OUTPUT_CORRECTION",
     outcome: "CORRECTED",
-    publicSafety: "PUBLIC_SAFE_WITH_REDACTION",
+    publicSafety: "PRIVATE_ONLY",
     surface: "GPU / AI support logs and proof case studies",
     drift: "Model output could imply final disposition, compromise, public proof, or production coverage.",
     control: "Support-only AI output contract preserves ai_decided_disposition=false, recommended_disposition=null, human_review_required=true, public_safe=false.",

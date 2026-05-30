@@ -52,18 +52,21 @@ export const releaseRouteCaveat = {
 
 export const reviewerPacket = {
   name: "REVIEWER_PACKET.md",
-  scope: "Boundary packet for HO-DET-001.",
+  scope: "Boundary packet for the HO-DET-001 SOCaaS Pilot Receipt.",
   evidenceChain: [
-    "Detections",
-    "Validation",
-    "Platform case-packet sample",
+    "Detection source",
+    "Alert shape",
+    "Controlled validation",
+    "Case packet / workflow contract",
+    "AI support boundary",
+    "Human review gate",
     "Proof card / record",
     "Website rendering (not proof)",
   ],
   doesNotProve: [
     "Runtime-active and signal-observed status are not claimed.",
-    "Production / customer deployment is blocked.",
-    "SOCaaS availability and autonomous / AI / analyst approval are blocked.",
+    "Production/customer/SOCaaS deployment is blocked.",
+    "SOCaaS-ready, FortiSIEM integration proven, autonomous SOC, AI-approved disposition, and analyst-approved disposition claims are blocked.",
   ],
 };
 
