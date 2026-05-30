@@ -32,12 +32,20 @@ export type ProofRecord = {
   notClaimed: string[];
   remainingBlocked: string[];
   promotionRequirements: string[];
+  receiptTitle?: string;
+  receiptSummary?: string;
+  detectionSource?: string[];
+  alertShape?: string[];
+  workflowContract?: string[];
+  proofAuthority?: string[];
+  aiSupportBoundary?: string[];
+  humanReviewGate?: string[];
 };
 
 export const proofRecords: ProofRecord[] = [
   {
     detectionId: "HO-DET-001",
-    title: "Controlled-test validation proof card",
+    title: "SOCaaS Pilot Receipt · controlled-test validation",
     proofLevel: proofCeiling,
     proofRecordState: "PROOF_RECORD_PRESENT",
     validationState: "controlled-test validation status",
@@ -49,18 +57,18 @@ export const proofRecords: ProofRecord[] = [
     caseFileHref: "/proof/ho-det-001/",
     blockedPromotions: blockedClaims,
     exists: [
-      "A public proof record route exists.",
-      "A public website route can point reviewers to the proof record.",
-      "A controlled-test validation boundary is stated.",
-      "Platform runtime contract enforcement exists as a non-promotional guardrail.",
-      "The HO-DET-001 loop can be reviewed as a controlled-test SOCaaS pilot receipt candidate.",
+      "A HO-DET-001 source route exists for Suspicious PowerShell EncodedCommand detection review.",
+      "A public proof record route exists and owns the proof ceiling.",
+      "A public website route can point reviewers to the proof record without becoming proof itself.",
+      "A controlled-test validation boundary is stated for 14 deterministic fixtures.",
+      "A platform case-packet / workflow contract exists as a non-promotional guardrail.",
     ],
     passed: [
       "The public ceiling is stated as CONTROLLED_TEST_VALIDATED.",
       "Blocked promotions are visible instead of hidden.",
       "Website rendering remains separated from evidence authority.",
       "The platform verifier preserves NOT_PUBLIC_SAFE and BLOCKED runtime promotion fields.",
-      "The pilot receipt chain exposes endpoint process facts, deterministic validation, support-only triage, and human claim boundaries.",
+      "The SOCaaS Pilot Receipt shows source, alert shape, validation, case packet, AI support, and human review as separate stages.",
     ],
     notClaimed: [
       "Runtime activation is not claimed.",
@@ -69,7 +77,7 @@ export const proofRecords: ProofRecord[] = [
       "Live Splunk fired, Cribl-routed status, Wazuh-routed public proof, AWS-live status, production-ready status, fleet-wide coverage, autonomous SOC operation, AI-approved disposition, and analyst-approved disposition are not claimed.",
       "External-use approval is not claimed.",
       "Public-safe proof is not claimed.",
-      "SOCaaS readiness, customer deployment, and autonomous production alert resolution are not claimed.",
+      "Production/customer/SOCaaS deployment, SOCaaS-ready status, FortiSIEM integration proven status, and autonomous production alert resolution are not claimed.",
     ],
     remainingBlocked: [
       "Runtime evidence must be promoted separately.",
@@ -83,6 +91,39 @@ export const proofRecords: ProofRecord[] = [
       "Evidence bundle with current trust classification.",
       "Runtime and signal claims reviewed independently.",
       "Public wording reviewed against blocked promotions.",
+    ],
+    receiptTitle: "HO-DET-001 SOCaaS Pilot Receipt",
+    receiptSummary:
+      "A reviewer-readable receipt for a SOCaaS-style pilot loop: source-controlled detection, controlled alert shape, deterministic validation, support-only case packet flow, proof authority, and human review gate. The website renders the receipt; it does not authorize stronger proof.",
+    detectionSource: [
+      "Detection route: Suspicious PowerShell EncodedCommand.",
+      "Source truth lives in the detections repository; source presence does not prove runtime deployment.",
+      "Validation truth lives in controlled fixtures and verifiers, not in website rendering.",
+    ],
+    alertShape: [
+      "Alert subject: encoded PowerShell process behavior.",
+      "Reviewer shape: endpoint process context, command-line indicator, expected positive / negative fixture outcomes, and blocked response authority.",
+      "The page does not expose raw private telemetry, internal host data, customer data, or runtime evidence.",
+    ],
+    workflowContract: [
+      "Case packet contract: route source facts, validation result, missing context, blocked actions, and reviewer-safe wording.",
+      "Workflow boundary: a packet can support analyst review; it cannot close a case, approve containment, or promote proof.",
+      "Proof Pack 001 and the proof record are the reviewer routes for the current ceiling.",
+    ],
+    proofAuthority: [
+      "Proof authority remains the proof record and validation artifacts, not the website page.",
+      "Current public ceiling remains CONTROLLED_TEST_VALIDATED.",
+      "Website rendering is not proof.",
+    ],
+    aiSupportBoundary: [
+      "AI may draft, summarize sanitized facts, identify missing context, and prepare reviewer wording.",
+      "AI cannot approve disposition, containment, case closure, proof promotion, public-safe status, or release authority.",
+      "AI labor remains below deterministic checks and human governance.",
+    ],
+    humanReviewGate: [
+      "Human review authorizes claim movement above the current ceiling.",
+      "Green checks and website rendering are not merge, proof, publication, or promotion authority.",
+      "Stronger runtime, signal, public-safe, deployment, SOCaaS-ready, FortiSIEM, autonomous, or analyst-disposition wording stays blocked until separately approved.",
     ],
   },
   {
