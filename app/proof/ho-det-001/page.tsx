@@ -5,6 +5,7 @@ import ClaimFirewallPanel from "@components/ClaimFirewallPanel";
 import LinkCard from "@components/LinkCard";
 import ProofPathTimeline, { type ProofPathStep } from "@components/ProofPathTimeline";
 import SectionHeader from "@components/SectionHeader";
+import SocaasWorkflowFlow from "@components/SocaasWorkflowFlow";
 import StatusConsole from "@components/StatusConsole";
 import { externalLinks } from "@data/navigation";
 import { flagshipProofRecord as record } from "@data/proofRecords";
@@ -21,47 +22,46 @@ export const metadata: Metadata = {
 const traceSteps: ProofPathStep[] = [
   {
     code: "SOURCE_PRESENT",
-    label: "Source present",
-    line: "Detection rule and SPL exist in hawkinsoperations-detections under version control.",
+    label: "Detection source",
+    line: "HO-DET-001 source is reviewable as Suspicious PowerShell EncodedCommand detection material.",
     href: externalLinks.detections,
     external: true,
   },
   {
-    code: "FIXTURE_VALIDATED",
-    label: "Fixture validated",
-    line: "Controlled positive and negative test cases pass in the validation repo.",
+    code: "ALERT_SHAPE",
+    label: "Alert shape",
+    line: "The receipt describes endpoint process context and expected fixture behavior without exposing raw runtime evidence.",
+    href: "/proof/ho-det-001/",
+  },
+  {
+    code: "CONTROLLED_VALIDATION",
+    label: "Controlled validation",
+    line: "Fourteen positive and negative fixtures define the controlled-test validation boundary.",
     href: externalLinks.validationReportHo,
     external: true,
   },
   {
-    code: "CASE_PACKET_ROUTED",
-    label: "Case packet routed",
-    line: "Findings, validation output, and reviewer wording assembled into the case file you are reading.",
-    href: "/proof/ho-det-001/",
+    code: "CASE_PACKET_CONTRACT",
+    label: "Case packet contract",
+    line: "Case packet workflow routes source facts, validation status, blocked actions, and support-only review fields.",
+    href: "/platform/contracts/",
   },
   {
     code: "AI_SUPPORT_ONLY",
     label: "AI support only",
     line: "AI accelerates labor: drafting, scaffolding, reviewer prep. AI does not promote claims.",
+    href: "/ai-security/",
+  },
+  {
+    code: "HUMAN_REVIEW_GATE",
+    label: "Human review gate",
+    line: "Human review authorizes any stronger claim movement; green checks and rendering do not.",
     href: "/controls/",
   },
   {
-    code: "SCANNER_CLEAN",
-    label: "Scanner clean",
-    line: "Blocked-claim scanner and site contract verifier pass before wording can ship.",
-    href: externalLinks.repoAuthorityMap,
-    external: true,
-  },
-  {
-    code: "CI_ENFORCED",
-    label: "CI enforced",
-    line: "CI fails the build when contract assertions or blocked-claim rules trip on a change.",
-    href: "/proof-loop/",
-  },
-  {
-    code: "RECORD_PUBLISHED",
-    label: "Record published",
-    line: "Public proof record exists with a stated ceiling, evidence pointers, and bounded scope.",
+    code: "PROOF_AUTHORITY",
+    label: "Proof authority",
+    line: "Proof record and validation artifacts own the current ceiling; this website is only the route.",
     href: externalLinks.proofRecord,
     external: true,
   },
@@ -71,6 +71,17 @@ const traceSteps: ProofPathStep[] = [
     line: "Public claim ceiling holds at CONTROLLED_TEST_VALIDATED. Stronger wording requires a separate promotion gate.",
     href: "/proof/ho-det-001/",
   },
+];
+
+const receiptSections = [
+  { title: "Detection source", items: record.detectionSource ?? [] },
+  { title: "Alert shape", items: record.alertShape ?? [] },
+  { title: "Controlled validation", items: record.passed },
+  { title: "Case packet / workflow contract", items: record.workflowContract ?? [] },
+  { title: "Proof authority", items: record.proofAuthority ?? [] },
+  { title: "AI support boundary", items: record.aiSupportBoundary ?? [] },
+  { title: "Human review gate", items: record.humanReviewGate ?? [] },
+  { title: "Blocked claims", items: record.notClaimed },
 ];
 
 export default function HoDet001CaseFilePage() {
@@ -84,7 +95,7 @@ export default function HoDet001CaseFilePage() {
 
       <section className="cockpit-section--tight">
         <div className="container grid gap-6 lg:grid-cols-[1.4fr_0.9fr] items-start">
-          <ProofPathTimeline detectionId={record.detectionId} title="HO-DET-001 · source to public boundary" steps={traceSteps} />
+          <ProofPathTimeline detectionId={record.detectionId} title="SOCaaS Pilot Receipt · source to public boundary" steps={traceSteps} />
           <StatusConsole
             rows={[
               { tone: "ice", label: "Proof level", value: record.proofLevel },
@@ -100,24 +111,35 @@ export default function HoDet001CaseFilePage() {
 
       <section className="cockpit-section--tight">
         <div className="container">
-          <SectionHeader title="What exists, what passed, what is not claimed" eyebrow="Case file" />
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <article className="moon-panel" style={{ padding: 22 }}>
-              <p className="cockpit-eyebrow">What exists</p>
-              <ul className="mt-3 space-y-3 text-sm leading-6" style={{ color: "var(--silver)" }}>
-                {record.exists.map((item, i) => (
-                  <li key={i}>{item}</li>
-                ))}
-              </ul>
-            </article>
-            <article className="moon-panel" style={{ padding: 22 }}>
-              <p className="cockpit-eyebrow">What passed</p>
-              <ul className="mt-3 space-y-3 text-sm leading-6" style={{ color: "var(--silver)" }}>
-                {record.passed.map((item, i) => (
-                  <li key={i}>{item}</li>
-                ))}
-              </ul>
-            </article>
+          <SectionHeader
+            title={record.receiptTitle ?? "HO-DET-001 receipt"}
+            eyebrow="SOCaaS Pilot Receipt"
+            description={record.receiptSummary}
+          />
+          <div className="mt-6 grid gap-4 lg:grid-cols-4">
+            {receiptSections.map((section) => (
+              <article key={section.title} className="moon-panel" style={{ padding: 20 }}>
+                <p className="cockpit-eyebrow">{section.title}</p>
+                <ul className="mt-3 space-y-3 text-sm leading-6" style={{ color: "var(--silver)" }}>
+                  {section.items.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="cockpit-section--tight">
+        <div className="container">
+          <SectionHeader
+            title="Workflow contract"
+            eyebrow="SOCaaS-style pilot loop"
+            description="The flow is visualized as source, validation, case packet, support-only AI, human review, and proof-controlled reporting. Each stage keeps its own authority boundary."
+          />
+          <div className="mt-6">
+            <SocaasWorkflowFlow />
           </div>
         </div>
       </section>
