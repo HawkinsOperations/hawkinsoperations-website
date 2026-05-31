@@ -130,6 +130,53 @@ if (homepageLabelFailures.length > 0) {
   process.exit(1);
 }
 
+const proofPage = readFileSync(join(root, "app/proof/page.tsx"), "utf8");
+const proofRecordsData = readFileSync(join(root, "src/data/proofRecords.ts"), "utf8");
+const navigationSource = readFileSync(join(root, "src/data/navigation.ts"), "utf8");
+const lifetimeLedgerRequiredTerms = [
+  ["app/proof/page.tsx", proofPage, "Lifetime Case Ledger v1"],
+  ["app/proof/page.tsx", proofPage, "total_ledger_events"],
+  ["app/proof/page.tsx", proofPage, "total_cases"],
+  ["app/proof/page.tsx", proofPage, "public_safe_count"],
+  ["app/proof/page.tsx", proofPage, "closed_case_count"],
+  ["app/proof/page.tsx", proofPage, "NOT_PUBLIC_SAFE"],
+  ["app/proof/page.tsx", proofPage, "SCHEMA_CONTRACT_VERIFIER_EXISTS_ONLY"],
+  ["app/proof/page.tsx", proofPage, "HO-DET-001"],
+  ["app/proof/page.tsx", proofPage, "HO-DET-011"],
+  ["app/proof/page.tsx", proofPage, "HO-DET-012"],
+  ["app/proof/page.tsx", proofPage, "VERIFICATION STATUS"],
+  ["app/proof/page.tsx", proofPage, "Workflow-status indicators only"],
+  ["app/proof/page.tsx", proofPage, "lifetime-ledger-public-summary"],
+  ["app/proof/page.tsx", proofPage, "lifetime-ledger-proof-bundle"],
+  ["app/proof/page.tsx", proofPage, "website is render-only"],
+  ["app/proof/page.tsx", proofPage, "proof repo owns the summary and proof bundle"],
+  ["app/proof/page.tsx", proofPage, "badges are workflow-status indicators only"],
+  ["app/proof/page.tsx", proofPage, "no runtime, signal, public-safe runtime proof, SOCaaS, production, autonomous SOC, disposition, or case-closure claim is made"],
+  ["src/data/proofRecords.ts", proofRecordsData, "lifetimeCaseLedgerV1"],
+  ["src/data/proofRecords.ts", proofRecordsData, "total_ledger_events: 4"],
+  ["src/data/proofRecords.ts", proofRecordsData, "total_cases: 4"],
+  ["src/data/proofRecords.ts", proofRecordsData, "public_safe_count: 0"],
+  ["src/data/proofRecords.ts", proofRecordsData, "closed_case_count: 0"],
+  ["src/data/proofRecords.ts", proofRecordsData, "correction_event_count: 0"],
+  ["src/data/proofRecords.ts", proofRecordsData, "superseding_event_count: 0"],
+  ["src/data/proofRecords.ts", proofRecordsData, "NOT_PUBLIC_SAFE"],
+  ["src/data/proofRecords.ts", proofRecordsData, "SCHEMA_CONTRACT_VERIFIER_EXISTS_ONLY"],
+  ["src/data/navigation.ts", navigationSource, "lifetimeLedgerSummary"],
+  ["src/data/navigation.ts", navigationSource, "lifetimeLedgerProofBundle"],
+  ["src/data/navigation.ts", navigationSource, "lifetimeLedgerBadges"],
+  ["src/data/navigation.ts", navigationSource, "proof/records/lifetime-case-ledger-v1-public-summary.json"],
+  ["src/data/navigation.ts", navigationSource, "proof/records/lifetime-case-ledger-v1-proof-bundle.json"],
+  ["src/data/navigation.ts", navigationSource, "actions/workflows/governance-gate.yml?query=branch%3Amain"],
+];
+const lifetimeLedgerFailures = lifetimeLedgerRequiredTerms
+  .filter(([, source, term]) => !source.includes(term))
+  .map(([file, , term]) => `${file} must include ${term}.`);
+
+if (lifetimeLedgerFailures.length > 0) {
+  console.error(`Lifetime Case Ledger render invariant failed:\n${lifetimeLedgerFailures.map((line) => `- ${line}`).join("\n")}`);
+  process.exit(1);
+}
+
 const blockedTerms = [
   "runtime-active",
   "signal-observed",

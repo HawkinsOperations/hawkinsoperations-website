@@ -12,6 +12,7 @@ import PromotionGateLadder from "@components/PromotionGateLadder";
 import RecentGovernedArtifacts from "@components/RecentGovernedArtifacts";
 import { promotionRequirements } from "@data/claims";
 import { externalLinks } from "@data/navigation";
+import { lifetimeCaseLedgerV1 } from "@data/proofRecords";
 
 export const metadata: Metadata = {
   title: "Proof | HawkinsOperations",
@@ -72,6 +73,76 @@ export default function ProofIndexPage() {
           <ProofPackReceipt />
           <div className="mt-6">
             <ProofManifestConsole />
+          </div>
+        </div>
+      </section>
+
+      {/* ── Lifetime Case Ledger v1 render-only route ───────────────── */}
+      <section id="lifetime-case-ledger" className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Render-only ledger route</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.2rem)" }}>
+              Lifetime Case Ledger v1
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              The website is render-only; the proof repo owns the summary and proof bundle.
+              The badges are workflow-status indicators only. Boundary: no runtime, signal, public-safe runtime proof, SOCaaS, production, autonomous SOC, disposition, or case-closure claim is made.
+            </p>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-4">
+            <article className="artifact-tile">
+              <span className="artifact-tile__cat">LEDGER STATUS</span>
+              <span className="artifact-tile__title">NOT_PUBLIC_SAFE</span>
+              <span className="artifact-tile__desc">Proof ceiling: SCHEMA_CONTRACT_VERIFIER_EXISTS_ONLY</span>
+            </article>
+            <article className="artifact-tile">
+              <span className="artifact-tile__cat">COUNT SNAPSHOT</span>
+              <span className="artifact-tile__title">total_ledger_events=4</span>
+              <span className="artifact-tile__desc">
+                total_cases=4 · public_safe_count=0 · closed_case_count=0
+              </span>
+            </article>
+            <article className="artifact-tile">
+              <span className="artifact-tile__cat">APPENDED DETECTIONS</span>
+              <span className="artifact-tile__title">HO-DET-001, HO-DET-011, HO-DET-012</span>
+              <span className="artifact-tile__desc">Tracked by proof-owned summary references, not by website authority.</span>
+            </article>
+            <article className="artifact-tile">
+              <span className="artifact-tile__cat">VERIFICATION STATUS</span>
+              <span className="artifact-tile__title">Workflow-status indicators only</span>
+              <span className="artifact-tile__desc">
+                Inspect lifetime-ledger-public-summary and lifetime-ledger-proof-bundle jobs in Governance Gate.
+              </span>
+            </article>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-3 mt-4">
+            {lifetimeCaseLedgerV1.references.map((reference) => (
+              <a
+                key={reference.label}
+                className="artifact-tile"
+                href={reference.href}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span className="artifact-tile__cat">{reference.label.toUpperCase()} ↗</span>
+                <span className="artifact-tile__title">{reference.repoPath}</span>
+                <span className="artifact-tile__desc">{reference.role}</span>
+                <span className="artifact-tile__link">Open ↗</span>
+              </a>
+            ))}
+          </div>
+
+          <div className="biz-translate mt-4" role="note" aria-label="Lifetime Case Ledger boundary">
+            <span className="biz-translate__label">Boundary</span>
+            <span>
+              <span className="biz-translate__text">
+                {lifetimeCaseLedgerV1.renderBoundary} Does not prove:{" "}
+                {lifetimeCaseLedgerV1.doesNotProve.join("; ")}.
+              </span>
+            </span>
           </div>
         </div>
       </section>

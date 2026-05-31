@@ -42,6 +42,55 @@ export type ProofRecord = {
   humanReviewGate?: string[];
 };
 
+export const lifetimeCaseLedgerV1 = {
+  title: "Lifetime Case Ledger v1",
+  status: "NOT_PUBLIC_SAFE",
+  proofCeiling: "SCHEMA_CONTRACT_VERIFIER_EXISTS_ONLY",
+  renderBoundary:
+    "website is render-only; proof repo owns the summary and proof bundle; badges are workflow-status indicators only; no runtime, signal, public-safe runtime proof, SOCaaS, production, autonomous SOC, disposition, or case-closure claim is made.",
+  counts: {
+    total_ledger_events: 4,
+    total_cases: 4,
+    public_safe_count: 0,
+    closed_case_count: 0,
+    correction_event_count: 0,
+    superseding_event_count: 0,
+  },
+  appendedDetections: ["HO-DET-001", "HO-DET-011", "HO-DET-012"],
+  references: [
+    {
+      label: "Proof-owned public summary",
+      href: externalLinks.lifetimeLedgerSummary,
+      repoPath: "proof/records/lifetime-case-ledger-v1-public-summary.json",
+      role: "bounded count and boundary summary",
+    },
+    {
+      label: "Proof bundle",
+      href: externalLinks.lifetimeLedgerProofBundle,
+      repoPath: "proof/records/lifetime-case-ledger-v1-proof-bundle.json",
+      role: "reviewer verification packet source",
+    },
+    {
+      label: "Badge verification",
+      href: externalLinks.lifetimeLedgerBadges,
+      repoPath: ".github/workflows/governance-gate.yml",
+      role: "workflow-status routing for ledger verifier jobs",
+    },
+  ],
+  doesNotProve: [
+    "live runtime activity",
+    "signal observation",
+    "public proof",
+    "public-safe runtime proof",
+    "SOCaaS deployment",
+    "production deployment",
+    "autonomous SOC authority",
+    "AI-approved final disposition",
+    "analyst-approved final disposition",
+    "case closure authority",
+  ],
+} as const;
+
 export const proofRecords: ProofRecord[] = [
   {
     detectionId: "HO-DET-001",
