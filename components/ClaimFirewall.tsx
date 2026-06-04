@@ -45,60 +45,32 @@ const ceilingLevels = [
   },
 ];
 
-const outcomeRules = [
-  "Rendering is not proof.",
-  "Green CI is evidence, not approval.",
-  "AI support is not disposition authority.",
-  "Runtime evidence does not automatically become public-safe proof.",
-  "Public wording must stay below the evidence ceiling.",
+const blockedTransformations = [
+  {
+    from: "validation",
+    to: "runtime proof",
+  },
+  {
+    from: "website rendering",
+    to: "proof",
+  },
+  {
+    from: "green CI",
+    to: "approval",
+  },
+  {
+    from: "AI support",
+    to: "disposition authority",
+  },
+  {
+    from: "runtime candidate",
+    to: "public-safe proof",
+  },
 ];
 
 export default function ClaimFirewall() {
   return (
     <div className="claim-firewall-demo" data-ci-target="blocked-claims">
-      <article className="claim-firewall-demo__control" aria-label="Claim Firewall visual control panel">
-        <div className="claim-firewall-demo__control-head">
-          <div>
-            <p className="cockpit-eyebrow">CI Claim Firewall</p>
-            <h3 className="claim-firewall-demo__title">WORDING -&gt; SCANNER -&gt; CEILING</h3>
-          </div>
-          <span className="rubber-stamp-blocked">BLOCKED</span>
-        </div>
-
-        <div className="claim-firewall-demo__flow" aria-label="Wording passes through scanner before reaching the public ceiling">
-          <div className="claim-firewall-demo__node claim-firewall-demo__node--wording">
-            <span className="claim-firewall-demo__node-code">01</span>
-            <strong>WORDING</strong>
-            <p>Public page copy, metadata, proof cards, and reviewer-facing summaries enter as claims to inspect.</p>
-          </div>
-          <div className="claim-firewall-demo__arrow" aria-hidden="true">-&gt;</div>
-          <div className="claim-firewall-demo__node claim-firewall-demo__node--scanner">
-            <span className="claim-firewall-demo__node-code">02</span>
-            <strong>SCANNER</strong>
-            <p>Deterministic checks look for blocked wording, unsafe context, rendering-as-proof drift, and promotion language.</p>
-            <div className="claim-firewall-demo__blocked-line">blocked claim context required</div>
-          </div>
-          <div className="claim-firewall-demo__arrow" aria-hidden="true">-&gt;</div>
-          <div className="claim-firewall-demo__node claim-firewall-demo__node--ceiling">
-            <span className="claim-firewall-demo__node-code">03</span>
-            <strong>CEILING</strong>
-            <p>Public wording stays below the evidence ceiling unless evidence linkage and explicit promotion authorize movement.</p>
-          </div>
-        </div>
-
-        <div className="claim-firewall-demo__console-line" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-          <span />
-        </div>
-
-        <p className="claim-firewall-demo__boundary">
-          Unsupported security claims should fail before they reach the public page. Website rendering is not proof.
-          Deterministic checks and human review keep public wording below the evidence ceiling.
-        </p>
-      </article>
-
       <article className="claim-firewall-demo__panel claim-firewall-demo__panel--meter">
         <div className="claim-firewall-demo__panel-head">
           <div>
@@ -201,9 +173,14 @@ export default function ClaimFirewall() {
           </div>
           <span className="claim-firewall-demo__panel-status">AI LABOR / HUMAN AUTHORITY</span>
         </div>
-        <ul className="claim-firewall-demo__outcomes">
-          {outcomeRules.map((item) => (
-            <li key={item}>{item}</li>
+        <ul className="claim-firewall-demo__outcomes" aria-label="Blocked claim transformations">
+          {blockedTransformations.map((item) => (
+            <li key={`${item.from}-${item.to}`}>
+              <span>{item.from}</span>
+              <strong aria-hidden="true">-&gt;</strong>
+              <span>{item.to}</span>
+              <em>blocked</em>
+            </li>
           ))}
         </ul>
         <p className="claim-firewall-demo__outcome-copy">
