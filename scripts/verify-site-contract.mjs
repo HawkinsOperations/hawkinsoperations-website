@@ -39,6 +39,11 @@ const requiredFiles = [
   "src/data/navigation.ts",
   "src/data/reviewerRoutes.ts",
   "src/data/credibilityMetrics.ts",
+  "components/CurrentProofSpine.tsx",
+  "public/.well-known/hawkinsoperations-proof.json",
+  "public/.well-known/agent-skills/index.json",
+  "public/_headers",
+  "public/agent.md",
   "public/raylee-hawkins-portrait.jpg",
   "public/robots.txt",
   "public/sitemap.xml",
@@ -131,6 +136,8 @@ if (homepageLabelFailures.length > 0) {
 }
 
 const proofPage = readFileSync(join(root, "app/proof/page.tsx"), "utf8");
+const proofHoDet001Page = readFileSync(join(root, "app/proof/ho-det-001/page.tsx"), "utf8");
+const currentProofSpine = readFileSync(join(root, "components/CurrentProofSpine.tsx"), "utf8");
 const proofRecordsData = readFileSync(join(root, "src/data/proofRecords.ts"), "utf8");
 const navigationSource = readFileSync(join(root, "src/data/navigation.ts"), "utf8");
 const lifetimeLedgerRequiredTerms = [
@@ -153,8 +160,8 @@ const lifetimeLedgerRequiredTerms = [
   ["app/proof/page.tsx", proofPage, "badges are workflow-status indicators only"],
   ["app/proof/page.tsx", proofPage, "no runtime, signal, public-safe runtime proof, SOCaaS, production, autonomous SOC, disposition, or case-closure claim is made"],
   ["src/data/proofRecords.ts", proofRecordsData, "lifetimeCaseLedgerV1"],
-  ["src/data/proofRecords.ts", proofRecordsData, "total_ledger_events: 4"],
-  ["src/data/proofRecords.ts", proofRecordsData, "total_cases: 4"],
+  ["src/data/proofRecords.ts", proofRecordsData, "total_ledger_events: 6"],
+  ["src/data/proofRecords.ts", proofRecordsData, "total_cases: 6"],
   ["src/data/proofRecords.ts", proofRecordsData, "public_safe_count: 0"],
   ["src/data/proofRecords.ts", proofRecordsData, "closed_case_count: 0"],
   ["src/data/proofRecords.ts", proofRecordsData, "correction_event_count: 0"],
@@ -174,6 +181,131 @@ const lifetimeLedgerFailures = lifetimeLedgerRequiredTerms
 
 if (lifetimeLedgerFailures.length > 0) {
   console.error(`Lifetime Case Ledger render invariant failed:\n${lifetimeLedgerFailures.map((line) => `- ${line}`).join("\n")}`);
+  process.exit(1);
+}
+
+const currentProofSpineRequiredTerms = [
+  ["app/page.tsx", homePage, "CurrentProofSpine"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "current-proof-spine"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "Current Proof Spine"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "Proof authority, validation engine, platform control layer."],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "proof-controlled detection"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "Proof Authority"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "Validation Engine"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "Platform Control Layer"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "Proof records, proof cards, proof packs, reviewer maps, accomplishment ledgers, and authority-boundary case studies"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "Local pipelines, parity checks, case-packet contracts, claim scanners, activity ledgers, and CI gates"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "Factory commands, ledger gates, state manifests, runtime candidates, recoverability drills, and SOAR packet contracts"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "Reviewer Metrics Pipeline v1"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, 'value: "6"'],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, 'label: "governed cases"'],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "Separates strict governed cases from validation activity, proof records, and blocked-claim counts."],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, 'value: "49"'],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, 'label: "validation fires"'],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, 'value: "106"'],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, 'label: "validation cases"'],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, 'value: "8"'],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, 'label: "proof records"'],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, 'value: "31"'],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, 'label: "blocked claims"'],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "public-safe"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "HO-DET-001 Receipt Chain"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "reviewer handoff"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "CONTROLLED_TEST_VALIDATED"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "Lifetime Case Ledger v1"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "state-manifest control"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "Runtime Case Collector v0"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "Runtime Route Proof v1 private-candidate review routing"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "Runner Trust Boundary"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "Separates public PR checks from manually triggered trusted-runner proof routes."],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "Standing Governance Controls"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "PR review rituals"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "Proof Pack 001 Quick Check"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "hash/verification path"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "Website rendering is not proof"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "GitHub Project metadata, website rendering, runtime truth, or signal truth into proof"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "does not promote proof"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "runtime-active status"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "signal-observed"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "public-safe runtime proof"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "production/SOCaaS/customer"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "deployment"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "FortiSIEM integration"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "AI disposition"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "analyst"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "disposition authority"],
+];
+const currentProofSpineFailures = currentProofSpineRequiredTerms
+  .filter(([, source, term]) => !source.includes(term))
+  .map(([file, , term]) => `${file} must include ${term}.`);
+
+if (currentProofSpineFailures.length > 0) {
+  console.error(`Current Proof Spine render invariant failed:\n${currentProofSpineFailures.map((line) => `- ${line}`).join("\n")}`);
+  process.exit(1);
+}
+
+if (!proofHoDet001Page.includes('title: "HO-DET-001 | HawkinsOperations"')) {
+  console.error("HO-DET-001 proof route metadata must use HawkinsOperations, not stale HawkinsOps branding.");
+  process.exit(1);
+}
+
+const discoveryProof = JSON.parse(readFileSync(join(root, "public/.well-known/hawkinsoperations-proof.json"), "utf8"));
+const agentSkills = JSON.parse(readFileSync(join(root, "public/.well-known/agent-skills/index.json"), "utf8"));
+const agentMarkdown = readFileSync(join(root, "public/agent.md"), "utf8");
+const headersFile = readFileSync(join(root, "public/_headers"), "utf8");
+const robotsText = readFileSync(join(root, "public/robots.txt"), "utf8");
+
+const discoveryFailures = [];
+if (discoveryProof.name !== "HawkinsOperations") {
+  discoveryFailures.push("public/.well-known/hawkinsoperations-proof.json must identify HawkinsOperations by name.");
+}
+if (discoveryProof.claim_ceiling !== "source_and_navigation_metadata_only") {
+  discoveryFailures.push("public/.well-known/hawkinsoperations-proof.json must cap claim_ceiling at source_and_navigation_metadata_only.");
+}
+if (!Array.isArray(discoveryProof.blocked_claims) || !discoveryProof.blocked_claims.includes("runtime_or_production_control")) {
+  discoveryFailures.push("public/.well-known/hawkinsoperations-proof.json must block runtime_or_production_control.");
+}
+if (!Array.isArray(discoveryProof.reviewer_routes) || discoveryProof.reviewer_routes.length < 4) {
+  discoveryFailures.push("public/.well-known/hawkinsoperations-proof.json must expose reviewer_routes for machine-readable navigation.");
+}
+if (agentSkills.agent_capability_boundary !== "read_review_navigation_only") {
+  discoveryFailures.push("public/.well-known/agent-skills/index.json must cap agent_capability_boundary at read_review_navigation_only.");
+}
+if (!Array.isArray(agentSkills.skills) || agentSkills.skills.length < 4) {
+  discoveryFailures.push("public/.well-known/agent-skills/index.json must list public read/review/navigation skills.");
+}
+for (const skill of agentSkills.skills ?? []) {
+  if (skill.execution || skill.auth_required || skill.private_api || skill.runtime_action) {
+    discoveryFailures.push(`agent skill ${skill.id ?? "<unknown>"} must not imply execution, auth, private API, or runtime action.`);
+  }
+}
+const unsupportedDiscoveryClaimPatterns = [
+  /MCP/i,
+  /WebMCP/i,
+  /OpenAI\s+cites/i,
+  /ChatGPT\s+cites/i,
+  /Apple\s+uses/i,
+  /production\s+proven/i,
+  /runtime\s+proven/i,
+  /live\s+SOC\s+proven/i,
+];
+if (unsupportedDiscoveryClaimPatterns.some((pattern) => pattern.test(`${JSON.stringify(discoveryProof)} ${JSON.stringify(agentSkills)} ${agentMarkdown}`))) {
+  discoveryFailures.push("agent discovery metadata must not imply MCP/WebMCP or unsupported citation/runtime/production claims.");
+}
+if (!headersFile.includes("Link: </.well-known/hawkinsoperations-proof.json>; rel=\"service-doc\"")) {
+  discoveryFailures.push("public/_headers must add a homepage service-doc Link header to hawkinsoperations-proof.json.");
+}
+if (!headersFile.includes("Link: </agent.md>; rel=\"alternate\"; type=\"text/markdown\"")) {
+  discoveryFailures.push("public/_headers must add a homepage alternate markdown Link header to agent.md.");
+}
+for (const directive of ["User-agent: *", "Allow: /", "Sitemap: https://hawkinsoperations.com/sitemap.xml", "Content-Signal: ai-train=no", "Content-Signal: search=yes", "Content-Signal: ai-input=yes"]) {
+  if (!robotsText.includes(directive)) {
+    discoveryFailures.push(`public/robots.txt must include ${directive}.`);
+  }
+}
+
+if (discoveryFailures.length > 0) {
+  console.error(`Agent discovery metadata invariant failed:\n${discoveryFailures.map((line) => `- ${line}`).join("\n")}`);
   process.exit(1);
 }
 
@@ -218,6 +350,7 @@ const allowedContext = [
   /not claimed/i,
   /not[-_ ]claimed/i,
   /does not claim/i,
+  /does not promote/i,
   /does not prove/i,
   /doesNotProve/,
   /cannot[-_ ]prove/i,

@@ -1,0 +1,79 @@
+{
+  "name": "HawkinsOperations",
+  "site": "https://hawkinsoperations.com",
+  "version": "2026-06-03",
+  "purpose": "Machine-readable reviewer navigation for the public website.",
+  "claim_ceiling": "source_and_navigation_metadata_only",
+  "truth_boundary": {
+    "website_role": "rendered public navigation and source-controlled documentation surface",
+    "website_does_not_prove": [
+      "runtime_or_production_control",
+      "signal_observation",
+      "external endorsement",
+      "citation, ranking, or validation by any AI or search provider"
+    ],
+    "authority": "Evidence and human review authorize claims. AI can support labor only."
+  },
+  "reviewer_routes": [
+    {
+      "id": "proof-overview",
+      "label": "Proof overview",
+      "url": "https://hawkinsoperations.com/proof/",
+      "use": "Review public proof navigation, verifier cards, and claim ceilings."
+    },
+    {
+      "id": "validation-registry",
+      "label": "Validation registry",
+      "url": "https://hawkinsoperations.com/validation/",
+      "use": "Review controlled validation status and blocked inference boundaries."
+    },
+    {
+      "id": "architecture-truth-surfaces",
+      "label": "Truth surfaces",
+      "url": "https://hawkinsoperations.com/architecture/truth-surfaces/",
+      "use": "Review the separation between source, validation, runtime, signal, evidence, and public proof surfaces."
+    },
+    {
+      "id": "repo-authority",
+      "label": "Repository authority map",
+      "url": "https://hawkinsoperations.com/architecture/repo-authority-map/",
+      "use": "Review source-controlled repository roles without inferring runtime state."
+    },
+    {
+      "id": "agent-skills",
+      "label": "Agent skills index",
+      "url": "https://hawkinsoperations.com/.well-known/agent-skills/index.json",
+      "use": "Review the read, review, and navigation capabilities exposed for agents."
+    }
+  ],
+  "related_metadata": [
+    {
+      "rel": "agent-skills",
+      "href": "https://hawkinsoperations.com/.well-known/agent-skills/index.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "alternate",
+      "href": "https://hawkinsoperations.com/agent.md",
+      "type": "text/markdown"
+    },
+    {
+      "rel": "sitemap",
+      "href": "https://hawkinsoperations.com/sitemap.xml",
+      "type": "application/xml"
+    },
+    {
+      "rel": "robots",
+      "href": "https://hawkinsoperations.com/robots.txt",
+      "type": "text/plain"
+    }
+  ],
+  "blocked_claims": [
+    "runtime_or_production_control",
+    "provider_endorsement",
+    "provider_citation_or_ranking",
+    "agent_validation_of_system",
+    "private_evidence_publication",
+    "auth_or_private_api_capability"
+  ]
+}

@@ -82,7 +82,7 @@ export default function AiSecurityPage() {
       <PageHero
         title="AI Security"
         subtitle="A governed implementation model for AI-assisted detection engineering and security operations."
-        description="HawkinsOperations demonstrates a governed SOCaaS-style implementation model for AI-assisted detection engineering and security operations: detection work, telemetry confidence, validation, case packets, support-only AI triage, human review, and proof-controlled reporting."
+        description="HawkinsOperations demonstrates a governed SOC workflow support model for AI-assisted detection engineering and security operations: detection work, telemetry confidence, validation, case packets, support-only AI triage, human review, and proof-controlled reporting."
         badges={[
           { label: "AI_SUPPORT_ONLY" },
           { label: "HUMAN_AUTHORITY_REQUIRED" },

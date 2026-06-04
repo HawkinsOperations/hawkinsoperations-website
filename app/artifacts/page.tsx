@@ -141,7 +141,7 @@ export default function ArtifactsIndexPage() {
               <a className="cta cta-primary" href="#evidence-bay">Open the evidence bay →</a>
               <a className="cta cta-quiet" href="#reviewer-paths">Reviewer paths</a>
               <a className="cta cta-quiet" href="#anchors">Anchor artifacts</a>
-              <a className="cta cta-quiet" href="/proof/">Proof ledger</a>
+              <a className="cta cta-quiet" href="/proof/">Proof authority</a>
             </div>
 
             <div className="artifact-receipt-room" role="note" aria-label="What the evidence bay is">
@@ -391,7 +391,7 @@ export default function ArtifactsIndexPage() {
               },
               {
                 family: "Proof Pack 001",
-                cells: ["present", "present", "routed", "routed", "—", "pending"],
+                cells: ["present", "present", "routed", "routed", "—", "reviewer-routed"],
               },
               {
                 family: "HO-DET-001 detection source",
@@ -448,7 +448,7 @@ export default function ArtifactsIndexPage() {
             {" "}<span className="mono">private</span> = held in private/internal evidence, not public ·
             {" "}<span className="mono">reference</span> = referenced but not promoted ·
             {" "}<span className="mono">blocked</span> = not eligible for public claim until promotion gate clears ·
-            {" "}<span className="mono">pending</span> = candidate route, not yet implemented.
+            {" "}<span className="mono">reviewer-routed</span> = bounded reviewer route available; not proof promotion.
             Website rendering is not proof; the matrix only describes coverage state.
           </p>
         </div>

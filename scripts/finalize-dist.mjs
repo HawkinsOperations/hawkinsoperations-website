@@ -1,4 +1,4 @@
-import { rmSync, renameSync, existsSync } from "node:fs";
+import { copyFileSync, rmSync, renameSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
 const root = process.cwd();
@@ -15,4 +15,5 @@ if (existsSync(dist)) {
 }
 
 renameSync(out, dist);
+copyFileSync(join(root, "public", "robots.txt"), join(dist, "robots.txt"));
 console.log(`finalize-dist: moved ${out} -> ${dist}`);

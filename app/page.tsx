@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ControlsFiredGraph from "@components/ControlsFiredGraph";
+import CurrentProofSpine from "@components/CurrentProofSpine";
 import HomeAttackCoverageBridge from "@components/HomeAttackCoverageBridge";
 import HomeReviewerBridgeToArtifacts from "@components/HomeReviewerBridgeToArtifacts";
 import HomeTrustBoundaryPanel from "@components/HomeTrustBoundaryPanel";
@@ -21,6 +22,8 @@ export default function HomePage() {
   return (
     <>
       <OrbitalHawkHero />
+
+      <CurrentProofSpine />
 
       <section id="proof-loop" className="cockpit-section--tight">
         <div className="container">

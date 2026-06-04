@@ -10,7 +10,7 @@ import { externalLinks } from "@data/navigation";
 export const metadata: Metadata = {
   title: "Detections | HawkinsOperations",
   description:
-    "Detection engineering portfolio for HawkinsOperations: detection IDs, validation status, ATT&CK mapping, proof ceilings, and runtime/public signal boundaries.",
+    "Detection source, validation, proof ceilings, ATT&CK mapping, and runtime/public signal boundaries for HawkinsOperations.",
   alternates: {
     canonical: "/detections/",
   },
@@ -41,8 +41,8 @@ export default function DetectionsPage() {
     <>
       <PageHero
         title="Detections"
-        subtitle="Detection engineering portfolio with proof boundaries attached."
-        description="This page shows the public detection-engineering surface: detection IDs, validation status, ATT&CK mapping where represented, proof ceilings, and runtime/public signal boundaries."
+        subtitle="Detection source, validation, and proof ceilings."
+        description="This page shows the public detection-engineering lifecycle: detection IDs, validation status, ATT&CK mapping where represented, proof ceilings, and runtime/public signal boundaries."
         badges={[
           { label: "DETECTION_ENGINEERING" },
           { label: "CONTROLLED_VALIDATION" },
@@ -60,9 +60,9 @@ export default function DetectionsPage() {
       <section className="cockpit-section--tight">
         <div className="container">
           <SectionHeader
-            title="Detection cards"
-            eyebrow="Portfolio"
-            description="Each card keeps validation, proof ceiling, and runtime/signal boundary visible so detection work cannot be over-promoted."
+            title="Detection systems"
+            eyebrow="Source → validation → proof ceiling"
+            description="Each card keeps source, validation, proof ceiling, and runtime/signal boundary visible so detection work cannot be over-promoted."
           />
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {detectionRows.map((row) => (

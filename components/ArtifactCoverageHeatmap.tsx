@@ -23,8 +23,8 @@ interface CoverageRow {
 }
 
 const rows: CoverageRow[] = [
-  { family: "HO-DET-001 proof loop", cells: ["present", "present", "present", "routed", "—", "controlled-test"], summary: "Public across source, validation, and proof; the website routes to the receipt. Public status holds at controlled-test scope." },
-  { family: "Proof Pack 001", cells: ["present", "present", "routed", "routed", "—", "pending"], summary: "Source and validation present; proof and website route to it. Public status is a pending candidate route, not yet promoted." },
+  { family: "HO-DET-001 proof loop", cells: ["present", "present", "present", "routed", "—", "controlled-test"], summary: "Source, validation, and proof routes are public; the website routes to the receipt. Claim ceiling remains controlled-test." },
+  { family: "Proof Pack 001", cells: ["present", "present", "routed", "routed", "—", "reviewer-routed"], summary: "Proof Pack route available as a bounded reviewer package with release, manifest, hash, and verifier routing. It does not promote runtime or public-safe runtime proof." },
   { family: "HO-DET-001 detection source", cells: ["present", "present", "routed", "routed", "—", "controlled-test"], summary: "Detection source and validation exist publicly; proof and website route to them at controlled-test scope." },
   { family: "Validation CI / report", cells: ["present", "present", "routed", "routed", "—", "present"], summary: "Validation output is public and routed from proof and website surfaces." },
   { family: "Backend adapter · field mapping", cells: ["private", "private", "—", "reference", "private", "blocked"], summary: "Held in private/internal evidence; the website references it only. Public claim is blocked until a promotion gate clears." },
@@ -43,6 +43,7 @@ const toneFor = (value: string): string => {
     case "private": return "private";
     case "reference": return "ref";
     case "unpublished": return "ref";
+    case "reviewer-routed": return "route";
     case "pending": return "pending";
     case "blocked": return "block";
     case "rendering": return "neutral";

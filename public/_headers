@@ -1,0 +1,4 @@
+/
+  Link: </.well-known/hawkinsoperations-proof.json>; rel="service-doc"
+  Link: </agent.md>; rel="alternate"; type="text/markdown"
+
