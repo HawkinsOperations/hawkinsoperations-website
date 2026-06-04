@@ -18,9 +18,9 @@ export default function ControlsPage() {
   return (
     <>
       <PageHero
-        title="Claim firewall"
-        subtitle="Allowed wording, blocked wording, and promotion gates in one public surface."
-        description="The firewall keeps a bounded validation result from becoming an unsupported runtime, signal, or public proof claim."
+        title="Claim Firewall"
+        subtitle="The public CI control that keeps website wording below the evidence ceiling."
+        description="Wording enters the scanner, blocked terms stay visible, and public claims remain capped until evidence linkage and explicit promotion change their state."
         badges={[
           { label: "RENDERING_ONLY" },
           { label: ceiling, tone: "warn" },

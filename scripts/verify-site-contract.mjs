@@ -138,6 +138,8 @@ if (homepageLabelFailures.length > 0) {
 const proofPage = readFileSync(join(root, "app/proof/page.tsx"), "utf8");
 const proofHoDet001Page = readFileSync(join(root, "app/proof/ho-det-001/page.tsx"), "utf8");
 const currentProofSpine = readFileSync(join(root, "components/CurrentProofSpine.tsx"), "utf8");
+const controlsPage = readFileSync(join(root, "app/controls/page.tsx"), "utf8");
+const claimFirewallComponent = readFileSync(join(root, "components/ClaimFirewall.tsx"), "utf8");
 const proofRecordsData = readFileSync(join(root, "src/data/proofRecords.ts"), "utf8");
 const navigationSource = readFileSync(join(root, "src/data/navigation.ts"), "utf8");
 const lifetimeLedgerRequiredTerms = [
@@ -241,6 +243,35 @@ const currentProofSpineFailures = currentProofSpineRequiredTerms
 
 if (currentProofSpineFailures.length > 0) {
   console.error(`Current Proof Spine render invariant failed:\n${currentProofSpineFailures.map((line) => `- ${line}`).join("\n")}`);
+  process.exit(1);
+}
+
+const claimFirewallVisualRequiredTerms = [
+  ["app/controls/page.tsx", controlsPage, "Claim Firewall"],
+  ["app/controls/page.tsx", controlsPage, "website wording below the evidence ceiling"],
+  ["app/controls/page.tsx", controlsPage, "Website rendering is not proof"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "claim-firewall-demo"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "WORDING -&gt; SCANNER -&gt; CEILING"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "Unsupported security claims should fail before they reach the public page"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "Evidence ceiling gauge"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "Blocked / not claimed"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "CONTROLLED RISK CHIPS"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "Allowed wording examples"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "Unsafe wording examples"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "Promotion gate timeline"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "Outcome panel"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "Rendering is not proof."],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "Green CI is evidence, not approval."],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "AI support is not disposition authority."],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "Runtime evidence does not automatically become public-safe proof."],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "Public wording must stay below the evidence ceiling."],
+];
+const claimFirewallVisualFailures = claimFirewallVisualRequiredTerms
+  .filter(([, source, term]) => !source.includes(term))
+  .map(([file, , term]) => `${file} must include ${term}.`);
+
+if (claimFirewallVisualFailures.length > 0) {
+  console.error(`Claim Firewall visual invariant failed:\n${claimFirewallVisualFailures.map((line) => `- ${line}`).join("\n")}`);
   process.exit(1);
 }
 
