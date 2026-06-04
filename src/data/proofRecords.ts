@@ -49,8 +49,8 @@ export const lifetimeCaseLedgerV1 = {
   renderBoundary:
     "website is render-only; proof repo owns the summary and proof bundle; badges are workflow-status indicators only; no runtime, signal, public-safe runtime proof, SOCaaS, production, autonomous SOC, disposition, or case-closure claim is made.",
   counts: {
-    total_ledger_events: 4,
-    total_cases: 4,
+    total_ledger_events: 6,
+    total_cases: 6,
     public_safe_count: 0,
     closed_case_count: 0,
     correction_event_count: 0,

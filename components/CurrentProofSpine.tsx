@@ -28,7 +28,7 @@ const operatingLayers = [
 ];
 
 const metricStrip = [
-  { value: "4", label: "governed cases" },
+  { value: "6", label: "governed cases" },
   { value: "49", label: "validation fires" },
   { value: "106", label: "validation cases" },
   { value: "8", label: "proof records" },
@@ -73,9 +73,10 @@ const proofSpineCards: ProofSpineCard[] = [
   {
     title: "Runtime Case Collector v0",
     status: "private candidate lane",
-    supports: "Separates route, dedupe, and append-gate handling for private runtime candidates.",
+    supports:
+      "Separates route, dedupe, append-gate handling, and Runtime Route Proof v1 private-candidate review routing.",
     doesNotProve:
-      "Does not prove governed case append, public runtime-active proof, or public signal-observed proof.",
+      "Does not prove governed case append, public runtime-active proof, public signal-observed proof, or public-safe runtime proof.",
     routeLabel: "Review runtime boundary",
     routeHref: "/proof/#runtime-boundary",
     tier: "supporting",

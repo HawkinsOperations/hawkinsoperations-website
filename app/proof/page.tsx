@@ -99,9 +99,9 @@ export default function ProofIndexPage() {
             </article>
             <article className="artifact-tile">
               <span className="artifact-tile__cat">COUNT SNAPSHOT</span>
-              <span className="artifact-tile__title">total_ledger_events=4</span>
+              <span className="artifact-tile__title">total_ledger_events=6</span>
               <span className="artifact-tile__desc">
-                total_cases=4 · public_safe_count=0 · closed_case_count=0
+                total_cases=6 · public_safe_count=0 · closed_case_count=0
               </span>
             </article>
             <article className="artifact-tile">
