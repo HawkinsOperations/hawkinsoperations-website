@@ -83,6 +83,8 @@ export default function OrbitalHawkHero() {
               <img
                 className="ohh__brand-img"
                 src="/brand/hawkinsoperations-hero-wide.png"
+                width={2508}
+                height={627}
                 alt="HawkinsOperations — Detection Engineering SOC. Proof. Truth. Authority."
                 loading="eager"
                 decoding="async"

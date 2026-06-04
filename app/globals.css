@@ -87,6 +87,18 @@ body::after {
   mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), transparent 78%);
 }
 
+@media (max-width: 720px) {
+  body::before,
+  body::after {
+    display: none;
+  }
+
+  .site-header {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
 a { color: inherit; text-decoration: none; }
 a:hover { color: var(--ice-blue); }
 
@@ -97,7 +109,10 @@ button:focus-visible {
   border-radius: 2px;
 }
 
-main { overflow: hidden; }
+main {
+  overflow-x: hidden;
+  overflow-y: visible;
+}
 
 .site-shell {
   position: relative;
@@ -6952,6 +6967,36 @@ body::after {
   background: transparent;
 }
 
+@media (max-width: 720px) {
+  .coverage-matrix {
+    overflow-x: visible;
+    box-shadow: 0 0 0 1px rgba(143, 216, 255, 0.06) inset, 0 16px 36px rgba(0, 0, 0, 0.38);
+  }
+
+  .coverage-matrix__head {
+    display: none;
+  }
+
+  .coverage-matrix__row {
+    min-width: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 10px;
+  }
+
+  .coverage-matrix__family {
+    grid-column: 1 / -1;
+    padding-right: 0;
+  }
+
+  .coverage-matrix__cell {
+    min-width: 0;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    letter-spacing: 0.08em;
+  }
+}
+
 /* ─────────────────────────────────────────────────────────────────────
  * S-TIER CONTROL-LAYER ADDITIONS (additive; dark cockpit preserved)
  * Adds two reserved accent colors and four shape-vocabulary utilities.
@@ -8518,6 +8563,16 @@ body::after {
 .reveal[data-delay="4"] { transition-delay: 320ms; }
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+@media (max-width: 720px) {
+  .reveal,
+  .reveal--up,
+  .reveal--down {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 /* Business translation strip — plain-English bridge under technical sections */
@@ -12519,8 +12574,23 @@ body::after {
   .ach__cell-text { font-size: 0.46rem; }
 }
 @media (max-width: 560px) {
-  .ach__grid { overflow-x: auto; }
-  .ach__col-head, .ach__row { grid-template-columns: minmax(110px, 1.3fr) repeat(6, minmax(34px, 1fr)); min-width: 460px; }
+  .ach__grid { overflow-x: visible; }
+  .ach__col-head { display: none; }
+  .ach__row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-width: 0;
+  }
+  .ach__row-family {
+    grid-column: 1 / -1;
+    padding-right: 0;
+  }
+  .ach__cell {
+    min-width: 0;
+  }
+  .ach__cell-text {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
