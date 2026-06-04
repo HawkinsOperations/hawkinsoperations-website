@@ -1,7 +1,8 @@
 type ProofSpineCard = {
   title: string;
   status: string;
-  proves: string;
+  supports: string;
+  metricLine?: string;
   doesNotProve: string;
   routeLabel: string;
   routeHref: string;
@@ -12,8 +13,10 @@ const proofSpineCards: ProofSpineCard[] = [
   {
     title: "Reviewer Metrics Pipeline v1",
     status: "reviewer-visible metrics",
-    proves:
-      "Separates 4 governed cases, 49 detection activity / controlled validation fires, 106 validation cases, 8 proof records, 31 blocked claims, and public-safe count 0.",
+    supports:
+      "Separates strict governed cases from broader validation activity, proof records, and blocked-claim counts.",
+    metricLine:
+      "4 governed cases · 49 validation fires · 106 validation cases · 8 proof records · 31 blocked claims · public-safe 0",
     doesNotProve:
       "Does not prove production SOC metrics, customer metrics, runtime case volume, or public-safe runtime proof.",
     routeLabel: "Open proof metrics route",
@@ -22,7 +25,7 @@ const proofSpineCards: ProofSpineCard[] = [
   {
     title: "HO-DET-001 Receipt Chain",
     status: "CONTROLLED_TEST_VALIDATED",
-    proves:
+    supports:
       "Connects detection source, validation receipt, platform contract, proof case study, and website route without raising the ceiling.",
     doesNotProve:
       "Does not prove SOCaaS deployment, customer deployment, FortiSIEM integration, production readiness, or public-safe runtime proof.",
@@ -32,7 +35,7 @@ const proofSpineCards: ProofSpineCard[] = [
   {
     title: "Lifetime Case Ledger v1",
     status: "append-gated accounting spine",
-    proves: "Provides governed-case accounting and a verifier-backed metric source.",
+    supports: "Provides governed-case accounting and a verifier-backed metric source.",
     doesNotProve:
       "Does not prove production case tracking, autonomous closure, or public runtime case proof.",
     routeLabel: "Inspect ledger route",
@@ -41,16 +44,16 @@ const proofSpineCards: ProofSpineCard[] = [
   {
     title: "Runtime Case Collector v0",
     status: "private candidate lane",
-    proves: "Separates route, dedupe, and append-gate handling for private runtime candidates.",
+    supports: "Separates route, dedupe, and append-gate handling for private runtime candidates.",
     doesNotProve:
       "Does not prove governed case append, public runtime-active proof, or public signal-observed proof.",
     routeLabel: "Review runtime boundary",
     routeHref: "/proof/#runtime-boundary",
   },
   {
-    title: "Runner Trust Split",
+    title: "Runner Trust Boundary",
     status: "workflow trust boundary",
-    proves: "Separates public PR workflows from trusted manual runner paths.",
+    supports: "Separates public PR checks from manually triggered trusted-runner proof routes.",
     doesNotProve:
       "Does not prove private runner infrastructure details or broad public PR self-hosted safety beyond the workflow split.",
     routeLabel: "Open platform contracts",
@@ -59,7 +62,7 @@ const proofSpineCards: ProofSpineCard[] = [
   {
     title: "Standing Governance Controls",
     status: "merged reviewer-routing controls",
-    proves: "Shows blocked-claim and reviewer-routing controls exist.",
+    supports: "Shows blocked-claim and reviewer-routing controls exist.",
     doesNotProve:
       "Does not prove runtime truth, signal truth, public-safe status, or GitHub Project metadata as proof.",
     routeLabel: "Open controls",
@@ -68,7 +71,7 @@ const proofSpineCards: ProofSpineCard[] = [
   {
     title: "Proof Pack 001 Quick Check",
     status: "bounded reviewer package",
-    proves: "Routes the 90-second reviewer check, release path, manifest, and verifier cards.",
+    supports: "Routes the 90-second reviewer check, release path, manifest, and verifier cards.",
     doesNotProve:
       "Does not prove runtime proof promotion, public-safe runtime proof, or any production deployment claim.",
     routeLabel: "Open Proof Pack 001",
@@ -104,9 +107,16 @@ export default function CurrentProofSpine() {
               <dl className="mt-4 grid gap-3 text-sm leading-6">
                 <div>
                   <dt className="mono text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-blue-100">
-                    Proves
+                    Supports
                   </dt>
-                  <dd className="mt-1 text-slate-300">{card.proves}</dd>
+                  <dd className="mt-1 text-slate-300">
+                    {card.supports}
+                    {card.metricLine && (
+                      <span className="mt-2 block text-xs leading-5 text-blue-100/85">
+                        {card.metricLine}
+                      </span>
+                    )}
+                  </dd>
                 </div>
                 <div>
                   <dt className="mono text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-amber-100">
