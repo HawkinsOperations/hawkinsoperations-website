@@ -141,7 +141,7 @@ export default function ArtifactsIndexPage() {
               <a className="cta cta-primary" href="#evidence-bay">Open the evidence bay →</a>
               <a className="cta cta-quiet" href="#reviewer-paths">Reviewer paths</a>
               <a className="cta cta-quiet" href="#anchors">Anchor artifacts</a>
-              <a className="cta cta-quiet" href="/proof/">Proof ledger</a>
+              <a className="cta cta-quiet" href="/proof/">Proof authority</a>
             </div>
 
             <div className="artifact-receipt-room" role="note" aria-label="What the evidence bay is">

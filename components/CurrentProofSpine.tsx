@@ -38,17 +38,6 @@ const metricStrip = [
 
 const proofSpineCards: ProofSpineCard[] = [
   {
-    title: "Reviewer Metrics Pipeline v1",
-    status: "reviewer-visible metrics",
-    supports:
-      "Separates strict governed cases from validation activity, proof records, and blocked-claim counts.",
-    doesNotProve:
-      "Does not prove production SOC metrics, customer metrics, runtime case volume, or public-safe runtime proof.",
-    routeLabel: "Open proof metrics route",
-    routeHref: "/proof/",
-    tier: "hero",
-  },
-  {
     title: "HO-DET-001 Receipt Chain",
     status: "CONTROLLED_TEST_VALIDATED",
     supports:
@@ -68,6 +57,17 @@ const proofSpineCards: ProofSpineCard[] = [
       "Does not prove production case tracking, autonomous closure, or public runtime case proof.",
     routeLabel: "Inspect ledger route",
     routeHref: "/proof/#lifetime-case-ledger",
+    tier: "hero",
+  },
+  {
+    title: "Reviewer Metrics Pipeline v1",
+    status: "reviewer-visible metrics",
+    supports:
+      "Separates strict governed cases from validation activity, proof records, and blocked-claim counts.",
+    doesNotProve:
+      "Does not prove production SOC metrics, customer metrics, runtime case volume, or public-safe runtime proof.",
+    routeLabel: "Open proof metrics route",
+    routeHref: "/proof/",
     tier: "hero",
   },
   {
@@ -128,26 +128,13 @@ export default function CurrentProofSpine() {
             className="cockpit-headline mt-2"
             style={{ fontSize: "clamp(1.7rem, 2.8vw, 2.4rem)" }}
           >
-            Current Proof Spine
+            Proof authority, validation engine, platform control layer.
           </h2>
           <p className="muted mt-3 max-w-4xl text-base leading-7">
             HawkinsOperations is not a portfolio page. It is a proof-controlled detection
             operations system: proof authority, validation engine, platform control layer, runtime
             candidates, metrics, and blocked claims separated before anything becomes public proof.
           </p>
-        </div>
-
-        <div className="grid gap-3 md:grid-cols-3">
-          {operatingLayers.map((layer, index) => (
-            <article
-              key={layer.title}
-              className="artifact-tile border-blue-300/20 bg-slate-950/70"
-            >
-              <span className="artifact-tile__cat">Layer 0{index + 1}</span>
-              <h3 className="mt-2 text-lg font-semibold text-slate-50">{layer.title}</h3>
-              <p className="mt-3 text-sm leading-6 text-slate-300">{layer.copy}</p>
-            </article>
-          ))}
         </div>
 
         <div className="mt-4 grid gap-2 rounded-md border border-blue-300/15 bg-blue-950/20 p-3 sm:grid-cols-3 xl:grid-cols-6">
@@ -158,6 +145,19 @@ export default function CurrentProofSpine() {
                 {metric.label}
               </span>
             </div>
+          ))}
+        </div>
+
+        <div className="mt-3 grid gap-3 md:grid-cols-3">
+          {operatingLayers.map((layer, index) => (
+            <article
+              key={layer.title}
+              className="artifact-tile border-blue-300/20 bg-slate-950/70"
+            >
+              <span className="artifact-tile__cat">Layer 0{index + 1}</span>
+              <h3 className="mt-2 text-lg font-semibold text-slate-50">{layer.title}</h3>
+              <p className="mt-3 text-sm leading-6 text-slate-300">{layer.copy}</p>
+            </article>
           ))}
         </div>
 

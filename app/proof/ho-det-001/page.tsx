@@ -11,7 +11,7 @@ import { externalLinks } from "@data/navigation";
 import { flagshipProofRecord as record } from "@data/proofRecords";
 
 export const metadata: Metadata = {
-  title: "HO-DET-001 | HawkinsOps",
+  title: "HO-DET-001 | HawkinsOperations",
   description:
     "HO-DET-001 case file preserving the CONTROLLED_TEST_VALIDATED proof ceiling and public claim boundary.",
   alternates: {
@@ -135,7 +135,7 @@ export default function HoDet001CaseFilePage() {
         <div className="container">
           <SectionHeader
             title="Workflow contract"
-            eyebrow="SOCaaS-style pilot loop"
+            eyebrow="SOC workflow pilot loop"
             description="The flow is visualized as source, validation, case packet, support-only AI, human review, and proof-controlled reporting. Each stage keeps its own authority boundary."
           />
           <div className="mt-6">

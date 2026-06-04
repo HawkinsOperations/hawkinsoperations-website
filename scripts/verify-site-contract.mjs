@@ -136,6 +136,7 @@ if (homepageLabelFailures.length > 0) {
 }
 
 const proofPage = readFileSync(join(root, "app/proof/page.tsx"), "utf8");
+const proofHoDet001Page = readFileSync(join(root, "app/proof/ho-det-001/page.tsx"), "utf8");
 const currentProofSpine = readFileSync(join(root, "components/CurrentProofSpine.tsx"), "utf8");
 const proofRecordsData = readFileSync(join(root, "src/data/proofRecords.ts"), "utf8");
 const navigationSource = readFileSync(join(root, "src/data/navigation.ts"), "utf8");
@@ -187,6 +188,7 @@ const currentProofSpineRequiredTerms = [
   ["app/page.tsx", homePage, "CurrentProofSpine"],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "current-proof-spine"],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "Current Proof Spine"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "Proof authority, validation engine, platform control layer."],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "proof-controlled detection"],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "Proof Authority"],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "Validation Engine"],
@@ -239,6 +241,11 @@ const currentProofSpineFailures = currentProofSpineRequiredTerms
 
 if (currentProofSpineFailures.length > 0) {
   console.error(`Current Proof Spine render invariant failed:\n${currentProofSpineFailures.map((line) => `- ${line}`).join("\n")}`);
+  process.exit(1);
+}
+
+if (!proofHoDet001Page.includes('title: "HO-DET-001 | HawkinsOperations"')) {
+  console.error("HO-DET-001 proof route metadata must use HawkinsOperations, not stale HawkinsOps branding.");
   process.exit(1);
 }
 
