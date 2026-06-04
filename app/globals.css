@@ -6324,7 +6324,7 @@ body::after {
   border-bottom: 1px solid var(--moon-border);
   background:
     radial-gradient(80% 80% at 18% 8%, rgba(59, 130, 246, 0.24), transparent 58%),
-    radial-gradient(60% 70% at 86% 16%, rgba(252, 165, 165, 0.15), transparent 52%),
+    radial-gradient(60% 70% at 86% 16%, rgba(30, 64, 116, 0.16), transparent 54%),
     linear-gradient(180deg, rgba(4, 8, 15, 0.98), rgba(3, 6, 11, 0.94));
 }
 
