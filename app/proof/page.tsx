@@ -209,7 +209,15 @@ export default function ProofIndexPage() {
               Where to inspect next.
             </h2>
           </div>
-          <div className="grid gap-3 md:grid-cols-3">
+          <div className="grid gap-3 md:grid-cols-4">
+            <a className="artifact-tile" href="/controls/">
+              <span className="artifact-tile__cat">CLAIM FIREWALL</span>
+              <span className="artifact-tile__title">Claim Firewall control surface</span>
+              <span className="artifact-tile__desc">
+                Review the public wording gate that keeps website rendering below proof authority.
+              </span>
+              <span className="artifact-tile__link">Open Claim Firewall -&gt;</span>
+            </a>
             <a className="artifact-tile" href="/proof/governance-saves/">
               <span className="artifact-tile__cat">GOVERNANCE SAVES</span>
               <span className="artifact-tile__title">Controls that prevented unsafe truth</span>

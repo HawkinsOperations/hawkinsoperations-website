@@ -60,6 +60,7 @@ const primaryNavMatch = navigationData.match(/export const primaryNavigation: Na
 const expectedPrimaryNav = [
   { label: "Home", href: "/" },
   { label: "Proof", href: "/proof/" },
+  { label: "Controls", href: "/controls/" },
   { label: "Artifacts", href: "/artifacts/" },
   { label: "Detections", href: "/detections/" },
   { label: "AI Security", href: "/ai-security/" },
@@ -142,6 +143,29 @@ const controlsPage = readFileSync(join(root, "app/controls/page.tsx"), "utf8");
 const claimFirewallComponent = readFileSync(join(root, "components/ClaimFirewall.tsx"), "utf8");
 const proofRecordsData = readFileSync(join(root, "src/data/proofRecords.ts"), "utf8");
 const navigationSource = readFileSync(join(root, "src/data/navigation.ts"), "utf8");
+const claimFirewallFrontDoorRequiredTerms = [
+  ["src/data/navigation.ts", navigationSource, 'label: "Controls"'],
+  ["src/data/navigation.ts", navigationSource, 'href: "/controls/"'],
+  ["app/page.tsx", homePage, 'href="/controls/"'],
+  ["app/page.tsx", homePage, "Claim Firewall"],
+  ["app/page.tsx", homePage, "Unsupported public security claims fail before they ship."],
+  ["app/page.tsx", homePage, "Inspect Claim Firewall"],
+  ["app/proof/page.tsx", proofPage, 'href="/controls/"'],
+  ["app/proof/page.tsx", proofPage, "Claim Firewall control surface"],
+  ["app/proof/page.tsx", proofPage, "Open Claim Firewall"],
+  ["app/proof/page.tsx", proofPage, "website rendering below proof authority"],
+  ["app/controls/page.tsx", controlsPage, "Website rendering is not proof"],
+  ["app/controls/page.tsx", controlsPage, "Public proof requires evidence linkage and explicit promotion."],
+];
+const claimFirewallFrontDoorFailures = claimFirewallFrontDoorRequiredTerms
+  .filter(([, source, term]) => !source.includes(term))
+  .map(([file, , term]) => `${file} must include ${term}.`);
+
+if (claimFirewallFrontDoorFailures.length > 0) {
+  console.error(`Claim Firewall front-door invariant failed:\n${claimFirewallFrontDoorFailures.map((line) => `- ${line}`).join("\n")}`);
+  process.exit(1);
+}
+
 const lifetimeLedgerRequiredTerms = [
   ["app/proof/page.tsx", proofPage, "Lifetime Case Ledger v1"],
   ["app/proof/page.tsx", proofPage, "total_ledger_events"],
@@ -306,6 +330,12 @@ if (!Array.isArray(discoveryProof.blocked_claims) || !discoveryProof.blocked_cla
 }
 if (!Array.isArray(discoveryProof.reviewer_routes) || discoveryProof.reviewer_routes.length < 4) {
   discoveryFailures.push("public/.well-known/hawkinsoperations-proof.json must expose reviewer_routes for machine-readable navigation.");
+}
+if (!discoveryProof.reviewer_routes?.some((route) => route.id === "claim-firewall" && route.url === "https://hawkinsoperations.com/controls/")) {
+  discoveryFailures.push("public/.well-known/hawkinsoperations-proof.json must expose /controls/ as the claim-firewall reviewer route.");
+}
+if (!agentMarkdown.includes("/controls/")) {
+  discoveryFailures.push("public/agent.md must list /controls/ as a public entry point.");
 }
 if (agentSkills.agent_capability_boundary !== "read_review_navigation_only") {
   discoveryFailures.push("public/.well-known/agent-skills/index.json must cap agent_capability_boundary at read_review_navigation_only.");
