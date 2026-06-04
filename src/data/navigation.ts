@@ -7,6 +7,7 @@ export type NavItem = {
 export const primaryNavigation: NavItem[] = [
   { label: "Home", href: "/", description: "Reviewer cockpit" },
   { label: "Proof", href: "/proof/", description: "Claim authority" },
+  { label: "Controls", href: "/controls/", description: "Claim Firewall" },
   { label: "Artifacts", href: "/artifacts/", description: "Reviewer receipts" },
   { label: "Detections", href: "/detections/", description: "Detection engineering" },
   { label: "AI Security", href: "/ai-security/", description: "AI-assisted SOC model" },

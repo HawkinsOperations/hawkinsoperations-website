@@ -60,6 +60,7 @@ const primaryNavMatch = navigationData.match(/export const primaryNavigation: Na
 const expectedPrimaryNav = [
   { label: "Home", href: "/" },
   { label: "Proof", href: "/proof/" },
+  { label: "Controls", href: "/controls/" },
   { label: "Artifacts", href: "/artifacts/" },
   { label: "Detections", href: "/detections/" },
   { label: "AI Security", href: "/ai-security/" },
@@ -138,8 +139,33 @@ if (homepageLabelFailures.length > 0) {
 const proofPage = readFileSync(join(root, "app/proof/page.tsx"), "utf8");
 const proofHoDet001Page = readFileSync(join(root, "app/proof/ho-det-001/page.tsx"), "utf8");
 const currentProofSpine = readFileSync(join(root, "components/CurrentProofSpine.tsx"), "utf8");
+const controlsPage = readFileSync(join(root, "app/controls/page.tsx"), "utf8");
+const claimFirewallComponent = readFileSync(join(root, "components/ClaimFirewall.tsx"), "utf8");
 const proofRecordsData = readFileSync(join(root, "src/data/proofRecords.ts"), "utf8");
 const navigationSource = readFileSync(join(root, "src/data/navigation.ts"), "utf8");
+const claimFirewallFrontDoorRequiredTerms = [
+  ["src/data/navigation.ts", navigationSource, 'label: "Controls"'],
+  ["src/data/navigation.ts", navigationSource, 'href: "/controls/"'],
+  ["app/page.tsx", homePage, 'href="/controls/"'],
+  ["app/page.tsx", homePage, "Claim Firewall"],
+  ["app/page.tsx", homePage, "Unsupported public security claims fail before they ship."],
+  ["app/page.tsx", homePage, "Inspect Claim Firewall"],
+  ["app/proof/page.tsx", proofPage, 'href="/controls/"'],
+  ["app/proof/page.tsx", proofPage, "Claim Firewall control surface"],
+  ["app/proof/page.tsx", proofPage, "Open Claim Firewall"],
+  ["app/proof/page.tsx", proofPage, "website rendering below proof authority"],
+  ["app/controls/page.tsx", controlsPage, "Website rendering is not proof"],
+  ["app/controls/page.tsx", controlsPage, "Public proof requires evidence linkage and explicit promotion."],
+];
+const claimFirewallFrontDoorFailures = claimFirewallFrontDoorRequiredTerms
+  .filter(([, source, term]) => !source.includes(term))
+  .map(([file, , term]) => `${file} must include ${term}.`);
+
+if (claimFirewallFrontDoorFailures.length > 0) {
+  console.error(`Claim Firewall front-door invariant failed:\n${claimFirewallFrontDoorFailures.map((line) => `- ${line}`).join("\n")}`);
+  process.exit(1);
+}
+
 const lifetimeLedgerRequiredTerms = [
   ["app/proof/page.tsx", proofPage, "Lifetime Case Ledger v1"],
   ["app/proof/page.tsx", proofPage, "total_ledger_events"],
@@ -244,6 +270,43 @@ if (currentProofSpineFailures.length > 0) {
   process.exit(1);
 }
 
+const claimFirewallVisualRequiredTerms = [
+  ["app/controls/page.tsx", controlsPage, "Claim Firewall"],
+  ["app/controls/page.tsx", controlsPage, "Public wording stays below the evidence ceiling"],
+  ["app/controls/page.tsx", controlsPage, "Website rendering is not proof"],
+  ["app/controls/page.tsx", controlsPage, "controls-hero"],
+  ["app/controls/page.tsx", controlsPage, "Unsupported security claims should fail before they reach the public page"],
+  ["app/controls/page.tsx", controlsPage, "WORDING"],
+  ["app/controls/page.tsx", controlsPage, "SCANNER"],
+  ["app/controls/page.tsx", controlsPage, "CEILING"],
+  ["app/controls/page.tsx", controlsPage, "PUBLIC WORDING ROUTE"],
+  ["app/controls/page.tsx", controlsPage, "public proof blocked"],
+  ["app/controls/page.tsx", controlsPage, "Public inspection layer"],
+  ["app/controls/page.tsx", controlsPage, "controls-hero__boundary-strip"],
+  ["app/controls/page.tsx", controlsPage, "Public proof requires evidence linkage and explicit promotion."],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "claim-firewall-demo"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "Evidence ceiling gauge"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "Blocked / not claimed"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "CONTROLLED RISK CHIPS"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "Allowed wording examples"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "Unsafe wording examples"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "Promotion gate timeline"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "Outcome panel"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "website rendering"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "green CI"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "AI support"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "runtime candidate"],
+  ["components/ClaimFirewall.tsx", claimFirewallComponent, "public-safe proof"],
+];
+const claimFirewallVisualFailures = claimFirewallVisualRequiredTerms
+  .filter(([, source, term]) => !source.includes(term))
+  .map(([file, , term]) => `${file} must include ${term}.`);
+
+if (claimFirewallVisualFailures.length > 0) {
+  console.error(`Claim Firewall visual invariant failed:\n${claimFirewallVisualFailures.map((line) => `- ${line}`).join("\n")}`);
+  process.exit(1);
+}
+
 if (!proofHoDet001Page.includes('title: "HO-DET-001 | HawkinsOperations"')) {
   console.error("HO-DET-001 proof route metadata must use HawkinsOperations, not stale HawkinsOps branding.");
   process.exit(1);
@@ -267,6 +330,12 @@ if (!Array.isArray(discoveryProof.blocked_claims) || !discoveryProof.blocked_cla
 }
 if (!Array.isArray(discoveryProof.reviewer_routes) || discoveryProof.reviewer_routes.length < 4) {
   discoveryFailures.push("public/.well-known/hawkinsoperations-proof.json must expose reviewer_routes for machine-readable navigation.");
+}
+if (!discoveryProof.reviewer_routes?.some((route) => route.id === "claim-firewall" && route.url === "https://hawkinsoperations.com/controls/")) {
+  discoveryFailures.push("public/.well-known/hawkinsoperations-proof.json must expose /controls/ as the claim-firewall reviewer route.");
+}
+if (!agentMarkdown.includes("/controls/")) {
+  discoveryFailures.push("public/agent.md must list /controls/ as a public entry point.");
 }
 if (agentSkills.agent_capability_boundary !== "read_review_navigation_only") {
   discoveryFailures.push("public/.well-known/agent-skills/index.json must cap agent_capability_boundary at read_review_navigation_only.");

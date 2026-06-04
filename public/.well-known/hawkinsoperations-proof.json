@@ -22,6 +22,12 @@
       "use": "Review public proof navigation, verifier cards, and claim ceilings."
     },
     {
+      "id": "claim-firewall",
+      "label": "Claim Firewall",
+      "url": "https://hawkinsoperations.com/controls/",
+      "use": "Review the public wording gate that keeps website rendering below proof authority."
+    },
+    {
       "id": "validation-registry",
       "label": "Validation registry",
       "url": "https://hawkinsoperations.com/validation/",
