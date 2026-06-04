@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Content-Signal: ai-train=no
+Content-Signal: search=yes
+Content-Signal: ai-input=yes
 
 Sitemap: https://hawkinsoperations.com/sitemap.xml

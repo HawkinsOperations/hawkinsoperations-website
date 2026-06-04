@@ -1,0 +1,87 @@
+{
+  "name": "HawkinsOperations public agent skills",
+  "site": "https://hawkinsoperations.com",
+  "version": "2026-06-03",
+  "agent_capability_boundary": "read_review_navigation_only",
+  "auth_required": false,
+  "private_api": false,
+  "runtime_action": false,
+  "execution": false,
+  "skills": [
+    {
+      "id": "review-proof-navigation",
+      "label": "Review proof navigation",
+      "description": "Read public proof pages and identify reviewer routes, verifier cards, and stated claim ceilings.",
+      "entrypoints": [
+        "https://hawkinsoperations.com/proof/",
+        "https://hawkinsoperations.com/proof/proof-pack-001/"
+      ],
+      "execution": false,
+      "auth_required": false,
+      "private_api": false,
+      "runtime_action": false
+    },
+    {
+      "id": "review-validation-status",
+      "label": "Review validation status",
+      "description": "Read public validation pages and summarize controlled validation boundaries without expanding claims.",
+      "entrypoints": [
+        "https://hawkinsoperations.com/validation/",
+        "https://hawkinsoperations.com/pipeline/"
+      ],
+      "execution": false,
+      "auth_required": false,
+      "private_api": false,
+      "runtime_action": false
+    },
+    {
+      "id": "navigate-truth-surfaces",
+      "label": "Navigate truth surfaces",
+      "description": "Read source, validation, runtime, signal, evidence, and public proof boundary explanations.",
+      "entrypoints": [
+        "https://hawkinsoperations.com/architecture/truth-surfaces/",
+        "https://hawkinsoperations.com/architecture/repo-authority-map/"
+      ],
+      "execution": false,
+      "auth_required": false,
+      "private_api": false,
+      "runtime_action": false
+    },
+    {
+      "id": "review-ai-governance-boundary",
+      "label": "Review AI governance boundary",
+      "description": "Read public AI governance language showing AI as labor and human governance as authority.",
+      "entrypoints": [
+        "https://hawkinsoperations.com/ai-security/",
+        "https://hawkinsoperations.com/controls/"
+      ],
+      "execution": false,
+      "auth_required": false,
+      "private_api": false,
+      "runtime_action": false
+    },
+    {
+      "id": "discover-public-metadata",
+      "label": "Discover public metadata",
+      "description": "Read robots, sitemap, and reviewer navigation metadata exposed by the public website.",
+      "entrypoints": [
+        "https://hawkinsoperations.com/.well-known/hawkinsoperations-proof.json",
+        "https://hawkinsoperations.com/sitemap.xml",
+        "https://hawkinsoperations.com/robots.txt"
+      ],
+      "execution": false,
+      "auth_required": false,
+      "private_api": false,
+      "runtime_action": false
+    }
+  ],
+  "blocked_capabilities": [
+    "authentication",
+    "private API access",
+    "SOC or lab action",
+    "case disposition",
+    "runtime control",
+    "evidence export",
+    "claim promotion"
+  ]
+}
