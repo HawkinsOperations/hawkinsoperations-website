@@ -49,7 +49,7 @@ const lanes: Lane[] = [
       "Runtime-supported (private)",
       "Runtime-observed (private, source-supported only)",
       "Closed controlled loop",
-      "SOCaaS-style model",
+      "Governed AI security operations model",
       "AI triage support (support-only)",
     ],
   },

@@ -36,7 +36,7 @@ const doors: Door[] = [
     href: "/ai-security/",
     title: "AI Security",
     description:
-      "SOCaaS-style implementation model for AI-assisted triage, deterministic verification, and human authority.",
+      "Governed AI security operations model for AI-assisted triage, deterministic verification, and human authority.",
     icon: "ai",
   },
   {

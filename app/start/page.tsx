@@ -69,7 +69,7 @@ const phase2Routes = [
 ];
 
 export const metadata: Metadata = {
-  title: "Start | HawkinsOps",
+  title: "Start | HawkinsOperations",
   description:
     "Reviewer routes for the HawkinsOperations public proof ceiling: proof system, artifacts, detection trace, GitHub organization, and audience-specific routes.",
   alternates: {

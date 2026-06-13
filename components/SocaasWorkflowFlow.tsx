@@ -67,7 +67,7 @@ const stages: SocaasFlowStage[] = [
 
 export default function SocaasWorkflowFlow() {
   return (
-    <ol className="swf" aria-label="SOCaaS / AI Security Operations workflow">
+    <ol className="swf" aria-label="AI-assisted security operations workflow">
       {stages.map((stage, idx) => (
         <li key={stage.index} className="swf__stage">
           <div className="swf__stage-head">
