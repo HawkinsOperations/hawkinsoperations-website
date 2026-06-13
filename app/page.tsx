@@ -39,7 +39,7 @@ export default function HomePage() {
               Each stage shows what happens, what control sits over it, and what gets blocked.
               The verifier owns pass and fail; human review owns merge authority.
             </p>
-            <a className="artifact-tile mt-5 block max-w-3xl" href="/controls/">
+            <a className="artifact-tile mt-5 block max-w-3xl" href="/claim-firewall/">
               <span className="artifact-tile__cat">CLAIM FIREWALL</span>
               <span className="artifact-tile__title">Unsupported public security claims fail before they ship.</span>
               <span className="artifact-tile__desc">
