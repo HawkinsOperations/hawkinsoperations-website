@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Claim Firewall moved | HawkinsOperations",
+  title: "Controls compatibility route | HawkinsOperations",
   description:
-    "The Claim Firewall product page now lives at /claim-firewall/. The legacy /controls/ route remains for compatibility.",
+    "The /controls/ route remains as a compatibility page. AevumGuard is the product front door; Claim Firewall is an internal Claim Authority capability.",
   alternates: {
-    canonical: "/claim-firewall/",
+    canonical: "/aevumguard/",
   },
 };
 
@@ -16,17 +16,20 @@ export default function ControlsPage() {
         <div className="controls-hero__copy">
           <p className="cockpit-eyebrow">Legacy route</p>
           <h1 id="legacy-controls-title" className="controls-hero__title">
-            Claim Firewall moved
+            Controls moved under AevumGuard
           </h1>
           <p className="controls-hero__lede">
-            The Claim Firewall product page now lives at /claim-firewall/.
+            AevumGuard is the HawkinsOperations product front door for governed AI-assisted security work.
           </p>
           <p className="controls-hero__lede">
-            This /controls/ route remains as a compatibility page for older reviewer links.
+            Claim Firewall remains an internal AevumGuard Claim Authority enforcement capability. This /controls/ route remains as a compatibility page for older reviewer links.
           </p>
-          <div className="controls-hero__pills" aria-label="Claim Firewall moved route">
+          <div className="controls-hero__pills" aria-label="Controls compatibility route">
+            <a href="/aevumguard/">
+              <span>Open AevumGuard</span>
+            </a>
             <a href="/claim-firewall/">
-              <span>Open Claim Firewall</span>
+              <span>Legacy capability route</span>
             </a>
             <span>RENDERING_ONLY website page</span>
           </div>
@@ -34,7 +37,7 @@ export default function ControlsPage() {
         <aside className="controls-hero__rail" aria-label="Legacy route boundary">
           <span className="controls-hero__rail-label">Compatibility only</span>
           <p>Website rendering is not proof authority. This route does not approve claims.</p>
-          <p>Claim Firewall checks wording policy only on the canonical product page.</p>
+          <p>Claim Firewall checks wording policy only as a TOOL_FUNCTION_ONLY capability inside AevumGuard.</p>
         </aside>
       </div>
     </section>

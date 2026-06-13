@@ -22,10 +22,10 @@
       "use": "Review public proof navigation, verifier cards, and claim ceilings."
     },
     {
-      "id": "claim-firewall",
-      "label": "Claim Firewall",
-      "url": "https://hawkinsoperations.com/claim-firewall/",
-      "use": "Review the public wording gate that keeps website rendering below proof authority."
+      "id": "aevumguard",
+      "label": "AevumGuard",
+      "url": "https://hawkinsoperations.com/aevumguard/",
+      "use": "Review the product front door and Claim Authority boundary without inferring runtime or signal truth."
     },
     {
       "id": "validation-registry",

@@ -5,6 +5,7 @@ import { recentGovernedArtifacts } from "@data/recentGovernedArtifacts";
 
 const staticRoutes = [
   "/",
+  "/aevumguard/",
   "/proof/",
   "/artifacts/",
   "/detections/",
@@ -19,7 +20,6 @@ const staticRoutes = [
   "/validation/",
   "/platform/contracts/",
   "/start/",
-  "/claim-firewall/",
   "/architecture/",
   "/architecture/truth-surfaces/",
   "/architecture/repo-authority-map/",

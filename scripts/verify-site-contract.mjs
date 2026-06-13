@@ -8,6 +8,7 @@ const requiredFiles = [
   "app/page.tsx",
   "app/start/page.tsx",
   "app/proof/page.tsx",
+  "app/aevumguard/page.tsx",
   "app/ai-security/page.tsx",
   "app/detections/page.tsx",
   "app/proof/ho-det-001/page.tsx",
@@ -60,8 +61,8 @@ const navigationData = readFileSync(join(root, "src/data/navigation.ts"), "utf8"
 const primaryNavMatch = navigationData.match(/export const primaryNavigation: NavItem\[] = \[([\s\S]*?)\];/);
 const expectedPrimaryNav = [
   { label: "Home", href: "/" },
+  { label: "AevumGuard", href: "/aevumguard/" },
   { label: "Proof", href: "/proof/" },
-  { label: "Claim Firewall", href: "/claim-firewall/" },
   { label: "Artifacts", href: "/artifacts/" },
   { label: "Detections", href: "/detections/" },
   { label: "AI Security", href: "/ai-security/" },
@@ -141,31 +142,46 @@ const proofPage = readFileSync(join(root, "app/proof/page.tsx"), "utf8");
 const proofHoDet001Page = readFileSync(join(root, "app/proof/ho-det-001/page.tsx"), "utf8");
 const currentProofSpine = readFileSync(join(root, "components/CurrentProofSpine.tsx"), "utf8");
 const claimFirewallPage = readFileSync(join(root, "app/claim-firewall/page.tsx"), "utf8");
+const aevumguardPage = readFileSync(join(root, "app/aevumguard/page.tsx"), "utf8");
 const controlsPage = readFileSync(join(root, "app/controls/page.tsx"), "utf8");
 const claimFirewallComponent = readFileSync(join(root, "components/ClaimFirewall.tsx"), "utf8");
 const proofRecordsData = readFileSync(join(root, "src/data/proofRecords.ts"), "utf8");
 const navigationSource = readFileSync(join(root, "src/data/navigation.ts"), "utf8");
-const claimFirewallFrontDoorRequiredTerms = [
-  ["src/data/navigation.ts", navigationSource, 'label: "Claim Firewall"'],
-  ["src/data/navigation.ts", navigationSource, 'href: "/claim-firewall/"'],
-  ["app/page.tsx", homePage, 'href="/claim-firewall/"'],
-  ["app/page.tsx", homePage, "Claim Firewall"],
-  ["app/page.tsx", homePage, "Unsupported public security claims fail before they ship."],
-  ["app/page.tsx", homePage, "Inspect Claim Firewall"],
+const aevumguardFrontDoorRequiredTerms = [
+  ["src/data/navigation.ts", navigationSource, 'label: "AevumGuard"'],
+  ["src/data/navigation.ts", navigationSource, 'href: "/aevumguard/"'],
+  ["src/data/navigation.ts", navigationSource, "aevumguard"],
+  ["app/aevumguard/page.tsx", aevumguardPage, "AevumGuard governs how AI-assisted security work becomes tested, reviewed, blocked, or safe to claim."],
+  ["app/aevumguard/page.tsx", aevumguardPage, "ProofOps control for the AI security era."],
+  ["app/aevumguard/page.tsx", aevumguardPage, "AI is not the authority. Evidence is."],
+  ["app/aevumguard/page.tsx", aevumguardPage, "AI-assisted security work"],
+  ["app/aevumguard/page.tsx", aevumguardPage, "Artifact Intake"],
+  ["app/aevumguard/page.tsx", aevumguardPage, "Evidence Graph"],
+  ["app/aevumguard/page.tsx", aevumguardPage, "Telemetry Contract Check"],
+  ["app/aevumguard/page.tsx", aevumguardPage, "Controlled Validation"],
+  ["app/aevumguard/page.tsx", aevumguardPage, "Runtime Candidate Ledger"],
+  ["app/aevumguard/page.tsx", aevumguardPage, "Signal Observation"],
+  ["app/aevumguard/page.tsx", aevumguardPage, "Human Review Gate"],
+  ["app/aevumguard/page.tsx", aevumguardPage, "ProofCard"],
+  ["app/aevumguard/page.tsx", aevumguardPage, "Claim Authority"],
+  ["app/aevumguard/page.tsx", aevumguardPage, "Safe Claim / Blocked Claim"],
   ["app/proof/page.tsx", proofPage, "Claim Firewall control surface"],
   ["app/proof/page.tsx", proofPage, "Open Claim Firewall"],
   ["app/proof/page.tsx", proofPage, "website rendering below proof authority"],
+  ["app/claim-firewall/page.tsx", claimFirewallPage, "AevumGuard Claim Authority capability"],
+  ["app/claim-firewall/page.tsx", claimFirewallPage, "Claim Firewall is a wording enforcement edge inside AevumGuard."],
+  ["app/claim-firewall/page.tsx", claimFirewallPage, "Claim Firewall is not the product, platform, front-door repo, or an eighth repo."],
   ["app/claim-firewall/page.tsx", claimFirewallPage, "Website rendering is not proof"],
   ["app/claim-firewall/page.tsx", claimFirewallPage, "Public proof requires evidence linkage and explicit promotion."],
-  ["app/controls/page.tsx", controlsPage, 'href="/claim-firewall/"'],
+  ["app/controls/page.tsx", controlsPage, 'href="/aevumguard/"'],
   ["app/controls/page.tsx", controlsPage, "Compatibility only"],
 ];
-const claimFirewallFrontDoorFailures = claimFirewallFrontDoorRequiredTerms
+const aevumguardFrontDoorFailures = aevumguardFrontDoorRequiredTerms
   .filter(([, source, term]) => !source.includes(term))
   .map(([file, , term]) => `${file} must include ${term}.`);
 
-if (claimFirewallFrontDoorFailures.length > 0) {
-  console.error(`Claim Firewall front-door invariant failed:\n${claimFirewallFrontDoorFailures.map((line) => `- ${line}`).join("\n")}`);
+if (aevumguardFrontDoorFailures.length > 0) {
+  console.error(`AevumGuard front-door invariant failed:\n${aevumguardFrontDoorFailures.map((line) => `- ${line}`).join("\n")}`);
   process.exit(1);
 }
 
@@ -284,7 +300,7 @@ const claimFirewallVisualRequiredTerms = [
   ["app/claim-firewall/page.tsx", claimFirewallPage, "CEILING"],
   ["app/claim-firewall/page.tsx", claimFirewallPage, "PUBLIC WORDING ROUTE"],
   ["app/claim-firewall/page.tsx", claimFirewallPage, "public proof blocked"],
-  ["app/claim-firewall/page.tsx", claimFirewallPage, "Release receipts"],
+  ["app/claim-firewall/page.tsx", claimFirewallPage, "Product boundary"],
   ["app/claim-firewall/page.tsx", claimFirewallPage, "controls-hero__boundary-strip"],
   ["app/claim-firewall/page.tsx", claimFirewallPage, "Public proof requires evidence linkage and explicit promotion."],
   ["components/ClaimFirewall.tsx", claimFirewallComponent, "claim-firewall-demo"],
@@ -334,11 +350,14 @@ if (!Array.isArray(discoveryProof.blocked_claims) || !discoveryProof.blocked_cla
 if (!Array.isArray(discoveryProof.reviewer_routes) || discoveryProof.reviewer_routes.length < 4) {
   discoveryFailures.push("public/.well-known/hawkinsoperations-proof.json must expose reviewer_routes for machine-readable navigation.");
 }
-if (!discoveryProof.reviewer_routes?.some((route) => route.id === "claim-firewall" && route.url === "https://hawkinsoperations.com/claim-firewall/")) {
-  discoveryFailures.push("public/.well-known/hawkinsoperations-proof.json must expose /claim-firewall/ as the claim-firewall reviewer route.");
+if (!discoveryProof.reviewer_routes?.some((route) => route.id === "aevumguard" && route.url === "https://hawkinsoperations.com/aevumguard/")) {
+  discoveryFailures.push("public/.well-known/hawkinsoperations-proof.json must expose /aevumguard/ as the product front-door reviewer route.");
 }
-if (!agentMarkdown.includes("/claim-firewall/")) {
-  discoveryFailures.push("public/agent.md must list /claim-firewall/ as a public entry point.");
+if (!agentMarkdown.includes("/aevumguard/")) {
+  discoveryFailures.push("public/agent.md must list /aevumguard/ as a public entry point.");
+}
+if (agentMarkdown.includes("/claim-firewall/")) {
+  discoveryFailures.push("public/agent.md must not list /claim-firewall/ as a public discovery entry point.");
 }
 if (agentSkills.agent_capability_boundary !== "read_review_navigation_only") {
   discoveryFailures.push("public/.well-known/agent-skills/index.json must cap agent_capability_boundary at read_review_navigation_only.");

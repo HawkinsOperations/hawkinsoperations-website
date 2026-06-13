@@ -11,7 +11,7 @@ import { ceiling, publicSafe } from "@config/site";
 /**
  * /artifacts/[slug]/page.tsx
  *
- * Public-safe reviewer detail page for one recent governed work
+ * Public reviewer detail page for one recent governed work
  * artifact. Static-export compatible (generateStaticParams pre-renders
  * one page per slug). No fetch, no GitHub API call.
  *
@@ -147,7 +147,7 @@ export default function ArtifactReviewPage({ params }: { params: { slug: string 
               </div>
             </div>
             <p className="artifact-review__boundary-note">
-              This page is a public-safe reviewer surface. The artifact is a hand-maintained static
+              This page is a public reviewer surface. The artifact is a hand-maintained static
               snapshot taken on {recentGovernedArtifactsSnapshotDate}. It is not auto-updated, does
               not claim runtime-active or signal-observed status, and does not prove public-safe
               runtime proof, GPU CI proven status, model execution in CI, AI-approved disposition,
