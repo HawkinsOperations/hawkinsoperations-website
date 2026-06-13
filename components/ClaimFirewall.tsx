@@ -59,29 +59,20 @@ const authorityStack = [
   ["platform", "control mechanics"],
   ["proof", "proof and claim authority"],
   ["website", "rendering only"],
-  ["claim-firewall", "utility only"],
+  ["aevumguard", "product front door"],
+  ["Claim Firewall", "internal AevumGuard capability"],
 ] as const;
 
 const receipts = [
   {
-    label: "Repo",
-    value: "HawkinsOperations/claim-firewall",
-    href: "https://github.com/HawkinsOperations/claim-firewall",
-  },
-  {
-    label: "Release v0.1.0",
-    value: "GitHub release",
-    href: "https://github.com/HawkinsOperations/claim-firewall/releases/tag/v0.1.0",
+    label: "Product repo",
+    value: "HawkinsOperations/aevumguard",
+    href: "https://github.com/HawkinsOperations/aevumguard",
   },
   {
     label: "Announcement",
     value: "HawkinsOperations discussion",
     href: "https://github.com/orgs/HawkinsOperations/discussions/51",
-  },
-  {
-    label: "CI",
-    value: "Actions",
-    href: "https://github.com/HawkinsOperations/claim-firewall/actions",
   },
 ];
 
@@ -147,10 +138,10 @@ export default function ClaimFirewall() {
           <span className="claim-firewall-demo__panel-status">ACTION GATE</span>
         </div>
         <p className="claim-firewall-demo__boundary">
-          Drop the action into CI to block configured wording before public text ships.
+          Run the AevumGuard Claim Authority scanner in CI to block configured wording before public text ships.
         </p>
         <pre className="claim-firewall-demo__terminal" aria-label="Claim Firewall GitHub Action example">
-          <code>{`- uses: HawkinsOperations/claim-firewall@v0.1.0
+          <code>{`- run: python -m claimfirewall scan . --policy policy/blocked_claims.yml
   with:
     paths: "."
     format: "text"
@@ -220,7 +211,7 @@ export default function ClaimFirewall() {
           <span className="claim-firewall-demo__panel-status">RENDERING_ONLY / TOOL_FUNCTION_ONLY</span>
         </div>
         <p className="claim-firewall-demo__boundary">
-          Claim Firewall checks wording against configured policy only.
+          Claim Firewall is an internal AevumGuard Claim Authority enforcement capability that checks wording against configured policy only.
         </p>
         <p className="claim-firewall-demo__boundary">
           It does not prove detection behavior, runtime telemetry, signal observation, production deployment,
@@ -233,7 +224,7 @@ export default function ClaimFirewall() {
         </p>
         <ul className="claim-firewall-demo__list claim-firewall-demo__list--allowed">
           <li>RENDERING_ONLY for this website page.</li>
-          <li>TOOL_FUNCTION_ONLY for Claim Firewall v0.1.0.</li>
+          <li>TOOL_FUNCTION_ONLY for the Claim Firewall capability inside AevumGuard.</li>
           <li>No public proof is created by this page.</li>
         </ul>
       </section>
@@ -257,7 +248,7 @@ export default function ClaimFirewall() {
           ))}
         </div>
         <p className="claim-firewall-demo__outcome-copy">
-          Claim Firewall supports claim hygiene. It does not approve claims. Evidence and human review decide truth.
+          Claim Firewall supports claim hygiene as an AevumGuard capability. It does not approve claims. Evidence and human review decide truth.
         </p>
       </section>
 

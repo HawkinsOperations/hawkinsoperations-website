@@ -20,7 +20,7 @@ const intakeRoutes = [
   {
     num: "02",
     title: "Review artifacts",
-    sub: "Open the artifact vault. Each recent governed work item routes to a public-safe reviewer review page.",
+    sub: "Open the artifact vault. Each recent governed work item routes to a bounded public review page.",
     href: "/artifacts/#recent-governed-work",
     variant: "default" as const,
   },
@@ -153,7 +153,7 @@ export default function StartPage() {
         <div className="container reveal reveal--up">
           <RecentGovernedArtifacts
             heading="Recent governed work · snapshot"
-            sub="Hand-maintained static snapshot of recent governed work. Each card opens a public-safe reviewer review page."
+            sub="Hand-maintained static snapshot of recent governed work. Each card opens a bounded public review page."
             limit={6}
           />
         </div>

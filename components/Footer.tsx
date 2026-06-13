@@ -74,8 +74,8 @@ export default function Footer() {
               </a>
             </li>
             <li>
-              <a href={externalLinks.claimFirewall} target="_blank" rel="noopener noreferrer">
-                Claim Firewall ↗
+              <a href={externalLinks.aevumguard} target="_blank" rel="noopener noreferrer">
+                AevumGuard ↗
               </a>
             </li>
             <li>

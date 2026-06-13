@@ -51,12 +51,12 @@ export const repos: RepoRecord[] = [
     doesNotProve: "Unlinked runtime state or claims outside the record.",
   },
   {
-    name: "claim-firewall",
-    href: externalLinks.claimFirewall,
-    purpose: "Local CLI and GitHub Action for scanning public wording against configured claim policy.",
-    truthSurface: "Claim policy tooling",
-    owns: "Tool behavior, policy examples, and release artifacts for wording scans.",
-    doesNotProve: "Runtime telemetry, signal observation, deployment state, or claim approval.",
+    name: "aevumguard",
+    href: externalLinks.aevumguard,
+    purpose: "Product front-door repo for governed AI-assisted security work.",
+    truthSurface: "Product / front door",
+    owns: "AevumGuard product framing and Claim Authority capabilities, starting with Claim Firewall.",
+    doesNotProve: "Runtime telemetry, signal observation, public-safe proof, deployment state, or claim approval.",
   },
   {
     name: "hawkinsoperations-website",

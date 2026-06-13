@@ -20,5 +20,5 @@ Repository: `hawkinsoperations-website`
 
 - Required governance files must exist.
 - CI gate must pass before merge.
-- Public-safe output only; internal control-plane data stays out.
+- Public rendering output only; internal control-plane data stays out.
 

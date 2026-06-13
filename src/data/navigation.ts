@@ -6,8 +6,8 @@ export type NavItem = {
 
 export const primaryNavigation: NavItem[] = [
   { label: "Home", href: "/", description: "Reviewer cockpit" },
+  { label: "AevumGuard", href: "/aevumguard/", description: "Product front door" },
   { label: "Proof", href: "/proof/", description: "Claim authority" },
-  { label: "Claim Firewall", href: "/claim-firewall/", description: "Public utility satellite" },
   { label: "Artifacts", href: "/artifacts/", description: "Reviewer receipts" },
   { label: "Detections", href: "/detections/", description: "Detection engineering" },
   { label: "AI Security", href: "/ai-security/", description: "AI-assisted SOC model" },
@@ -36,7 +36,7 @@ export const externalLinks = {
   validation: "https://github.com/HawkinsOperations/hawkinsoperations-validation",
   platform: "https://github.com/HawkinsOperations/hawkinsoperations-platform",
   proof: "https://github.com/HawkinsOperations/hawkinsoperations-proof",
-  claimFirewall: "https://github.com/HawkinsOperations/claim-firewall",
+  aevumguard: "https://github.com/HawkinsOperations/aevumguard",
   governanceSavesCandidates: "https://github.com/HawkinsOperations/hawkinsoperations-proof/blob/main/docs/governance-saves/GOVERNANCE-SAVES-CANDIDATES.md",
   governanceSavesEvidenceMatrix: "https://github.com/HawkinsOperations/hawkinsoperations-proof/blob/main/docs/governance-saves/GOVERNANCE-SAVES-EVIDENCE-MATRIX.md",
   platformDetectionFactoryController: "https://github.com/HawkinsOperations/hawkinsoperations-platform/blob/main/docs/factory/DETECTION_FACTORY_CONTROLLER_V0.md",
