@@ -41,7 +41,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   // Keep tab title concise. Drop long brand suffix to avoid clipping.
   const short = a.title.length > 56 ? a.title.slice(0, 53).trimEnd() + "…" : a.title;
   return {
-    title: `${short} | HawkinsOps`,
+    title: `${short} | HawkinsOperations`,
     description: `${a.summary} Snapshot as of ${recentGovernedArtifactsSnapshotDate}. Website rendering is not proof.`,
     alternates: {
       canonical: `/artifacts/${a.slug}/`,
