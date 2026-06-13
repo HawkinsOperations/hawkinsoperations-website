@@ -83,7 +83,7 @@ export const reviewerRoutes: ReviewerRoute[] = [
     ],
     links: [
       { label: "LLM boundary", href: "/pipeline/#llm-boundary" },
-      { label: "Claim firewall", href: "/controls/" },
+      { label: "Claim Firewall", href: "/claim-firewall/" },
       { label: "Control matrix", href: externalLinks.controlMatrix, external: true },
     ],
   },

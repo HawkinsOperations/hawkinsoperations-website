@@ -54,7 +54,7 @@ export default function ArchitecturePage() {
           description="The website can host stable data attributes for scanners, but enforcement still lives in repositories, workflows, and promotion gates."
         />
         <div className="grid gap-4 md:grid-cols-3">
-          <LinkCard href="/controls/" title="Claim firewall" description="Allowed claims, blocked terms, and wording examples." />
+          <LinkCard href="/claim-firewall/" title="Claim Firewall" description="Allowed claims, blocked terms, and wording examples." />
           <LinkCard href="/repos/" title="Repository map" description="Where each proof plane lives." />
           <LinkCard href="/proof/" title="Proof ledger" description="The flagship HO-DET-001 record and current ceiling." />
         </div>

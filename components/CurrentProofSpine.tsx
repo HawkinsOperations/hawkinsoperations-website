@@ -98,8 +98,8 @@ const proofSpineCards: ProofSpineCard[] = [
       "Maintains blocked-claim controls, reviewer routing, PR review rituals, and proof-boundary enforcement surfaces.",
     doesNotProve:
       "Does not make GitHub Project metadata, website rendering, runtime truth, or signal truth into proof.",
-    routeLabel: "Open controls",
-    routeHref: "/controls/",
+    routeLabel: "Open Claim Firewall",
+    routeHref: "/claim-firewall/",
     tier: "supporting",
   },
   {

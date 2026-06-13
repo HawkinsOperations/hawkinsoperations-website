@@ -57,7 +57,7 @@ const counters: Counter[] = [
     value: String(blockedClaims.length),
     label: "blocked claims kept visible",
     meaning: "Runtime, signal, and stronger claims shown as blocked, not hidden.",
-    href: "/controls/",
+    href: "/claim-firewall/",
   },
 ];
 

@@ -78,7 +78,7 @@ export default function GovernanceSavesPage() {
           <div className="grid gap-4 md:grid-cols-4">
             <LinkCard href="/proof/" title="Proof ledger" description="Return to proof authority and current promotion gates." />
             <LinkCard href="/ai-security/" title="AI Security model" description="See how governance saves map to AI Security Operations." />
-            <LinkCard href="/controls/" title="Claim firewall" description="Inspect the control surface for blocked wording." />
+            <LinkCard href="/claim-firewall/" title="Claim Firewall" description="Inspect the control surface for blocked wording." />
             <LinkCard href={externalLinks.governanceSavesCandidates} title="Governance saves source" description="Open the source-controlled candidate ledger." external />
           </div>
         </div>

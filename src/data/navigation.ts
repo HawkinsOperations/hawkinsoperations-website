@@ -36,6 +36,7 @@ export const externalLinks = {
   validation: "https://github.com/HawkinsOperations/hawkinsoperations-validation",
   platform: "https://github.com/HawkinsOperations/hawkinsoperations-platform",
   proof: "https://github.com/HawkinsOperations/hawkinsoperations-proof",
+  claimFirewall: "https://github.com/HawkinsOperations/claim-firewall",
   governanceSavesCandidates: "https://github.com/HawkinsOperations/hawkinsoperations-proof/blob/main/docs/governance-saves/GOVERNANCE-SAVES-CANDIDATES.md",
   governanceSavesEvidenceMatrix: "https://github.com/HawkinsOperations/hawkinsoperations-proof/blob/main/docs/governance-saves/GOVERNANCE-SAVES-EVIDENCE-MATRIX.md",
   platformDetectionFactoryController: "https://github.com/HawkinsOperations/hawkinsoperations-platform/blob/main/docs/factory/DETECTION_FACTORY_CONTROLLER_V0.md",

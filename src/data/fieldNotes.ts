@@ -61,7 +61,7 @@ export const fieldNotes: FieldNote[] = [
     tags: ["claims", "review", "credibility"],
     summary: "Showing what is blocked makes the supported claim easier to trust.",
     proofBoundary: "Blocked promotions are intentionally visible.",
-    relatedLinks: [{ label: "Claim firewall", href: "/controls/" }],
+    relatedLinks: [{ label: "Claim Firewall", href: "/claim-firewall/" }],
     body: [
       "A proof system is stronger when it names what has not been proven.",
       "The claim firewall prevents a good validation result from being stretched into runtime, signal, or public proof language.",

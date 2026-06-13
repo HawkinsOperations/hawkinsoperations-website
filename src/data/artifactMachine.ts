@@ -57,7 +57,7 @@ export const artifactStages: ArtifactStage[] = [
     supports: "Supports faster labor only — drafting, scaffolding, and reviewer prep.",
     bounded: "AI cannot promote a claim. No AI-approved disposition.",
     nextGate: "Deterministic verifier scans the wording before it can advance.",
-    link: { label: "Claim firewall", href: "/controls/" },
+    link: { label: "Claim Firewall", href: "/claim-firewall/" },
   },
   {
     id: "verifier",
