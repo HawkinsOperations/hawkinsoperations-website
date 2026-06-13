@@ -1,6 +1,12 @@
 const quickStartCommands = [
-  "python -m claimfirewall scan README.md --policy policy/blocked_claims.yml",
-  "claimfirewall scan README.md --policy policy/blocked_claims.yml",
+  {
+    label: "Python module",
+    command: "python -m claimfirewall scan README.md --policy policy/blocked_claims.yml",
+  },
+  {
+    label: "Console script",
+    command: "claimfirewall scan README.md --policy policy/blocked_claims.yml",
+  },
 ];
 
 const policyAreas = [
@@ -92,11 +98,14 @@ export default function ClaimFirewall() {
           </div>
           <span className="claim-firewall-demo__panel-status">CLI</span>
         </div>
-        <div className="claim-firewall-demo__examples">
-          {quickStartCommands.map((command) => (
-            <pre key={command} className="claim-firewall-demo__terminal">
-              <code>{command}</code>
-            </pre>
+        <div className="claim-firewall-demo__stack" style={{ display: "grid", gap: 16 }}>
+          {quickStartCommands.map((item) => (
+            <article key={item.label} className="claim-firewall-demo__panel">
+              <p className="cockpit-eyebrow">{item.label}</p>
+              <pre className="claim-firewall-demo__terminal" style={{ overflowX: "auto" }}>
+                <code>{item.command}</code>
+              </pre>
+            </article>
           ))}
         </div>
       </section>
@@ -135,8 +144,11 @@ export default function ClaimFirewall() {
               Gate public wording in CI
             </h2>
           </div>
-          <span className="claim-firewall-demo__panel-status">HawkinsOperations/claim-firewall@v0.1.0</span>
+          <span className="claim-firewall-demo__panel-status">ACTION GATE</span>
         </div>
+        <p className="claim-firewall-demo__boundary">
+          Drop the action into CI to block configured wording before public text ships.
+        </p>
         <pre className="claim-firewall-demo__terminal" aria-label="Claim Firewall GitHub Action example">
           <code>{`- uses: HawkinsOperations/claim-firewall@v0.1.0
   with:
@@ -222,7 +234,7 @@ export default function ClaimFirewall() {
         <ul className="claim-firewall-demo__list claim-firewall-demo__list--allowed">
           <li>RENDERING_ONLY for this website page.</li>
           <li>TOOL_FUNCTION_ONLY for Claim Firewall v0.1.0.</li>
-          <li>No public-safe proof is created by this page.</li>
+          <li>No public proof is created by this page.</li>
         </ul>
       </section>
 

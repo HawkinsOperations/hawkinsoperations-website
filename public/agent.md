@@ -7,7 +7,7 @@ This public website exposes read, review, and navigation metadata for agents and
 - `/.well-known/hawkinsoperations-proof.json`
 - `/.well-known/agent-skills/index.json`
 - `/proof/`
-- `/controls/`
+- `/claim-firewall/`
 - `/validation/`
 - `/architecture/truth-surfaces/`
 - `/architecture/repo-authority-map/`
