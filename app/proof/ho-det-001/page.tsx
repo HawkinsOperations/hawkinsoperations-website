@@ -56,7 +56,7 @@ const traceSteps: ProofPathStep[] = [
     code: "HUMAN_REVIEW_GATE",
     label: "Human review gate",
     line: "Human review authorizes any stronger claim movement; green checks and rendering do not.",
-    href: "/controls/",
+    href: "/claim-firewall/",
   },
   {
     code: "PROOF_AUTHORITY",

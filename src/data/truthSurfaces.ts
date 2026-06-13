@@ -41,7 +41,7 @@ export const truthSurfaces: TruthSurface[] = [
     doesNotProve: "Signal observation, evidence linkage, or public-safe proof.",
     promotesBy: "Current runtime evidence with a bounded trust class.",
     blockedBy: "Private-only evidence, stale host state, or unreviewed telemetry.",
-    exampleArtifact: { label: "Runtime stays blocked — claim firewall", href: "/controls/" },
+    exampleArtifact: { label: "Runtime stays blocked — Claim Firewall", href: "/claim-firewall/" },
   },
   {
     name: "Signal Truth",
@@ -51,7 +51,7 @@ export const truthSurfaces: TruthSurface[] = [
     doesNotProve: "Fleet scope, production readiness, or public-safe status.",
     promotesBy: "Signal artifacts tied to time, source, and validation records.",
     blockedBy: "No event record, unclear source, or non-public evidence limits.",
-    exampleArtifact: { label: "Signal stays blocked — claim firewall", href: "/controls/" },
+    exampleArtifact: { label: "Signal stays blocked — Claim Firewall", href: "/claim-firewall/" },
   },
   {
     name: "Evidence Truth",

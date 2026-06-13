@@ -51,6 +51,14 @@ export const repos: RepoRecord[] = [
     doesNotProve: "Unlinked runtime state or claims outside the record.",
   },
   {
+    name: "claim-firewall",
+    href: externalLinks.claimFirewall,
+    purpose: "Local CLI and GitHub Action for scanning public wording against configured claim policy.",
+    truthSurface: "Claim policy tooling",
+    owns: "Tool behavior, policy examples, and release artifacts for wording scans.",
+    doesNotProve: "Runtime telemetry, signal observation, deployment state, or claim approval.",
+  },
+  {
     name: "hawkinsoperations-website",
     href: externalLinks.website,
     purpose: "Public rendering, reviewer navigation, and claim-boundary presentation.",

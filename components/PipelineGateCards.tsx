@@ -29,7 +29,7 @@ const cards: Card[] = [
     tech: "Blocked terms remain visible as blocked claims but cannot silently become public assertions.",
     plain: "The system can discuss what is blocked without accidentally claiming it.",
     variant: "red",
-    href: "/controls/",
+    href: "/claim-firewall/",
     hrefLabel: "Open the claim firewall →",
   },
   {

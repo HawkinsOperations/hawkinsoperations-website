@@ -210,7 +210,7 @@ export default function ProofIndexPage() {
             </h2>
           </div>
           <div className="grid gap-3 md:grid-cols-4">
-            <a className="artifact-tile" href="/controls/">
+            <a className="artifact-tile" href="/claim-firewall/">
               <span className="artifact-tile__cat">CLAIM FIREWALL</span>
               <span className="artifact-tile__title">Claim Firewall control surface</span>
               <span className="artifact-tile__desc">

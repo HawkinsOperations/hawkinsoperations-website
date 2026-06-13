@@ -266,7 +266,7 @@ export const artifacts: Artifact[] = [
     description: "Allowed wording, blocked wording, and the wording examples that route safe claims through promotion gates.",
     proves: "The supported public ceiling and the explicit list of claims kept off the public surface.",
     doesNotProve: "That blocked claims are merely pending; some remain blocked by design.",
-    primary: { label: "Open firewall", href: "/controls/" },
+    primary: { label: "Open Claim Firewall", href: "/claim-firewall/" },
     tags: ["claims", "governance"],
   },
   {
@@ -375,7 +375,7 @@ export const artifacts: Artifact[] = [
     description: "The current public list of claims kept off the rendering layer until separate evidence-backed promotion changes their state.",
     proves: "Reviewers can see what is blocked, not just what is supported.",
     doesNotProve: "Hidden claims; the blocked list is intentionally visible.",
-    primary: { label: "Open firewall", href: "/controls/" },
+    primary: { label: "Open Claim Firewall", href: "/claim-firewall/" },
     secondary: { label: "Why blocked claims help", href: "/field-notes/why-blocked-claims-increase-credibility/" },
     tags: ["claims", "blocked"],
   },

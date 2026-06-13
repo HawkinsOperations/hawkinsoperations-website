@@ -5,7 +5,7 @@ const routes = [
   { title: "Proof ledger", href: "/proof/", description: "Inspect the HO-DET-001 proof card and current proof ceiling." },
   { title: "Truth surface model", href: "/architecture/truth-surfaces/", description: "Separate source, validation, runtime, signal, evidence, and public proof." },
   { title: "Repository map", href: "/repos/", description: "See which repository owns each trust surface." },
-  { title: "Claim firewall", href: "/controls/", description: "Review allowed claims, blocked claims, and promotion requirements." },
+  { title: "Claim Firewall", href: "/claim-firewall/", description: "Review allowed claims, blocked claims, and promotion requirements." },
   { title: "Field notes", href: "/field-notes/", description: "Read the technical archive behind the proof boundary." },
 ];
 

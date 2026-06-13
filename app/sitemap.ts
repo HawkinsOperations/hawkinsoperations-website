@@ -20,7 +20,6 @@ const staticRoutes = [
   "/platform/contracts/",
   "/start/",
   "/claim-firewall/",
-  "/controls/",
   "/architecture/",
   "/architecture/truth-surfaces/",
   "/architecture/repo-authority-map/",

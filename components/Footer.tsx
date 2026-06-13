@@ -74,6 +74,11 @@ export default function Footer() {
               </a>
             </li>
             <li>
+              <a href={externalLinks.claimFirewall} target="_blank" rel="noopener noreferrer">
+                Claim Firewall ↗
+              </a>
+            </li>
+            <li>
               <a href={externalLinks.rayleeGithub} target="_blank" rel="noopener noreferrer">
                 Raylee Hawkins ↗
               </a>
