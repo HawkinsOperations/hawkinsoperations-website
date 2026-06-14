@@ -46,7 +46,21 @@ Artifacts already has a strong evidence-bay layout, cards with ceilings, and rev
 
 Before: the page read like a rendering report and made Hoxline feel smaller than the underlying proof packet.
 
-After: the first viewport names Hoxline by HawkinsOperations, shows `CONTROLLED_TEST_VALIDATED`, `public_safe false`, and `human_review_required true`, and routes into the interactive ProofOps loop.
+After v0 expansion: the page now reads as the flagship product route for Hoxline by HawkinsOperations. The first viewport names Hoxline as ProofOps control for the AI security era, states that AI is not authority and evidence is, shows `CONTROLLED_TEST_VALIDATED`, `public_safe false`, and `human_review_required true`, and gives reviewer route / controlled demo entry points before any doctrine-style boundary copy.
+
+New Hoxline flagship sections:
+
+- The Claim Problem: AI can draft convincing security claims faster than organizations can safely prove them.
+- Product Thesis: AI is not authority; evidence is.
+- What Hoxline Controls: AI output intake, evidence graphing, validation state, proof ceiling, claim decision, and reviewer handoff.
+- The Hoxline Answer: generated output, evidence, validation, proof records, public rendering, and claim authority remain separate.
+- Interactive ProofOps Loop: the canonical eleven-step loop stays interactive, with active detail near the controls.
+- HO-DET-001 Controlled Demo Spotlight: one artifact, one loop, one ProofCard context, one safe claim, and blocked stronger claims.
+- Claim Boundary Matrix: allowed, blocked, and required-review wording states.
+- Authority Architecture: seven-surface authority map for Hoxline, detections, validation, platform, proof, website, and organization routing.
+- Reviewer Start Path: controlled demo package, proof ceiling / blocked claims, then authority references.
+- Trust Boundary: compact non-claim panel.
+- Next Gate: evidence required before stronger claims.
 
 ### Detections
 
@@ -80,6 +94,18 @@ The diagram is implemented as buttons, supports keyboard focus, and uses an acti
 - Controlled validation proves controlled validation only.
 - Website rendering is not proof.
 
+## Interaction Model Update
+
+- ProofOps loop: connected staged control diagram on desktop, single-column stepper on mobile, neutral default steps, active step emphasis, visible focus, and the microcopy "Tap a step to inspect the control."
+- Reviewer lenses: tabbed views for Executive, Detection engineer, Reviewer, and Claim authority perspectives.
+- Claim matrix: compact allowed / blocked / required-review cards keep wording decisions scannable without converting the page into a report.
+
+## Mobile Fixes
+
+- Sticky header rendering is forced to a solid dark surface with a higher stacking context through `app/globals.css`, preventing content ghosting behind mobile nav.
+- Mobile ProofOps hero decoration removes the amber top-right radial glow so the `/detections/` route does not show the unwanted yellow / white artifact.
+- Loop controls collapse to a one-column stepper on narrow screens, avoiding horizontal overflow and keeping the active detail panel directly after the controls.
+
 ## Before / After Summary
 
 - Before: Hoxline, Detections, and AI Security used correct boundary text but did not feel like one product family.
@@ -97,4 +123,4 @@ This visual system does not claim runtime-active status, runtime proven status, 
 
 VISUAL_SCREENSHOT_UNAVAILABLE: project-local Playwright is not installed and the in-app browser surface was unavailable during this run.
 
-FIGMA_HANDOFF_UNAVAILABLE: no target Figma file or active local handoff was available. This design document is the repo-local handoff artifact.
+FIGMA_HANDOFF_TODO_AFTER_FLAGSHIP_REDESIGN: create a `Hoxline Product Page v0` frame with mobile hero, desktop hero, ProofOps loop diagram concept, authority map concept, and claim decision matrix when a target Figma file or active local handoff is available. This design document remains the repo-local handoff artifact.

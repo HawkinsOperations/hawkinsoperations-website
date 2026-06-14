@@ -2050,7 +2050,15 @@ body::after {
 .brand-mark--lg { width: min(178px, 48vw); height: min(178px, 48vw); border-radius: 16px; }
 
 .site-header {
+  z-index: 80;
+  background: #03060b;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   box-shadow: 0 18px 48px rgba(0, 0, 0, 0.38);
+}
+
+.site-header nav {
+  background: #03060b;
 }
 
 .headline {
@@ -13644,6 +13652,14 @@ a.card.group:hover { border-color: rgba(143, 216, 255, 0.45); }
     linear-gradient(180deg, rgba(7, 12, 22, 0.2), transparent 70%);
 }
 
+@media (max-width: 720px) {
+  .proofops-hero::before {
+    background:
+      linear-gradient(120deg, rgba(96, 165, 250, 0.1), transparent 44%),
+      linear-gradient(180deg, rgba(7, 12, 22, 0.3), transparent 72%);
+  }
+}
+
 .proofops-hero__grid {
   position: relative;
   display: grid;
@@ -13865,6 +13881,14 @@ a.card.group:hover { border-color: rgba(143, 216, 255, 0.45); }
   text-transform: uppercase;
 }
 
+.proofops-loop__hint {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  text-transform: none;
+}
+
 .proofops-loop__stage {
   display: grid;
   gap: 18px;
@@ -13880,7 +13904,7 @@ a.card.group:hover { border-color: rgba(143, 216, 255, 0.45); }
 .proofops-loop__rail {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: 12px;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -13892,21 +13916,72 @@ a.card.group:hover { border-color: rgba(143, 216, 255, 0.45); }
   }
 }
 
+@media (min-width: 1120px) {
+  .proofops-loop__rail {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.proofops-loop__rail li {
+  position: relative;
+}
+
+@media (min-width: 700px) {
+  .proofops-loop__rail li:not(:nth-child(3n))::after {
+    content: "";
+    position: absolute;
+    left: calc(100% + 2px);
+    top: 50%;
+    width: 8px;
+    border-top: 1px solid rgba(143, 216, 255, 0.26);
+    transform: translateY(-50%);
+  }
+}
+
+@media (min-width: 1120px) {
+  .proofops-loop__rail li:not(:nth-child(3n))::after {
+    content: none;
+  }
+
+  .proofops-loop__rail li:not(:nth-child(4n))::after {
+    content: "";
+    position: absolute;
+    left: calc(100% + 2px);
+    top: 50%;
+    width: 8px;
+    border-top: 1px solid rgba(143, 216, 255, 0.26);
+    transform: translateY(-50%);
+  }
+}
+
 .proofops-loop__step {
+  position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: 8px;
   align-items: center;
   width: 100%;
   min-height: 64px;
-  border: 1px solid rgba(201, 211, 223, 0.14);
+  border: 1px solid rgba(201, 211, 223, 0.16);
   border-radius: 8px;
-  background: rgba(8, 13, 22, 0.58);
+  background:
+    linear-gradient(180deg, rgba(12, 19, 32, 0.74), rgba(6, 10, 18, 0.82));
   color: var(--silver);
-  padding: 10px;
+  padding: 11px 10px 11px 14px;
   text-align: left;
   cursor: pointer;
   transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+.proofops-loop__step::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 3px;
+  border-radius: 0 999px 999px 0;
+  background: rgba(143, 216, 255, 0.42);
 }
 
 .proofops-loop__step:hover,
@@ -13918,8 +13993,17 @@ a.card.group:hover { border-color: rgba(143, 216, 255, 0.45); }
 
 .proofops-loop__step.is-active {
   border-color: var(--proofops-cyan);
-  background: rgba(143, 216, 255, 0.08);
-  box-shadow: 0 0 0 1px rgba(143, 216, 255, 0.22) inset;
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(143, 216, 255, 0.16), transparent 52%),
+    rgba(13, 21, 36, 0.9);
+  box-shadow:
+    0 0 0 1px rgba(143, 216, 255, 0.28) inset,
+    0 12px 28px rgba(0, 0, 0, 0.26);
+}
+
+.proofops-loop__step.is-active::before {
+  background: var(--proofops-cyan);
+  box-shadow: 0 0 16px rgba(143, 216, 255, 0.48);
 }
 
 .proofops-loop__index {
@@ -13940,6 +14024,10 @@ a.card.group:hover { border-color: rgba(143, 216, 255, 0.45); }
 .proofops-loop__step--ceiling .proofops-loop__index { color: var(--proofops-amber); }
 .proofops-loop__step--blocked .proofops-loop__index { color: var(--proofops-blocked); }
 .proofops-loop__step--safe .proofops-loop__index { color: var(--proofops-green); }
+.proofops-loop__step--ceiling::before { background: rgba(240, 184, 95, 0.52); }
+.proofops-loop__step--blocked::before { background: rgba(252, 165, 165, 0.5); }
+.proofops-loop__step--safe::before { background: rgba(95, 208, 160, 0.52); }
+.proofops-loop__step--human::before { background: rgba(96, 165, 250, 0.52); }
 
 .proofops-loop__detail {
   position: sticky;

@@ -105,6 +105,7 @@ export default function ProofOpsLoopDiagram() {
         <div>
           <p className="proofops-kicker">Interactive ProofOps loop</p>
           <h2 id="proofops-loop-title">AI helps. Evidence gates. Humans promote.</h2>
+          <p className="proofops-loop__hint">Tap a step to inspect the control.</p>
         </div>
         <p>{statusLine}</p>
       </div>
