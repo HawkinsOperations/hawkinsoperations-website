@@ -60,7 +60,7 @@ const authorityStack = [
   ["proof", "proof and claim authority"],
   ["website", "rendering only"],
   ["aevumguard", "product front door"],
-  ["Claim Firewall", "internal AevumGuard capability"],
+  ["Claim Firewall", "internal Hoxline capability"],
 ] as const;
 
 const receipts = [
@@ -138,7 +138,7 @@ export default function ClaimFirewall() {
           <span className="claim-firewall-demo__panel-status">ACTION GATE</span>
         </div>
         <p className="claim-firewall-demo__boundary">
-          Run the AevumGuard Claim Authority scanner in CI to block configured wording before public text ships.
+          Run the Hoxline Claim Authority scanner in CI to block configured wording before public text ships.
         </p>
         <pre className="claim-firewall-demo__terminal" aria-label="Claim Firewall GitHub Action example">
           <code>{`- run: python -m claimfirewall scan . --policy policy/blocked_claims.yml
@@ -211,7 +211,7 @@ export default function ClaimFirewall() {
           <span className="claim-firewall-demo__panel-status">RENDERING_ONLY / TOOL_FUNCTION_ONLY</span>
         </div>
         <p className="claim-firewall-demo__boundary">
-          Claim Firewall is an internal AevumGuard Claim Authority enforcement capability that checks wording against configured policy only.
+          Claim Firewall is an internal Hoxline Claim Authority enforcement capability that checks wording against configured policy only.
         </p>
         <p className="claim-firewall-demo__boundary">
           It does not prove detection behavior, runtime telemetry, signal observation, production deployment,
@@ -224,7 +224,7 @@ export default function ClaimFirewall() {
         </p>
         <ul className="claim-firewall-demo__list claim-firewall-demo__list--allowed">
           <li>RENDERING_ONLY for this website page.</li>
-          <li>TOOL_FUNCTION_ONLY for the Claim Firewall capability inside AevumGuard.</li>
+          <li>TOOL_FUNCTION_ONLY for the Claim Firewall capability inside Hoxline.</li>
           <li>No public proof is created by this page.</li>
         </ul>
       </section>
@@ -248,7 +248,7 @@ export default function ClaimFirewall() {
           ))}
         </div>
         <p className="claim-firewall-demo__outcome-copy">
-          Claim Firewall supports claim hygiene as an AevumGuard capability. It does not approve claims. Evidence and human review decide truth.
+          Claim Firewall supports claim hygiene as a Hoxline capability. It does not approve claims. Evidence and human review decide truth.
         </p>
       </section>
 

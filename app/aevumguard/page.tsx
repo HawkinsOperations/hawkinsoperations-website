@@ -20,42 +20,42 @@ const productLoop = [
 ];
 
 export const metadata: Metadata = {
-  title: "AevumGuard | HawkinsOperations",
+  title: "Hoxline | HawkinsOperations",
   description:
-    "AevumGuard governs how AI-assisted security work becomes tested, reviewed, blocked, or safe to claim.",
+    "Hoxline separates AI output from evidence-bound claim authority.",
   alternates: {
     canonical: "/aevumguard/",
   },
 };
 
-export default function AevumGuardPage() {
+export default function HoxlinePage() {
   return (
     <>
       <PageHero
-        title="AevumGuard"
+        title="Hoxline"
         subtitle="ProofOps control for the AI security era."
-        description="AevumGuard governs how AI-assisted security work becomes tested, reviewed, blocked, or safe to claim."
+        description="Hoxline separates AI output from evidence-bound claim authority."
         badges={[{ label: "PRODUCT_FRONT_DOOR" }, { label: "RENDERING_ONLY" }]}
       />
 
       <section className="cockpit-section--tight">
         <div className="container reveal reveal--up">
-          <SectionHeader title="Product Doctrine" eyebrow="AevumGuard" />
+          <SectionHeader title="Product Doctrine" eyebrow="Hoxline" />
           <p className="muted mt-3 max-w-3xl text-sm leading-6">
             AI is not the authority. Evidence is. HawkinsOperations is the brand/system;
-            AevumGuard is the product/front-door repo for the governed product experience.
+            Hoxline is the product/front-door repo for the governed product experience.
           </p>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <LinkCard
               href={externalLinks.aevumguard}
-              title="AevumGuard repo"
-              description="Product front-door repo for AevumGuard and Claim Authority capabilities."
+              title="Hoxline repo"
+              description="Compatibility repo path for Hoxline by HawkinsOperations and Claim Authority capabilities."
               external
             />
             <LinkCard
               href="/claim-firewall/"
               title="Claim Firewall capability"
-              description="Legacy capability route for the internal AevumGuard Claim Authority wording enforcement edge."
+              description="Legacy capability route for the internal Hoxline Claim Authority wording enforcement edge."
             />
           </div>
         </div>
@@ -64,7 +64,7 @@ export default function AevumGuardPage() {
       <section className="cockpit-section--tight">
         <div className="container reveal reveal--up">
           <SectionHeader title="Core Loop" eyebrow="Product flow" />
-          <ol className="claim-firewall-demo__outcomes" aria-label="AevumGuard core loop">
+          <ol className="claim-firewall-demo__outcomes" aria-label="Hoxline core loop">
             {productLoop.map((step, index) => (
               <li key={step}>
                 <span>{String(index + 1).padStart(2, "0")}</span>

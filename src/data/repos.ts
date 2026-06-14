@@ -55,7 +55,7 @@ export const repos: RepoRecord[] = [
     href: externalLinks.aevumguard,
     purpose: "Product front-door repo for governed AI-assisted security work.",
     truthSurface: "Product / front door",
-    owns: "AevumGuard product framing and Claim Authority capabilities, starting with Claim Firewall.",
+    owns: "Hoxline product framing and Claim Authority capabilities, starting with Claim Firewall.",
     doesNotProve: "Runtime telemetry, signal observation, public-safe proof, deployment state, or claim approval.",
   },
   {
