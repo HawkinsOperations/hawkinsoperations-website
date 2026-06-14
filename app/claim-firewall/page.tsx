@@ -6,7 +6,7 @@ const cliCommand = "python -m claimfirewall scan README.md --policy policy/block
 export const metadata: Metadata = {
   title: "Claim Firewall capability | HawkinsOperations",
   description:
-    "Claim Firewall is an internal AevumGuard Claim Authority enforcement capability for checking unsupported public wording. It is not the product or a separate repo.",
+    "Claim Firewall is an internal Hoxline Claim Authority enforcement capability for checking unsupported public wording. It is not the product or a separate repo.",
   alternates: {
     canonical: "/claim-firewall/",
   },
@@ -18,19 +18,19 @@ export default function ClaimFirewallPage() {
       <section className="controls-hero" aria-labelledby="claim-firewall-title">
         <div className="container controls-hero__grid">
           <div className="controls-hero__copy">
-            <p className="cockpit-eyebrow">AevumGuard Claim Authority capability</p>
+            <p className="cockpit-eyebrow">Hoxline Claim Authority capability</p>
             <h1 id="claim-firewall-title" className="controls-hero__title">
               Claim Firewall
             </h1>
             <p className="controls-hero__lede">
-              Claim Firewall is a wording enforcement edge inside AevumGuard.
+              Claim Firewall is a wording enforcement edge inside Hoxline.
             </p>
             <p className="controls-hero__lede">
-              AevumGuard governs how AI-assisted security work becomes tested, reviewed, blocked, or safe to claim.
+              Hoxline separates AI output from evidence-bound claim authority.
               Claim Firewall remains TOOL_FUNCTION_ONLY unless evidence expands.
             </p>
             <div className="controls-hero__pills" aria-label="Claim Firewall capability status">
-              <span>Internal AevumGuard capability</span>
+              <span>Internal Hoxline capability</span>
               <span>Claim Authority enforcement</span>
               <span>TOOL_FUNCTION_ONLY</span>
               <span>RENDERING_ONLY website page</span>
@@ -41,11 +41,11 @@ export default function ClaimFirewallPage() {
 
           <aside className="controls-hero__rail" aria-label="Claim Firewall release receipts">
             <span className="controls-hero__rail-label">Product boundary</span>
-            <p>AevumGuard is the product/front-door repo. Claim Firewall is not the product, platform, front-door repo, or an eighth repo.</p>
+            <p>Hoxline is the product identity for the current product/front-door repo. Claim Firewall is not the product, platform, front-door repo, or an eighth repo.</p>
             <p>Website rendering is not proof authority. Claim Firewall supports claim hygiene only as an internal capability.</p>
             <div className="controls-hero__pills" aria-label="Claim Firewall external links">
               <a href="https://github.com/HawkinsOperations/aevumguard" target="_blank" rel="noopener noreferrer">
-                <span>View AevumGuard</span>
+                <span>View Hoxline repo</span>
               </a>
               <a href="https://github.com/orgs/HawkinsOperations/discussions/51" target="_blank" rel="noopener noreferrer">
                 <span>Historical announcement</span>
@@ -81,7 +81,7 @@ export default function ClaimFirewallPage() {
             <pre className="claim-firewall-demo__terminal" aria-label="Visible CLI command">
               <code>{cliCommand}</code>
             </pre>
-            <div className="controls-hero__meter" aria-label="AevumGuard capability summary">
+            <div className="controls-hero__meter" aria-label="Hoxline capability summary">
               <span>scan files</span>
               <span>scan dirs</span>
               <span>text output</span>

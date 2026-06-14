@@ -6,7 +6,7 @@ export type NavItem = {
 
 export const primaryNavigation: NavItem[] = [
   { label: "Home", href: "/", description: "Reviewer cockpit" },
-  { label: "AevumGuard", href: "/aevumguard/", description: "Product front door" },
+  { label: "Hoxline", href: "/aevumguard/", description: "Product front door" },
   { label: "Proof", href: "/proof/", description: "Claim authority" },
   { label: "Artifacts", href: "/artifacts/", description: "Reviewer receipts" },
   { label: "Detections", href: "/detections/", description: "Detection engineering" },

@@ -61,7 +61,7 @@ const navigationData = readFileSync(join(root, "src/data/navigation.ts"), "utf8"
 const primaryNavMatch = navigationData.match(/export const primaryNavigation: NavItem\[] = \[([\s\S]*?)\];/);
 const expectedPrimaryNav = [
   { label: "Home", href: "/" },
-  { label: "AevumGuard", href: "/aevumguard/" },
+  { label: "Hoxline", href: "/aevumguard/" },
   { label: "Proof", href: "/proof/" },
   { label: "Artifacts", href: "/artifacts/" },
   { label: "Detections", href: "/detections/" },
@@ -147,11 +147,11 @@ const controlsPage = readFileSync(join(root, "app/controls/page.tsx"), "utf8");
 const claimFirewallComponent = readFileSync(join(root, "components/ClaimFirewall.tsx"), "utf8");
 const proofRecordsData = readFileSync(join(root, "src/data/proofRecords.ts"), "utf8");
 const navigationSource = readFileSync(join(root, "src/data/navigation.ts"), "utf8");
-const aevumguardFrontDoorRequiredTerms = [
-  ["src/data/navigation.ts", navigationSource, 'label: "AevumGuard"'],
+const hoxlineFrontDoorRequiredTerms = [
+  ["src/data/navigation.ts", navigationSource, 'label: "Hoxline"'],
   ["src/data/navigation.ts", navigationSource, 'href: "/aevumguard/"'],
   ["src/data/navigation.ts", navigationSource, "aevumguard"],
-  ["app/aevumguard/page.tsx", aevumguardPage, "AevumGuard governs how AI-assisted security work becomes tested, reviewed, blocked, or safe to claim."],
+  ["app/aevumguard/page.tsx", aevumguardPage, "Hoxline separates AI output from evidence-bound claim authority."],
   ["app/aevumguard/page.tsx", aevumguardPage, "ProofOps control for the AI security era."],
   ["app/aevumguard/page.tsx", aevumguardPage, "AI is not the authority. Evidence is."],
   ["app/aevumguard/page.tsx", aevumguardPage, "AI-assisted security work"],
@@ -168,20 +168,20 @@ const aevumguardFrontDoorRequiredTerms = [
   ["app/proof/page.tsx", proofPage, "Claim Firewall control surface"],
   ["app/proof/page.tsx", proofPage, "Open Claim Firewall"],
   ["app/proof/page.tsx", proofPage, "website rendering below proof authority"],
-  ["app/claim-firewall/page.tsx", claimFirewallPage, "AevumGuard Claim Authority capability"],
-  ["app/claim-firewall/page.tsx", claimFirewallPage, "Claim Firewall is a wording enforcement edge inside AevumGuard."],
+  ["app/claim-firewall/page.tsx", claimFirewallPage, "Hoxline Claim Authority capability"],
+  ["app/claim-firewall/page.tsx", claimFirewallPage, "Claim Firewall is a wording enforcement edge inside Hoxline."],
   ["app/claim-firewall/page.tsx", claimFirewallPage, "Claim Firewall is not the product, platform, front-door repo, or an eighth repo."],
   ["app/claim-firewall/page.tsx", claimFirewallPage, "Website rendering is not proof"],
   ["app/claim-firewall/page.tsx", claimFirewallPage, "Public proof requires evidence linkage and explicit promotion."],
   ["app/controls/page.tsx", controlsPage, 'href="/aevumguard/"'],
   ["app/controls/page.tsx", controlsPage, "Compatibility only"],
 ];
-const aevumguardFrontDoorFailures = aevumguardFrontDoorRequiredTerms
+const hoxlineFrontDoorFailures = hoxlineFrontDoorRequiredTerms
   .filter(([, source, term]) => !source.includes(term))
   .map(([file, , term]) => `${file} must include ${term}.`);
 
-if (aevumguardFrontDoorFailures.length > 0) {
-  console.error(`AevumGuard front-door invariant failed:\n${aevumguardFrontDoorFailures.map((line) => `- ${line}`).join("\n")}`);
+if (hoxlineFrontDoorFailures.length > 0) {
+  console.error(`Hoxline front-door invariant failed:\n${hoxlineFrontDoorFailures.map((line) => `- ${line}`).join("\n")}`);
   process.exit(1);
 }
 
