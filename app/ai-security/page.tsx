@@ -1,52 +1,98 @@
 import type { Metadata } from "next";
-import BoundaryNotice from "@components/BoundaryNotice";
-import ClosedLoopFlow from "@components/ClosedLoopFlow";
 import LinkCard from "@components/LinkCard";
-import PageHero from "@components/PageHero";
-import RuntimeBoundaryLadder from "@components/RuntimeBoundaryLadder";
 import SectionHeader from "@components/SectionHeader";
-import SocaasWorkflowFlow from "@components/SocaasWorkflowFlow";
+import {
+  BlockedClaimGrid,
+  ClaimBoundaryPanel,
+  EvidenceCeilingCard,
+  ProofOpsLoopDiagram,
+  ProofOpsPageHero,
+  ReviewerLensTabs,
+  SignalBlockedBadge,
+  type ReviewerLens,
+} from "@components/proofops";
 import { externalLinks } from "@data/navigation";
 import { proofPack } from "@data/proofPackManifest";
 import { registryStats } from "@data/validationRegistry";
 
-const whatTransfers = [
+export const metadata: Metadata = {
+  title: "AI Security | HawkinsOperations",
+  description:
+    "A governed AI Security Operations implementation model for AI-assisted detection engineering, deterministic verification, and human authority.",
+  alternates: {
+    canonical: "/ai-security/",
+  },
+};
+
+const workflowLenses: ReviewerLens[] = [
   {
-    title: "Source-controlled detections",
-    detail: "Rule logic, ATT&CK mapping, status metadata, and review history are version-controlled and auditable.",
+    label: "AI support",
+    title: "AI is labor",
+    body: "AI can help draft detections, summarize reviewer context, and organize case packets, but it does not authorize disposition.",
+    checkpoints: [
+      "AI output enters the same artifact intake path.",
+      "Claim wording is checked against evidence ceilings.",
+      "AI approval is not claimed.",
+    ],
   },
   {
-    title: "Deterministic verifiers",
-    detail: "Validation packages, schema checks, and claim-boundary scanners fail closed before merge.",
+    label: "Verifier",
+    title: "Deterministic checks gate behavior",
+    body: "Schemas, controlled fixture results, and claim-boundary scanners provide deterministic friction before public rendering.",
+    checkpoints: [
+      "Validation remains separate from proof authority.",
+      "Controlled validation does not become runtime or signal proof.",
+      "Failed checks stop promotion.",
+    ],
   },
   {
-    title: "Case-packet structure",
-    detail: "SOAR-shaped case packets with support-only AI fields, blocked actions, and dry-run defaults.",
+    label: "Human authority",
+    title: "Humans gate promotion",
+    body: "Human review sits above implementation momentum, green checks, and AI summaries.",
+    checkpoints: [
+      "human_review_required remains true where applicable.",
+      "Final authorization is not claimed by the site.",
+      "Analyst approval is not implied by AI support.",
+    ],
   },
   {
-    title: "Human review authority",
-    detail: "Visible human review sits above CI, above AI output, above implementation momentum.",
+    label: "Ceiling",
+    title: "The proof ceiling travels with the artifact",
+    body: "Each reviewer route should show what the artifact supports and what it does not prove.",
+    checkpoints: [
+      "Website rendering is not proof.",
+      "public_safe remains false unless separately approved.",
+      "Proof authority remains outside the website repo.",
+    ],
   },
-  {
-    title: "Claim ceiling discipline",
-    detail: "Scanners, record boundaries, and record-is-not-rendering rules keep public copy below evidence ceilings.",
-  },
-  {
-    title: "Governance saves discipline",
-    detail: "The public-facing Governance Saves subset models what controls fired looks like across merge, claim, runtime, evidence, and validator surfaces.",
-  },
+];
+
+const blockedClaims = [
+  "runtime-active status",
+  "runtime proven status",
+  "signal observed status",
+  "public-safe proof",
+  "production-ready status",
+  "SOCaaS-ready status",
+  "SOCaaS deployed status",
+  "customer deployed status",
+  "autonomous SOC operation",
+  "AI approved disposition",
+  "analyst approved disposition",
+  "final human authorization",
+  "case closed status",
 ];
 
 const reviewerSurfaces = [
   {
+    href: "/hoxline/",
+    title: "Hoxline",
+    description: "Open the ProofOps control plane route and interactive claim loop.",
+  },
+  {
     href: "/proof/proof-pack-001/",
     title: "Proof Pack 001",
     description: `${proofPack.id} routes a bounded HO-DET-001 reviewer package at ${proofPack.ceiling}.`,
-  },
-  {
-    href: "/proof/governance-saves/",
-    title: "Governance Saves",
-    description: "Public-facing subset: what was blocked, what control fired, why it matters.",
   },
   {
     href: "/detections/",
@@ -60,101 +106,113 @@ const reviewerSurfaces = [
   },
 ];
 
-const blockedClaims = [
-  "HawkinsOperations is not presented as a production SOCaaS platform.",
-  "Customer validation, partner endorsement, and live enterprise deployment are not claimed.",
-  "Runtime-active public proof and public signal-observed proof remain blocked unless separately proven and approved.",
-  "AI-approved disposition, autonomous SOC, and analyst-approved-by-AI wording remain blocked.",
-];
-
-export const metadata: Metadata = {
-  title: "AI Security | HawkinsOperations",
-  description:
-    "A governed AI Security Operations implementation model for AI-assisted detection engineering, SOC workflow support, deterministic verification, and human authority.",
-  alternates: {
-    canonical: "/ai-security/",
-  },
-};
-
 export default function AiSecurityPage() {
   return (
-    <>
-      <PageHero
+    <div className="proofops-page">
+      <ProofOpsPageHero
+        eyebrow="AI support under ProofOps control"
         title="AI Security"
-        subtitle="A governed implementation model for AI-assisted detection engineering and security operations."
-        description="HawkinsOperations demonstrates a governed SOC workflow support model for AI-assisted detection engineering and security operations: detection work, telemetry confidence, validation, case packets, support-only AI triage, human review, and proof-controlled reporting."
-        badges={[
-          { label: "AI_SUPPORT_ONLY" },
-          { label: "HUMAN_AUTHORITY_REQUIRED" },
-          { label: "PRODUCTION_CLAIM_BLOCKED", tone: "block" },
+        accent="without AI authority"
+        subtitle="A governed implementation model where AI helps security work move faster, while evidence and human review decide what can be claimed."
+        description="This route separates AI support, deterministic verification, human authority, proof ceilings, and blocked claims so the model reads like an operator workflow instead of a long report."
+        metrics={[
+          { label: "AI role", value: "support only", tone: "cyan" },
+          { label: "Verifier", value: "deterministic", tone: "green" },
+          { label: "Authority", value: "human review", tone: "amber" },
+          { label: "Promotion", value: "bounded", tone: "blocked" },
         ]}
-      />
-
-      <section className="container section-tight">
-        <BoundaryNotice
-          title="AI Security boundary"
-          text="This is an implementation model and reviewer route. It does not claim production SOCaaS availability, customer validation, partner endorsement, runtime-active public proof, public signal-observed proof, or autonomous SOC authority."
-        />
-      </section>
-
-      <section className="cockpit-section--tight">
-        <div className="container">
-          <SectionHeader
-            title="Workflow: detection → proof-controlled reporting"
-            eyebrow="SOC workflow"
-            description="Each stage owns a distinct truth. AI supports labor; verifiers gate evidence; humans authorize claims."
+      >
+        <p className="proofops-kicker">Support-only split</p>
+        <div className="proofops-grid-2">
+          <EvidenceCeilingCard
+            label="AI support"
+            ceiling="Labor"
+            detail="Draft, organize, summarize, and route."
+            tone="cyan"
           />
-          <SocaasWorkflowFlow />
+          <EvidenceCeilingCard
+            label="Authority"
+            ceiling="Evidence + human review"
+            detail="Claims move only when evidence and review permit it."
+            tone="amber"
+          />
+        </div>
+      </ProofOpsPageHero>
+
+      <section className="proofops-section">
+        <div className="container">
+          <ClaimBoundaryPanel
+            title="AI support does not become claim authority."
+            description="The route keeps AI, deterministic verifiers, human review, and proof ceilings visually separated."
+            boundaries={[
+              { label: "AI support", value: "labor and drafting", tone: "cyan" },
+              { label: "Verifier", value: "schema and controlled checks", tone: "green" },
+              { label: "Human authority", value: "promotion gate", tone: "amber" },
+              { label: "Website", value: "rendering only", tone: "neutral" },
+              { label: "Not claimed", value: "AI approved disposition", tone: "blocked" },
+              { label: "Not claimed", value: "analyst approved disposition", tone: "blocked" },
+            ]}
+          />
         </div>
       </section>
 
-      <section className="cockpit-section--tight">
+      <section className="proofops-section">
         <div className="container">
           <SectionHeader
-            title="Closed controlled loop"
-            eyebrow="Detection to proof"
-            description="A repo-visible loop reviewers can trace end-to-end. Runtime, signal, and production promotion sit outside this loop on purpose."
+            title="Workflow visualization"
+            eyebrow="Support -> verify -> review -> bound"
+            description="The same Hoxline loop applies to AI-assisted security work: AI helps; evidence gates; humans promote."
           />
-          <ClosedLoopFlow />
+          <ProofOpsLoopDiagram />
         </div>
       </section>
 
-      <section className="cockpit-section--tight">
+      <section className="proofops-section">
         <div className="container">
           <SectionHeader
-            title="Runtime boundary ladder"
-            eyebrow="Claim ladder"
-            description="Controlled validation is real. Public runtime proof is not promoted until a separate evidence and approval gate fires."
+            title="Reviewer lenses"
+            eyebrow="Read the model by authority"
+            description="The page is organized by what each layer can do and what it cannot claim."
           />
-          <RuntimeBoundaryLadder />
+          <ReviewerLensTabs lenses={workflowLenses} />
         </div>
       </section>
 
-      <section className="cockpit-section--tight">
+      <section className="proofops-section">
         <div className="container">
-          <SectionHeader
-            title="What transfers to a SOC"
-            eyebrow="Transferable model"
-            description="Each item is repo-visible discipline that maps to real security operations work without requiring HawkinsOperations infrastructure."
-          />
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {whatTransfers.map((item) => (
-              <article key={item.title} className="card p-5">
-                <p className="mono text-xs uppercase text-blue-100">Transfers</p>
-                <h3 className="mt-3 text-lg font-semibold text-slate-50">{item.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-slate-300">{item.detail}</p>
-              </article>
-            ))}
+          <SectionHeader title="Evidence ceiling and blocked claims" eyebrow="Claim discipline" />
+          <div className="proofops-grid-3">
+            <EvidenceCeilingCard
+              label="Controlled validation"
+              ceiling="Supported where records exist"
+              detail="Controlled validation remains distinct from runtime and signal proof."
+              tone="green"
+            />
+            <EvidenceCeilingCard
+              label="public_safe"
+              ceiling="false unless approved"
+              detail="Public release safety requires separate evidence and approval."
+              tone="blocked"
+            />
+            <EvidenceCeilingCard
+              label="Human gate"
+              ceiling="required"
+              detail="Human review sits above AI output and green checks."
+              tone="amber"
+            />
+          </div>
+          <div className="mt-6">
+            <BlockedClaimGrid claims={blockedClaims} />
           </div>
         </div>
       </section>
 
-      <section className="cockpit-section--tight">
+      <section className="proofops-section">
         <div className="container">
           <SectionHeader
             title="Reviewer inspection path"
             eyebrow="Evidence routes"
-            description="Start with the strongest bounded reviewer package, then inspect detections, validation, and Governance Saves."
+            description="Start with Hoxline, then inspect proof, detections, and validation routes. Each surface keeps its own authority boundary."
           />
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {reviewerSurfaces.map((surface) => (
@@ -164,20 +222,29 @@ export default function AiSecurityPage() {
         </div>
       </section>
 
-      <section className="cockpit-section--tight">
+      <section className="proofops-section">
         <div className="container">
-          <SectionHeader title="What remains blocked" eyebrow="Claim ceiling" />
-          <div className="grid gap-3 md:grid-cols-2">
-            {blockedClaims.map((claim) => (
-              <article key={claim} className="card p-4">
-                <p className="text-sm leading-6 text-slate-300">{claim}</p>
+          <SectionHeader title="What transfers" eyebrow="Operator-grade pattern" />
+          <div className="proofops-grid-3">
+            {[
+              ["Source control", "Rule logic, mapping, status metadata, and review history remain auditable."],
+              ["Deterministic gates", "Validation packages, schema checks, and claim-boundary scans fail closed."],
+              ["Case structure", "Case packets can carry support-only AI fields and blocked action defaults."],
+              ["Human review", "Review authority stays visible above CI, AI output, and implementation momentum."],
+              ["Claim ceilings", "Public copy remains below the evidence ceiling attached to each artifact."],
+              ["Reviewer routes", "Routes help reviewers inspect evidence without turning rendering into proof."],
+            ].map(([title, detail]) => (
+              <article key={title} className="proofops-card">
+                <p className="proofops-kicker">Transfer</p>
+                <h3>{title}</h3>
+                <p>{detail}</p>
               </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="cockpit-section--tight pb-24">
+      <section className="proofops-section pb-24">
         <div className="container">
           <SectionHeader title="Source-controlled context" eyebrow="Repos" />
           <div className="grid gap-4 md:grid-cols-3">
@@ -185,8 +252,13 @@ export default function AiSecurityPage() {
             <LinkCard href={externalLinks.orgRequiredChecksMatrix} title="Required checks matrix" description="Observed checks, report-only controls, and website rendering boundaries." external />
             <LinkCard href={externalLinks.platformDetectionFactoryController} title="Detection Factory Controller v0" description="Bounded reviewer status and plan emitter; platform visibility, not proof promotion." external />
           </div>
+          <div className="mt-6 flex flex-wrap gap-2">
+            <SignalBlockedBadge label="AI approval not claimed" />
+            <SignalBlockedBadge label="analyst approval not claimed" />
+            <SignalBlockedBadge label="case closure not claimed" />
+          </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }
