@@ -9,11 +9,14 @@ import ReviewerModeSelector from "@components/ReviewerModeSelector";
 import SixDoorCockpit from "@components/SixDoorCockpit";
 import {
   AuthorityConstellation,
+  BoundedMetricsRail,
   ClaimDecisionMatrixVisual,
   ComplexityStatsRail,
+  DataPackSourceStrip,
   OutputArtifactWall,
   StageStatusChart,
   VisualIntelligenceHero,
+  VisualModuleRail,
 } from "@components/visual-intelligence";
 
 export const metadata: Metadata = {
@@ -31,6 +34,9 @@ export default function HomePage() {
       <section className="cockpit-section">
         <div className="container">
           <VisualIntelligenceHero />
+          <div className="mt-5">
+            <DataPackSourceStrip />
+          </div>
           <div className="mt-5">
             <ComplexityStatsRail />
           </div>
@@ -56,7 +62,13 @@ export default function HomePage() {
             <ClaimDecisionMatrixVisual />
           </div>
           <div className="mt-5">
+            <BoundedMetricsRail />
+          </div>
+          <div className="mt-5">
             <AuthorityConstellation compact />
+          </div>
+          <div className="mt-5">
+            <VisualModuleRail />
           </div>
         </div>
       </section>

@@ -14,9 +14,11 @@ import {
 } from "@components/proofops";
 import {
   AuthorityConstellation,
+  BoundedMetricsRail,
   CapabilityMaturityGrid,
   ClaimDecisionMatrixVisual,
   ComplexityStatsRail,
+  DataPackSourceStrip,
   EvidencePathTimeline,
   GauntletExecutionConsole,
   LoopStatusOrbit,
@@ -24,6 +26,7 @@ import {
   StageStatusChart,
   StillGatedPanel,
   VisualIntelligenceHero,
+  VisualModuleRail,
 } from "@components/visual-intelligence";
 
 export const metadata: Metadata = {
@@ -211,6 +214,9 @@ export default function HoxlinePage() {
         <div className="container">
           <VisualIntelligenceHero />
           <div className="mt-5">
+            <DataPackSourceStrip />
+          </div>
+          <div className="mt-5">
             <ComplexityStatsRail />
           </div>
         </div>
@@ -221,15 +227,21 @@ export default function HoxlinePage() {
           <SectionHeader
             title="What Hoxline can verify today"
             eyebrow="Controlled capability before gated states"
-            description="Gauntlet v0 makes the product feel like an engine: it runs the canonical HO-DET-001 loop, emits reviewer artifacts, records the current proof ceiling, and keeps runtime and signal promotion gated."
+            description="Capability Visual Data Pack v1 makes the product feel like an engine: it records the canonical HO-DET-001 loop, reviewer outputs, output contract checks, bounded metrics, visual modules, and remaining gates without promoting runtime or signal claims."
           />
           <div className="vi-grid-2">
             <CapabilityMaturityGrid />
             <StageStatusChart />
           </div>
+          <div className="mt-5">
+            <BoundedMetricsRail />
+          </div>
           <div className="mt-5 vi-grid-2">
             <GauntletExecutionConsole />
             <OutputArtifactWall />
+          </div>
+          <div className="mt-5">
+            <VisualModuleRail />
           </div>
         </div>
       </section>
@@ -239,7 +251,7 @@ export default function HoxlinePage() {
         title="Hoxline"
         accent="Run the ProofOps loop."
         subtitle="Executable claim control for AI-assisted security work."
-        description="ProofOps control for the AI security era. AI is not the authority. Evidence is. Hoxline controls what AI-assisted security work is allowed to become while Gauntlet v0 keeps runtime, signal, public-safe, production, customer, and approval claims blocked unless evidence exists."
+        description="ProofOps control for the AI security era. AI is not the authority. Evidence is. Hoxline controls what AI-assisted security work is allowed to become while Capability Visual Data Pack v1 keeps runtime, signal, public-safe, production, customer, and approval claims blocked unless evidence exists."
         metrics={[
           { label: "Runner", value: "GAUNTLET_V0", tone: "cyan" },
           { label: "Artifact", value: "HO-DET-001", tone: "cyan" },

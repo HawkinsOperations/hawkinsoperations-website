@@ -3,15 +3,20 @@
 import { useMemo, useState, type CSSProperties } from "react";
 import {
   authoritySurfaces,
+  boundedMetrics,
+  capabilityMaturityChart,
   claimDecisionGroups,
   complexityStats,
   evidencePathTimeline,
   generatedOutputs,
+  generatedOutputsChart,
   hoxlineDataSource,
   loopStageStatuses,
   positiveCapabilities,
-  stillGatedStates,
+  remainingGates,
   validationMetrics,
+  visualModuleDefinitions,
+  stageStatusDistribution,
   type AuthoritySurface,
   type ClaimDecisionGroup,
   type GeneratedOutput,
@@ -54,12 +59,12 @@ export function VisualIntelligenceHero({ compact = false }: { compact?: boolean 
         </h1>
         <p className="vi-hero__subtitle">Executable claim control for AI-assisted security work.</p>
         <p className="vi-hero__body">
-          The Gauntlet v0 runner turns HO-DET-001 into reviewer-readable JSON and Markdown output:
-          loop stages, proof ceiling, allowed wording, blocked claim families, missing evidence, and
-          a human review boundary.
+          Capability Visual Data Pack v1 shows what Hoxline can verify today: HO-DET-001 loop
+          execution, reviewer-readable outputs, output contract checks, bounded claim decisions,
+          and still-gated runtime and signal evidence.
         </p>
         <div className="vi-chip-row" aria-label="Current Hoxline status">
-          <StatusChip tone="cyan">GAUNTLET_V0</StatusChip>
+          <StatusChip tone="cyan">CAPABILITY_VISUAL_DATA_PACK_V1</StatusChip>
           <StatusChip tone="blue">HO-DET-001</StatusChip>
           <StatusChip tone="green">CONTROLLED_TEST_VALIDATED</StatusChip>
           <StatusChip tone="red">RUNTIME_GATED</StatusChip>
@@ -95,9 +100,9 @@ export function StageStatusChart() {
   return (
     <section className="vi-panel">
       <div className="vi-panel__head">
-        <p className="cockpit-eyebrow">Stage status distribution</p>
+        <p className="cockpit-eyebrow">stage_status_distribution</p>
         <h2>Visual stage status data</h2>
-        <p>Gauntlet v0 exposes the loop as status data, not as a flat warning list.</p>
+        <p>Capability Visual Data Pack v1 exposes the loop as status data, not as a flat warning list.</p>
       </div>
       <div className="vi-bars">
         {totals.map((metric) => (
@@ -190,8 +195,8 @@ export function CapabilityMaturityGrid() {
     <section className="vi-panel">
       <div className="vi-panel__head">
         <p className="cockpit-eyebrow">What Hoxline can verify today</p>
-        <h2>Capability maturity grid</h2>
-        <p>Positive capability is shown first; gated states remain visible without taking over the story.</p>
+        <h2>capability_maturity_chart</h2>
+        <p>Positive capability is shown first; the PR #13 maturity chart keeps gated areas visible without taking over the story.</p>
       </div>
       <div className="vi-tabs" role="tablist" aria-label="Capability filter">
         {(["all", "available", "controlled", "gated"] as const).map((item) => (
@@ -210,6 +215,20 @@ export function CapabilityMaturityGrid() {
           </article>
         ))}
       </div>
+      <div className="vi-maturity-bars" aria-label="Capability maturity chart values">
+        {capabilityMaturityChart.map((item) => (
+          <div key={item.capability} className="vi-bar-row">
+            <span>{item.capability}</span>
+            <div className="vi-bar-track">
+              <span
+                className={`vi-bar-fill ${toneClass(item.tone)}`}
+                style={{ "--vi-pct": `${item.maturityScore}%` } as CustomStyle}
+              />
+            </div>
+            <strong>{item.maturityLabel}</strong>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
@@ -221,7 +240,7 @@ export function AuthorityConstellation({ compact = false }: { compact?: boolean 
   return (
     <section className={`vi-panel vi-constellation ${compact ? "vi-constellation--compact" : ""}`}>
       <div className="vi-panel__head">
-        <p className="cockpit-eyebrow">Authority constellation</p>
+        <p className="cockpit-eyebrow">authority_surface_chart</p>
         <h2>Seven surfaces, separated</h2>
         <p>Hoxline is the control route. It does not replace proof, source, validation, platform, website, or org routing boundaries.</p>
       </div>
@@ -275,6 +294,7 @@ export function GauntletExecutionConsole() {
       <div className="vi-console__footer">
         <StatusChip tone="green">JSON output</StatusChip>
         <StatusChip tone="green">Markdown output</StatusChip>
+        <StatusChip tone="blue">contract tests 8</StatusChip>
         <StatusChip tone="red">runtime gated</StatusChip>
         <StatusChip tone="amber">signal missing evidence</StatusChip>
       </div>
@@ -289,7 +309,7 @@ export function OutputArtifactWall() {
   return (
     <section className="vi-panel">
       <div className="vi-panel__head">
-        <p className="cockpit-eyebrow">Generated outputs</p>
+        <p className="cockpit-eyebrow">generated_outputs_chart</p>
         <h2>Output artifact wall</h2>
         <p>Reviewer-readable outputs are surfaced as artifacts. They are routes to inspect, not proof promotion.</p>
       </div>
@@ -308,6 +328,13 @@ export function OutputArtifactWall() {
         ))}
       </div>
       <OutputDetail output={active} />
+      <div className="vi-output-summary" aria-label="Generated outputs chart">
+        {generatedOutputsChart.map((output) => (
+          <span key={output.outputType} className={`vi-chip ${toneClass(output.tone)}`}>
+            {output.outputType}: {output.count}
+          </span>
+        ))}
+      </div>
     </section>
   );
 }
@@ -332,7 +359,7 @@ export function EvidencePathTimeline() {
   return (
     <section className="vi-panel">
       <div className="vi-panel__head">
-        <p className="cockpit-eyebrow">Evidence path timeline</p>
+        <p className="cockpit-eyebrow">build_timeline</p>
         <h2>Reviewer path from source to gated claims</h2>
         <p>Tap a node to inspect what exists today and what remains gated.</p>
       </div>
@@ -366,7 +393,7 @@ export function ClaimDecisionMatrixVisual() {
   return (
     <section className="vi-panel">
       <div className="vi-panel__head">
-        <p className="cockpit-eyebrow">Claim decision matrix</p>
+        <p className="cockpit-eyebrow">claim_decision_chart</p>
         <h2>Allowed, blocked, and required evidence</h2>
         <p>Toggle the decision families. Blocked claims are visible as boundaries, not as product claims.</p>
       </div>
@@ -407,8 +434,8 @@ export function StillGatedPanel() {
         <p>These states remain required before stronger public claims can move.</p>
       </div>
       <div className="vi-gated__grid">
-        {stillGatedStates.map((state) => (
-          <span key={state}>{state}</span>
+        {remainingGates.map((gate) => (
+          <span key={gate.gate}>{gate.gate}: {gate.status}</span>
         ))}
       </div>
       <p className="vi-boundary-line">
@@ -416,5 +443,51 @@ export function StillGatedPanel() {
         public_safe false with human_review_required true.
       </p>
     </section>
+  );
+}
+
+export function VisualModuleRail() {
+  return (
+    <section className="vi-panel">
+      <div className="vi-panel__head">
+        <p className="cockpit-eyebrow">visual modules</p>
+        <h2>PR #13 module map</h2>
+        <p>The website renders the exact visual modules defined by the Capability Visual Data Pack v1.</p>
+      </div>
+      <div className="vi-module-grid">
+        {visualModuleDefinitions.map((module) => (
+          <article key={module.id} className="vi-module-card">
+            <span>{module.id}</span>
+            <strong>{module.label}</strong>
+            <p>{module.role}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export function BoundedMetricsRail() {
+  return (
+    <div className="vi-stats-rail" aria-label="Capability visual data pack bounded metrics">
+      {boundedMetrics.map((metric) => (
+        <article key={metric.label} className={`vi-stat ${toneClass(metric.tone)}`}>
+          <strong>{metric.value}</strong>
+          <span>{metric.label}</span>
+          <small>{metric.detail}</small>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+export function DataPackSourceStrip() {
+  return (
+    <div className="vi-source-strip" aria-label="Capability Visual Data Pack v1 source">
+      <StatusChip tone="cyan">{hoxlineDataSource.mode}</StatusChip>
+      <StatusChip tone="blue">{hoxlineDataSource.sourcePr}</StatusChip>
+      <StatusChip tone="green">{hoxlineDataSource.showcaseId}</StatusChip>
+      <StatusChip tone="amber">{`stage_status_distribution ${stageStatusDistribution.length}`}</StatusChip>
+    </div>
   );
 }

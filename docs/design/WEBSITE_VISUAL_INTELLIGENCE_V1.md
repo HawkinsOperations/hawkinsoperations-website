@@ -2,16 +2,19 @@
 
 ## Source Data
 
-Preferred showcase data pack was not present locally at implementation time:
+Implementation now uses the real Hoxline Capability Visual Data Pack v1 from merged Hoxline PR #13.
 
-`C:\Raylee\Repo\HawkinsOperations\aevumguard\examples\showcase\ho-det-001-capability-visual-data-pack-v1.json`
+Source files:
 
-Implementation uses the local Gauntlet v0 fallback:
+- `C:\Raylee\Repo\HawkinsOperations\aevumguard\examples\showcase\ho-det-001-capability-visual-data-pack-v1.json`
+- `C:\Raylee\Repo\HawkinsOperations\aevumguard\examples\showcase\ho-det-001-capability-visual-data-pack-v1.md`
+- `C:\Raylee\Repo\HawkinsOperations\aevumguard\schemas\capability-visual-data-pack-v1.schema.json`
 
-- `C:\Raylee\Repo\HawkinsOperations\aevumguard\examples\gauntlet\ho-det-001-full-loop-run-v0.json`
-- `C:\Raylee\Repo\HawkinsOperations\aevumguard\examples\gauntlet\ho-det-001-full-loop-run-v0.md`
-- `C:\Raylee\Repo\HawkinsOperations\aevumguard\schemas\gauntlet-full-loop-run-v0.schema.json`
-- Local source commit recorded during ingest: `9c6b591af20a6ecb7fb38aa192a2253f20acd9ed`
+Merged source commit verified locally:
+
+`903da4e5cccc9eeb53a4c21b8639c7d472b7eb7d`
+
+The previous temporary source references were removed. Website-local typed exports copy only bounded, chart-ready values from the Hoxline data pack because the website cannot import files outside this repo at runtime.
 
 ## Figma Direction
 
@@ -25,14 +28,16 @@ Created directions:
 2. Evidence Constellation
 3. Gauntlet Engine
 
-Selected implementation direction:
+Selected implementation direction remains:
 
-Mission Control + Gauntlet Engine. The homepage becomes an operator-facing command surface, while `/hoxline/` becomes the engine page that shows loop execution, generated outputs, authority separation, claim decisions, and gated evidence.
+Mission Control + Gauntlet Engine. The homepage is an operator-facing command surface, while `/hoxline/` is the engine page showing capability data, stage distribution, generated outputs, authority separation, claim decisions, build timeline, and gated evidence.
+
+Figma file status for this update: direction frames already exist. The website and this design doc now carry the real data-pack labels and source references.
 
 ## Visual Principles
 
-- Show complexity as systems: orbit, console, stage chart, authority constellation, output wall, and evidence timeline.
-- Keep positive controlled capability visible before blocked states.
+- Show complexity as systems: orbit, console, stage chart, authority constellation, output wall, evidence timeline, and module rail.
+- Foreground positive controlled capabilities before blocked states.
 - Use cyan and blue for inspection/navigation, green for controlled capability, amber for proof ceilings and required gates, and red only for blocked claim states.
 - Avoid text-only expansion. Each new content block should have a chart, diagram, stage map, console, or selectable state.
 - Keep mobile interactions stacked and tappable.
@@ -52,16 +57,35 @@ Implemented under `components/visual-intelligence/`:
 - `ClaimDecisionMatrixVisual`
 - `StillGatedPanel`
 - `ComplexityStatsRail`
+- `BoundedMetricsRail`
+- `DataPackSourceStrip`
+- `VisualModuleRail`
 
 ## Chart Plan
 
-- Stage status distribution: bar chart from actual Gauntlet stage counts.
-- Loop orbit: canonical stages as selectable nodes.
-- Authority constellation: seven surfaces around Hoxline as the control route.
-- Capability grid: filterable capability states.
-- Output wall: selectable generated artifacts with external links.
-- Timeline: evidence path from source artifact to reviewer handoff.
-- Claim matrix: toggle allowed, blocked, and required evidence groups.
+Data comes from the PR #13 `website_chart_data` object:
+
+- `stage_status_distribution`
+- `loop_stage_status_chart`
+- `capability_maturity_chart`
+- `authority_surface_chart`
+- `generated_outputs_chart`
+- `claim_decision_chart`
+- `build_timeline`
+
+Visual modules come from the PR #13 `visual_modules` list:
+
+- `mission_control_hero`
+- `proofops_loop_orbit`
+- `gauntlet_execution_console`
+- `capability_maturity_visual`
+- `authority_constellation`
+- `evidence_pipeline_timeline`
+- `claim_decision_matrix`
+- `generated_outputs_wall`
+- `reviewer_path_timeline`
+- `still_gated_panel`
+- `complexity_stats_rail`
 
 ## Interaction Plan
 
@@ -78,7 +102,7 @@ Interactive controls:
 
 - Stack visual modules vertically.
 - Keep tap targets visible and large enough for phone preview.
-- Avoid all-red warning walls by placing controlled capability and stage data first.
+- Show what Hoxline can verify today before still-gated states.
 - Use responsive grids with no horizontal overflow.
 - Keep browser/header overlap out of the critical first viewport.
 

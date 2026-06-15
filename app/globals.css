@@ -14974,6 +14974,64 @@ a.card.group:hover { border-color: rgba(143, 216, 255, 0.45); }
   line-height: 1.6;
 }
 
+.vi-source-strip,
+.vi-output-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.vi-maturity-bars {
+  display: grid;
+  gap: 13px;
+  margin-top: 22px;
+  border-top: 1px solid rgba(148, 163, 184, 0.14);
+  padding-top: 18px;
+}
+
+.vi-module-grid {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+@media (min-width: 760px) {
+  .vi-module-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.vi-module-card {
+  border: 1px solid rgba(109, 213, 255, 0.16);
+  border-radius: 14px;
+  background: rgba(8, 15, 27, 0.72);
+  padding: 15px;
+}
+
+.vi-module-card span {
+  color: var(--proofops-cyan);
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  overflow-wrap: anywhere;
+  text-transform: uppercase;
+}
+
+.vi-module-card strong {
+  display: block;
+  margin-top: 9px;
+  color: var(--silver-bright);
+  font-size: 0.95rem;
+}
+
+.vi-module-card p {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.48;
+}
+
 .vi-grid-2,
 .vi-grid-3 {
   display: grid;
