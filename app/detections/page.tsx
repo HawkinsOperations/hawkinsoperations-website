@@ -8,6 +8,7 @@ import {
   ProofOpsPageHero,
   SignalBlockedBadge,
 } from "@components/proofops";
+import { EvidencePathTimeline, StageStatusChart } from "@components/visual-intelligence";
 import { attackFamilies, attackMapSafeCopy, cyberKillChainStages } from "@data/attackCoverage";
 import { externalLinks } from "@data/navigation";
 import { validationRows } from "@data/validationRegistry";
@@ -117,6 +118,20 @@ export default function DetectionsPage() {
               { label: "Website", value: "rendering only", tone: "neutral" },
             ]}
           />
+        </div>
+      </section>
+
+      <section className="proofops-section">
+        <div className="container">
+          <SectionHeader
+            title="Detection lifecycle feeds Hoxline"
+            eyebrow="Source truth into claim control"
+            description="Detection source and controlled validation can feed the Hoxline loop, but the runtime and signal gates remain separate until evidence exists."
+          />
+          <div className="vi-grid-2">
+            <StageStatusChart />
+            <EvidencePathTimeline />
+          </div>
         </div>
       </section>
 

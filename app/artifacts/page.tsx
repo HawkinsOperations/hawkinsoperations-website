@@ -5,6 +5,7 @@ import EvidenceBay from "@components/EvidenceBay";
 import GpuFactoryLane from "@components/GpuFactoryLane";
 import RecentGovernedArtifacts from "@components/RecentGovernedArtifacts";
 import StatusConsole from "@components/StatusConsole";
+import { EvidencePathTimeline, OutputArtifactWall } from "@components/visual-intelligence";
 import { flagshipArtifacts, highRoiArtifactGroups, type Artifact } from "@data/artifacts";
 
 export const metadata: Metadata = {
@@ -161,6 +162,25 @@ export default function ArtifactsIndexPage() {
 
         <div className="container mt-12">
           <hr className="cockpit-rule" />
+        </div>
+      </section>
+
+      <section id="hoxline-output-wall" className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Hoxline reviewer outputs</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "2rem" }}>
+              Gauntlet v0 adds an output wall to the evidence bay.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              The generated JSON, Markdown, and runner docs help reviewers inspect HO-DET-001 loop
+              state. They are rendered as artifacts, not as stronger proof or public-safe promotion.
+            </p>
+          </div>
+          <div className="vi-grid-2">
+            <OutputArtifactWall />
+            <EvidencePathTimeline />
+          </div>
         </div>
       </section>
 

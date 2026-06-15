@@ -12,11 +12,27 @@ import {
   SignalBlockedBadge,
   type ReviewerLens,
 } from "@components/proofops";
+import {
+  AuthorityConstellation,
+  BoundedMetricsRail,
+  CapabilityMaturityGrid,
+  ClaimDecisionMatrixVisual,
+  ComplexityStatsRail,
+  DataPackSourceStrip,
+  EvidencePathTimeline,
+  GauntletExecutionConsole,
+  LoopStatusOrbit,
+  OutputArtifactWall,
+  StageStatusChart,
+  StillGatedPanel,
+  VisualIntelligenceHero,
+  VisualModuleRail,
+} from "@components/visual-intelligence";
 
 export const metadata: Metadata = {
   title: "Hoxline | HawkinsOperations",
   description:
-    "Hoxline by HawkinsOperations is a ProofOps control plane for bounded AI-assisted security work, reviewer evidence paths, and claim boundaries.",
+    "Hoxline by HawkinsOperations runs the controlled ProofOps loop for HO-DET-001 and emits bounded reviewer JSON and Markdown outputs while preserving claim boundaries.",
   alternates: {
     canonical: "/hoxline/",
   },
@@ -194,16 +210,54 @@ const lenses: ReviewerLens[] = [
 export default function HoxlinePage() {
   return (
     <div className="proofops-page">
+      <section className="proofops-section">
+        <div className="container">
+          <VisualIntelligenceHero />
+          <div className="mt-5">
+            <DataPackSourceStrip />
+          </div>
+          <div className="mt-5">
+            <ComplexityStatsRail />
+          </div>
+        </div>
+      </section>
+
+      <section className="proofops-section">
+        <div className="container">
+          <SectionHeader
+            title="What Hoxline can verify today"
+            eyebrow="Controlled capability before gated states"
+            description="Capability Visual Data Pack v1 makes the product feel like an engine: it records the canonical HO-DET-001 loop, reviewer outputs, output contract checks, bounded metrics, visual modules, and remaining gates without promoting runtime or signal claims."
+          />
+          <div className="vi-grid-2">
+            <CapabilityMaturityGrid />
+            <StageStatusChart />
+          </div>
+          <div className="mt-5">
+            <BoundedMetricsRail />
+          </div>
+          <div className="mt-5 vi-grid-2">
+            <GauntletExecutionConsole />
+            <OutputArtifactWall />
+          </div>
+          <div className="mt-5">
+            <VisualModuleRail />
+          </div>
+        </div>
+      </section>
+
       <ProofOpsPageHero
         eyebrow="Hoxline by HawkinsOperations"
         title="Hoxline"
-        accent="ProofOps control"
-        subtitle="ProofOps control for the AI security era."
-        description="AI is not the authority. Evidence is. Hoxline controls what AI-assisted security work is allowed to become while proof authority, source truth, validation truth, platform contracts, and website rendering remain separate."
+        accent="Run the ProofOps loop."
+        subtitle="Executable claim control for AI-assisted security work."
+        description="ProofOps control for the AI security era. AI is not the authority. Evidence is. Hoxline controls what AI-assisted security work is allowed to become while Capability Visual Data Pack v1 keeps runtime, signal, public-safe, production, customer, and approval claims blocked unless evidence exists."
         metrics={[
-          { label: "Product", value: "control plane", tone: "cyan" },
+          { label: "Runner", value: "GAUNTLET_V0", tone: "cyan" },
+          { label: "Artifact", value: "HO-DET-001", tone: "cyan" },
           { label: "Ceiling", value: "CONTROLLED_TEST_VALIDATED", tone: "amber" },
-          { label: "public_safe", value: "false", tone: "blocked" },
+          { label: "Runtime", value: "gated", tone: "blocked" },
+          { label: "Signal", value: "missing evidence", tone: "amber" },
           { label: "Human review", value: "required", tone: "green" },
         ]}
       >
@@ -229,6 +283,24 @@ export default function HoxlinePage() {
           />
         </div>
       </ProofOpsPageHero>
+
+      <section className="proofops-section">
+        <div className="container">
+          <SectionHeader
+            title="Gauntlet engine"
+            eyebrow="Interactive visual intelligence"
+            description="The same controlled-loop data is rendered as a stage orbit, authority constellation, evidence path timeline, and claim decision matrix. These visuals make complexity inspectable without turning the website into proof."
+          />
+          <div className="vi-grid-2">
+            <LoopStatusOrbit />
+            <AuthorityConstellation />
+          </div>
+          <div className="mt-5 vi-grid-2">
+            <EvidencePathTimeline />
+            <ClaimDecisionMatrixVisual />
+          </div>
+        </div>
+      </section>
 
       <section className="proofops-section">
         <div className="container">
@@ -478,6 +550,12 @@ export default function HoxlinePage() {
               description="Inspect controlled fixture status and blocked runtime or signal states."
             />
           </div>
+        </div>
+      </section>
+
+      <section className="proofops-section">
+        <div className="container">
+          <StillGatedPanel />
         </div>
       </section>
 

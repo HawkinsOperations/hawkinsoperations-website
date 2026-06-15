@@ -11,6 +11,7 @@ import {
   SignalBlockedBadge,
   type ReviewerLens,
 } from "@components/proofops";
+import { CapabilityMaturityGrid, GauntletExecutionConsole } from "@components/visual-intelligence";
 import { externalLinks } from "@data/navigation";
 import { proofPack } from "@data/proofPackManifest";
 import { registryStats } from "@data/validationRegistry";
@@ -153,6 +154,20 @@ export default function AiSecurityPage() {
               { label: "Not claimed", value: "analyst approved disposition", tone: "blocked" },
             ]}
           />
+        </div>
+      </section>
+
+      <section className="proofops-section">
+        <div className="container">
+          <SectionHeader
+            title="AI support is governed by ProofOps control"
+            eyebrow="Hoxline visual intelligence"
+            description="Gauntlet v0 shows how AI-assisted security work enters a controlled loop, emits reviewer artifacts, and keeps runtime, signal, approval, and public-safe claims gated."
+          />
+          <div className="vi-grid-2">
+            <CapabilityMaturityGrid />
+            <GauntletExecutionConsole />
+          </div>
         </div>
       </section>
 

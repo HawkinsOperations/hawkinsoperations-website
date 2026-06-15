@@ -1,6 +1,6 @@
 import { externalLinks } from "@data/navigation";
 
-type DoorIcon = "proof" | "artifacts" | "detections" | "ai" | "about" | "source";
+type DoorIcon = "hoxline" | "proof" | "artifacts" | "detections" | "ai" | "about" | "source";
 
 type Door = {
   href: string;
@@ -11,6 +11,13 @@ type Door = {
 };
 
 const doors: Door[] = [
+  {
+    href: "/hoxline/",
+    title: "Hoxline",
+    description:
+      "Flagship ProofOps control plane with Gauntlet v0 loop execution, reviewer outputs, and gated runtime/signal states.",
+    icon: "hoxline",
+  },
   {
     href: "/proof/",
     title: "Proof",
@@ -58,6 +65,15 @@ const doors: Door[] = [
 
 function Glyph({ icon }: { icon: DoorIcon }) {
   switch (icon) {
+    case "hoxline":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+          <circle cx="12" cy="12" r="8" />
+          <circle cx="12" cy="12" r="3" />
+          <path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4" />
+          <path d="M17.5 6.5l-3 3M6.5 17.5l3-3M6.5 6.5l3 3M17.5 17.5l-3-3" />
+        </svg>
+      );
     case "proof":
       return (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">

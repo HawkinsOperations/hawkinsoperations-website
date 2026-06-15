@@ -4,10 +4,20 @@ import CurrentProofSpine from "@components/CurrentProofSpine";
 import HomeAttackCoverageBridge from "@components/HomeAttackCoverageBridge";
 import HomeReviewerBridgeToArtifacts from "@components/HomeReviewerBridgeToArtifacts";
 import HomeTrustBoundaryPanel from "@components/HomeTrustBoundaryPanel";
-import OrbitalHawkHero from "@components/OrbitalHawkHero";
 import ProofLoopRail from "@components/ProofLoopRail";
 import ReviewerModeSelector from "@components/ReviewerModeSelector";
 import SixDoorCockpit from "@components/SixDoorCockpit";
+import {
+  AuthorityConstellation,
+  BoundedMetricsRail,
+  ClaimDecisionMatrixVisual,
+  ComplexityStatsRail,
+  DataPackSourceStrip,
+  OutputArtifactWall,
+  StageStatusChart,
+  VisualIntelligenceHero,
+  VisualModuleRail,
+} from "@components/visual-intelligence";
 
 export const metadata: Metadata = {
   title: "HawkinsOperations",
@@ -21,7 +31,47 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
-      <OrbitalHawkHero />
+      <section className="cockpit-section">
+        <div className="container">
+          <VisualIntelligenceHero />
+          <div className="mt-5">
+            <DataPackSourceStrip />
+          </div>
+          <div className="mt-5">
+            <ComplexityStatsRail />
+          </div>
+        </div>
+      </section>
+
+      <section id="hoxline-product" className="cockpit-section--tight">
+        <div className="container">
+          <div className="home-section__head mb-6">
+            <p className="cockpit-eyebrow">Flagship product</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "2rem" }}>
+              Hoxline: executable ProofOps control.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              HawkinsOperations is not just a portfolio. Hoxline runs a controlled ProofOps loop for
+              HO-DET-001 and emits bounded reviewer artifacts while runtime, signal, public release,
+              production, customer, and approval claims remain gated.
+            </p>
+          </div>
+          <div className="vi-grid-3">
+            <StageStatusChart />
+            <OutputArtifactWall />
+            <ClaimDecisionMatrixVisual />
+          </div>
+          <div className="mt-5">
+            <BoundedMetricsRail />
+          </div>
+          <div className="mt-5">
+            <AuthorityConstellation compact />
+          </div>
+          <div className="mt-5">
+            <VisualModuleRail />
+          </div>
+        </div>
+      </section>
 
       <CurrentProofSpine />
 
@@ -77,10 +127,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="six-doors" className="cockpit-section--tight">
+      <section id="public-doors" className="cockpit-section--tight">
         <div className="container">
           <div className="home-section__head mb-6">
-            <p className="cockpit-eyebrow">Six public doors</p>
+            <p className="cockpit-eyebrow">Public product doors</p>
             <h2
               className="cockpit-headline mt-2"
               style={{ fontSize: "clamp(1.7rem, 2.8vw, 2.4rem)" }}
@@ -88,8 +138,8 @@ export default function HomePage() {
               Pick the surface you want to inspect.
             </h2>
             <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              The public site routes through six primary doors. Support routes still exist,
-              but they serve these doors.
+              The public site now leads with Hoxline as the current product route, then routes
+              reviewers into proof, artifacts, detections, AI security, source, and operating context.
             </p>
           </div>
           <SixDoorCockpit />
