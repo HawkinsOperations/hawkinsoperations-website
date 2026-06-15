@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description:
     "The /controls/ route remains as a compatibility page. Hoxline is the product front door; Claim Firewall is an internal Claim Authority capability.",
   alternates: {
-    canonical: "/aevumguard/",
+    canonical: "/hoxline/",
   },
 };
 
@@ -25,7 +25,7 @@ export default function ControlsPage() {
             Claim Firewall remains an internal Hoxline Claim Authority enforcement capability. This /controls/ route remains as a compatibility page for older reviewer links.
           </p>
           <div className="controls-hero__pills" aria-label="Controls compatibility route">
-            <a href="/aevumguard/">
+            <a href="/hoxline/">
               <span>Open Hoxline</span>
             </a>
             <a href="/claim-firewall/">

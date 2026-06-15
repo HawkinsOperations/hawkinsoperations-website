@@ -44,7 +44,7 @@ export default function ClaimFirewallPage() {
             <p>Hoxline is the product identity for the current product/front-door repo. Claim Firewall is not the product, platform, front-door repo, or an eighth repo.</p>
             <p>Website rendering is not proof authority. Claim Firewall supports claim hygiene only as an internal capability.</p>
             <div className="controls-hero__pills" aria-label="Claim Firewall external links">
-              <a href="https://github.com/HawkinsOperations/aevumguard" target="_blank" rel="noopener noreferrer">
+              <a href="https://github.com/HawkinsOperations/hoxline" target="_blank" rel="noopener noreferrer">
                 <span>View Hoxline repo</span>
               </a>
               <a href="https://github.com/orgs/HawkinsOperations/discussions/51" target="_blank" rel="noopener noreferrer">
