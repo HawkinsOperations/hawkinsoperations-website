@@ -10,6 +10,7 @@ import ProofRecordsEvidenceBay from "@components/ProofRecordsEvidenceBay";
 import ProofTrustBoundaryRail from "@components/ProofTrustBoundaryRail";
 import PromotionGateLadder from "@components/PromotionGateLadder";
 import RecentGovernedArtifacts from "@components/RecentGovernedArtifacts";
+import { AuthorityConstellation, ClaimDecisionMatrixVisual } from "@components/visual-intelligence";
 import { promotionRequirements } from "@data/claims";
 import { externalLinks } from "@data/navigation";
 import { lifetimeCaseLedgerV1 } from "@data/proofRecords";
@@ -28,6 +29,26 @@ export default function ProofIndexPage() {
     <>
       {/* ── Vault hero ───────────────────────────────────────────────── */}
       <ProofVaultHero />
+
+      <section id="hoxline-rendering-reference" className="cockpit-section--tight">
+        <div className="container">
+          <div className="mb-6">
+            <p className="cockpit-eyebrow">Hoxline rendering reference</p>
+            <h2 className="cockpit-headline mt-2" style={{ fontSize: "2rem" }}>
+              Hoxline can visualize the loop. Proof authority stays here.
+            </h2>
+            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
+              Gauntlet v0 output is useful reviewer context for HO-DET-001, but it does not make
+              Hoxline or the website proof authority. Runtime and signal promotion still require
+              separate evidence and review records.
+            </p>
+          </div>
+          <div className="vi-grid-2">
+            <AuthorityConstellation compact />
+            <ClaimDecisionMatrixVisual />
+          </div>
+        </div>
+      </section>
 
       {/* ── Governance Saves dashboard ───────────────────────────────── */}
       <section id="governance-saves" className="cockpit-section--tight">
