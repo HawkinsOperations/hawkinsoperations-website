@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import HoxlineEngineRoom from "@components/hoxline/HoxlineEngineRoom";
 import LinkCard from "@components/LinkCard";
 import SectionHeader from "@components/SectionHeader";
 import {
@@ -213,6 +214,9 @@ export default function HoxlinePage() {
       <section className="proofops-section">
         <div className="container">
           <VisualIntelligenceHero />
+          <div className="mt-6">
+            <HoxlineEngineRoom />
+          </div>
           <div className="engine-room mt-6" aria-label="Hoxline Engine Room system scene">
             <div className="engine-room__copy">
               <p className="cockpit-eyebrow">Hoxline Engine Room</p>

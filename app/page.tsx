@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import ControlsFiredGraph from "@components/ControlsFiredGraph";
 import MissionControlHero from "@components/command-center/MissionControlHero";
 import ProofSpineMetricsRail from "@components/command-center/ProofSpineMetricsRail";
+import SystemShowcaseHero from "@components/command-center/SystemShowcaseHero";
 import V1ToV2EvolutionStrip from "@components/command-center/V1ToV2EvolutionStrip";
 import VerifyTerminalDrawer from "@components/command-center/VerifyTerminalDrawer";
 import CurrentProofSpine from "@components/CurrentProofSpine";
@@ -36,6 +37,8 @@ export default function HomePage() {
     <>
       <section className="cockpit-section">
         <div className="container">
+          <SystemShowcaseHero />
+          <div className="mt-6" />
           <MissionControlHero />
           <div className="mt-5">
             <ProofSpineMetricsRail />

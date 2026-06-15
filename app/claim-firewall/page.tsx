@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ClaimFirewallDemoTheater from "@components/claim-firewall/ClaimFirewallDemoTheater";
 import ClaimFirewallSimulator from "@components/claim-firewall/ClaimFirewallSimulator";
 import ClaimFirewall from "@components/ClaimFirewall";
 
@@ -16,6 +17,12 @@ export const metadata: Metadata = {
 export default function ClaimFirewallPage() {
   return (
     <>
+      <section className="cockpit-section">
+        <div className="container">
+          <ClaimFirewallDemoTheater />
+        </div>
+      </section>
+
       <section className="controls-hero" aria-labelledby="claim-firewall-title">
         <div className="container controls-hero__grid">
           <div className="controls-hero__copy">

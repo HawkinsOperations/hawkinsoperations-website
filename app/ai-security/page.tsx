@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import AiGovernedTriageBoard from "@components/ai-security/AiGovernedTriageBoard";
 import LinkCard from "@components/LinkCard";
 import SectionHeader from "@components/SectionHeader";
 import {
@@ -139,6 +140,12 @@ export default function AiSecurityPage() {
           />
         </div>
       </ProofOpsPageHero>
+
+      <section className="proofops-section">
+        <div className="container">
+          <AiGovernedTriageBoard />
+        </div>
+      </section>
 
       <section className="proofops-section">
         <div className="container">

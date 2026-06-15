@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import DetectionInventoryCockpit from "@components/detections/DetectionInventoryCockpit";
+import DetectionOpsCockpit from "@components/detections/DetectionOpsCockpit";
 import LinkCard from "@components/LinkCard";
 import SectionHeader from "@components/SectionHeader";
 import {
@@ -82,6 +83,12 @@ const blockedClaims = [
 export default function DetectionsPage() {
   return (
     <div className="proofops-page">
+      <section className="proofops-section">
+        <div className="container">
+          <DetectionOpsCockpit />
+        </div>
+      </section>
+
       <ProofOpsPageHero
         eyebrow="Detection source to claim boundary"
         title="Detections"
