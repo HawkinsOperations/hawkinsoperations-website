@@ -74,7 +74,7 @@ export default function Footer() {
               </a>
             </li>
             <li>
-              <a href={externalLinks.aevumguard} target="_blank" rel="noopener noreferrer">
+              <a href={externalLinks.hoxline} target="_blank" rel="noopener noreferrer">
                 Hoxline ↗
               </a>
             </li>

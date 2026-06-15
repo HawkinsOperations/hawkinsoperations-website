@@ -51,8 +51,8 @@ export const repos: RepoRecord[] = [
     doesNotProve: "Unlinked runtime state or claims outside the record.",
   },
   {
-    name: "aevumguard",
-    href: externalLinks.aevumguard,
+    name: "hoxline",
+    href: externalLinks.hoxline,
     purpose: "Product front-door repo for governed AI-assisted security work.",
     truthSurface: "Product / front door",
     owns: "Hoxline product framing and Claim Authority capabilities, starting with Claim Firewall.",

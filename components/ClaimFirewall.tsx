@@ -59,15 +59,15 @@ const authorityStack = [
   ["platform", "control mechanics"],
   ["proof", "proof and claim authority"],
   ["website", "rendering only"],
-  ["aevumguard", "product front door"],
+  ["hoxline", "product front door"],
   ["Claim Firewall", "internal Hoxline capability"],
 ] as const;
 
 const receipts = [
   {
     label: "Product repo",
-    value: "HawkinsOperations/aevumguard",
-    href: "https://github.com/HawkinsOperations/aevumguard",
+    value: "HawkinsOperations/hoxline",
+    href: "https://github.com/HawkinsOperations/hoxline",
   },
   {
     label: "Announcement",

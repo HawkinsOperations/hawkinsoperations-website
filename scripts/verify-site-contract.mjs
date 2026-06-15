@@ -61,7 +61,7 @@ const navigationData = readFileSync(join(root, "src/data/navigation.ts"), "utf8"
 const primaryNavMatch = navigationData.match(/export const primaryNavigation: NavItem\[] = \[([\s\S]*?)\];/);
 const expectedPrimaryNav = [
   { label: "Home", href: "/" },
-  { label: "Hoxline", href: "/aevumguard/" },
+  { label: "Hoxline", href: "/hoxline/" },
   { label: "Proof", href: "/proof/" },
   { label: "Artifacts", href: "/artifacts/" },
   { label: "Detections", href: "/detections/" },
@@ -143,28 +143,25 @@ const proofHoDet001Page = readFileSync(join(root, "app/proof/ho-det-001/page.tsx
 const currentProofSpine = readFileSync(join(root, "components/CurrentProofSpine.tsx"), "utf8");
 const claimFirewallPage = readFileSync(join(root, "app/claim-firewall/page.tsx"), "utf8");
 const aevumguardPage = readFileSync(join(root, "app/aevumguard/page.tsx"), "utf8");
+const hoxlinePage = readFileSync(join(root, "app/hoxline/page.tsx"), "utf8");
 const controlsPage = readFileSync(join(root, "app/controls/page.tsx"), "utf8");
 const claimFirewallComponent = readFileSync(join(root, "components/ClaimFirewall.tsx"), "utf8");
 const proofRecordsData = readFileSync(join(root, "src/data/proofRecords.ts"), "utf8");
 const navigationSource = readFileSync(join(root, "src/data/navigation.ts"), "utf8");
 const hoxlineFrontDoorRequiredTerms = [
   ["src/data/navigation.ts", navigationSource, 'label: "Hoxline"'],
-  ["src/data/navigation.ts", navigationSource, 'href: "/aevumguard/"'],
-  ["src/data/navigation.ts", navigationSource, "aevumguard"],
-  ["app/aevumguard/page.tsx", aevumguardPage, "Hoxline separates AI output from evidence-bound claim authority."],
-  ["app/aevumguard/page.tsx", aevumguardPage, "ProofOps control for the AI security era."],
-  ["app/aevumguard/page.tsx", aevumguardPage, "AI is not the authority. Evidence is."],
-  ["app/aevumguard/page.tsx", aevumguardPage, "AI-assisted security work"],
-  ["app/aevumguard/page.tsx", aevumguardPage, "Artifact Intake"],
-  ["app/aevumguard/page.tsx", aevumguardPage, "Evidence Graph"],
-  ["app/aevumguard/page.tsx", aevumguardPage, "Telemetry Contract Check"],
-  ["app/aevumguard/page.tsx", aevumguardPage, "Controlled Validation"],
-  ["app/aevumguard/page.tsx", aevumguardPage, "Runtime Candidate Ledger"],
-  ["app/aevumguard/page.tsx", aevumguardPage, "Signal Observation"],
-  ["app/aevumguard/page.tsx", aevumguardPage, "Human Review Gate"],
-  ["app/aevumguard/page.tsx", aevumguardPage, "ProofCard"],
-  ["app/aevumguard/page.tsx", aevumguardPage, "Claim Authority"],
-  ["app/aevumguard/page.tsx", aevumguardPage, "Safe Claim / Blocked Claim"],
+  ["src/data/navigation.ts", navigationSource, 'href: "/hoxline/"'],
+  ["src/data/navigation.ts", navigationSource, "hoxline"],
+  ["app/hoxline/page.tsx", hoxlinePage, "ProofOps control for the AI security era."],
+  ["app/hoxline/page.tsx", hoxlinePage, "AI is not the authority. Evidence is."],
+  ["app/hoxline/page.tsx", hoxlinePage, "The Claim Problem"],
+  ["app/hoxline/page.tsx", hoxlinePage, "HO-DET-001 Controlled Demo Spotlight"],
+  ["app/hoxline/page.tsx", hoxlinePage, "Authority Architecture"],
+  ["app/hoxline/page.tsx", hoxlinePage, "Next Gate"],
+  ["app/aevumguard/page.tsx", aevumguardPage, "Legacy compatibility route"],
+  ["app/aevumguard/page.tsx", aevumguardPage, "AevumGuard was legacy naming"],
+  ["app/aevumguard/page.tsx", aevumguardPage, 'canonical: "/hoxline/"'],
+  ["app/aevumguard/page.tsx", aevumguardPage, 'href="/hoxline/"'],
   ["app/proof/page.tsx", proofPage, "Claim Firewall control surface"],
   ["app/proof/page.tsx", proofPage, "Open Claim Firewall"],
   ["app/proof/page.tsx", proofPage, "website rendering below proof authority"],
@@ -173,7 +170,7 @@ const hoxlineFrontDoorRequiredTerms = [
   ["app/claim-firewall/page.tsx", claimFirewallPage, "Claim Firewall is not the product, platform, front-door repo, or an eighth repo."],
   ["app/claim-firewall/page.tsx", claimFirewallPage, "Website rendering is not proof"],
   ["app/claim-firewall/page.tsx", claimFirewallPage, "Public proof requires evidence linkage and explicit promotion."],
-  ["app/controls/page.tsx", controlsPage, 'href="/aevumguard/"'],
+  ["app/controls/page.tsx", controlsPage, 'href="/hoxline/"'],
   ["app/controls/page.tsx", controlsPage, "Compatibility only"],
 ];
 const hoxlineFrontDoorFailures = hoxlineFrontDoorRequiredTerms
@@ -350,11 +347,14 @@ if (!Array.isArray(discoveryProof.blocked_claims) || !discoveryProof.blocked_cla
 if (!Array.isArray(discoveryProof.reviewer_routes) || discoveryProof.reviewer_routes.length < 4) {
   discoveryFailures.push("public/.well-known/hawkinsoperations-proof.json must expose reviewer_routes for machine-readable navigation.");
 }
-if (!discoveryProof.reviewer_routes?.some((route) => route.id === "aevumguard" && route.url === "https://hawkinsoperations.com/aevumguard/")) {
-  discoveryFailures.push("public/.well-known/hawkinsoperations-proof.json must expose /aevumguard/ as the product front-door reviewer route.");
+if (!discoveryProof.reviewer_routes?.some((route) => route.id === "hoxline" && route.url === "https://hawkinsoperations.com/hoxline/")) {
+  discoveryFailures.push("public/.well-known/hawkinsoperations-proof.json must expose /hoxline/ as the product front-door reviewer route.");
 }
-if (!agentMarkdown.includes("/aevumguard/")) {
-  discoveryFailures.push("public/agent.md must list /aevumguard/ as a public entry point.");
+if (!agentMarkdown.includes("/hoxline/")) {
+  discoveryFailures.push("public/agent.md must list /hoxline/ as a public entry point.");
+}
+if (agentMarkdown.includes("/aevumguard/")) {
+  discoveryFailures.push("public/agent.md must not list /aevumguard/ as a current public entry point.");
 }
 if (agentMarkdown.includes("/claim-firewall/")) {
   discoveryFailures.push("public/agent.md must not list /claim-firewall/ as a public discovery entry point.");
