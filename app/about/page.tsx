@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import BrandMark from "@components/BrandMark";
 import StatusConsole from "@components/StatusConsole";
 import PortraitCommandFrame from "@components/PortraitCommandFrame";
+import V1ToV2EvolutionStrip from "@components/command-center/V1ToV2EvolutionStrip";
 import { externalLinks } from "@data/navigation";
 
 export const metadata: Metadata = {
@@ -225,6 +226,12 @@ export default function AboutPage() {
             proof and do not automatically transfer into HawkinsOperations claims. Stronger wording for
             the successor surface requires a separate evidence-backed promotion gate.
           </p>
+        </div>
+      </section>
+
+      <section className="cockpit-section--tight">
+        <div className="container">
+          <V1ToV2EvolutionStrip />
         </div>
       </section>
 

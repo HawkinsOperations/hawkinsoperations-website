@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ClaimFirewallSimulator from "@components/claim-firewall/ClaimFirewallSimulator";
 import ClaimFirewall from "@components/ClaimFirewall";
 
 const cliCommand = "python -m claimfirewall scan README.md --policy policy/blocked_claims.yml";
@@ -98,6 +99,12 @@ export default function ClaimFirewallPage() {
               Public wording stays below the evidence ceiling.
             </p>
           </div>
+        </div>
+      </section>
+
+      <section className="cockpit-section--tight">
+        <div className="container">
+          <ClaimFirewallSimulator />
         </div>
       </section>
 

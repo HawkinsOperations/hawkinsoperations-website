@@ -15084,3 +15084,684 @@ a.card.group:hover { border-color: rgba(143, 216, 255, 0.45); }
     transition: none !important;
   }
 }
+/* Cinematic Command Center v3 */
+.cc-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
+  gap: clamp(24px, 4vw, 58px);
+  align-items: center;
+  min-height: min(760px, calc(100vh - 110px));
+  padding: clamp(24px, 4vw, 52px);
+  border: 1px solid rgba(143, 216, 255, 0.18);
+  border-radius: 26px;
+  background: linear-gradient(135deg, rgba(5, 10, 19, 0.98), rgba(9, 18, 31, 0.94));
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.42), inset 0 0 80px rgba(59, 130, 246, 0.05);
+  overflow: hidden;
+}
+
+.cc-hero::before {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  border: 1px solid rgba(143, 216, 255, 0.08);
+  border-radius: 20px;
+  pointer-events: none;
+}
+
+.cc-hero__copy,
+.cc-map,
+.cc-hero__teaser {
+  position: relative;
+  z-index: 1;
+}
+
+.cc-hero h1 {
+  margin: 18px 0 0;
+  max-width: 760px;
+  color: var(--silver-bright);
+  font-size: clamp(3rem, 8vw, 7.2rem);
+  line-height: 0.9;
+  letter-spacing: 0;
+}
+
+.cc-hero__tagline {
+  margin: 22px 0 0;
+  max-width: 720px;
+  color: var(--electric-blue-bright);
+  font-size: clamp(1.35rem, 2.6vw, 2.3rem);
+  line-height: 1.05;
+}
+
+.cc-hero__body,
+.gov-hero p,
+.gov-risk-panel p,
+.cf-sim__head p,
+.det-cockpit__head p,
+.evidence-scene__hero p,
+.engine-room p,
+.ai-workflow-scene p {
+  color: var(--silver);
+  line-height: 1.65;
+}
+
+.cc-hero__actions,
+.gov-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.cc-map {
+  min-height: 430px;
+  border: 1px solid rgba(143, 216, 255, 0.18);
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(10, 18, 32, 0.92), rgba(3, 7, 14, 0.96));
+  overflow: hidden;
+}
+
+.cc-map__routes {
+  position: absolute;
+  inset: 7%;
+  width: 86%;
+  height: 86%;
+  fill: none;
+  stroke: rgba(143, 216, 255, 0.28);
+  stroke-width: 1.5;
+}
+
+.cc-map__core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  width: 168px;
+  height: 168px;
+  display: grid;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(95, 255, 171, 0.42);
+  border-radius: 50%;
+  background: rgba(4, 10, 16, 0.92);
+  box-shadow: 0 0 44px rgba(95, 255, 171, 0.16);
+  text-align: center;
+}
+
+.cc-map__core span,
+.cc-map__core strong,
+.cc-map__node,
+.cc-metric span,
+.cc-metric small {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cc-map__core span { color: var(--ice-blue); font-size: 0.78rem; }
+.cc-map__core strong { color: var(--gate-green, #5fd0a0); font-size: 0.68rem; line-height: 1.3; }
+
+.cc-map__node {
+  position: absolute;
+  z-index: 3;
+  display: inline-flex;
+  min-width: 92px;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 10px;
+  border: 1px solid rgba(143, 216, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(7, 13, 24, 0.94);
+  color: var(--silver-bright);
+  font-size: 0.62rem;
+  text-align: center;
+}
+
+.cc-map__node--cyan { color: var(--ice-blue); }
+.cc-map__node--blue { color: var(--electric-blue-bright); }
+.cc-map__node--green { color: #7fffc0; }
+.cc-map__node--amber { color: var(--ceiling-amber); }
+.cc-map__node--red { color: var(--blocked-red); }
+.cc-map__node--neutral { color: var(--muted); }
+.cc-map__node:nth-of-type(1) { left: 8%; top: 45%; }
+.cc-map__node:nth-of-type(2) { left: 20%; top: 15%; }
+.cc-map__node:nth-of-type(3) { right: 18%; top: 15%; }
+.cc-map__node:nth-of-type(4) { right: 6%; top: 45%; }
+.cc-map__node:nth-of-type(5) { right: 20%; bottom: 13%; }
+.cc-map__node:nth-of-type(6) { left: 20%; bottom: 13%; }
+.cc-map__node:nth-of-type(7) { left: 36%; bottom: 2%; }
+
+.cc-hero__teaser {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr 1fr;
+  gap: 12px;
+}
+
+.cc-hero__teaser article,
+.cc-metric,
+.gov-counter,
+.gov-risk-panel,
+.gov-chart,
+.gov-spotlight,
+.cf-sim,
+.engine-room,
+.det-cockpit,
+.evidence-scene,
+.cc-evolution,
+.cc-terminal,
+.ai-workflow-scene {
+  border: 1px solid rgba(143, 216, 255, 0.16);
+  border-radius: 18px;
+  background: rgba(8, 14, 25, 0.84);
+}
+
+.cc-hero__teaser article,
+.cc-metrics,
+.cc-evolution,
+.cc-terminal,
+.gov-chart,
+.gov-risk-panel,
+.cf-sim,
+.det-cockpit,
+.evidence-scene,
+.engine-room,
+.ai-workflow-scene {
+  padding: clamp(18px, 3vw, 30px);
+}
+
+.cc-hero__teaser span,
+.cc-hero__teaser small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.cc-hero__teaser strong {
+  display: block;
+  margin: 7px 0;
+  color: var(--silver-bright);
+  font-size: clamp(2rem, 5vw, 4.6rem);
+  line-height: 0.9;
+}
+
+.cc-metrics__head h2,
+.cc-evolution__panel h2,
+.gov-risk-panel h2,
+.gov-chart__head h2,
+.cf-sim__head h2,
+.det-cockpit__head h2,
+.evidence-scene__hero h2,
+.engine-room h2,
+.ai-workflow-scene h2 {
+  margin: 8px 0 0;
+  color: var(--silver-bright);
+  font-size: clamp(1.5rem, 3vw, 2.4rem);
+  line-height: 1.05;
+}
+
+.cc-metrics__grid,
+.cc-evolution__stats,
+.det-cockpit__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.cc-metric { padding: 16px; }
+.cc-metric strong { display: block; color: var(--silver-bright); font-size: clamp(1.9rem, 4vw, 3.4rem); line-height: 0.95; }
+.cc-metric span { display: block; margin-top: 8px; color: var(--ice-blue); font-size: 0.72rem; }
+.cc-metric small { display: block; margin-top: 8px; color: var(--muted); font-size: 0.66rem; line-height: 1.45; }
+
+.cc-metrics__footer,
+.cc-terminal__chips,
+.gov-ticker,
+.det-lifecycle,
+.evidence-route-map,
+.engine-room__rail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.cc-metrics__footer span,
+.cc-terminal__chips span,
+.gov-ticker span,
+.det-lifecycle span,
+.evidence-route-map span,
+.engine-room__rail span,
+.cc-evolution__stats span {
+  border: 1px solid rgba(143, 216, 255, 0.18);
+  border-radius: 999px;
+  padding: 7px 10px;
+  background: rgba(143, 216, 255, 0.06);
+  color: var(--ice-blue);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.cc-terminal__toggle,
+.cc-evolution__controls,
+.gov-explorer__toolbar,
+.gov-explorer__tools,
+.gov-explorer__segmented,
+.gov-explorer__outcomes,
+.cf-sim__selector,
+.det-cockpit__filters,
+.evidence-scene__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.cc-terminal__toggle {
+  width: 100%;
+  justify-content: space-between;
+  border: 0;
+  background: transparent;
+  color: var(--silver-bright);
+  cursor: pointer;
+  text-align: left;
+}
+
+.cc-terminal__body { margin-top: 18px; color: var(--silver); }
+.cc-terminal pre { white-space: pre-wrap; }
+
+.cc-evolution__controls button,
+.gov-explorer button,
+.cf-sim__selector button,
+.det-cockpit__filters button,
+.det-killchain__tabs button,
+.evidence-scene__filters button {
+  border: 1px solid rgba(143, 216, 255, 0.18);
+  border-radius: 999px;
+  padding: 9px 12px;
+  background: rgba(7, 13, 24, 0.9);
+  color: var(--silver);
+  cursor: pointer;
+}
+
+.cc-evolution__controls button.is-active,
+.gov-explorer button.is-active,
+.cf-sim__selector button.is-active,
+.det-cockpit__filters button.is-active,
+.det-killchain__tabs button.is-active,
+.evidence-scene__filters button.is-active {
+  border-color: var(--ice-blue);
+  color: var(--ice-blue);
+  background: rgba(143, 216, 255, 0.12);
+}
+
+.cc-evolution__panel { margin-top: 18px; }
+.cc-evolution__panel p { color: var(--silver); line-height: 1.7; }
+
+.gov-dashboard { display: grid; gap: 24px; }
+
+.gov-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 360px);
+  gap: 24px;
+  align-items: stretch;
+  padding: clamp(22px, 4vw, 42px);
+  border: 1px solid rgba(143, 216, 255, 0.16);
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(4, 8, 15, 0.96), rgba(14, 24, 39, 0.92));
+}
+
+.gov-hero h1 {
+  margin: 10px 0 0;
+  color: var(--silver-bright);
+  font-size: clamp(3rem, 7vw, 6.4rem);
+  line-height: 0.9;
+  letter-spacing: 0;
+}
+
+.gov-counter {
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  text-align: center;
+}
+
+.gov-counter span,
+.gov-counter small,
+.gov-counter em {
+  color: var(--muted);
+  font-style: normal;
+  text-transform: uppercase;
+}
+
+.gov-counter strong {
+  color: var(--blocked-red);
+  font-size: clamp(5rem, 12vw, 9rem);
+  line-height: 0.9;
+}
+
+.gov-dashboard__grid,
+.cf-sim__grid,
+.det-cockpit__grid,
+.evidence-scene__hero,
+.engine-room,
+.ai-workflow-scene {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 18px;
+}
+
+.gov-chart__bars { display: grid; gap: 10px; margin-top: 18px; }
+
+.gov-chart__row {
+  display: grid;
+  grid-template-columns: minmax(110px, 1fr) minmax(90px, 1.5fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.gov-chart__row span,
+.gov-chart__row strong { color: var(--silver); font-size: 0.78rem; }
+
+.gov-chart__track {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(143, 216, 255, 0.08);
+}
+
+.gov-chart__track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--electric-blue), var(--ice-blue));
+}
+
+.gov-risk-panel__lanes,
+.gov-spotlight__panels {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.gov-risk-panel__lanes article,
+.gov-spotlight__panels section {
+  border-left: 2px solid rgba(143, 216, 255, 0.42);
+  padding: 12px 14px;
+  background: rgba(143, 216, 255, 0.05);
+}
+
+.gov-risk-panel__lanes span,
+.gov-spotlight__panels span,
+.cf-decision dt,
+.cf-wording span {
+  color: var(--ice-blue);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+}
+
+.gov-explorer { display: grid; gap: 16px; }
+.gov-explorer__toolbar { justify-content: space-between; align-items: flex-start; }
+.gov-explorer__chips { display: flex; flex: 1; flex-wrap: wrap; gap: 8px; }
+.gov-explorer__tools label { display: grid; gap: 5px; color: var(--muted); font-size: 0.75rem; text-transform: uppercase; }
+.gov-explorer__tools input {
+  width: min(100%, 280px);
+  border: 1px solid rgba(143, 216, 255, 0.22);
+  border-radius: 999px;
+  padding: 10px 12px;
+  background: rgba(3, 7, 14, 0.86);
+  color: var(--silver-bright);
+}
+.gov-explorer__status,
+.gov-explorer__empty { color: var(--muted); }
+
+.gov-spotlight {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 16px;
+  padding: 20px;
+}
+.gov-spotlight h3 { color: var(--silver-bright); font-size: clamp(1.3rem, 2.6vw, 2rem); }
+
+.gov-record-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+.gov-record {
+  display: grid;
+  gap: 8px;
+  min-height: 178px;
+  border-radius: 14px;
+  padding: 16px;
+  text-align: left;
+}
+.gov-record strong,
+.gov-table__row span { color: var(--silver-bright); }
+.gov-record small,
+.gov-record span { color: var(--muted); }
+
+.gov-outcome {
+  justify-self: start;
+  border-radius: 999px;
+  padding: 4px 8px;
+  color: var(--ice-blue);
+  font-style: normal;
+  font-size: 0.68rem;
+}
+.gov-outcome--blocked { color: var(--blocked-red); }
+.gov-outcome--downgraded,
+.gov-outcome--corrected { color: var(--ceiling-amber); }
+.gov-outcome--hardened { color: #7fffc0; }
+
+.gov-table {
+  overflow-x: auto;
+  border: 1px solid rgba(143, 216, 255, 0.14);
+  border-radius: 14px;
+}
+.gov-table__row {
+  display: grid;
+  grid-template-columns: 72px 150px 110px minmax(160px, 0.8fr) minmax(260px, 1.2fr);
+  gap: 12px;
+  width: 100%;
+  min-width: 860px;
+  border: 0;
+  border-bottom: 1px solid rgba(143, 216, 255, 0.08);
+  border-radius: 0;
+  padding: 12px;
+  text-align: left;
+}
+.gov-table__row--head { background: rgba(143, 216, 255, 0.08); }
+
+.cf-sim__head { max-width: 880px; }
+.cf-sim__selector { margin: 20px 0; }
+.cf-stepper { display: grid; gap: 10px; padding: 0; margin: 0; list-style: none; }
+.cf-stepper__node { width: 100%; justify-content: flex-start; border-radius: 14px; text-align: left; }
+.cf-stepper__node span { color: var(--muted); margin-right: 8px; }
+.cf-decision {
+  border: 1px solid rgba(252, 165, 165, 0.22);
+  border-radius: 18px;
+  padding: 22px;
+  background: rgba(22, 8, 14, 0.72);
+}
+.cf-decision h3 {
+  margin: 6px 0;
+  color: var(--blocked-red);
+  font-size: clamp(2.5rem, 7vw, 5rem);
+  line-height: 0.9;
+}
+.cf-decision dd,
+.cf-decision p,
+.cf-wording p { color: var(--silver); }
+.cf-wording {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 14px;
+  align-items: stretch;
+  margin-top: 18px;
+}
+.cf-wording__lane {
+  border: 1px solid rgba(143, 216, 255, 0.16);
+  border-radius: 16px;
+  padding: 18px;
+  background: rgba(4, 10, 18, 0.8);
+}
+.cf-wording__lane--bad { border-color: rgba(252, 165, 165, 0.3); }
+.cf-wording__lane--safe { border-color: rgba(95, 255, 171, 0.28); }
+.cf-wording__arrow { align-self: center; color: var(--ice-blue); }
+
+.engine-room__rail { align-content: center; }
+.engine-room__rail span { min-width: 122px; }
+
+.det-cockpit__stats { margin: 22px 0; }
+.det-stat {
+  border: 1px solid rgba(143, 216, 255, 0.16);
+  border-radius: 14px;
+  padding: 14px;
+  background: rgba(143, 216, 255, 0.05);
+}
+.det-stat strong { display: block; color: var(--silver-bright); font-size: 2.2rem; }
+.det-stat span { color: var(--muted); font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 0.7rem; text-transform: uppercase; }
+.det-cockpit__filters,
+.evidence-scene__filters { margin: 18px 0; }
+.det-inventory,
+.det-killchain { display: grid; gap: 14px; }
+.det-family { display: grid; gap: 10px; }
+.det-family h3,
+.det-killchain h3 { color: var(--silver-bright); }
+.det-node {
+  border: 1px solid rgba(143, 216, 255, 0.16);
+  border-radius: 15px;
+  padding: 16px;
+  background: rgba(5, 11, 20, 0.76);
+}
+.det-node span,
+.det-node dt {
+  color: var(--ice-blue);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+}
+.det-node strong { display: block; color: var(--silver-bright); margin-top: 6px; }
+.det-node p,
+.det-node dd,
+.det-node small,
+.det-killchain p,
+.det-killchain dd { color: var(--silver); }
+.det-killchain {
+  align-self: start;
+  border: 1px solid rgba(143, 216, 255, 0.16);
+  border-radius: 18px;
+  padding: 18px;
+  background: rgba(8, 14, 25, 0.82);
+}
+.det-killchain__tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+
+.evidence-scene__hero aside {
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(143, 216, 255, 0.18);
+  border-radius: 18px;
+  min-height: 190px;
+  text-align: center;
+  background: rgba(143, 216, 255, 0.06);
+}
+.evidence-scene__hero aside strong { color: var(--ice-blue); font-size: clamp(4rem, 10vw, 7rem); line-height: 0.9; }
+.evidence-scene__hero aside span,
+.evidence-scene__hero aside small { color: var(--muted); text-transform: uppercase; }
+.receipt-wall {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+}
+.receipt-wall__card {
+  min-height: 170px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid rgba(143, 216, 255, 0.16);
+  border-radius: 16px;
+  padding: 16px;
+  background: rgba(5, 11, 20, 0.8);
+  text-decoration: none;
+}
+.receipt-wall__card:hover { border-color: var(--ice-blue); transform: translateY(-2px); }
+.receipt-wall__card span,
+.receipt-wall__card small { color: var(--muted); font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 0.67rem; text-transform: uppercase; }
+.receipt-wall__card strong { color: var(--silver-bright); font-size: 1rem; line-height: 1.25; }
+.receipt-wall__card p { color: var(--ice-blue); margin: 0; }
+
+.ai-workflow-scene__rail {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ai-workflow-scene__rail li {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid rgba(143, 216, 255, 0.16);
+  border-radius: 14px;
+  padding: 13px;
+  background: rgba(143, 216, 255, 0.05);
+}
+.ai-workflow-scene__rail span { color: var(--ice-blue); font-family: "JetBrains Mono", ui-monospace, monospace; }
+.ai-workflow-scene__rail strong { color: var(--silver-bright); }
+
+@media (max-width: 980px) {
+  .cc-hero,
+  .gov-hero,
+  .gov-dashboard__grid,
+  .cf-sim__grid,
+  .det-cockpit__grid,
+  .evidence-scene__hero,
+  .engine-room,
+  .ai-workflow-scene,
+  .gov-spotlight {
+    grid-template-columns: 1fr;
+  }
+
+  .cc-hero { min-height: auto; padding: 22px; }
+  .cc-map { min-height: 360px; }
+  .cc-hero__teaser { grid-template-columns: 1fr; }
+  .cf-wording { grid-template-columns: 1fr; }
+  .cf-wording__arrow { justify-self: center; transform: rotate(90deg); }
+}
+
+@media (max-width: 640px) {
+  .cc-hero h1,
+  .gov-hero h1 {
+    font-size: clamp(2.8rem, 18vw, 4.3rem);
+  }
+
+  .cc-map__node {
+    min-width: 76px;
+    min-height: 36px;
+    font-size: 0.55rem;
+  }
+
+  .cc-map__core {
+    width: 130px;
+    height: 130px;
+  }
+
+  .gov-chart__row {
+    grid-template-columns: 1fr auto;
+  }
+
+  .gov-chart__track {
+    grid-column: 1 / -1;
+  }
+
+  .gov-table__row {
+    min-width: 760px;
+  }
+}

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import DetectionInventoryCockpit from "@components/detections/DetectionInventoryCockpit";
 import LinkCard from "@components/LinkCard";
 import SectionHeader from "@components/SectionHeader";
 import {
@@ -105,6 +106,12 @@ export default function DetectionsPage() {
           ))}
         </ol>
       </ProofOpsPageHero>
+
+      <section className="proofops-section">
+        <div className="container">
+          <DetectionInventoryCockpit />
+        </div>
+      </section>
 
       <section className="proofops-section">
         <div className="container">

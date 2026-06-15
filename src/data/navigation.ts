@@ -15,7 +15,7 @@ export const primaryNavigation: NavItem[] = [
 ];
 
 export const reviewerLinks: NavItem[] = [
-  { label: "Governance Saves", href: "/proof/governance-saves/", description: "Controls that fired" },
+  { label: "Governance Saves", href: "/governance-saves/", description: "Controls that fired" },
   { label: "Proof Pack 001", href: "/proof/proof-pack-001/", description: "Bounded reviewer package" },
   { label: "Runtime boundary", href: "/proof/runtime-proof-factory/", description: "Bounded runtime summaries" },
   { label: "Architecture", href: "/architecture/", description: "Truth-plane separation" },

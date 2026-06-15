@@ -10,6 +10,7 @@ import ProofRecordsEvidenceBay from "@components/ProofRecordsEvidenceBay";
 import ProofTrustBoundaryRail from "@components/ProofTrustBoundaryRail";
 import PromotionGateLadder from "@components/PromotionGateLadder";
 import RecentGovernedArtifacts from "@components/RecentGovernedArtifacts";
+import EvidenceBayScene from "@components/evidence/EvidenceBay";
 import { AuthorityConstellation, ClaimDecisionMatrixVisual } from "@components/visual-intelligence";
 import { promotionRequirements } from "@data/claims";
 import { externalLinks } from "@data/navigation";
@@ -29,6 +30,12 @@ export default function ProofIndexPage() {
     <>
       {/* ── Vault hero ───────────────────────────────────────────────── */}
       <ProofVaultHero />
+
+      <section className="cockpit-section--tight">
+        <div className="container">
+          <EvidenceBayScene />
+        </div>
+      </section>
 
       <section id="hoxline-rendering-reference" className="cockpit-section--tight">
         <div className="container">

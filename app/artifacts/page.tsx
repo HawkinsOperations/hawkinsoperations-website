@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import ArtifactCoverageHeatmap from "@components/ArtifactCoverageHeatmap";
 import ArtifactReviewerPaths from "@components/ArtifactReviewerPaths";
 import EvidenceBay from "@components/EvidenceBay";
+import EvidenceBayScene from "@components/evidence/EvidenceBay";
 import GpuFactoryLane from "@components/GpuFactoryLane";
 import RecentGovernedArtifacts from "@components/RecentGovernedArtifacts";
 import StatusConsole from "@components/StatusConsole";
@@ -162,6 +163,12 @@ export default function ArtifactsIndexPage() {
 
         <div className="container mt-12">
           <hr className="cockpit-rule" />
+        </div>
+      </section>
+
+      <section id="receipt-wall" className="cockpit-section--tight">
+        <div className="container reveal reveal--up">
+          <EvidenceBayScene />
         </div>
       </section>
 
