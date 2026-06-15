@@ -77,10 +77,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="six-doors" className="cockpit-section--tight">
+      <section id="public-doors" className="cockpit-section--tight">
         <div className="container">
           <div className="home-section__head mb-6">
-            <p className="cockpit-eyebrow">Six public doors</p>
+            <p className="cockpit-eyebrow">Public product doors</p>
             <h2
               className="cockpit-headline mt-2"
               style={{ fontSize: "clamp(1.7rem, 2.8vw, 2.4rem)" }}
@@ -88,9 +88,22 @@ export default function HomePage() {
               Pick the surface you want to inspect.
             </h2>
             <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              The public site routes through six primary doors. Support routes still exist,
-              but they serve these doors.
+              The public site routes through current product, proof, artifact, detection, AI Security,
+              source, and context surfaces. Support routes still exist, but they serve these doors.
             </p>
+            <a className="artifact-tile mt-5 block max-w-3xl" href="/hoxline/">
+              <span className="artifact-tile__cat">HOXLINE</span>
+              <span className="artifact-tile__title">Hoxline: executable ProofOps control</span>
+              <span className="artifact-tile__desc">
+                The product route now includes Gauntlet v0, a full-loop runner for HO-DET-001
+                that emits bounded reviewer artifacts.
+              </span>
+              <span className="artifact-tile__desc">
+                Website rendering is not proof; Gauntlet v0 remains at the controlled-validation ceiling
+                with runtime blocked and signal missing evidence.
+              </span>
+              <span className="artifact-tile__link">Open Hoxline -&gt;</span>
+            </a>
           </div>
           <SixDoorCockpit />
         </div>

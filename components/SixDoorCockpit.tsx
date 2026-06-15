@@ -1,6 +1,6 @@
 import { externalLinks } from "@data/navigation";
 
-type DoorIcon = "proof" | "artifacts" | "detections" | "ai" | "about" | "source";
+type DoorIcon = "hoxline" | "proof" | "artifacts" | "detections" | "ai" | "about" | "source";
 
 type Door = {
   href: string;
@@ -11,6 +11,13 @@ type Door = {
 };
 
 const doors: Door[] = [
+  {
+    href: "/hoxline/",
+    title: "Hoxline",
+    description:
+      "Executable ProofOps control with Gauntlet v0, HO-DET-001 full-loop reviewer outputs, runtime blocked, and signal missing evidence.",
+    icon: "hoxline",
+  },
   {
     href: "/proof/",
     title: "Proof",
@@ -58,6 +65,14 @@ const doors: Door[] = [
 
 function Glyph({ icon }: { icon: DoorIcon }) {
   switch (icon) {
+    case "hoxline":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+          <path d="M4 6h16v12H4z" />
+          <path d="M7 9h4M7 12h7M7 15h3" />
+          <path d="M17 9l2 3-2 3M14 12h5" />
+        </svg>
+      );
     case "proof":
       return (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">

@@ -16,7 +16,7 @@ import {
 export const metadata: Metadata = {
   title: "Hoxline | HawkinsOperations",
   description:
-    "Hoxline by HawkinsOperations is a ProofOps control plane for bounded AI-assisted security work, reviewer evidence paths, and claim boundaries.",
+    "Hoxline by HawkinsOperations runs the canonical ProofOps loop for HO-DET-001 and emits bounded reviewer-readable Gauntlet v0 outputs.",
   alternates: {
     canonical: "/hoxline/",
   },
@@ -25,8 +25,11 @@ export const metadata: Metadata = {
 const heroFacts = [
   ["Public form", "Hoxline by HawkinsOperations"],
   ["Product role", "ProofOps control plane"],
-  ["Current example", "HO-DET-001"],
+  ["Gauntlet", "GAUNTLET_V0_EXECUTABLE"],
+  ["Artifact", "HO-DET-001"],
   ["Evidence ceiling", "CONTROLLED_TEST_VALIDATED"],
+  ["Runtime Candidate Ledger", "BLOCKED"],
+  ["Signal Observation", "MISSING_EVIDENCE"],
   ["public_safe", "false"],
   ["human_review_required", "true"],
 ];
@@ -76,6 +79,43 @@ const controlSurfaces = [
     label: "Review",
     title: "Reviewer handoff",
     detail: "The route points reviewers to proof, source, validation, and platform authority before trust is granted.",
+  },
+];
+
+const gauntletStages = [
+  ["AI-assisted security work", "REFERENCE_ONLY", "Neutral context for the controlled artifact."],
+  ["Artifact Intake", "PASS", "HO-DET-001 is the named artifact under review."],
+  ["Evidence Graph", "PASS", "Reviewer references remain attached to authority surfaces."],
+  ["Telemetry Contract Check", "PASS", "Telemetry expectations are checked without claiming observation."],
+  ["Controlled Validation", "PASS", "Controlled positive and negative fixture evidence defines the current ceiling."],
+  ["Runtime Candidate Ledger", "BLOCKED", "Runtime status remains blocked until separate runtime evidence exists."],
+  ["Signal Observation", "MISSING_EVIDENCE", "Signal evidence is not present in this public reviewer surface."],
+  ["Human Review Gate", "HUMAN_REVIEW_REQUIRED", "Promotion remains gated by human review."],
+  ["ProofCard", "PASS", "Reviewer-readable proof-card context is emitted without creating proof authority."],
+  ["Claim Authority", "PASS", "Allowed and blocked wording is separated under the current ceiling."],
+  ["Safe Claim / Blocked Claim", "PASS", "One controlled-validation claim is allowed; stronger families stay blocked."],
+];
+
+const gauntletLinks = [
+  {
+    href: "https://github.com/HawkinsOperations/hoxline/blob/main/examples/gauntlet/ho-det-001-full-loop-run-v0.json",
+    title: "Full-loop JSON",
+    description: "Reviewer-readable JSON output for the HO-DET-001 Gauntlet v0 run.",
+  },
+  {
+    href: "https://github.com/HawkinsOperations/hoxline/blob/main/examples/gauntlet/ho-det-001-full-loop-run-v0.md",
+    title: "Full-loop Markdown",
+    description: "Markdown output with the stage table, claim ceiling, blocked claims, and reviewer summary.",
+  },
+  {
+    href: "https://github.com/HawkinsOperations/hoxline/blob/main/docs/gauntlet/HOXLINE_GAUNTLET_FULL_LOOP_RUNNER_V0.md",
+    title: "Runner docs",
+    description: "Source-controlled documentation for the Hoxline Gauntlet full-loop runner v0.",
+  },
+  {
+    href: "https://github.com/HawkinsOperations/hoxline/pull/11",
+    title: "Hoxline PR #11",
+    description: "Merged PR that introduced the bounded Gauntlet full-loop runner v0.",
   },
 ];
 
@@ -195,19 +235,22 @@ export default function HoxlinePage() {
   return (
     <div className="proofops-page">
       <ProofOpsPageHero
-        eyebrow="Hoxline by HawkinsOperations"
+        eyebrow="HOXLINE BY HAWKINSOPERATIONS"
         title="Hoxline"
-        accent="ProofOps control"
-        subtitle="ProofOps control for the AI security era."
-        description="AI is not the authority. Evidence is. Hoxline controls what AI-assisted security work is allowed to become while proof authority, source truth, validation truth, platform contracts, and website rendering remain separate."
+        accent="Run the ProofOps loop."
+        subtitle="Executable claim control for AI-assisted security work."
+        description="Hoxline is ProofOps control for the AI security era. It now runs the canonical ProofOps loop for HO-DET-001 and emits reviewer-readable JSON and Markdown outputs while keeping runtime, signal, public-safe, production, customer, and approval claims blocked unless evidence exists."
         metrics={[
-          { label: "Product", value: "control plane", tone: "cyan" },
+          { label: "Runner", value: "GAUNTLET_V0_EXECUTABLE", tone: "cyan" },
+          { label: "Artifact", value: "HO-DET-001", tone: "cyan" },
           { label: "Ceiling", value: "CONTROLLED_TEST_VALIDATED", tone: "amber" },
+          { label: "Runtime", value: "BLOCKED", tone: "blocked" },
+          { label: "Signal", value: "MISSING_EVIDENCE", tone: "blocked" },
           { label: "public_safe", value: "false", tone: "blocked" },
           { label: "Human review", value: "required", tone: "green" },
         ]}
       >
-        <p className="proofops-kicker">Product boundary</p>
+        <p className="proofops-kicker">Gauntlet v0 status</p>
         <dl className="proofops-compact-list">
           {heroFacts.map(([label, value]) => (
             <div key={label}>
@@ -218,9 +261,9 @@ export default function HoxlinePage() {
         </dl>
         <div className="mt-4 grid gap-3">
           <LinkCard
-            href="#controlled-demo"
-            title="Inspect controlled demo"
-            description="Open the HO-DET-001 spotlight and claim decision boundary."
+            href="#gauntlet-v0"
+            title="Inspect Gauntlet v0"
+            description="Open the executable full-loop runner summary and artifact outputs."
           />
           <LinkCard
             href="#reviewer-path"
@@ -267,6 +310,64 @@ export default function HoxlinePage() {
               { label: "Promotion", value: "human_review_required true", tone: "blocked" },
             ]}
           />
+        </div>
+      </section>
+
+      <section id="gauntlet-v0" className="proofops-section">
+        <div className="container">
+          <SectionHeader
+            title="Hoxline Gauntlet v0"
+            eyebrow="Executable ProofOps loop"
+            description="The Gauntlet runner turns the Hoxline loop into an executable reviewer artifact for HO-DET-001. It emits the full stage table, proof ceiling, allowed claim, blocked claims, missing evidence, and reviewer summary."
+          />
+          <article className="proofops-gauntlet">
+            <div className="proofops-gauntlet__head">
+              <div>
+                <p className="proofops-kicker">Full-loop runner</p>
+                <h3>HO-DET-001 emits JSON and Markdown reviewer outputs.</h3>
+                <p>
+                  Gauntlet v0 is controlled-loop runner output only. Runtime Candidate Ledger remains BLOCKED,
+                  Signal Observation remains MISSING_EVIDENCE, public_safe remains false, and human_review_required remains true.
+                </p>
+              </div>
+              <div className="proofops-gauntlet__badges" aria-label="Gauntlet v0 bounded status">
+                <SignalBlockedBadge label="runtime blocked" />
+                <SignalBlockedBadge label="signal missing evidence" />
+                <SignalBlockedBadge label="public_safe false" />
+                <span className="proofops-gauntlet__pass">CONTROLLED_TEST_VALIDATED</span>
+              </div>
+            </div>
+
+            <div className="proofops-gauntlet__stages" aria-label="Hoxline Gauntlet v0 stage table">
+              {gauntletStages.map(([stage, status, detail]) => (
+                <div key={stage} className={`proofops-gauntlet__stage proofops-gauntlet__stage--${status.toLowerCase().replace(/_/g, "-")}`}>
+                  <span>{status}</span>
+                  <strong>{stage}</strong>
+                  <p>{detail}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {gauntletLinks.map((link) => (
+                <LinkCard
+                  key={link.href}
+                  href={link.href}
+                  title={link.title}
+                  description={link.description}
+                  external
+                />
+              ))}
+            </div>
+
+            <div className="proofops-gauntlet__cli" aria-label="LOCAL_CHECKOUT_CLI">
+              <p className="proofops-kicker">LOCAL_CHECKOUT_CLI</p>
+              <pre>
+                <code>{`$env:PYTHONPATH='src'; python -B -m hoxline gauntlet run --artifact HO-DET-001 --format json
+$env:PYTHONPATH='src'; python -B -m hoxline gauntlet run --artifact HO-DET-001 --format markdown`}</code>
+              </pre>
+            </div>
+          </article>
         </div>
       </section>
 

@@ -14356,6 +14356,165 @@ a.card.group:hover { border-color: rgba(143, 216, 255, 0.45); }
   }
 }
 
+.proofops-gauntlet {
+  border: 1px solid rgba(143, 216, 255, 0.28);
+  border-radius: 12px;
+  background:
+    radial-gradient(90% 80% at 0% 0%, rgba(143, 216, 255, 0.12), transparent 58%),
+    linear-gradient(180deg, rgba(10, 17, 30, 0.9), rgba(5, 9, 16, 0.96));
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.36);
+  padding: clamp(20px, 3vw, 30px);
+}
+
+.proofops-gauntlet__head {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+@media (min-width: 860px) {
+  .proofops-gauntlet__head {
+    grid-template-columns: minmax(0, 0.8fr) minmax(280px, 0.45fr);
+    align-items: start;
+  }
+}
+
+.proofops-gauntlet__head h3 {
+  margin: 10px 0 0;
+  color: var(--silver-bright);
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  line-height: 1.08;
+}
+
+.proofops-gauntlet__head p {
+  margin: 12px 0 0;
+  max-width: 74ch;
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.65;
+}
+
+.proofops-gauntlet__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  border: 1px solid rgba(201, 211, 223, 0.14);
+  border-radius: 10px;
+  background: rgba(5, 9, 16, 0.58);
+  padding: 14px;
+}
+
+.proofops-gauntlet__pass {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  border: 1px solid rgba(95, 208, 160, 0.38);
+  border-radius: 999px;
+  background: rgba(95, 208, 160, 0.07);
+  color: #b8f7d8;
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  line-height: 1.2;
+  padding: 8px 11px;
+  text-transform: uppercase;
+}
+
+.proofops-gauntlet__stages {
+  display: grid;
+  gap: 10px;
+}
+
+@media (min-width: 760px) {
+  .proofops-gauntlet__stages {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1120px) {
+  .proofops-gauntlet__stages {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.proofops-gauntlet__stage {
+  min-width: 0;
+  border: 1px solid rgba(201, 211, 223, 0.14);
+  border-left: 3px solid rgba(143, 216, 255, 0.46);
+  border-radius: 8px;
+  background: rgba(8, 13, 22, 0.62);
+  padding: 13px;
+}
+
+.proofops-gauntlet__stage span {
+  display: inline-flex;
+  color: var(--proofops-cyan);
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.proofops-gauntlet__stage strong {
+  display: block;
+  margin-top: 8px;
+  color: var(--silver-bright);
+  font-size: 0.98rem;
+  line-height: 1.25;
+}
+
+.proofops-gauntlet__stage p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.proofops-gauntlet__stage--pass {
+  border-left-color: var(--proofops-green);
+}
+
+.proofops-gauntlet__stage--pass span {
+  color: #b8f7d8;
+}
+
+.proofops-gauntlet__stage--blocked,
+.proofops-gauntlet__stage--missing-evidence,
+.proofops-gauntlet__stage--human-review-required {
+  border-left-color: var(--proofops-blocked);
+}
+
+.proofops-gauntlet__stage--blocked span,
+.proofops-gauntlet__stage--missing-evidence span,
+.proofops-gauntlet__stage--human-review-required span {
+  color: #ffc2ca;
+}
+
+.proofops-gauntlet__stage--reference-only {
+  border-left-color: var(--proofops-blue);
+}
+
+.proofops-gauntlet__cli {
+  margin-top: 22px;
+  border: 1px solid rgba(143, 216, 255, 0.22);
+  border-radius: 10px;
+  background: rgba(3, 6, 11, 0.72);
+  padding: 16px;
+}
+
+.proofops-gauntlet__cli pre {
+  margin: 12px 0 0;
+  overflow-x: auto;
+  color: var(--silver-bright);
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.74rem;
+  line-height: 1.7;
+  white-space: pre;
+}
+
 @media (max-width: 620px) {
   .proofops-loop__head {
     align-items: start;
