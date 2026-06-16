@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import ControlsFiredGraph from "@components/ControlsFiredGraph";
+import SystemShowcaseHero from "@components/command-center/SystemShowcaseHero";
+import V1ToV2EvolutionStrip from "@components/command-center/V1ToV2EvolutionStrip";
+import VerifyTerminalDrawer from "@components/command-center/VerifyTerminalDrawer";
 import CurrentProofSpine from "@components/CurrentProofSpine";
 import HomeAttackCoverageBridge from "@components/HomeAttackCoverageBridge";
 import HomeReviewerBridgeToArtifacts from "@components/HomeReviewerBridgeToArtifacts";
@@ -15,7 +18,6 @@ import {
   DataPackSourceStrip,
   OutputArtifactWall,
   StageStatusChart,
-  VisualIntelligenceHero,
   VisualModuleRail,
 } from "@components/visual-intelligence";
 
@@ -33,7 +35,10 @@ export default function HomePage() {
     <>
       <section className="cockpit-section">
         <div className="container">
-          <VisualIntelligenceHero />
+          <SystemShowcaseHero />
+          <div className="mt-5">
+            <VerifyTerminalDrawer />
+          </div>
           <div className="mt-5">
             <DataPackSourceStrip />
           </div>
@@ -48,7 +53,7 @@ export default function HomePage() {
           <div className="home-section__head mb-6">
             <p className="cockpit-eyebrow">Flagship product</p>
             <h2 className="cockpit-headline mt-2" style={{ fontSize: "2rem" }}>
-              Hoxline: executable ProofOps control.
+              Hoxline Engine Preview: executable ProofOps control.
             </h2>
             <p className="muted mt-3 text-sm leading-6 max-w-3xl">
               HawkinsOperations is not just a portfolio. Hoxline runs a controlled ProofOps loop for
@@ -70,6 +75,12 @@ export default function HomePage() {
           <div className="mt-5">
             <VisualModuleRail />
           </div>
+        </div>
+      </section>
+
+      <section id="v1-v2-evolution" className="cockpit-section--tight">
+        <div className="container">
+          <V1ToV2EvolutionStrip />
         </div>
       </section>
 

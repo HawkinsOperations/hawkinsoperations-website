@@ -1,11 +1,7 @@
 import type { Metadata } from "next";
-import BoundaryNotice from "@components/BoundaryNotice";
-import GovernanceSavesExplorer from "@components/GovernanceSavesExplorer";
+import GovernanceIntelDashboard from "@components/governance/GovernanceIntelDashboard";
 import LinkCard from "@components/LinkCard";
-import PageHero from "@components/PageHero";
 import SectionHeader from "@components/SectionHeader";
-import { ceiling } from "@config/site";
-import { governanceSavesSummary } from "@data/governanceSaves";
 import { externalLinks } from "@data/navigation";
 
 export const metadata: Metadata = {
@@ -20,33 +16,13 @@ export const metadata: Metadata = {
 export default function GovernanceSavesPage() {
   return (
     <>
-      <PageHero
-        title="Governance Saves"
-        subtitle={`Where controls fired. Public-facing subset from ${governanceSavesSummary.rangeLabel}.`}
-        description={`An interactive record of ${governanceSavesSummary.publicRenderedCount} source-backed governance saves. Each card names the drift attempted, the control that fired, and the reviewer value preserved under the current claim ceiling.`}
-        badges={[
-          { label: ceiling, tone: "warn" },
-          { label: `${governanceSavesSummary.publicRenderedCount} / ${governanceSavesSummary.ledgerRangeTotal} RENDERED` },
-          { label: "PUBLIC-FACING SUBSET" },
-          { label: "NO_PRODUCTION_SAVE_METRIC", tone: "block" },
-        ]}
-      />
-
-      <section className="container section-tight">
-        <BoundaryNotice
-          title="Governance boundary"
-          text="Governance Saves are reviewer-grade examples of controls that fired. They do not prove production incident prevention, customer deployment, fleet-wide protection, runtime-active public proof, signal-observed public proof, autonomous SOC authority, or AI-approved disposition."
-        />
-      </section>
-
-      <section className="cockpit-section--tight">
+      <section className="cockpit-section">
         <div className="container">
-          <SectionHeader
-            title="Governance Saves explorer"
-            eyebrow={`Public-facing subset of ${governanceSavesSummary.rangeLabel}`}
-            description="Filter by control category, search by ID or surface, and expand rendered records for the attempted drift, the control that fired, and why it matters to a reviewer."
-          />
-          <GovernanceSavesExplorer />
+          <GovernanceIntelDashboard />
+          <p className="gov-explorer__status mt-4">
+            Governance Saves renders a public-facing subset. Private-only records and omitted or
+            demoted records are not rendered on this website surface.
+          </p>
         </div>
       </section>
 
@@ -55,14 +31,14 @@ export default function GovernanceSavesPage() {
           <SectionHeader
             title="What this surface does not claim"
             eyebrow="Boundary"
-            description="Governance Saves are reviewer examples, not production-impact metrics."
+            description="Governance Saves are reviewer examples of controls that fired, not production-impact metrics."
           />
           <div className="grid gap-3 md:grid-cols-2">
             {[
               "No card claims production incident prevention, customer deployment, or fleet-wide protection.",
-              `${governanceSavesSummary.privateOnlyCount} private-only rows and ${governanceSavesSummary.omittedIds.length} omitted/demoted source IDs are not rendered here.`,
               "Public-backed examples do not promote runtime-active public proof or signal-observed public proof.",
               "Green checks remain validation evidence, not merge or publication authority.",
+              "Outcome impact totals are not_measured unless a source record explicitly supports them.",
             ].map((line) => (
               <article key={line} className="card p-4">
                 <p className="text-sm leading-6 text-slate-300">{line}</p>

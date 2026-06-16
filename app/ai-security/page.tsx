@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import AiGovernedTriageBoard from "@components/ai-security/AiGovernedTriageBoard";
 import LinkCard from "@components/LinkCard";
 import SectionHeader from "@components/SectionHeader";
 import {
@@ -139,6 +140,35 @@ export default function AiSecurityPage() {
           />
         </div>
       </ProofOpsPageHero>
+
+      <section className="proofops-section">
+        <div className="container">
+          <AiGovernedTriageBoard />
+        </div>
+      </section>
+
+      <section className="proofops-section">
+        <div className="container">
+          <div className="ai-workflow-scene" aria-label="Governed AI workflow visual">
+            <div>
+              <p className="cockpit-eyebrow">Governed AI Workflow</p>
+              <h2>AI drafts. Verifiers test. Claim Firewall clamps. Human review decides.</h2>
+              <p>
+                The workflow shows where AI helps and where the system stops it. Public wording
+                stays below evidence, proof ceilings, and human review gates.
+              </p>
+            </div>
+            <ol className="ai-workflow-scene__rail">
+              {["AI Draft", "Verifier", "Claim Firewall", "Human Review", "Public Wording"].map((step, index) => (
+                <li key={step}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <strong>{step}</strong>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </section>
 
       <section className="proofops-section">
         <div className="container">
