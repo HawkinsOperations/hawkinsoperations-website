@@ -10,10 +10,10 @@ export default function DetectionOpsCockpit() {
       <div className="detection-ops-cockpit__hero">
         <div>
           <p className="cockpit-eyebrow">Detection Operations Cockpit</p>
-          <h2 id="detection-ops-title">ATT&CK context, validation firepower, proof ceilings.</h2>
+          <h2 id="detection-ops-title">Detection Operations Cockpit.</h2>
           <p>
-            This is the detection engineering machine: source packages, platform lanes, controlled
-            validation, proof routing, Hoxline claim control, and public rendering separated.
+            ATT&CK / Kill Chain orientation, source-backed rows, controlled validation, proof
+            ceilings, and Hoxline claim control in one routed machine.
           </p>
         </div>
         <div className="detection-ops-cockpit__stats">
@@ -48,4 +48,3 @@ export default function DetectionOpsCockpit() {
     </section>
   );
 }
-

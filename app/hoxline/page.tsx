@@ -217,22 +217,6 @@ export default function HoxlinePage() {
           <div className="mt-6">
             <HoxlineEngineRoom />
           </div>
-          <div className="engine-room mt-6" aria-label="Hoxline Engine Room system scene">
-            <div className="engine-room__copy">
-              <p className="cockpit-eyebrow">Hoxline Engine Room</p>
-              <h2>Gauntlet v0 turns the ProofOps loop into an executable control surface.</h2>
-              <p>
-                The engine does not ask the website to prove anything. It emits reviewer-readable
-                outputs, stage status, claim decisions, and still-gated lanes so a reviewer can see
-                where evidence exists and where stronger wording remains clamped.
-              </p>
-            </div>
-            <div className="engine-room__rail" aria-label="Engine route rail">
-              {["AI draft", "intake", "graph", "validation", "review", "ProofCard", "claim gate"].map((step) => (
-                <span key={step}>{step}</span>
-              ))}
-            </div>
-          </div>
           <div className="mt-5">
             <DataPackSourceStrip />
           </div>

@@ -15805,6 +15805,16 @@ a.card.group:hover { border-color: rgba(143, 216, 255, 0.45); }
   gap: 24px;
 }
 
+.system-showcase-hero__copy {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.system-showcase-hero__machine {
+  grid-column: 2;
+  grid-row: 1;
+}
+
 .system-showcase-hero__copy h1,
 .detection-ops-cockpit__hero h2,
 .claim-demo-theater__header h2,
@@ -16099,6 +16109,29 @@ a.card.group:hover { border-color: rgba(143, 216, 255, 0.45); }
   text-align: center;
 }
 
+.governance-intel__counter span,
+.governance-intel__counter small {
+  display: block;
+}
+
+.governance-intel__counter small {
+  margin-top: 4px;
+  color: #bfdbfe;
+}
+
+.detection-proof-route__node strong,
+.detection-proof-route__node span,
+.detection-proof-route__metrics strong,
+.detection-proof-route__metrics span {
+  display: block;
+}
+
+.detection-proof-route__node span,
+.detection-proof-route__metrics span {
+  margin-top: 6px;
+  color: #bfdbfe;
+}
+
 .governance-intel__controls {
   display: grid;
   grid-template-columns: 1fr minmax(220px, 0.34fr);
@@ -16189,6 +16222,57 @@ a.card.group:hover { border-color: rgba(143, 216, 255, 0.45); }
   line-height: 1.55;
 }
 
+.controls-hero--compact {
+  display: grid;
+  gap: 8px;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.58);
+  color: #cbd5e1;
+  padding: 14px 16px;
+}
+
+.controls-hero--compact::before {
+  display: none;
+}
+
+.controls-hero--compact p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.controls-hero--compact strong {
+  color: #fde68a;
+}
+
+.controls-hero__compact-head,
+.controls-hero__compact-route {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.controls-hero__compact-head span,
+.controls-hero__compact-route span,
+.controls-hero__compact-route em {
+  color: #67e8f9;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.68rem;
+  font-style: normal;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.controls-hero__compact-route strong,
+.controls-hero__compact-route em {
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 999px;
+  padding: 5px 8px;
+  background: rgba(2, 6, 23, 0.54);
+}
+
 .evidence-gap-chips {
   display: flex;
   flex-wrap: wrap;
@@ -16227,6 +16311,24 @@ a.card.group:hover { border-color: rgba(143, 216, 255, 0.45); }
     grid-template-columns: 1fr;
   }
 
+  .system-showcase-hero__copy,
+  .system-showcase-hero__counters,
+  .system-showcase-hero__machine {
+    grid-column: 1;
+  }
+
+  .system-showcase-hero__copy {
+    grid-row: 1;
+  }
+
+  .system-showcase-hero__counters {
+    grid-row: 2;
+  }
+
+  .system-showcase-hero__machine {
+    grid-row: 3;
+  }
+
   .system-counter-rail,
   .org-system-map__rail,
   .org-system-map__surfaces,
@@ -16259,6 +16361,37 @@ a.card.group:hover { border-color: rgba(143, 216, 255, 0.45); }
   .artifact-receipt-wall__head h2,
   .ai-triage-board__head h2,
   .system-origin-strip h2 {
-    font-size: clamp(2rem, 13vw, 3.4rem);
+    font-size: clamp(1.85rem, 11vw, 3rem);
+  }
+
+  .system-showcase-hero__lede,
+  .detection-ops-cockpit__hero p,
+  .governance-intel__hero p,
+  .claim-demo-theater__header p {
+    line-height: 1.5;
+  }
+
+  .system-counter-rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .detection-ops-cockpit__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .system-counter {
+    padding: 12px;
+  }
+
+  .detection-ops-cockpit__stats span {
+    padding: 10px;
+  }
+
+  .system-counter__value {
+    font-size: clamp(1.7rem, 10vw, 2.6rem);
+  }
+
+  .detection-ops-cockpit__stats strong {
+    font-size: 1.45rem;
   }
 }

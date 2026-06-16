@@ -7,7 +7,6 @@ import {
   BlockedClaimGrid,
   ClaimBoundaryPanel,
   EvidenceCeilingCard,
-  ProofOpsPageHero,
   SignalBlockedBadge,
 } from "@components/proofops";
 import { EvidencePathTimeline, StageStatusChart } from "@components/visual-intelligence";
@@ -45,29 +44,6 @@ const detectionRows = attackFamilies.flatMap((family) =>
 const flagship = detectionRows.find((row) => row.id === "HO-DET-001");
 const lifecycleSummary = cyberKillChainStages.slice(0, 4);
 
-const lifecycle = [
-  {
-    label: "Source",
-    title: "Detection source",
-    detail: "Rule and status metadata stay on the detection source surface.",
-  },
-  {
-    label: "Validation",
-    title: "Controlled fixtures",
-    detail: "Fixture results define the current behavior truth.",
-  },
-  {
-    label: "Proof ceiling",
-    title: "Evidence cap",
-    detail: "The page displays the ceiling; it does not raise it.",
-  },
-  {
-    label: "Claim boundary",
-    title: "Blocked wording",
-    detail: "Runtime, signal, public release, production, and customer claims stay blocked.",
-  },
-];
-
 const blockedClaims = [
   "runtime-active status",
   "runtime proven status",
@@ -88,31 +64,6 @@ export default function DetectionsPage() {
           <DetectionOpsCockpit />
         </div>
       </section>
-
-      <ProofOpsPageHero
-        eyebrow="Detection source to claim boundary"
-        title="Detections"
-        accent="with ceilings"
-        subtitle="Detection work is useful only when its source, validation, ceiling, and blocked claims travel together."
-        description="This route makes the detection lifecycle easier to scan while preserving the same proof boundaries: source truth, behavior truth, proof authority, and website rendering remain separate."
-        metrics={[
-          { label: "Portfolio", value: `${detectionRows.length} cards`, tone: "cyan" },
-          { label: "Flagship", value: "HO-DET-001", tone: "amber" },
-          { label: "Ceiling shown", value: "per artifact", tone: "green" },
-          { label: "Runtime / signal", value: "not promoted", tone: "blocked" },
-        ]}
-      >
-        <p className="proofops-kicker">Lifecycle strip</p>
-        <ol className="proofops-lifecycle" aria-label="Detection lifecycle">
-          {lifecycle.map((step) => (
-            <li key={step.label}>
-              <span>{step.label}</span>
-              <strong>{step.title}</strong>
-              <p>{step.detail}</p>
-            </li>
-          ))}
-        </ol>
-      </ProofOpsPageHero>
 
       <section className="proofops-section">
         <div className="container">

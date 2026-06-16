@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import GovernanceCommandDashboard from "@components/governance/GovernanceCommandDashboard";
 import GovernanceIntelDashboard from "@components/governance/GovernanceIntelDashboard";
 import LinkCard from "@components/LinkCard";
 import SectionHeader from "@components/SectionHeader";
@@ -20,8 +19,6 @@ export default function GovernanceSavesPage() {
       <section className="cockpit-section">
         <div className="container">
           <GovernanceIntelDashboard />
-          <div className="mt-6" />
-          <GovernanceCommandDashboard />
           <p className="gov-explorer__status mt-4">
             Governance Saves renders a public-facing subset. Private-only records and omitted or
             demoted records are not rendered on this website surface.
