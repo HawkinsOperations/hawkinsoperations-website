@@ -8,6 +8,10 @@ export default function ReviewerRunPath({ variant = "home" }: ReviewerRunPathPro
   const actions = publicStatus.reviewer_actions;
   const title = variant === "hoxline" ? "Run the Hoxline review path" : "Reviewer can verify";
   const eyebrow = variant === "hoxline" ? "Clone-runnable path" : "Inspect / download / clone / run";
+  const flowSteps =
+    variant === "hoxline"
+      ? ["HO-DET-001", "Gauntlet", "Artifacts", "Verifier", "Claim gate"]
+      : ["Snapshot", "Sources", "Download", "Clone", "Run"];
 
   return (
     <section className={`reviewer-run-path reviewer-run-path--${variant}`} aria-label={title}>
@@ -25,6 +29,22 @@ export default function ReviewerRunPath({ variant = "home" }: ReviewerRunPathPro
         <span>Download</span>
         <span>Clone</span>
         <span>Run</span>
+      </div>
+
+      <div className="reviewer-run-path__flow" aria-label="Reviewer flow visualization">
+        <div className="reviewer-run-path__flow-track" aria-hidden="true">
+          <span className="reviewer-run-path__packet reviewer-run-path__packet--one" />
+          <span className="reviewer-run-path__packet reviewer-run-path__packet--two" />
+          <span className="reviewer-run-path__packet reviewer-run-path__packet--three" />
+        </div>
+        <ol>
+          {flowSteps.map((step, index) => (
+            <li key={step}>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <strong>{step}</strong>
+            </li>
+          ))}
+        </ol>
       </div>
 
       <div className="reviewer-run-path__links" aria-label="Online reviewer links">
