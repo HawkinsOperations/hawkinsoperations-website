@@ -41,7 +41,12 @@ const requiredFiles = [
   "src/data/navigation.ts",
   "src/data/reviewerRoutes.ts",
   "src/data/credibilityMetrics.ts",
+  "src/data/generated/public-status.generated.ts",
+  "src/data/publicSurfaceIdentities.ts",
+  "public/data/public-status.json",
+  "docs/live-public-surface-stress-test.md",
   "components/CurrentProofSpine.tsx",
+  "components/ReviewerRunPath.tsx",
   "public/.well-known/hawkinsoperations-proof.json",
   "public/.well-known/agent-skills/index.json",
   "public/_headers",
@@ -229,9 +234,11 @@ if (lifetimeLedgerFailures.length > 0) {
 const currentProofSpineRequiredTerms = [
   ["app/page.tsx", homePage, "CurrentProofSpine"],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "current-proof-spine"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "@data/generated/public-status.generated"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "Generated public-status rendering input"],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "Current Proof Spine"],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "Proof authority, validation engine, platform control layer."],
-  ["components/CurrentProofSpine.tsx", currentProofSpine, "proof-controlled detection"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "exposes built work first"],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "Proof Authority"],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "Validation Engine"],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "Platform Control Layer"],
@@ -239,21 +246,16 @@ const currentProofSpineRequiredTerms = [
   ["components/CurrentProofSpine.tsx", currentProofSpine, "Local pipelines, parity checks, case-packet contracts, claim scanners, activity ledgers, and CI gates"],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "Factory commands, ledger gates, state manifests, runtime candidates, recoverability drills, and SOAR packet contracts"],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "Reviewer Metrics Pipeline v1"],
-  ["components/CurrentProofSpine.tsx", currentProofSpine, 'value: "6"'],
-  ["components/CurrentProofSpine.tsx", currentProofSpine, 'label: "governed cases"'],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, 'metricDisplay("governed_cases")'],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "Separates strict governed cases from validation activity, proof records, and blocked-claim counts."],
-  ["components/CurrentProofSpine.tsx", currentProofSpine, 'value: "49"'],
-  ["components/CurrentProofSpine.tsx", currentProofSpine, 'label: "validation fires"'],
-  ["components/CurrentProofSpine.tsx", currentProofSpine, 'value: "106"'],
-  ["components/CurrentProofSpine.tsx", currentProofSpine, 'label: "validation cases"'],
-  ["components/CurrentProofSpine.tsx", currentProofSpine, 'value: "8"'],
-  ["components/CurrentProofSpine.tsx", currentProofSpine, 'label: "proof records"'],
-  ["components/CurrentProofSpine.tsx", currentProofSpine, 'value: "31"'],
-  ["components/CurrentProofSpine.tsx", currentProofSpine, 'label: "blocked claims"'],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, 'metricDisplay("validation_fires")'],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, 'metricDisplay("validation_cases")'],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, 'metricDisplay("proof_records")'],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, 'metricDisplay("blocked_claims")'],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "public-safe"],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "HO-DET-001 Receipt Chain"],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "reviewer handoff"],
-  ["components/CurrentProofSpine.tsx", currentProofSpine, "CONTROLLED_TEST_VALIDATED"],
+  ["components/CurrentProofSpine.tsx", currentProofSpine, "Controlled test validated"],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "Lifetime Case Ledger v1"],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "state-manifest control"],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "Runtime Case Collector v0"],
@@ -544,6 +546,205 @@ for (const file of scanRoots.flatMap(collectFiles)) {
 
 if (failures.length > 0) {
   console.error(`Blocked-claim scan failed:\n${failures.map((line) => `- ${line}`).join("\n")}`);
+  process.exit(1);
+}
+
+const publicStatusSource = readFileSync(join(root, "src/data/generated/public-status.generated.ts"), "utf8");
+const publicStatusJson = JSON.parse(readFileSync(join(root, "public/data/public-status.json"), "utf8"));
+const publicSurfaceIdentities = readFileSync(join(root, "src/data/publicSurfaceIdentities.ts"), "utf8");
+const proofOfWorkCounterRail = readFileSync(join(root, "components/command-center/ProofOfWorkCounterRail.tsx"), "utf8");
+const hoxlineEngineRoom = readFileSync(join(root, "components/hoxline/HoxlineEngineRoom.tsx"), "utf8");
+const reviewerRunPath = readFileSync(join(root, "components/ReviewerRunPath.tsx"), "utf8");
+const stressTestReport = readFileSync(join(root, "docs/live-public-surface-stress-test.md"), "utf8");
+
+const publicStatusFailures = [];
+for (const term of [
+  "GENERATED_PUBLIC_STATUS_V0_SNAPSHOT",
+  "generated_at",
+  "generated_by",
+  "generation_mode",
+  "snapshot_label",
+  "source_repos",
+  "source_paths",
+  "source_commit_refs",
+  "freshness_window_days",
+  "stale_evaluation",
+  "proof_ceiling",
+  "public_safe",
+  "website_rendering_boundary",
+  "no_proof_promotion_statement",
+  "source_ownership_message",
+  "owning_routes",
+  "reviewer_actions",
+  "raw_status_constants",
+  "Controlled test validated",
+  "Not public-safe",
+  "Rendering only",
+  "Website rendering is not proof.",
+]) {
+  if (!publicStatusSource.includes(term)) {
+    publicStatusFailures.push(`src/data/generated/public-status.generated.ts must include ${term}.`);
+  }
+}
+
+if (publicStatusJson.generated_by !== "GENERATED_PUBLIC_STATUS_V0_SNAPSHOT") {
+  publicStatusFailures.push("public/data/public-status.json must be labeled GENERATED_PUBLIC_STATUS_V0_SNAPSHOT.");
+}
+if (publicStatusJson.generation_mode !== "bounded_v0_snapshot_fixture") {
+  publicStatusFailures.push("public/data/public-status.json must include generation_mode bounded_v0_snapshot_fixture.");
+}
+if (!publicStatusJson.snapshot_label?.includes("Generated public status")) {
+  publicStatusFailures.push("public/data/public-status.json must include a generated status snapshot_label.");
+}
+if (publicStatusJson.freshness_window_days !== 14) {
+  publicStatusFailures.push("public/data/public-status.json must document the 14-day freshness window.");
+}
+if (publicStatusJson.stale_evaluation?.supported !== true || publicStatusJson.stale_evaluation?.stale_when_older_than_days !== 14) {
+  publicStatusFailures.push("public/data/public-status.json must include stale evaluation support tied to the 14-day freshness window.");
+}
+if (publicStatusJson.website_rendering_boundary?.statement !== "Website rendering is not proof.") {
+  publicStatusFailures.push("public/data/public-status.json must preserve the website rendering boundary.");
+}
+if (!publicStatusJson.no_proof_promotion_statement?.includes("snapshot/rendering input only")) {
+  publicStatusFailures.push("public/data/public-status.json must state that generated status is a snapshot/rendering input only.");
+}
+if (!publicStatusJson.source_ownership_message?.includes("proof") || !publicStatusJson.source_ownership_message?.includes("validation")) {
+  publicStatusFailures.push("public/data/public-status.json must include source ownership language.");
+}
+for (const routeKey of ["public_status_json", "hoxline", "proof", "validation", "detections", "platform_contracts", "claim_firewall"]) {
+  if (!publicStatusJson.owning_routes?.[routeKey]) {
+    publicStatusFailures.push(`public/data/public-status.json must include owning_routes.${routeKey}.`);
+  }
+}
+for (const metricKey of [
+  "controls_fired",
+  "validation_fires",
+  "validation_cases",
+  "proof_records",
+  "blocked_claims",
+  "governed_cases",
+  "closed_case_count",
+  "public_safe_count",
+]) {
+  const metric = publicStatusJson.metrics?.[metricKey];
+  if (!metric || typeof metric.value !== "number" || typeof metric.display_value !== "string" || !metric.display_label || !metric.source_href) {
+    publicStatusFailures.push(`public/data/public-status.json metrics.${metricKey} must include value, display_value, display_label, and source_href.`);
+  }
+}
+if (!Array.isArray(publicStatusJson.reviewer_actions?.inspect_online) || publicStatusJson.reviewer_actions.inspect_online.length < 4) {
+  publicStatusFailures.push("public/data/public-status.json must include reviewer_actions.inspect_online with at least four source routes.");
+}
+if (publicStatusJson.reviewer_actions?.download_json?.href !== "/data/public-status.json") {
+  publicStatusFailures.push("public/data/public-status.json must include reviewer_actions.download_json pointing to /data/public-status.json.");
+}
+if (!publicStatusJson.reviewer_actions?.clone_repo?.command?.includes("git clone https://github.com/HawkinsOperations/hoxline.git")) {
+  publicStatusFailures.push("public/data/public-status.json must include the Hoxline clone command.");
+}
+for (const command of ["python -B -m pytest -q tests", "python -B -m hoxline gauntlet verify", "npm run check:site", "npm run build"]) {
+  if (!publicStatusJson.reviewer_actions?.run_commands?.some((entry) => entry.command.includes(command))) {
+    publicStatusFailures.push(`public/data/public-status.json reviewer_actions.run_commands must include ${command}.`);
+  }
+}
+
+for (const term of [
+  "cinematic mission briefing",
+  "interactive product console",
+  "evidence room / receipt wall",
+  "technical catalog / ATT&CK workbench",
+  "operator origin / methodology bridge",
+  "support-only AI model",
+]) {
+  if (!publicSurfaceIdentities.includes(term)) {
+    publicStatusFailures.push(`src/data/publicSurfaceIdentities.ts must include ${term}.`);
+  }
+}
+
+for (const [file, source, required] of [
+  ["components/command-center/ProofOfWorkCounterRail.tsx", proofOfWorkCounterRail, "public-status.json"],
+  ["components/command-center/ProofOfWorkCounterRail.tsx", proofOfWorkCounterRail, "generatedStatusFreshnessLabel"],
+  ["components/command-center/ProofOfWorkCounterRail.tsx", proofOfWorkCounterRail, "ReviewerRunPath"],
+  ["components/hoxline/HoxlineEngineRoom.tsx", hoxlineEngineRoom, "publicStatus.hoxline.runner.label"],
+  ["components/hoxline/HoxlineEngineRoom.tsx", hoxlineEngineRoom, "publicStatus.source_ownership_message"],
+  ["components/hoxline/HoxlineEngineRoom.tsx", hoxlineEngineRoom, "ReviewerRunPath"],
+  ["components/ReviewerRunPath.tsx", reviewerRunPath, "Download, clone, and run commands"],
+  ["components/ReviewerRunPath.tsx", reviewerRunPath, "details"],
+  ["components/ReviewerRunPath.tsx", reviewerRunPath, "reviewer_actions"],
+]) {
+  if (!source.includes(required)) {
+    publicStatusFailures.push(`${file} must consume generated public status via ${required}.`);
+  }
+}
+
+for (const term of [
+  "Page-overlap matrix",
+  "REDUNDANCY_RISK",
+  "REDUNDANCY_RISK decision table",
+  "VISUAL_MONOTONY_RISK",
+  "VISUAL_MONOTONY_RISK primitive inventory",
+  "Prompt 4 should be: Public Site Visual Refactor + Evidence Consolidation",
+  "Accomplishment-first rewrite inventory",
+  "Partial reduction already made in this PR",
+  "No-proof-promotion statement",
+]) {
+  if (!stressTestReport.includes(term)) {
+    publicStatusFailures.push(`docs/live-public-surface-stress-test.md must include ${term}.`);
+  }
+}
+
+if (publicStatusFailures.length > 0) {
+  console.error(`Generated public status invariant failed:\n${publicStatusFailures.map((line) => `- ${line}`).join("\n")}`);
+  process.exit(1);
+}
+
+const hardcodedMetricGuardFiles = [
+  "app/page.tsx",
+  "components/command-center/ProofOfWorkCounterRail.tsx",
+  "components/CurrentProofSpine.tsx",
+  "components/hoxline/HoxlineEngineRoom.tsx",
+  "components/visual-intelligence/index.tsx",
+  "src/data/systemShowcase.ts",
+];
+const hardcodedMetricAllowedFiles = new Set([
+  "src/data/generated/public-status.generated.ts",
+  "public/data/public-status.json",
+  "docs/live-public-surface-stress-test.md",
+]);
+const riskyMetricPatterns = [
+  /\b\d+\s+controls fired\b/i,
+  /\b\d+\s+validation fires\b/i,
+  /\b\d+\s+validation cases\b/i,
+  /\b\d+\s+proof records\b/i,
+  /\b\d+\s+blocked claims\b/i,
+  /\b\d+\s+claims blocked\b/i,
+  /\b\d+\s+governed cases\b/i,
+  /\b\d+\s+public-safe\b/i,
+  /\b\d+\s+closed cases\b/i,
+  /\b(?:controls_fired|validation_fires|validation_cases|proof_records|blocked_claims|public_safe_count|closed_case_count)\s*[:=]\s*\d+\b/i,
+];
+const rawPrimaryCopyPatterns = [
+  /<span>\s*(?:CONTROLLED_TEST_VALIDATED|NOT_PUBLIC_SAFE|RENDERING_ONLY|RUNTIME_BLOCKED|SIGNAL_MISSING_EVIDENCE|HUMAN_REVIEW_REQUIRED)\s*<\/span>/,
+  /<StatusChip[^>]*>\s*(?:CONTROLLED_TEST_VALIDATED|NOT_PUBLIC_SAFE|RENDERING_ONLY|RUNTIME_BLOCKED|SIGNAL_MISSING_EVIDENCE|HUMAN_REVIEW_REQUIRED)\s*<\/StatusChip>/,
+];
+const metricGuardFailures = [];
+
+for (const relativeFile of hardcodedMetricGuardFiles) {
+  if (hardcodedMetricAllowedFiles.has(relativeFile)) continue;
+  const source = readFileSync(join(root, relativeFile), "utf8");
+  if (/HISTORICAL_POINT_IN_TIME/.test(source)) continue;
+  const lines = source.split(/\r?\n/);
+  lines.forEach((line, index) => {
+    if (line.includes("@data/generated/public-status.generated")) return;
+    if (riskyMetricPatterns.some((pattern) => pattern.test(line))) {
+      metricGuardFailures.push(`${relativeFile}:${index + 1}: changing public metric must come from generated public status: ${line.trim()}`);
+    }
+    if (rawPrimaryCopyPatterns.some((pattern) => pattern.test(line))) {
+      metricGuardFailures.push(`${relativeFile}:${index + 1}: raw status constants must be human-labeled in primary copy: ${line.trim()}`);
+    }
+  });
+}
+
+if (metricGuardFailures.length > 0) {
+  console.error(`Hardcoded public metric guard failed:\n${metricGuardFailures.map((line) => `- ${line}`).join("\n")}`);
   process.exit(1);
 }
 

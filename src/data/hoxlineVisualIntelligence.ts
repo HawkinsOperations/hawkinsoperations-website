@@ -1,3 +1,6 @@
+// HISTORICAL_POINT_IN_TIME: Capability Visual Data Pack v1 snapshot rendered for reviewer context.
+// Changing public metrics belong in src/data/generated/public-status.generated.ts.
+
 export type HoxlineStageStatus =
   | "PASS"
   | "BLOCKED"
