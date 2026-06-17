@@ -1,3 +1,5 @@
+import { metricDisplay, publicStatus } from "./generated/public-status.generated";
+
 export type ShowcaseTone = "cyan" | "blue" | "green" | "amber" | "red" | "neutral";
 
 export type SystemSurface = {
@@ -57,41 +59,11 @@ export const orgSystemSources = [
 ] as const;
 
 export const proofOfWorkMetrics: ProofOfWorkMetric[] = [
-  {
-    label: "controls fired",
-    value: "72",
-    detail: "public-facing Governance Saves records",
-    source: "src/data/governanceSaves.ts; governance dashboard category counts",
-    tone: "cyan",
-  },
-  {
-    label: "claims blocked",
-    value: "31",
-    detail: "reviewer metrics blocked-claim count",
-    source: "hawkinsoperations-platform README; reviewer metrics pipeline",
-    tone: "red",
-  },
-  {
-    label: "validation cases",
-    value: "106",
-    detail: "controlled validation case count",
-    source: "hawkinsoperations-validation/activity/detection-activity-ledger-v1.json",
-    tone: "green",
-  },
-  {
-    label: "proof records",
-    value: "8",
-    detail: "proof-record activity metric",
-    source: "hawkinsoperations-proof README; hawkinsoperations-platform README",
-    tone: "amber",
-  },
-  {
-    label: "public-safe",
-    value: "0",
-    detail: "public-safe count remains zero",
-    source: "hawkinsoperations-platform README; validation activity ledger",
-    tone: "neutral",
-  },
+  metricDisplay("controls_fired"),
+  metricDisplay("blocked_claims"),
+  metricDisplay("validation_cases"),
+  metricDisplay("proof_records"),
+  metricDisplay("public_safe_count"),
 ];
 
 export const systemSurfaces: SystemSurface[] = [
@@ -189,7 +161,7 @@ export const systemRouteSteps: SystemRouteStep[] = [
     label: "Validation",
     short: "behavior truth",
     source: "detection-activity-ledger-v1.json",
-    status: "49 fires / 106 cases",
+    status: `${publicStatus.metrics.validation_fires.value} fires / ${publicStatus.metrics.validation_cases.value} cases`,
     tone: "green",
   },
   {
@@ -197,7 +169,7 @@ export const systemRouteSteps: SystemRouteStep[] = [
     label: "Proof",
     short: "claim ceiling",
     source: "proof records and cards",
-    status: "8 records / 31 blocked claims",
+    status: `${publicStatus.metrics.proof_records.value} records / ${publicStatus.metrics.blocked_claims.value} blocked claims`,
     tone: "amber",
   },
   {

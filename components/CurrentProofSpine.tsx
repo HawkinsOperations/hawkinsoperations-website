@@ -1,3 +1,5 @@
+import { generatedStatusFreshnessLabel, metricDisplay } from "@data/generated/public-status.generated";
+
 type ProofSpineCard = {
   title: string;
   status: string;
@@ -28,18 +30,18 @@ const operatingLayers = [
 ];
 
 const metricStrip = [
-  { value: "6", label: "governed cases" },
-  { value: "49", label: "validation fires" },
-  { value: "106", label: "validation cases" },
-  { value: "8", label: "proof records" },
-  { value: "31", label: "blocked claims" },
-  { value: "0", label: "public-safe" },
+  metricDisplay("governed_cases"),
+  metricDisplay("validation_fires"),
+  metricDisplay("validation_cases"),
+  metricDisplay("proof_records"),
+  metricDisplay("blocked_claims"),
+  metricDisplay("public_safe_count"),
 ];
 
 const proofSpineCards: ProofSpineCard[] = [
   {
     title: "HO-DET-001 Receipt Chain",
-    status: "CONTROLLED_TEST_VALIDATED",
+    status: "Controlled test validated",
     supports:
       "Connects detection source, validation receipt, platform contract, proof case study, website route, and reviewer handoff.",
     doesNotProve:
@@ -131,9 +133,9 @@ export default function CurrentProofSpine() {
             Proof authority, validation engine, platform control layer.
           </h2>
           <p className="muted mt-3 max-w-4xl text-base leading-7">
-            HawkinsOperations is not a portfolio page. It is a proof-controlled detection
-            operations system: proof authority, validation engine, platform control layer, runtime
-            candidates, metrics, and blocked claims separated before anything becomes public proof.
+            HawkinsOperations exposes built work first: proof records, controlled validation,
+            platform ledgers, governed metrics, reviewer routes, and claim-boundary controls are
+            separated so reviewers can inspect the system without trusting the website presentation.
           </p>
         </div>
 
@@ -147,6 +149,10 @@ export default function CurrentProofSpine() {
             </div>
           ))}
         </div>
+        <p className="mt-2 text-xs leading-5 text-slate-400">
+          Generated public-status rendering input: {generatedStatusFreshnessLabel()}. Counts route
+          to owning proof, platform, and validation records; this website does not authorize them.
+        </p>
 
         <div className="mt-3 grid gap-3 md:grid-cols-3">
           {operatingLayers.map((layer, index) => (
@@ -175,9 +181,14 @@ export default function CurrentProofSpine() {
                 </div>
                 <div>
                   <dt className="mono text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-amber-100">
-                    Does not prove
+                    Boundary
                   </dt>
-                  <dd className="mt-1 text-slate-400">{card.doesNotProve}</dd>
+                  <dd className="mt-1 text-slate-400">
+                    <details className="proof-boundary-details">
+                      <summary>Open proof ceiling</summary>
+                      <span>{card.doesNotProve}</span>
+                    </details>
+                  </dd>
                 </div>
               </dl>
               <a
@@ -204,9 +215,14 @@ export default function CurrentProofSpine() {
                 </div>
                 <div>
                   <dt className="mono text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-amber-100">
-                    Does not prove
+                    Boundary
                   </dt>
-                  <dd className="mt-1 text-slate-400">{card.doesNotProve}</dd>
+                  <dd className="mt-1 text-slate-400">
+                    <details className="proof-boundary-details">
+                      <summary>Open proof ceiling</summary>
+                      <span>{card.doesNotProve}</span>
+                    </details>
+                  </dd>
                 </div>
               </dl>
               <a className="artifact-tile__link mt-4" href={card.routeHref}>

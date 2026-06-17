@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, type CSSProperties } from "react";
+import { publicStatus } from "@data/generated/public-status.generated";
 import {
   authoritySurfaces,
   boundedMetrics,
@@ -20,6 +21,7 @@ import {
   type AuthoritySurface,
   type ClaimDecisionGroup,
   type GeneratedOutput,
+  type HoxlineStageStatus,
   type LoopStageStatus,
   type VisualTone,
 } from "@data/hoxlineVisualIntelligence";
@@ -32,6 +34,14 @@ function toneClass(tone: VisualTone) {
 
 function StatusChip({ children, tone = "cyan" }: { children: string; tone?: VisualTone }) {
   return <span className={`vi-chip ${toneClass(tone)}`}>{children}</span>;
+}
+
+function statusLabel(status: HoxlineStageStatus) {
+  return status
+    .toLowerCase()
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
 }
 
 export function ComplexityStatsRail() {
@@ -64,12 +74,12 @@ export function VisualIntelligenceHero({ compact = false }: { compact?: boolean 
           and still-gated runtime and signal evidence.
         </p>
         <div className="vi-chip-row" aria-label="Current Hoxline status">
-          <StatusChip tone="cyan">CAPABILITY_VISUAL_DATA_PACK_V1</StatusChip>
+          <StatusChip tone="cyan">Capability visual data pack v1</StatusChip>
           <StatusChip tone="blue">HO-DET-001</StatusChip>
-          <StatusChip tone="green">CONTROLLED_TEST_VALIDATED</StatusChip>
-          <StatusChip tone="red">RUNTIME_GATED</StatusChip>
-          <StatusChip tone="amber">SIGNAL_MISSING_EVIDENCE</StatusChip>
-          <StatusChip tone="amber">HUMAN_REVIEW_REQUIRED</StatusChip>
+          <StatusChip tone="green">{publicStatus.hoxline.proof_ceiling.label}</StatusChip>
+          <StatusChip tone="red">{publicStatus.raw_status_constants.RUNTIME_GATED}</StatusChip>
+          <StatusChip tone="amber">{publicStatus.hoxline.signal.label}</StatusChip>
+          <StatusChip tone="amber">{publicStatus.hoxline.human_review.label}</StatusChip>
         </div>
         <div className="vi-hero__actions">
           <a className="cta cta-primary" href="/hoxline/">
@@ -138,7 +148,7 @@ export function LoopStatusOrbit({ compact = false }: { compact?: boolean }) {
       <div className="vi-orbit__shell">
         <div className="vi-orbit__core">
           <span>HO-DET-001</span>
-          <strong>{hoxlineDataSource.proofCeiling}</strong>
+          <strong>{publicStatus.hoxline.proof_ceiling.label}</strong>
         </div>
         {loopStageStatuses.map((stage, index) => {
           const angle = (Math.PI * 2 * index) / loopStageStatuses.length - Math.PI / 2;
@@ -168,7 +178,7 @@ export function LoopStatusOrbit({ compact = false }: { compact?: boolean }) {
 function StageDetail({ stage, compact }: { stage: LoopStageStatus; compact?: boolean }) {
   return (
     <article className={`vi-detail ${toneClass(stage.tone)}`}>
-      <p className="vi-detail__eyebrow">{stage.status}</p>
+      <p className="vi-detail__eyebrow">{statusLabel(stage.status)}</p>
       <h3>{stage.stage}</h3>
       <p>{stage.reviewerNote}</p>
       {!compact && (

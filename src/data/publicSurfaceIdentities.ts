@@ -1,0 +1,45 @@
+export const publicSurfaceIdentities = {
+  home: {
+    page: "Home",
+    identity: "cinematic mission briefing",
+    job: "explain the story fast and route reviewers",
+    mustNotBecome: "full proof ledger",
+    dominantPrimitives: ["mission hero", "compact metric rail", "route tiles", "one story bridge"],
+  },
+  hoxline: {
+    page: "Hoxline",
+    identity: "interactive product console",
+    job: "show ProofOps loop + HO-DET-001 demo",
+    mustNotBecome: "duplicate evidence wall",
+    dominantPrimitives: ["product console", "loop diagram", "demo spotlight", "allowed vs blocked comparison"],
+  },
+  evidence: {
+    page: "Evidence / future Proof + Artifacts",
+    identity: "evidence room / receipt wall",
+    job: "proof records, artifacts, proof packs, runtime boundary, receipts",
+    mustNotBecome: "another homepage",
+    dominantPrimitives: ["evidence room", "receipt wall", "proof record cards", "runtime boundary tower"],
+  },
+  detections: {
+    page: "Detections",
+    identity: "technical catalog / ATT&CK workbench",
+    job: "detection rows, ATT&CK mapping, validation status, proof ceiling",
+    mustNotBecome: "proof sermon",
+    dominantPrimitives: ["catalog table/cards", "ATT&CK mapping", "validation status rail", "source links"],
+  },
+  about: {
+    page: "About",
+    identity: "operator origin / methodology bridge",
+    job: "Raylee story, manufacturing QC to detection governance, current/legacy boundary",
+    mustNotBecome: "metric wall",
+    dominantPrimitives: ["origin story", "manufacturing QC bridge", "timeline / methodology ladder", "social/proof routes"],
+  },
+  aiSecurity: {
+    page: "AI Security",
+    identity: "support-only AI model",
+    job: "explain AI as labor, not authority",
+    mustNotBecome: "duplicate Hoxline/proof explainer",
+    futureRecommendation: "demote out of primary nav after content is reused elsewhere",
+    dominantPrimitives: ["support-only split", "workflow ladder", "authority boundary"],
+  },
+} as const;
