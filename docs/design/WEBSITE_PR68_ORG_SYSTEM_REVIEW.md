@@ -21,7 +21,7 @@ Current production remains proof-disciplined but still reads partly like a docum
 
 ## Repos inspected
 
-### Hoxline / local `aevumguard`
+### Hoxline / local `hoxline`
 
 Paths inspected:
 

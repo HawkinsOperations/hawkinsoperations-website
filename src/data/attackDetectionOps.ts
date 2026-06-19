@@ -51,7 +51,7 @@ export const detectionLifecycleSteps: DetectionLifecycleStep[] = [
     label: "Claim boundary",
     surface: "Hoxline / Claim Firewall",
     status: "unsupported runtime/signal/public-safe wording blocked or downgraded",
-    source: "aevumguard/examples/showcase/ho-det-001-capability-visual-data-pack-v1.json",
+    source: "hoxline/examples/showcase/ho-det-001-capability-visual-data-pack-v1.json",
   },
   {
     label: "Website render",

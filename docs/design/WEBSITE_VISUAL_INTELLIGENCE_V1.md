@@ -6,9 +6,9 @@ Implementation now uses the real Hoxline Capability Visual Data Pack v1 from mer
 
 Source files:
 
-- `C:\Raylee\Repo\HawkinsOperations\aevumguard\examples\showcase\ho-det-001-capability-visual-data-pack-v1.json`
-- `C:\Raylee\Repo\HawkinsOperations\aevumguard\examples\showcase\ho-det-001-capability-visual-data-pack-v1.md`
-- `C:\Raylee\Repo\HawkinsOperations\aevumguard\schemas\capability-visual-data-pack-v1.schema.json`
+- `C:\Raylee\Repo\HawkinsOperations\hoxline\examples\showcase\ho-det-001-capability-visual-data-pack-v1.json`
+- `C:\Raylee\Repo\HawkinsOperations\hoxline\examples\showcase\ho-det-001-capability-visual-data-pack-v1.md`
+- `C:\Raylee\Repo\HawkinsOperations\hoxline\schemas\capability-visual-data-pack-v1.schema.json`
 
 Merged source commit verified locally:
 

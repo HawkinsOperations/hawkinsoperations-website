@@ -37,7 +37,7 @@ export const externalLinks = {
   platform: "https://github.com/HawkinsOperations/hawkinsoperations-platform",
   proof: "https://github.com/HawkinsOperations/hawkinsoperations-proof",
   hoxline: "https://github.com/HawkinsOperations/hoxline",
-  legacyAevumGuard: "https://github.com/HawkinsOperations/aevumguard",
+  legacyHoxlineRedirect: "https://github.com/HawkinsOperations/hoxline",
   governanceSavesCandidates: "https://github.com/HawkinsOperations/hawkinsoperations-proof/blob/main/docs/governance-saves/GOVERNANCE-SAVES-CANDIDATES.md",
   governanceSavesEvidenceMatrix: "https://github.com/HawkinsOperations/hawkinsoperations-proof/blob/main/docs/governance-saves/GOVERNANCE-SAVES-EVIDENCE-MATRIX.md",
   platformDetectionFactoryController: "https://github.com/HawkinsOperations/hawkinsoperations-platform/blob/main/docs/factory/DETECTION_FACTORY_CONTROLLER_V0.md",

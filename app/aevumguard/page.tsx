@@ -11,13 +11,13 @@ import { externalLinks } from "@data/navigation";
 export const metadata: Metadata = {
   title: "Hoxline moved | HawkinsOperations",
   description:
-    "AevumGuard is a legacy compatibility route. Hoxline by HawkinsOperations is the current product front door.",
+    "AevumGuard was a prior working name. Hoxline by HawkinsOperations is the current product front door.",
   alternates: {
     canonical: "/hoxline/",
   },
 };
 
-export default function AevumGuardCompatibilityPage() {
+export default function HoxlineCompatibilityPage() {
   return (
     <div className="proofops-page">
       <section className="proofops-hero">
@@ -29,7 +29,7 @@ export default function AevumGuardCompatibilityPage() {
               <span>moved</span>
             </h1>
             <p className="proofops-hero__subtitle">
-              AevumGuard was legacy naming. Hoxline by HawkinsOperations is the current product front door.
+              AevumGuard was a prior working name. Hoxline by HawkinsOperations is the current product front door.
             </p>
             <p className="proofops-hero__description">
               Use the current `/hoxline/` route for the flagship ProofOps control-plane page. This compatibility route exists only for older links and does not create proof authority.
@@ -74,7 +74,7 @@ export default function AevumGuardCompatibilityPage() {
         <div className="container">
           <SectionHeader
             title="Compatibility only"
-            eyebrow="AevumGuard legacy boundary"
+            eyebrow="Prior-name boundary"
             description="This page is not the product front door. It exists to move older links toward Hoxline while keeping proof and claim boundaries visible."
           />
           <div className="proofops-grid-3">
@@ -86,8 +86,8 @@ export default function AevumGuardCompatibilityPage() {
             />
             <EvidenceCeilingCard
               label="Legacy name"
-              ceiling="AevumGuard"
-              detail="Legacy naming only; not the current product front door."
+              ceiling="prior working name"
+              detail="AevumGuard was a prior working name. Hoxline is the current product name."
               tone="amber"
             />
             <EvidenceCeilingCard

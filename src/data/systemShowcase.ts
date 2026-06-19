@@ -50,7 +50,7 @@ export type ClaimFirewallExample = {
 };
 
 export const orgSystemSources = [
-  "C:\\Raylee\\Repo\\HawkinsOperations\\aevumguard\\examples\\showcase\\ho-det-001-capability-visual-data-pack-v1.json",
+  "C:\\Raylee\\Repo\\HawkinsOperations\\hoxline\\examples\\showcase\\ho-det-001-capability-visual-data-pack-v1.json",
   "C:\\Raylee\\Repo\\HawkinsOperations\\hawkinsoperations-detections\\detections\\DETECTION_FACTORY_INDEX.md",
   "C:\\Raylee\\Repo\\HawkinsOperations\\hawkinsoperations-validation\\activity\\detection-activity-ledger-v1.json",
   "C:\\Raylee\\Repo\\HawkinsOperations\\hawkinsoperations-proof\\README.md",
