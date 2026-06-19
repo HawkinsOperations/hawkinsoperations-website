@@ -164,7 +164,7 @@ const hoxlineFrontDoorRequiredTerms = [
   ["app/hoxline/page.tsx", hoxlinePage, "Authority Architecture"],
   ["app/hoxline/page.tsx", hoxlinePage, "Next Gate"],
   ["app/aevumguard/page.tsx", aevumguardPage, "Legacy compatibility route"],
-  ["app/aevumguard/page.tsx", aevumguardPage, "AevumGuard was legacy naming"],
+  ["app/aevumguard/page.tsx", aevumguardPage, "AevumGuard was a prior working name"],
   ["app/aevumguard/page.tsx", aevumguardPage, 'canonical: "/hoxline/"'],
   ["app/aevumguard/page.tsx", aevumguardPage, 'href="/hoxline/"'],
   ["app/proof/page.tsx", proofPage, "Claim Firewall control surface"],

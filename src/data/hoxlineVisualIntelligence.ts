@@ -127,16 +127,16 @@ const toneForStatus = (status: HoxlineStageStatus): VisualTone => {
 };
 
 // Copied from Hoxline PR #13 after merge.
-// Source: C:\Raylee\Repo\HawkinsOperations\aevumguard\examples\showcase\ho-det-001-capability-visual-data-pack-v1.json
-// Schema: C:\Raylee\Repo\HawkinsOperations\aevumguard\schemas\capability-visual-data-pack-v1.schema.json
+// Source: C:\Raylee\Repo\HawkinsOperations\hoxline\examples\showcase\ho-det-001-capability-visual-data-pack-v1.json
+// Schema: C:\Raylee\Repo\HawkinsOperations\hoxline\schemas\capability-visual-data-pack-v1.schema.json
 export const hoxlineDataSource = {
   mode: "CAPABILITY_VISUAL_DATA_PACK_V1",
   sourcePath:
-    "C:\\Raylee\\Repo\\HawkinsOperations\\aevumguard\\examples\\showcase\\ho-det-001-capability-visual-data-pack-v1.json",
+    "C:\\Raylee\\Repo\\HawkinsOperations\\hoxline\\examples\\showcase\\ho-det-001-capability-visual-data-pack-v1.json",
   markdownPath:
-    "C:\\Raylee\\Repo\\HawkinsOperations\\aevumguard\\examples\\showcase\\ho-det-001-capability-visual-data-pack-v1.md",
+    "C:\\Raylee\\Repo\\HawkinsOperations\\hoxline\\examples\\showcase\\ho-det-001-capability-visual-data-pack-v1.md",
   schemaPath:
-    "C:\\Raylee\\Repo\\HawkinsOperations\\aevumguard\\schemas\\capability-visual-data-pack-v1.schema.json",
+    "C:\\Raylee\\Repo\\HawkinsOperations\\hoxline\\schemas\\capability-visual-data-pack-v1.schema.json",
   localSourceCommit: "903da4e5cccc9eeb53a4c21b8639c7d472b7eb7d",
   sourcePr: "Hoxline PR #13",
   showcaseId: "ho-det-001-capability-visual-data-pack-v1",
