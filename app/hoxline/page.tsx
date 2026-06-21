@@ -157,6 +157,37 @@ const reviewerPath = [
   },
 ];
 
+const publicReviewerPacket = [
+  {
+    title: "Current-state panel",
+    detail:
+      "Hoxline Public Reviewer Packet v0 keeps public_safe false, human review required, website rendering below proof, and green CI below approval.",
+  },
+  {
+    title: "Allowed claim",
+    detail: "HO-DET-001 has controlled validation evidence and remains under governed review.",
+  },
+  {
+    title: "Blocked stronger claims",
+    detail:
+      "The packet does not claim runtime proof, signal observation, production readiness, customer deployment, SOCaaS deployment, AI approval, analyst approval, case closure, or public proof promotion.",
+  },
+  {
+    title: "HO-DET-011 / HO-DET-012 boundary",
+    detail:
+      "Both remain waiting on real operator evidence; marker hits without governed execution IDs do not establish operator receipt evidence.",
+  },
+  {
+    title: "Private reference boundary",
+    detail:
+      "Private runtime reference digests are hash references only. They are not public proof and do not raise the public proof ceiling.",
+  },
+  {
+    title: "No promotion side effects",
+    detail: "No ledger append, no public proof promotion, and no schedule enablement are created by this page.",
+  },
+];
+
 const nextGate = [
   "Separate runtime evidence from the appropriate authority path.",
   "Preserved signal evidence tied to the artifact and telemetry contract.",
@@ -529,6 +560,29 @@ export default function HoxlinePage() {
           <div className="mt-6">
             <ReviewerLensTabs lenses={lenses} />
           </div>
+          <div className="mt-6">
+            <ClaimBoundaryPanel
+              title="Hoxline Public Reviewer Packet v0"
+              description="This route renders the packet as reviewer orientation only. Rendering is not proof, public_safe remains false, private runtime references are not public proof, human review remains required, no ledger append happened, no public proof promotion happened, and no schedule was enabled."
+              boundaries={[
+                { label: "Packet status", value: "NOT_PUBLIC_SAFE", tone: "blocked" },
+                { label: "Public ceiling", value: "CONTROLLED_TEST_VALIDATED", tone: "green" },
+                { label: "Private references", value: "hash references only", tone: "amber" },
+                { label: "Website", value: "rendering only", tone: "neutral" },
+                { label: "Human review", value: "required", tone: "amber" },
+                { label: "Promotion", value: "not promoted", tone: "blocked" },
+              ]}
+            />
+          </div>
+          <div className="mt-6 proofops-grid-3">
+            {publicReviewerPacket.map((item) => (
+              <article key={item.title} className="proofops-card">
+                <p className="proofops-kicker">Reviewer packet</p>
+                <h3>{item.title}</h3>
+                <p>{item.detail}</p>
+              </article>
+            ))}
+          </div>
           <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <LinkCard
               href="https://github.com/HawkinsOperations/hoxline/pull/7"
@@ -546,6 +600,24 @@ export default function HoxlinePage() {
               href="https://github.com/HawkinsOperations/hoxline/pull/10"
               title="PR #10 draft"
               description="Draft controlled demo packaging work. Demo packaging only; not merged proof."
+              external
+            />
+            <LinkCard
+              href="https://github.com/HawkinsOperations/hoxline/blob/main/docs/reviewer/HOXLINE_PUBLIC_REVIEWER_PACKET_V0.md"
+              title="Reviewer packet doc"
+              description="Read the public reviewer packet boundary and current-state explanation."
+              external
+            />
+            <LinkCard
+              href="https://github.com/HawkinsOperations/hoxline/blob/main/examples/reviewer/hoxline-public-reviewer-packet-v0.json"
+              title="Reviewer packet JSON"
+              description="Inspect the sanitized current-state packet data."
+              external
+            />
+            <LinkCard
+              href="https://github.com/HawkinsOperations/hoxline/blob/main/schemas/public-reviewer-packet-v0.schema.json"
+              title="Reviewer packet schema"
+              description="Inspect the fail-closed schema constants for the packet."
               external
             />
             <LinkCard
