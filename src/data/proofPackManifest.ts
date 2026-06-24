@@ -52,7 +52,7 @@ export const releaseRouteCaveat = {
 
 export const reviewerPacket = {
   name: "REVIEWER_PACKET.md",
-  scope: "Boundary packet for the HO-DET-001 SOCaaS Pilot Receipt.",
+  scope: "Boundary packet for the HO-DET-001 Controlled Validation Receipt.",
   evidenceChain: [
     "Detection source",
     "Alert shape",

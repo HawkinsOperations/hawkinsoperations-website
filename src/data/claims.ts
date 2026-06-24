@@ -7,7 +7,7 @@ export const allowedClaims = [
   "HawkinsOperations separates source truth, runtime truth, signal truth, evidence truth, and public proof.",
   "HO-DET-001 is CONTROLLED_TEST_VALIDATED.",
   "HO-DET-001 has controlled-test validation status.",
-  "HO-DET-001 may be rendered as a SOCaaS Pilot Receipt when the receipt keeps source, validation, case packet, AI support, human review, and proof authority separate.",
+  "HO-DET-001 may be rendered as a Controlled Validation Receipt when the receipt keeps source, validation, case packet, AI support, human review, and proof authority separate.",
   "Source presence does not prove runtime.",
   "Validation does not prove public signal.",
   "Public proof requires evidence linkage and explicit promotion.",
