@@ -94,7 +94,7 @@ export const lifetimeCaseLedgerV1 = {
 export const proofRecords: ProofRecord[] = [
   {
     detectionId: "HO-DET-001",
-    title: "SOCaaS Pilot Receipt · controlled-test validation",
+    title: "Controlled Validation Receipt · controlled-test validation",
     proofLevel: proofCeiling,
     proofRecordState: "PROOF_RECORD_PRESENT",
     validationState: "controlled-test validation status",
@@ -117,7 +117,7 @@ export const proofRecords: ProofRecord[] = [
       "Blocked promotions are visible instead of hidden.",
       "Website rendering remains separated from evidence authority.",
       "The platform verifier preserves NOT_PUBLIC_SAFE and BLOCKED runtime promotion fields.",
-      "The SOCaaS Pilot Receipt shows source, alert shape, validation, case packet, AI support, and human review as separate stages.",
+      "The controlled validation receipt shows source, alert shape, validation, case packet, AI support, and human review as separate stages.",
     ],
     notClaimed: [
       "Runtime activation is not claimed.",
@@ -141,9 +141,9 @@ export const proofRecords: ProofRecord[] = [
       "Runtime and signal claims reviewed independently.",
       "Public wording reviewed against blocked promotions.",
     ],
-    receiptTitle: "HO-DET-001 SOCaaS Pilot Receipt",
+    receiptTitle: "HO-DET-001 Controlled Validation Receipt",
     receiptSummary:
-      "A reviewer-readable receipt for a SOCaaS-style pilot loop: source-controlled detection, controlled alert shape, deterministic validation, support-only case packet flow, proof authority, and human review gate. The website renders the receipt; it does not authorize stronger proof.",
+      "A reviewer-readable receipt for a controlled validation loop: source-controlled detection, controlled alert shape, deterministic validation, support-only case packet flow, proof authority, and human review gate. The website renders the receipt; it does not authorize stronger proof.",
     detectionSource: [
       "Detection route: Suspicious PowerShell EncodedCommand.",
       "Source truth lives in the detections repository; source presence does not prove runtime deployment.",

@@ -95,7 +95,7 @@ export default function HoDet001CaseFilePage() {
 
       <section className="cockpit-section--tight">
         <div className="container grid gap-6 lg:grid-cols-[1.4fr_0.9fr] items-start">
-          <ProofPathTimeline detectionId={record.detectionId} title="SOCaaS Pilot Receipt · source to public boundary" steps={traceSteps} />
+          <ProofPathTimeline detectionId={record.detectionId} title="Controlled Validation Receipt · source to public boundary" steps={traceSteps} />
           <StatusConsole
             rows={[
               { tone: "ice", label: "Proof level", value: record.proofLevel },
@@ -113,7 +113,7 @@ export default function HoDet001CaseFilePage() {
         <div className="container">
           <SectionHeader
             title={record.receiptTitle ?? "HO-DET-001 receipt"}
-            eyebrow="SOCaaS Pilot Receipt"
+            eyebrow="Controlled Validation Receipt"
             description={record.receiptSummary}
           />
           <div className="mt-6 grid gap-4 lg:grid-cols-4">

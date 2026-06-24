@@ -173,9 +173,9 @@ const publicReviewerPacket = [
       "The packet does not claim runtime proof, signal observation, production readiness, customer deployment, SOCaaS deployment, AI approval, analyst approval, case closure, or public proof promotion.",
   },
   {
-    title: "HO-DET-011 / HO-DET-012 boundary",
+    title: "Private runtime candidate boundary",
     detail:
-      "Both remain waiting on real operator evidence; marker hits without governed execution IDs do not establish operator receipt evidence.",
+      "HO-DET-009, HO-DET-010, HO-DET-011, and HO-DET-012 may be referenced only as private runtime candidate and standing collector support. They remain NOT_PUBLIC_SAFE, human review required, and not public proof.",
   },
   {
     title: "Private reference boundary",
