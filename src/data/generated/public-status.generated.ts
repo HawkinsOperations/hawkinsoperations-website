@@ -198,6 +198,13 @@ export const GENERATED_PUBLIC_STATUS_V0_SNAPSHOT = {
     },
     run_commands: [
       {
+        label: "Hoxline one-command demo",
+        repo: "HawkinsOperations/hoxline",
+        working_directory: "hoxline repo root",
+        command: "python -B -m hoxline demo quickstart",
+        source_basis: "Org Start Here 30-second reviewer path; deterministic local fixture-based demo.",
+      },
+      {
         label: "Hoxline tests",
         repo: "HawkinsOperations/hoxline",
         working_directory: "hoxline repo root",

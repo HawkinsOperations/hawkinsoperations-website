@@ -640,7 +640,7 @@ if (publicStatusJson.reviewer_actions?.download_json?.href !== "/data/public-sta
 if (!publicStatusJson.reviewer_actions?.clone_repo?.command?.includes("git clone https://github.com/HawkinsOperations/hoxline.git")) {
   publicStatusFailures.push("public/data/public-status.json must include the Hoxline clone command.");
 }
-for (const command of ["python -B -m pytest -q tests", "python -B -m hoxline gauntlet verify", "npm run check:site", "npm run build"]) {
+for (const command of ["python -B -m hoxline demo quickstart", "python -B -m pytest -q tests", "python -B -m hoxline gauntlet verify", "npm run check:site", "npm run build"]) {
   if (!publicStatusJson.reviewer_actions?.run_commands?.some((entry) => entry.command.includes(command))) {
     publicStatusFailures.push(`public/data/public-status.json reviewer_actions.run_commands must include ${command}.`);
   }
