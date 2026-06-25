@@ -106,6 +106,7 @@
       "command": "git clone https://github.com/HawkinsOperations/hoxline.git"
     },
     "run_commands": [
+      { "label": "Hoxline one-command demo", "repo": "HawkinsOperations/hoxline", "working_directory": "hoxline repo root", "command": "python -B -m hoxline demo quickstart", "source_basis": "Org Start Here 30-second reviewer path; deterministic local fixture-based demo." },
       { "label": "Hoxline tests", "repo": "HawkinsOperations/hoxline", "working_directory": "hoxline repo root", "command": "python -B -m pytest -q tests", "source_basis": "Hoxline reviewer path requested for clone-run inspection." },
       { "label": "Hoxline Gauntlet output verifier", "repo": "HawkinsOperations/hoxline", "working_directory": "hoxline repo root", "command": "python -B -m hoxline gauntlet verify --input examples/gauntlet/ho-det-001-full-loop-run-v0.json --schema schemas/gauntlet-full-loop-run-v0.schema.json", "source_basis": "Capability visual data pack verifier command path." },
       { "label": "Website site contract", "repo": "HawkinsOperations/hawkinsoperations-website", "working_directory": "hawkinsoperations-website repo root", "command": "npm run check:site", "source_basis": "Website generated-status and public-surface contract verifier." },

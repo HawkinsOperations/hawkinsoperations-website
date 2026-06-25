@@ -145,7 +145,7 @@ const authorityMap = [
 const reviewerPath = [
   {
     title: "Inspect the controlled demo package",
-    detail: "Start with the HO-DET-001 bridge, release packet, and existing bounded case-file route.",
+    detail: "Clone the Hoxline repo, run `python -B -m hoxline demo quickstart`, then read `.hoxline/demo-runs/<timestamp>/reviewer-pack.md`. The demo is deterministic, local, fixture-based, and not runtime proof.",
   },
   {
     title: "Inspect the proof ceiling and blocked claims",
