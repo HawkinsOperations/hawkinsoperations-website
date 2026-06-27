@@ -8,9 +8,9 @@ export const primaryNavigation: NavItem[] = [
   { label: "Home", href: "/", description: "Reviewer cockpit" },
   { label: "Hoxline", href: "/hoxline/", description: "Product front door" },
   { label: "Proof", href: "/proof/", description: "Claim authority" },
-  { label: "Artifacts", href: "/artifacts/", description: "Reviewer receipts" },
   { label: "Detections", href: "/detections/", description: "Detection engineering" },
-  { label: "AI Security", href: "/ai-security/", description: "AI-assisted SOC model" },
+  { label: "Claim Firewall", href: "/claim-firewall/", description: "Hoxline claim gate" },
+  { label: "Architecture", href: "/architecture/", description: "Truth-plane separation" },
   { label: "About", href: "/about/", description: "Mission and archive boundary" },
 ];
 

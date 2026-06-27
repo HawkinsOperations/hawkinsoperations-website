@@ -141,7 +141,7 @@ export default function HomePage() {
       <section id="public-doors" className="cockpit-section--tight">
         <div className="container">
           <div className="home-section__head mb-6">
-            <p className="cockpit-eyebrow">Public product doors</p>
+            <p className="cockpit-eyebrow">Public reviewer doors</p>
             <h2
               className="cockpit-headline mt-2"
               style={{ fontSize: "clamp(1.7rem, 2.8vw, 2.4rem)" }}
@@ -150,7 +150,7 @@ export default function HomePage() {
             </h2>
             <p className="muted mt-3 text-sm leading-6 max-w-3xl">
               The public site now leads with Hoxline as the current product route, then routes
-              reviewers into proof, artifacts, detections, AI security, source, and operating context.
+              reviewers into proof, detections, Claim Firewall, architecture, source, and operating context.
             </p>
           </div>
           <SixDoorCockpit />

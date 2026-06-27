@@ -213,8 +213,8 @@ export const governanceCategoryData: GovernanceCategoryDatum[] = [
 export const claimFirewallExamples: ClaimFirewallExample[] = [
   {
     id: "runtime-active",
-    label: "runtime active",
-    incomingClaim: "HO-DET-001 is runtime active.",
+    label: "runtime-status overclaim",
+    incomingClaim: "Blocked example: HO-DET-001 is runtime active.",
     context: "HO-DET-001 controlled validation route",
     decision: "BLOCKED",
     saferWording: "HO-DET-001 has controlled validation evidence and runtime claims remain gated.",
@@ -224,8 +224,8 @@ export const claimFirewallExamples: ClaimFirewallExample[] = [
   },
   {
     id: "signal-observed",
-    label: "signal observed",
-    incomingClaim: "HO-DET-001 signal was observed.",
+    label: "signal-status overclaim",
+    incomingClaim: "Blocked example: HO-DET-001 signal was observed.",
     context: "Hoxline Gauntlet stage 7",
     decision: "BLOCKED",
     saferWording: "Signal Observation remains MISSING_EVIDENCE for the public Hoxline run.",
@@ -235,8 +235,8 @@ export const claimFirewallExamples: ClaimFirewallExample[] = [
   },
   {
     id: "production-ready",
-    label: "production ready",
-    incomingClaim: "The detection package is production ready.",
+    label: "production-readiness overclaim",
+    incomingClaim: "Blocked example: the detection package is production ready.",
     context: "detection factory source package",
     decision: "DOWNGRADED",
     saferWording: "The source package and controlled validation state are inspectable; production claims require separate evidence.",
@@ -246,8 +246,8 @@ export const claimFirewallExamples: ClaimFirewallExample[] = [
   },
   {
     id: "ai-approved",
-    label: "AI approved",
-    incomingClaim: "AI approved the case.",
+    label: "AI-approval overclaim",
+    incomingClaim: "Blocked example: AI approved the case.",
     context: "AI-assisted security workflow",
     decision: "HARDENED",
     saferWording: "AI can support summarization; deterministic checks and human review own authority.",

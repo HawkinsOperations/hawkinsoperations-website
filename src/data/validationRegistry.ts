@@ -82,12 +82,12 @@ export const validationRows: ValidationRow[] = [
     fixtures: { total: 17, positive: 7, negative: 10, missed: 0, falsePositiveNegatives: 0 },
     badges: [
       { label: "CONTROLLED_TEST_VALIDATED", tone: "ceiling" },
-      { label: "PUBLIC_SAFE_APPROVED", tone: "ceiling" },
+      { label: "BOUNDED_PUBLIC_SAFE_SUMMARY_APPROVED", tone: "ceiling" },
     ],
     noProofRecord: false,
     contractOnly: false,
     publicRuntimeBlocked: true,
-    copyBoundary: "Bounded public-safe summary approved; private runtime evidence remains outside public repos.",
+    copyBoundary: "Bounded public-safe summary wording approved; private runtime evidence remains outside public repos.",
     exists: [
       "A controlled-test validation package with 17 fixtures.",
       "A private lab runtime receipt with Wazuh-backed private observation.",
@@ -114,7 +114,7 @@ export const validationRows: ValidationRow[] = [
     fixtures: { total: 8, positive: 4, negative: 4, missed: 0, falsePositiveNegatives: 0 },
     badges: [
       { label: "CONTROLLED_TEST_VALIDATED", tone: "ceiling" },
-      { label: "PUBLIC_SAFE_APPROVED", tone: "ceiling" },
+      { label: "BOUNDED_PUBLIC_SAFE_SUMMARY_APPROVED", tone: "ceiling" },
     ],
     noProofRecord: false,
     contractOnly: false,

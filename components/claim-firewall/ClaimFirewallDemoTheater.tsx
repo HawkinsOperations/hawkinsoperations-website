@@ -30,6 +30,7 @@ export default function ClaimFirewallDemoTheater() {
             key={item.id}
             type="button"
             className={activeClaim === index ? "is-active" : ""}
+            aria-pressed={activeClaim === index}
             onClick={() => {
               setActiveClaim(index);
               setActiveStage(2);
@@ -42,7 +43,13 @@ export default function ClaimFirewallDemoTheater() {
       <ClaimPacketFlow active={activeStage} />
       <div className="claim-demo-theater__stage-controls" aria-label="Pipeline stage controls">
         {[0, 1, 2, 3, 4, 5].map((index) => (
-          <button key={index} type="button" onClick={() => setActiveStage(index)} className={activeStage === index ? "is-active" : ""}>
+          <button
+            key={index}
+            type="button"
+            onClick={() => setActiveStage(index)}
+            className={activeStage === index ? "is-active" : ""}
+            aria-pressed={activeStage === index}
+          >
             stage {index + 1}
           </button>
         ))}

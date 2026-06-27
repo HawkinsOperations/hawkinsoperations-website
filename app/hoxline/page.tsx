@@ -49,18 +49,18 @@ const heroFacts = [
 ];
 
 const blockedClaims = [
-  "runtime-active status",
-  "runtime proven status",
-  "signal observed status",
-  "public-safe proof",
-  "production-ready status",
-  "SOCaaS-ready status",
-  "SOCaaS deployed status",
-  "customer deployed status",
-  "AI approved disposition",
-  "analyst approved disposition",
-  "final human authorization",
-  "case closed status",
+  "runtime-status overclaim",
+  "runtime-proof overclaim",
+  "signal-status overclaim",
+  "public-safe proof overclaim",
+  "production-readiness overclaim",
+  "SOCaaS-readiness overclaim",
+  "SOCaaS-deployment overclaim",
+  "customer-deployment overclaim",
+  "AI-disposition approval overclaim",
+  "analyst-disposition approval overclaim",
+  "final-authorization overclaim",
+  "case-closure overclaim",
 ];
 
 const controlSurfaces = [

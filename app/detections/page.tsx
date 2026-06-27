@@ -45,15 +45,15 @@ const flagship = detectionRows.find((row) => row.id === "HO-DET-001");
 const lifecycleSummary = cyberKillChainStages.slice(0, 4);
 
 const blockedClaims = [
-  "runtime-active status",
-  "runtime proven status",
-  "signal observed status",
-  "public-safe proof",
-  "production-ready status",
-  "SOCaaS-ready status",
-  "customer deployed status",
-  "public runtime proof",
-  "public signal proof",
+  "runtime-status overclaim",
+  "runtime-proof overclaim",
+  "signal-status overclaim",
+  "public-safe proof overclaim",
+  "production-readiness overclaim",
+  "SOCaaS-readiness overclaim",
+  "customer-deployment overclaim",
+  "public runtime-proof overclaim",
+  "public signal-proof overclaim",
 ];
 
 export default function DetectionsPage() {
