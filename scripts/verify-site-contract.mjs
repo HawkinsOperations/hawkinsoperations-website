@@ -68,9 +68,9 @@ const expectedPrimaryNav = [
   { label: "Home", href: "/" },
   { label: "Hoxline", href: "/hoxline/" },
   { label: "Proof", href: "/proof/" },
-  { label: "Artifacts", href: "/artifacts/" },
   { label: "Detections", href: "/detections/" },
-  { label: "AI Security", href: "/ai-security/" },
+  { label: "Claim Firewall", href: "/claim-firewall/" },
+  { label: "Architecture", href: "/architecture/" },
   { label: "About", href: "/about/" },
 ];
 const navFailures = [];

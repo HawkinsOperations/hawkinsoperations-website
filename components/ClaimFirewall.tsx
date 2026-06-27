@@ -31,12 +31,12 @@ const safeContexts = [
 
 const transformations = [
   {
-    blocked: "This detection is production ready.",
+    blocked: "Blocked example: this detection is production ready.",
     why: "Production maturity requires deployment evidence and explicit review.",
     safer: "This detection has controlled-test validation only.",
   },
   {
-    blocked: "AI approved the final disposition.",
+    blocked: "Blocked example: AI approved the final disposition.",
     why: "AI can support analysis, but approval authority remains human.",
     safer: "AI provided support-only triage context. Human review remains authority.",
   },
@@ -114,7 +114,7 @@ export default function ClaimFirewall() {
         <div className="claim-firewall-demo__examples">
           <article className="claim-firewall-demo__panel claim-firewall-demo__panel--unsafe">
             <p className="cockpit-eyebrow">Unsafe wording examples</p>
-            <p className="claim-firewall-demo__boundary">This detection is production ready.</p>
+            <p className="claim-firewall-demo__boundary">Blocked example: this detection is production ready.</p>
           </article>
           <article className="claim-firewall-demo__panel">
             <p className="cockpit-eyebrow">Finding</p>

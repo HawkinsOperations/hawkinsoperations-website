@@ -70,19 +70,19 @@ const workflowLenses: ReviewerLens[] = [
 ];
 
 const blockedClaims = [
-  "runtime-active status",
-  "runtime proven status",
-  "signal observed status",
-  "public-safe proof",
-  "production-ready status",
-  "SOCaaS-ready status",
-  "SOCaaS deployed status",
-  "customer deployed status",
-  "autonomous SOC operation",
-  "AI approved disposition",
-  "analyst approved disposition",
-  "final human authorization",
-  "case closed status",
+  "runtime-status overclaim",
+  "runtime-proof overclaim",
+  "signal-status overclaim",
+  "public-safe proof overclaim",
+  "production-readiness overclaim",
+  "SOCaaS-readiness overclaim",
+  "SOCaaS-deployment overclaim",
+  "customer-deployment overclaim",
+  "autonomous-SOC overclaim",
+  "AI-disposition approval overclaim",
+  "analyst-disposition approval overclaim",
+  "final-authorization overclaim",
+  "case-closure overclaim",
 ];
 
 const reviewerSurfaces = [
@@ -180,8 +180,8 @@ export default function AiSecurityPage() {
               { label: "Verifier", value: "schema and controlled checks", tone: "green" },
               { label: "Human authority", value: "promotion gate", tone: "amber" },
               { label: "Website", value: "rendering only", tone: "neutral" },
-              { label: "Not claimed", value: "AI approved disposition", tone: "blocked" },
-              { label: "Not claimed", value: "analyst approved disposition", tone: "blocked" },
+              { label: "Not claimed", value: "AI-disposition approval", tone: "blocked" },
+              { label: "Not claimed", value: "analyst-disposition approval", tone: "blocked" },
             ]}
           />
         </div>

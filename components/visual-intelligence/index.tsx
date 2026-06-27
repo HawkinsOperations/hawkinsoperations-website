@@ -208,9 +208,15 @@ export function CapabilityMaturityGrid() {
         <h2>capability_maturity_chart</h2>
         <p>Positive capability is shown first; the PR #13 maturity chart keeps gated areas visible without taking over the story.</p>
       </div>
-      <div className="vi-tabs" role="tablist" aria-label="Capability filter">
+      <div className="vi-tabs" role="group" aria-label="Capability filter">
         {(["all", "available", "controlled", "gated"] as const).map((item) => (
-          <button key={item} type="button" className={filter === item ? "is-active" : ""} onClick={() => setFilter(item)}>
+          <button
+            key={item}
+            type="button"
+            className={filter === item ? "is-active" : ""}
+            aria-pressed={filter === item}
+            onClick={() => setFilter(item)}
+          >
             {item}
           </button>
         ))}
@@ -407,12 +413,13 @@ export function ClaimDecisionMatrixVisual() {
         <h2>Allowed, blocked, and required evidence</h2>
         <p>Toggle the decision families. Blocked claims are visible as boundaries, not as product claims.</p>
       </div>
-      <div className="vi-tabs" role="tablist" aria-label="Claim decision groups">
+      <div className="vi-tabs" role="group" aria-label="Claim decision groups">
         {claimDecisionGroups.map((group) => (
           <button
             key={group.id}
             type="button"
             className={active.id === group.id ? "is-active" : ""}
+            aria-pressed={active.id === group.id}
             onClick={() => setActiveId(group.id)}
           >
             {group.label}

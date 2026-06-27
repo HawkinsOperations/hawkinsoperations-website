@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 
 type SurfaceSlug = "source" | "validation" | "runtime" | "signal" | "evidence" | "public-proof";
 
@@ -118,6 +118,24 @@ export default function TruthSurfaceSeparation() {
     setActiveFilter((current) => (current === slug ? null : slug));
   };
 
+  const handleTabKey = (event: ReactKeyboardEvent<HTMLButtonElement>, index: number) => {
+    if (event.key !== "ArrowRight" && event.key !== "ArrowLeft" && event.key !== "Home" && event.key !== "End") {
+      return;
+    }
+    event.preventDefault();
+
+    let nextIndex = index;
+    if (event.key === "ArrowRight") nextIndex = (index + 1) % surfaces.length;
+    if (event.key === "ArrowLeft") nextIndex = (index - 1 + surfaces.length) % surfaces.length;
+    if (event.key === "Home") nextIndex = 0;
+    if (event.key === "End") nextIndex = surfaces.length - 1;
+
+    const nextSurface = surfaces[nextIndex];
+    setActivePanel(nextSurface.slug);
+    setActiveFilter(nextSurface.slug);
+    document.getElementById(`truth-tab-${nextSurface.slug}`)?.focus();
+  };
+
   const statusText = activeFilter
     ? `Filter active · ${surfaces.find((s) => s.slug === activeFilter)?.name ?? activeFilter} surface highlighted.`
     : "Filter inactive · all surfaces shown.";
@@ -152,13 +170,16 @@ export default function TruthSurfaceSeparation() {
           return (
             <button
               key={surface.slug}
+              id={`truth-tab-${surface.slug}`}
               type="button"
               className={`truth-board__switch ${isSelected ? "is-selected" : ""} ${isActive ? "is-active" : ""}`}
               onClick={() => handleSwitch(surface.slug)}
+              onKeyDown={(event) => handleTabKey(event, index)}
               role="tab"
               aria-selected={isSelected ? "true" : "false"}
               aria-pressed={isActive ? "true" : "false"}
               aria-controls={`truth-panel-${surface.slug}`}
+              tabIndex={isSelected ? 0 : -1}
             >
               <span className="truth-board__switch-index mono">{String(index + 1).padStart(2, "0")}</span>
               <span>{surface.name}</span>
@@ -188,6 +209,7 @@ export default function TruthSurfaceSeparation() {
               className="truth-board__panel"
               id={`truth-panel-${surface.slug}`}
               role="tabpanel"
+              aria-labelledby={`truth-tab-${surface.slug}`}
               hidden={activePanel !== surface.slug}
             >
               <div className="truth-board__panel-head">

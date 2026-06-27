@@ -1,6 +1,6 @@
 import { externalLinks } from "@data/navigation";
 
-type DoorIcon = "hoxline" | "proof" | "artifacts" | "detections" | "ai" | "about" | "source";
+type DoorIcon = "hoxline" | "proof" | "claim" | "detections" | "architecture" | "about" | "source";
 
 type Door = {
   href: string;
@@ -26,11 +26,11 @@ const doors: Door[] = [
     icon: "proof",
   },
   {
-    href: "/artifacts/",
-    title: "Artifacts",
+    href: "/claim-firewall/",
+    title: "Claim Firewall",
     description:
-      "Reviewer receipts, proof packages, evidence cards, release artifacts, and does-prove / does-not-prove boundaries.",
-    icon: "artifacts",
+      "Internal Hoxline claim gate for blocked wording, safer phrasing, and human-review boundaries.",
+    icon: "claim",
   },
   {
     href: "/detections/",
@@ -40,11 +40,11 @@ const doors: Door[] = [
     icon: "detections",
   },
   {
-    href: "/ai-security/",
-    title: "AI Security",
+    href: "/architecture/",
+    title: "Architecture",
     description:
-      "Governed AI security operations model for AI-assisted triage, deterministic verification, and human authority.",
-    icon: "ai",
+      "Truth-plane separation across source, validation, proof, Hoxline, website rendering, and reviewer routes.",
+    icon: "architecture",
   },
   {
     href: "/about/",
@@ -81,11 +81,12 @@ function Glyph({ icon }: { icon: DoorIcon }) {
           <path d="M9 12l2 2 4-4" />
         </svg>
       );
-    case "artifacts":
+    case "claim":
       return (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-          <path d="M4 7l8-3 8 3v10l-8 3-8-3V7z" />
-          <path d="M4 7l8 3 8-3M12 10v10" />
+          <path d="M12 3l8 4v6c0 4.7-3.2 7.2-8 8-4.8-.8-8-3.3-8-8V7l8-4z" />
+          <path d="M8.5 12h7M8.5 15h4.5" />
+          <path d="M16 9l-5 5-2.5-2.5" />
         </svg>
       );
     case "detections":
@@ -96,13 +97,13 @@ function Glyph({ icon }: { icon: DoorIcon }) {
           <path d="M12 1v3M12 20v3M1 12h3M20 12h3" />
         </svg>
       );
-    case "ai":
+    case "architecture":
       return (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-          <path d="M6 4h12v6a6 6 0 01-12 0V4z" />
-          <path d="M9 20h6M12 16v4" />
-          <circle cx="9" cy="8" r="1" fill="currentColor" stroke="none" />
-          <circle cx="15" cy="8" r="1" fill="currentColor" stroke="none" />
+          <rect x="4" y="4" width="6" height="6" rx="1.5" />
+          <rect x="14" y="4" width="6" height="6" rx="1.5" />
+          <rect x="9" y="14" width="6" height="6" rx="1.5" />
+          <path d="M10 7h4M7 10v2.5L9 16M17 10v2.5L15 16" />
         </svg>
       );
     case "about":
