@@ -10,7 +10,7 @@ export const primaryNavigation: NavItem[] = [
   { label: "Proof", href: "/proof/", description: "Claim authority" },
   { label: "Detections", href: "/detections/", description: "Detection engineering" },
   { label: "Claim Firewall", href: "/claim-firewall/", description: "Hoxline claim gate" },
-  { label: "Architecture", href: "/architecture/", description: "Truth-plane separation" },
+  { label: "AI Automation", href: "/ai-security/", description: "AI-assisted security automation surface" },
   { label: "About", href: "/about/", description: "Mission and archive boundary" },
 ];
 

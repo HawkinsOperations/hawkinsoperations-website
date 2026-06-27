@@ -1,6 +1,6 @@
 import { externalLinks } from "@data/navigation";
 
-type DoorIcon = "hoxline" | "proof" | "claim" | "detections" | "architecture" | "about" | "source";
+type DoorIcon = "hoxline" | "proof" | "claim" | "detections" | "automation" | "architecture" | "about" | "source";
 
 type Door = {
   href: string;
@@ -40,11 +40,11 @@ const doors: Door[] = [
     icon: "detections",
   },
   {
-    href: "/architecture/",
-    title: "Architecture",
+    href: "/ai-security/",
+    title: "AI Automation",
     description:
-      "Truth-plane separation across source, validation, proof, Hoxline, website rendering, and reviewer routes.",
-    icon: "architecture",
+      "The AI-assisted security automation surface: how generated work becomes gated, reviewer-ready output.",
+    icon: "automation",
   },
   {
     href: "/about/",
@@ -95,6 +95,15 @@ function Glyph({ icon }: { icon: DoorIcon }) {
           <circle cx="12" cy="12" r="9" />
           <circle cx="12" cy="12" r="4" />
           <path d="M12 1v3M12 20v3M1 12h3M20 12h3" />
+        </svg>
+      );
+    case "automation":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+          <circle cx="5" cy="6" r="2.4" />
+          <circle cx="19" cy="6" r="2.4" />
+          <circle cx="12" cy="18" r="2.4" />
+          <path d="M7.4 6h9.2M6 8.2l4.6 7.6M18 8.2l-4.6 7.6" />
         </svg>
       );
     case "architecture":
