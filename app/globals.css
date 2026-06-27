@@ -17983,3 +17983,139 @@ a.card.group:hover { border-color: rgba(143, 216, 255, 0.45); }
     transform: translate(-50%, -50%);
   }
 }
+
+/* ════════════════════════════════════════════════════════════════════════
+   INSTRUMENT DECK v1 — homepage tablet repair + density polish
+   design/homepage-instrument-deck-v1. Rendering/interaction only.
+   Screenshot-grounded: kills the iPad white-line band, hero blur, overflow,
+   and tightens the page-end. Desktop is preserved.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Overflow: clip (not hidden) avoids the scroll-container hairline seam that
+   the old `overflow-x: hidden + overflow-y: visible` combo can produce. */
+main {
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+/* Touch devices: remove the fixed full-viewport overlays. body::after is a
+   repeating horizontal band (background-size: 100% 9rem) — the prime suspect
+   for the white horizontal line seen while scrolling on iPad. Also stop the
+   animated hero sweep that can paint a moving light band / soften text. */
+@media (pointer: coarse) {
+  body::before,
+  body::after {
+    display: none !important;
+  }
+  .awb__glow {
+    display: none !important;
+    animation: none !important;
+  }
+  .site-header {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* Real tablet tier (the missing 641–1024 breakpoint). */
+@media (max-width: 1024px) {
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: clip;
+  }
+  body::before,
+  body::after {
+    display: none;
+  }
+  .site-header > .container {
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    padding-top: 10px;
+    padding-bottom: 8px;
+  }
+  .site-header > .container > nav[aria-label="Primary navigation"] {
+    order: 3;
+    flex-basis: 100%;
+    width: 100%;
+    gap: 0.95rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--moon-border-bright) transparent;
+  }
+  .site-header .cta {
+    display: none !important;
+  }
+  .site-header .nav-link {
+    min-width: max-content;
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+  }
+  .awb {
+    grid-template-columns: 1fr;
+  }
+  .awb__glow {
+    display: none;
+  }
+  /* Crisp solid hero headline instead of gradient-clipped text, which renders
+     soft/blurry in Safari — the reported iPad hero softness. */
+  .awb__accent {
+    -webkit-text-fill-color: var(--silver-bright);
+    color: var(--silver-bright);
+    background: none;
+  }
+  .awb__metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .awb__pipeline {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .awb__pipe-item {
+    flex: 1 1 calc(33.333% - 6px);
+  }
+  .awb__pipe-link {
+    display: none;
+  }
+  .orbx__workspace {
+    grid-template-columns: 1fr;
+  }
+  .orbx__stage {
+    max-width: 340px;
+  }
+}
+
+@media (max-width: 680px) {
+  .awb__pipe-item {
+    flex: 1 1 calc(50% - 6px);
+  }
+  .orbx__stage {
+    max-width: 300px;
+  }
+}
+
+/* Tap targets on touch surfaces (~44px). */
+@media (pointer: coarse) {
+  .awb__pipe,
+  .awb__cta,
+  .orbx__stepper button,
+  .sdc__door {
+    min-height: 44px;
+  }
+  .orbx__node {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Finished end-state: tighten the closing boundary section so the page does
+   not read as a false bottom, and give the footer a clear top edge. */
+#trust-boundary {
+  padding-top: clamp(28px, 4vw, 48px);
+  padding-bottom: clamp(36px, 5vw, 56px);
+}
+footer {
+  border-top: 1px solid var(--moon-border);
+}

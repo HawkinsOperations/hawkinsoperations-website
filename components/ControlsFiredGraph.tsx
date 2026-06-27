@@ -99,9 +99,9 @@ export default function ControlsFiredGraph() {
     <div className="cfg" aria-labelledby={titleId} aria-describedby={descId}>
       <header className="cfg__head">
         <div>
-          <p className="cfg__eyebrow">Governance Saves · proof of value</p>
+          <p className="cfg__eyebrow">Governance Saves · generated from source records</p>
           <h3 id={titleId} className="cfg__title">
-            Controls Fired Before Bad Truth Shipped
+            Governance controls that fired before overclaims shipped
           </h3>
           <p id={descId} className="cfg__sub">
             {governanceSavesSummary.publicRenderedCount} public-facing records from{" "}
