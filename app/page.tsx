@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import ControlsFiredGraph from "@components/ControlsFiredGraph";
-import SystemShowcaseHero from "@components/command-center/SystemShowcaseHero";
+import HomeAutomationCockpitV2 from "@components/command-center/HomeAutomationCockpitV2";
+import ProofOfWorkCounterRail from "@components/command-center/ProofOfWorkCounterRail";
 import V1ToV2EvolutionStrip from "@components/command-center/V1ToV2EvolutionStrip";
 import VerifyTerminalDrawer from "@components/command-center/VerifyTerminalDrawer";
+import OrbitInteractionWorkbench from "@components/visual-intelligence/OrbitInteractionWorkbench";
 import CurrentProofSpine from "@components/CurrentProofSpine";
 import HomeAttackCoverageBridge from "@components/HomeAttackCoverageBridge";
 import HomeReviewerBridgeToArtifacts from "@components/HomeReviewerBridgeToArtifacts";
@@ -35,7 +37,10 @@ export default function HomePage() {
     <>
       <section className="cockpit-section">
         <div className="container">
-          <SystemShowcaseHero />
+          <HomeAutomationCockpitV2 />
+          <div className="mt-6">
+            <ProofOfWorkCounterRail />
+          </div>
           <div className="mt-5">
             <VerifyTerminalDrawer />
           </div>
@@ -45,6 +50,17 @@ export default function HomePage() {
           <div className="mt-5">
             <ComplexityStatsRail />
           </div>
+        </div>
+      </section>
+
+      <section id="product-loop" className="cockpit-section--tight">
+        <div className="container">
+          <OrbitInteractionWorkbench
+            mode="loop"
+            eyebrow="Interactive product loop"
+            title="Watch AI-assisted work become reviewer-ready output."
+            intro="Tap any stage in the Hoxline loop to inspect what exists, the AI role, the output artifact, and the next handoff. Runtime and signal claims stay gated until evidence is promoted."
+          />
         </div>
       </section>
 

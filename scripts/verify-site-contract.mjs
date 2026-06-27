@@ -70,7 +70,7 @@ const expectedPrimaryNav = [
   { label: "Proof", href: "/proof/" },
   { label: "Detections", href: "/detections/" },
   { label: "Claim Firewall", href: "/claim-firewall/" },
-  { label: "Architecture", href: "/architecture/" },
+  { label: "AI Automation", href: "/ai-security/" },
   { label: "About", href: "/about/" },
 ];
 const navFailures = [];

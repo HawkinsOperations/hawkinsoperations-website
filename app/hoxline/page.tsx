@@ -14,7 +14,6 @@ import {
   type ReviewerLens,
 } from "@components/proofops";
 import {
-  AuthorityConstellation,
   BoundedMetricsRail,
   CapabilityMaturityGrid,
   ClaimDecisionMatrixVisual,
@@ -22,13 +21,13 @@ import {
   DataPackSourceStrip,
   EvidencePathTimeline,
   GauntletExecutionConsole,
-  LoopStatusOrbit,
   OutputArtifactWall,
   StageStatusChart,
   StillGatedPanel,
   VisualIntelligenceHero,
   VisualModuleRail,
 } from "@components/visual-intelligence";
+import OrbitInteractionWorkbench from "@components/visual-intelligence/OrbitInteractionWorkbench";
 
 export const metadata: Metadata = {
   title: "Hoxline | HawkinsOperations",
@@ -326,10 +325,12 @@ export default function HoxlinePage() {
             eyebrow="Interactive visual intelligence"
             description="The same controlled-loop data is rendered as a stage orbit, authority constellation, evidence path timeline, and claim decision matrix. These visuals make complexity inspectable without turning the website into proof."
           />
-          <div className="vi-grid-2">
-            <LoopStatusOrbit />
-            <AuthorityConstellation />
-          </div>
+          <OrbitInteractionWorkbench
+            mode="loop"
+            eyebrow="Interactive loop"
+            title="The 11-stage Hoxline loop"
+            intro="Tap any stage to inspect what exists, the AI role, the output artifact, and the next handoff. Runtime and signal claims stay gated until evidence is promoted."
+          />
           <div className="mt-5 vi-grid-2">
             <EvidencePathTimeline />
             <ClaimDecisionMatrixVisual />
@@ -529,7 +530,13 @@ export default function HoxlinePage() {
             eyebrow="Seven surfaces, separate authority"
             description="The architecture is intentionally split. Hoxline controls product flow and claim decisions, while proof, source, validation, platform, rendering, and organization routing keep their own authority boundaries."
           />
-          <div className="proofops-grid-3">
+          <OrbitInteractionWorkbench
+            mode="surfaces"
+            eyebrow="Control map"
+            title="Seven surfaces, separate authority"
+            intro="Select a surface to see what it owns, what stays in another gate, and where to inspect it."
+          />
+          <div className="mt-6 proofops-grid-3">
             {authorityMap.map(([repo, role, detail]) => (
               <article key={repo} className="proofops-card">
                 <p className="proofops-kicker">{role}</p>
