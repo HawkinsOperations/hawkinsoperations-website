@@ -2,25 +2,20 @@ import type { Metadata } from "next";
 import ControlsFiredGraph from "@components/ControlsFiredGraph";
 import HomeAutomationCockpitV2 from "@components/command-center/HomeAutomationCockpitV2";
 import ProofOfWorkCounterRail from "@components/command-center/ProofOfWorkCounterRail";
-import V1ToV2EvolutionStrip from "@components/command-center/V1ToV2EvolutionStrip";
-import VerifyTerminalDrawer from "@components/command-center/VerifyTerminalDrawer";
 import OrbitInteractionWorkbench from "@components/visual-intelligence/OrbitInteractionWorkbench";
 import CurrentProofSpine from "@components/CurrentProofSpine";
 import HomeAttackCoverageBridge from "@components/HomeAttackCoverageBridge";
 import HomeReviewerBridgeToArtifacts from "@components/HomeReviewerBridgeToArtifacts";
 import HomeTrustBoundaryPanel from "@components/HomeTrustBoundaryPanel";
 import ProofLoopRail from "@components/ProofLoopRail";
-import ReviewerModeSelector from "@components/ReviewerModeSelector";
 import SixDoorCockpit from "@components/SixDoorCockpit";
 import {
-  AuthorityConstellation,
   BoundedMetricsRail,
   ClaimDecisionMatrixVisual,
   ComplexityStatsRail,
   DataPackSourceStrip,
   OutputArtifactWall,
   StageStatusChart,
-  VisualModuleRail,
 } from "@components/visual-intelligence";
 
 export const metadata: Metadata = {
@@ -40,9 +35,6 @@ export default function HomePage() {
           <HomeAutomationCockpitV2 />
           <div className="mt-6">
             <ProofOfWorkCounterRail />
-          </div>
-          <div className="mt-5">
-            <VerifyTerminalDrawer />
           </div>
           <div className="mt-5">
             <DataPackSourceStrip />
@@ -85,18 +77,6 @@ export default function HomePage() {
           <div className="mt-5">
             <BoundedMetricsRail />
           </div>
-          <div className="mt-5">
-            <AuthorityConstellation compact />
-          </div>
-          <div className="mt-5">
-            <VisualModuleRail />
-          </div>
-        </div>
-      </section>
-
-      <section id="v1-v2-evolution" className="cockpit-section--tight">
-        <div className="container">
-          <V1ToV2EvolutionStrip />
         </div>
       </section>
 
@@ -132,25 +112,6 @@ export default function HomePage() {
       <section id="attack-coverage" className="cockpit-section--tight">
         <div className="container reveal reveal--up">
           <HomeAttackCoverageBridge />
-        </div>
-      </section>
-
-      <section id="reviewer-mode" className="cockpit-section--tight">
-        <div className="container">
-          <div className="home-section__head mb-6">
-            <p className="cockpit-eyebrow">Reviewer mode</p>
-            <h2
-              className="cockpit-headline mt-2"
-              style={{ fontSize: "clamp(1.7rem, 2.8vw, 2.4rem)" }}
-            >
-              Pick the lens you read this site through.
-            </h2>
-            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              The site routes the same proof differently for an executive scan, a proof-pack
-              audit, or a technical deep dive. Use the keyboard arrows to switch lenses.
-            </p>
-          </div>
-          <ReviewerModeSelector />
         </div>
       </section>
 
