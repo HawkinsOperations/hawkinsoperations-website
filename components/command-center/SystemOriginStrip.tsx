@@ -1,6 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { publicStatus } from "@data/generated/public-status.generated";
+
+const currentMetrics = [
+  `${publicStatus.metrics.controls_fired.display_value} controls fired`,
+  `${publicStatus.metrics.validation_fires.display_value} validation fires`,
+  `${publicStatus.metrics.validation_cases.display_value} validation cases`,
+  `${publicStatus.metrics.blocked_claims.display_value} blocked claims`,
+  `${publicStatus.metrics.validation_cases.freshness_status} - ${publicStatus.metrics.validation_cases.source_label}`,
+];
 
 const modes = {
   v1: {
@@ -13,7 +22,7 @@ const modes = {
     title: "V2 separates authority.",
     detail:
       "HawkinsOperations splits source, validation, platform, proof, Hoxline, governance routing, and website rendering so claims cannot outrun evidence.",
-    metrics: ["72 controls fired", "49 validation fires", "106 validation cases", "31 blocked claims"],
+    metrics: currentMetrics,
   },
 };
 

@@ -1,3 +1,4 @@
+import { publicStatus } from "./generated/public-status.generated";
 import { attackFamilies, cyberKillChainStages } from "./attackCoverage";
 
 export type DetectionOpsDatum = {
@@ -38,8 +39,8 @@ export const detectionLifecycleSteps: DetectionLifecycleStep[] = [
   {
     label: "Controlled validation",
     surface: "hawkinsoperations-validation",
-    status: "49 controlled validation fires / 106 validation cases",
-    source: "activity/detection-activity-ledger-v1.json",
+    status: `${publicStatus.metrics.validation_fires.display_value} controlled validation fires / ${publicStatus.metrics.validation_cases.display_value} validation cases`,
+    source: `${publicStatus.metrics.validation_cases.source_repo}/${publicStatus.metrics.validation_cases.source_path} @ ${publicStatus.metrics.validation_cases.source_commit.slice(0, 7)} (${publicStatus.metrics.validation_cases.freshness_status})`,
   },
   {
     label: "Proof ceiling",
@@ -112,10 +113,10 @@ export const detectionOpsInventory: DetectionOpsDatum[] = attackFamilies.flatMap
 
 export const attackOpsSummary = {
   sourceBackedRows: detectionOpsInventory.length,
-  controlledValidationFires: 49,
-  validationCases: 106,
-  publicSafeCount: 0,
+  controlledValidationFires: publicStatus.metrics.validation_fires.value,
+  validationCases: publicStatus.metrics.validation_cases.value,
+  publicSafeCount: publicStatus.metrics.public_safe_count.value,
   source:
-    "hawkinsoperations-detections/detections/DETECTION_FACTORY_INDEX.md and hawkinsoperations-validation/activity/detection-activity-ledger-v1.json",
+    `${publicStatus.metrics.validation_cases.source_repo}/${publicStatus.metrics.validation_cases.source_path} and hawkinsoperations-detections/detections/DETECTION_FACTORY_INDEX.md`,
 } as const;
 
