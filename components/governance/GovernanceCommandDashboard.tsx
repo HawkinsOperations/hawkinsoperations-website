@@ -1,15 +1,17 @@
+import { publicStatus } from "@data/generated/public-status.generated";
 import { governanceSavesSummary } from "@data/governanceSaves";
 import GovernanceCategoryChart from "./GovernanceCategoryChart";
 import GovernanceSaveRecordExplorer from "./GovernanceSaveRecordExplorer";
 
 export default function GovernanceCommandDashboard() {
+  const controlsMetric = publicStatus.metrics.controls_fired;
   return (
     <div className="gov-dashboard">
       <section className="gov-hero" aria-labelledby="governance-command-title">
         <div>
           <p className="cockpit-eyebrow">Governance Saves Control Dashboard</p>
           <h1 id="governance-command-title">
-            {governanceSavesSummary.publicRenderedCount} Unverified Claims Blocked
+            {controlsMetric.display_value} Unverified Claims Blocked
           </h1>
           <p>
             Controls fired before bad security truth shipped. This is a source-backed public subset
@@ -22,8 +24,8 @@ export default function GovernanceCommandDashboard() {
         </div>
         <aside className="gov-counter" aria-label="Governance Saves counter">
           <span>controls fired</span>
-          <strong>{governanceSavesSummary.publicRenderedCount}</strong>
-          <small>{governanceSavesSummary.rangeLabel}</small>
+          <strong>{controlsMetric.display_value}</strong>
+          <small>{controlsMetric.freshness_status} - {controlsMetric.source_label}</small>
           <em>outcome impact totals: not_measured unless source states them</em>
         </aside>
       </section>

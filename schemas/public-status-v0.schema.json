@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hawkinsoperations.com/schemas/public-status-v0.schema.json",
+  "title": "HawkinsOperations Public Status v0",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "generated_at",
+    "generated_by",
+    "generator_commit",
+    "freshness",
+    "sources",
+    "metric_list",
+    "metrics",
+    "known_gaps",
+    "proof_ceiling"
+  ],
+  "properties": {
+    "schema_version": { "const": "public-status-v0" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "generated_by": { "const": "scripts/generate-public-status.mjs" },
+    "generator_commit": { "type": ["string", "null"] },
+    "freshness": {
+      "type": "object",
+      "required": ["status", "max_age_hours", "age_hours"],
+      "properties": {
+        "status": { "enum": ["fresh", "stale", "source_unavailable", "unverified"] },
+        "max_age_hours": { "type": "number" },
+        "age_hours": { "type": "number" }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/source" }
+    },
+    "metric_list": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/metric" }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/metric" }
+    },
+    "known_gaps": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "proof_ceiling": {
+      "type": "object",
+      "required": ["raw", "label", "detail"]
+    }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "required": ["repo", "authority", "path", "available", "method", "notes"],
+      "properties": {
+        "repo": { "type": "string" },
+        "authority": { "type": "string" },
+        "path": { "type": "string" },
+        "commit": { "type": ["string", "null"] },
+        "available": { "type": "boolean" },
+        "method": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+    "metric": {
+      "type": "object",
+      "required": [
+        "id",
+        "label",
+        "value",
+        "unit",
+        "authority",
+        "source_repo",
+        "source_path",
+        "method",
+        "generated_at",
+        "freshness_status",
+        "proof_ceiling",
+        "claim_status",
+        "not_claiming",
+        "display_value",
+        "display_label",
+        "source_label",
+        "source_href"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "value": { "type": ["number", "null"] },
+        "unit": { "type": "string" },
+        "authority": { "type": "string" },
+        "source_repo": { "type": "string" },
+        "source_path": { "type": "string" },
+        "source_commit": { "type": ["string", "null"] },
+        "method": { "type": "string" },
+        "generated_at": { "type": "string", "format": "date-time" },
+        "freshness_status": { "enum": ["fresh", "stale", "source_unavailable", "unverified"] },
+        "proof_ceiling": { "type": "string" },
+        "claim_status": { "type": "string" },
+        "not_claiming": { "type": "array", "items": { "type": "string" } },
+        "blocked_reason": { "type": "string" },
+        "display_value": { "type": "string" },
+        "display_label": { "type": "string" },
+        "detail": { "type": "string" },
+        "source_label": { "type": "string" },
+        "source_href": { "type": "string" },
+        "tone": { "type": "string" }
+      }
+    }
+  }
+}

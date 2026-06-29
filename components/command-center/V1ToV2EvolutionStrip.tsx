@@ -1,6 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { publicStatus } from "@data/generated/public-status.generated";
+
+const currentStats = [
+  "Hoxline control plane",
+  `${publicStatus.metrics.controls_fired.display_value} public-facing controls fired`,
+  `${publicStatus.metrics.proof_records.display_value} proof records`,
+  `${publicStatus.metrics.public_safe_count.display_value} public-safe promotions`,
+  `${publicStatus.metrics.controls_fired.freshness_status} - ${publicStatus.metrics.controls_fired.source_label}`,
+];
 
 const modes = {
   v1: {
@@ -12,7 +21,7 @@ const modes = {
   v2: {
     label: "V2 current system",
     title: "Proof-governed AI security operations with separated authority surfaces.",
-    stats: ["Hoxline control plane", "72 public-facing controls fired", "8 proof records", "0 public-safe promotions"],
+    stats: currentStats,
     note: "Current public truth is governed by proof records, validation, claim boundaries, and human review.",
   },
 };

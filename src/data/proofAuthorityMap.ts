@@ -1,3 +1,4 @@
+import { publicStatus } from "./generated/public-status.generated";
 import type { ShowcaseTone } from "./systemShowcase";
 
 export type ProofAuthorityNode = {
@@ -41,7 +42,7 @@ export const proofAuthorityNodes: ProofAuthorityNode[] = [
     route: "/proof/",
     authority: "hawkinsoperations-proof / hawkinsoperations-platform",
     ceiling: "proof-bounded metrics snapshot",
-    supports: "49 activity fires, 106 validation cases, 8 proof records, 31 blocked claims, 0 public-safe",
+    supports: `${publicStatus.metrics.validation_fires.display_value} activity fires, ${publicStatus.metrics.validation_cases.display_value} validation cases, ${publicStatus.metrics.proof_records.display_value} proof records, ${publicStatus.metrics.blocked_claims.display_value} blocked claims, ${publicStatus.metrics.public_safe_count.display_value} public-safe (${publicStatus.metrics.validation_cases.freshness_status} from ${publicStatus.metrics.validation_cases.source_label})`,
     stillGated: ["runtime truth", "signal truth", "case closure", "customer or production claims"],
     source: "hawkinsoperations-proof README and hawkinsoperations-platform README",
     tone: "cyan",

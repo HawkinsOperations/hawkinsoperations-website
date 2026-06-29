@@ -1,0 +1,88 @@
+name: Public status sync
+
+on:
+  workflow_dispatch:
+    inputs:
+      update_branch:
+        description: "Create or update a PR branch if generated public status drifts."
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+      run_visual:
+        description: "Run Playwright visual QA after generation."
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+  schedule:
+    - cron: "17 11 * * 1"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  public-status-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout website
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate public status
+        run: npm run public-status:generate
+
+      - name: Verify public status
+        run: npm run public-status:verify
+
+      - name: Check site contract
+        run: npm run check:site
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Install Playwright Chromium
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_visual == 'true' }}
+        run: npx playwright install chromium
+
+      - name: Run visual QA
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_visual == 'true' }}
+        run: npm run test:visual
+
+      - name: Detect public status drift
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.update_branch == 'true') }}
+        run: |
+          git diff --exit-code || {
+            echo "Generated public status drift detected."
+            echo "Re-run this workflow manually with update_branch=true, or run npm run public-status:generate locally and open a PR."
+            exit 1
+          }
+
+      - name: Create public status refresh PR
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.update_branch == 'true' }}
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: automation/public-status-data-plane-v0
+          commit-message: Refresh generated public status
+          title: Refresh generated public status
+          body: |
+            Summary:
+            - Regenerates public/data/public-status.json.
+            - Refreshes source-linked freshness metadata.
+            - Does not direct-push to main.
+
+            Proof ceiling:
+            This proves only generated website rendering input and local verification hooks. It does not prove runtime, signal, controlled validation truth, production readiness, customer deployment, public-safe proof, final human approval, merge readiness, or website-as-proof.

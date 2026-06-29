@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { publicStatus } from "@data/generated/public-status.generated";
 import { governanceCategoryLabels, governanceSaves } from "@data/governanceSaves";
 import GovernanceCategoryDistribution from "./GovernanceCategoryDistribution";
 import GovernanceOpsLens from "./GovernanceOpsLens";
@@ -17,6 +18,7 @@ const lensCategoryMap: Record<string, string[]> = {
 };
 
 export default function GovernanceIntelDashboard() {
+  const controlsMetric = publicStatus.metrics.controls_fired;
   const [category, setCategory] = useState<(typeof categories)[number]>("all");
   const [query, setQuery] = useState("");
   const [lens, setLens] = useState("Claim control");
@@ -39,16 +41,18 @@ export default function GovernanceIntelDashboard() {
       <div className="governance-intel__hero">
         <div>
           <p className="cockpit-eyebrow">Governance Saves Control Dashboard</p>
-          <h2 id="governance-intel-title">72 unverified claims blocked.</h2>
+          <h2 id="governance-intel-title">{controlsMetric.display_value} unverified claims blocked.</h2>
           <p>
             Control intelligence for claim boundaries, runtime gates, validation hardening, merge
             authority, and reviewer-readable saves.
           </p>
         </div>
         <div className="governance-intel__counter">
-          <strong>72</strong>
+          <strong>{controlsMetric.display_value}</strong>
           <span>controls fired</span>
-          <small>public-facing records</small>
+          <small>
+            {controlsMetric.freshness_status} - {controlsMetric.source_label}
+          </small>
         </div>
       </div>
       <GovernanceOpsLens active={lens} onChange={setLens} />

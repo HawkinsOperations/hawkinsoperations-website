@@ -44,6 +44,11 @@ const requiredFiles = [
   "src/data/generated/public-status.generated.ts",
   "src/data/publicSurfaceIdentities.ts",
   "public/data/public-status.json",
+  "schemas/public-status-v0.schema.json",
+  "scripts/generate-public-status.mjs",
+  "scripts/verify-public-status.mjs",
+  "docs/public-status-data-plane-v0.md",
+  ".github/workflows/public-status-sync.yml",
   "docs/live-public-surface-stress-test.md",
   "components/CurrentProofSpine.tsx",
   "components/ReviewerRunPath.tsx",
@@ -559,11 +564,17 @@ const stressTestReport = readFileSync(join(root, "docs/live-public-surface-stres
 
 const publicStatusFailures = [];
 for (const term of [
+  "GENERATED_PUBLIC_STATUS_V0",
   "GENERATED_PUBLIC_STATUS_V0_SNAPSHOT",
+  "schema_version",
   "generated_at",
   "generated_by",
+  "generator_commit",
   "generation_mode",
   "snapshot_label",
+  "freshness",
+  "metric_list",
+  "known_gaps",
   "source_repos",
   "source_paths",
   "source_commit_refs",
@@ -577,7 +588,6 @@ for (const term of [
   "owning_routes",
   "reviewer_actions",
   "raw_status_constants",
-  "Controlled test validated",
   "Not public-safe",
   "Rendering only",
   "Website rendering is not proof.",
@@ -587,17 +597,26 @@ for (const term of [
   }
 }
 
-if (publicStatusJson.generated_by !== "GENERATED_PUBLIC_STATUS_V0_SNAPSHOT") {
-  publicStatusFailures.push("public/data/public-status.json must be labeled GENERATED_PUBLIC_STATUS_V0_SNAPSHOT.");
+if (publicStatusJson.schema_version !== "public-status-v0") {
+  publicStatusFailures.push("public/data/public-status.json must use schema_version public-status-v0.");
 }
-if (publicStatusJson.generation_mode !== "bounded_v0_snapshot_fixture") {
-  publicStatusFailures.push("public/data/public-status.json must include generation_mode bounded_v0_snapshot_fixture.");
+if (publicStatusJson.generated_by !== "scripts/generate-public-status.mjs") {
+  publicStatusFailures.push("public/data/public-status.json must point generated_by at scripts/generate-public-status.mjs.");
+}
+if (!publicStatusJson.generator_commit) {
+  publicStatusFailures.push("public/data/public-status.json must include generator_commit.");
+}
+if (publicStatusJson.generation_mode !== "generated_public_status_data_plane_v0") {
+  publicStatusFailures.push("public/data/public-status.json must include generation_mode generated_public_status_data_plane_v0.");
 }
 if (!publicStatusJson.snapshot_label?.includes("Generated public status")) {
   publicStatusFailures.push("public/data/public-status.json must include a generated status snapshot_label.");
 }
 if (publicStatusJson.freshness_window_days !== 14) {
   publicStatusFailures.push("public/data/public-status.json must document the 14-day freshness window.");
+}
+if (publicStatusJson.freshness?.max_age_hours !== 336 || !["fresh", "stale", "source_unavailable", "unverified"].includes(publicStatusJson.freshness?.status)) {
+  publicStatusFailures.push("public/data/public-status.json must include freshness status and 336-hour window.");
 }
 if (publicStatusJson.stale_evaluation?.supported !== true || publicStatusJson.stale_evaluation?.stale_when_older_than_days !== 14) {
   publicStatusFailures.push("public/data/public-status.json must include stale evaluation support tied to the 14-day freshness window.");
@@ -610,6 +629,15 @@ if (!publicStatusJson.no_proof_promotion_statement?.includes("snapshot/rendering
 }
 if (!publicStatusJson.source_ownership_message?.includes("proof") || !publicStatusJson.source_ownership_message?.includes("validation")) {
   publicStatusFailures.push("public/data/public-status.json must include source ownership language.");
+}
+if (!Array.isArray(publicStatusJson.sources) || publicStatusJson.sources.length < 7) {
+  publicStatusFailures.push("public/data/public-status.json must include sources[] for repo authority surfaces.");
+}
+if (!Array.isArray(publicStatusJson.metric_list) || publicStatusJson.metric_list.length < 8) {
+  publicStatusFailures.push("public/data/public-status.json must include metric_list[] for generated metrics.");
+}
+if (!Array.isArray(publicStatusJson.known_gaps) || publicStatusJson.known_gaps.length === 0) {
+  publicStatusFailures.push("public/data/public-status.json must include known_gaps[].");
 }
 for (const routeKey of ["public_status_json", "hoxline", "proof", "validation", "detections", "platform_contracts", "claim_firewall"]) {
   if (!publicStatusJson.owning_routes?.[routeKey]) {
@@ -628,8 +656,20 @@ for (const metricKey of [
 ]) {
   const metric = publicStatusJson.metrics?.[metricKey];
   if (!metric || typeof metric.value !== "number" || typeof metric.display_value !== "string" || !metric.display_label || !metric.source_href) {
-    publicStatusFailures.push(`public/data/public-status.json metrics.${metricKey} must include value, display_value, display_label, and source_href.`);
+    publicStatusFailures.push(`public/data/public-status.json metrics.${metricKey} must include numeric value, display_value, display_label, and source_href.`);
+    continue;
   }
+  for (const field of ["authority", "source_repo", "source_path", "source_commit", "method", "freshness_status", "proof_ceiling", "claim_status", "not_claiming"]) {
+    if (metric[field] === undefined || metric[field] === null || metric[field] === "") {
+      publicStatusFailures.push(`public/data/public-status.json metrics.${metricKey}.${field} is required.`);
+    }
+  }
+  if (!Array.isArray(metric.not_claiming) || !metric.not_claiming.includes("runtime proof")) {
+    publicStatusFailures.push(`public/data/public-status.json metrics.${metricKey}.not_claiming must include runtime proof.`);
+  }
+}
+if (publicStatusJson.metrics?.public_safe_count?.value !== 0 || publicStatusJson.public_safe?.value !== false) {
+  publicStatusFailures.push("public/data/public-status.json must keep public-safe count at zero and public_safe false.");
 }
 if (!Array.isArray(publicStatusJson.reviewer_actions?.inspect_online) || publicStatusJson.reviewer_actions.inspect_online.length < 4) {
   publicStatusFailures.push("public/data/public-status.json must include reviewer_actions.inspect_online with at least four source routes.");
@@ -640,7 +680,7 @@ if (publicStatusJson.reviewer_actions?.download_json?.href !== "/data/public-sta
 if (!publicStatusJson.reviewer_actions?.clone_repo?.command?.includes("git clone https://github.com/HawkinsOperations/hoxline.git")) {
   publicStatusFailures.push("public/data/public-status.json must include the Hoxline clone command.");
 }
-for (const command of ["python -B -m hoxline demo quickstart", "python -B -m pytest -q tests", "python -B -m hoxline gauntlet verify", "npm run check:site", "npm run build"]) {
+for (const command of ["npm run public-status:generate", "npm run public-status:verify", "npm run check:site", "npm run typecheck", "npm run test:visual"]) {
   if (!publicStatusJson.reviewer_actions?.run_commands?.some((entry) => entry.command.includes(command))) {
     publicStatusFailures.push(`public/data/public-status.json reviewer_actions.run_commands must include ${command}.`);
   }

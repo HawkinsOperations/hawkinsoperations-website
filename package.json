@@ -10,6 +10,8 @@
     "test:visual": "playwright test",
     "test:visual:headed": "playwright test --headed",
     "typecheck": "tsc --noEmit",
+    "public-status:generate": "node scripts/generate-public-status.mjs",
+    "public-status:verify": "node scripts/verify-public-status.mjs",
     "generate:brand-assets": "node scripts/generate-brand-assets.mjs"
   },
   "dependencies": {
