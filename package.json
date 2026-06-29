@@ -7,6 +7,8 @@
     "build": "next build && node scripts/finalize-dist.mjs",
     "check:site": "node scripts/verify-site-contract.mjs",
     "preview": "npx --yes serve dist",
+    "test:visual": "playwright test",
+    "test:visual:headed": "playwright test --headed",
     "typecheck": "tsc --noEmit",
     "generate:brand-assets": "node scripts/generate-brand-assets.mjs"
   },
@@ -16,6 +18,7 @@
     "react-dom": "18.3.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4.2.4",
     "@types/node": "^22.10.0",
     "@types/react": "^18.3.12",

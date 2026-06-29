@@ -18119,3 +18119,210 @@ main {
 footer {
   border-top: 1px solid var(--moon-border);
 }
+
+/* ════════════════════════════════════════════════════════════════════════
+   COMMAND SURFACE MOTION v1 — landing hero elevation (design / rendering only)
+   06-28-26 landing_page_visual_design_only_v1.
+   Elevates the existing above-the-fold cockpit (.awb) into a governed
+   command surface: an operator signal field, artifacts moving through gates,
+   a live active-gate pulse, a flowing evidence rail, and a clearer
+   safe-flow vs held/gated reading.
+   Boundaries: no copy, claim, status, route, or dependency change. Every
+   animation below is reduced-motion AND coarse-pointer guarded (see the two
+   guard blocks at the end), and the hero "signal field" is hosted on the
+   already coarse/≤1024px-hidden .awb__glow layer so tablet + mobile stay
+   clean (no moving bands, no overflow). Desktop-only premium texture.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Operator signal field — faint blueprint grid + a slow diagonal trace beam,
+   layered on the existing decorative hero glow (desktop only). */
+.awb__glow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(143, 216, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(143, 216, 255, 0.05) 1px, transparent 1px);
+  background-size: 46px 46px;
+  -webkit-mask: radial-gradient(125% 95% at 0% 0%, #000 6%, transparent 60%);
+  mask: radial-gradient(125% 95% at 0% 0%, #000 6%, transparent 60%);
+  opacity: 0.7;
+}
+.awb__glow::after {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: 0;
+  width: 55%;
+  height: 180%;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(103, 232, 249, 0.06) 46%,
+    rgba(103, 232, 249, 0.12) 52%,
+    transparent 100%
+  );
+  filter: blur(2px);
+  animation: awbTraceBeam 9s ease-in-out infinite;
+}
+@keyframes awbTraceBeam {
+  0%   { transform: translateX(-60%) rotate(8deg); opacity: 0; }
+  18%  { opacity: 1; }
+  82%  { opacity: 1; }
+  100% { transform: translateX(240%) rotate(8deg); opacity: 0; }
+}
+
+/* Artifacts moving through gates — a light token travels each pipeline
+   connector toward the next gate. Connectors only render above 1024px. */
+.awb__pipe-link {
+  position: relative;
+  overflow: hidden;
+}
+.awb__pipe-link::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 45%;
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--ice-blue), transparent);
+  box-shadow: 0 0 6px 0 var(--ice-blue-glow);
+  animation: awbGateFlow 2.6s linear infinite;
+}
+.awb__pipe-item:nth-child(2) .awb__pipe-link::after { animation-delay: 0.52s; }
+.awb__pipe-item:nth-child(3) .awb__pipe-link::after { animation-delay: 1.04s; }
+.awb__pipe-item:nth-child(4) .awb__pipe-link::after { animation-delay: 1.56s; }
+.awb__pipe-item:nth-child(5) .awb__pipe-link::after { animation-delay: 2.08s; }
+@keyframes awbGateFlow {
+  0%   { transform: translateX(-120%); opacity: 0; }
+  35%  { opacity: 1; }
+  100% { transform: translateX(240%); opacity: 0; }
+}
+
+/* Live gate — the active stage button reads as currently evaluating. */
+.awb__pipe { position: relative; }
+.awb__pipe.is-active::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 11px;
+  pointer-events: none;
+  border: 1px solid var(--ice-blue);
+  opacity: 0.35;
+  animation: awbGatePulse 2.4s ease-in-out infinite;
+}
+@keyframes awbGatePulse {
+  0%, 100% { opacity: 0.16; box-shadow: 0 0 0 0 rgba(143, 216, 255, 0); }
+  50%      { opacity: 0.55; box-shadow: 0 0 16px -2px var(--ice-blue-glow); }
+}
+.awb__pipe:focus-visible {
+  outline: 2px solid var(--ice-blue);
+  outline-offset: 2px;
+}
+
+/* Evidence rail — a soft highlight flows down the active stage accent bar,
+   reading as live evidence held against the artifact. Height-independent
+   (animates background-position so it works for any panel height). */
+.awb__stage::before {
+  background-color: var(--awb-accent, var(--ice-blue));
+  background-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(248, 251, 255, 0.85) 50%,
+    transparent 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 36%;
+  background-position: 0 -40%;
+  animation: awbRailSheen 4.5s ease-in-out infinite;
+}
+@keyframes awbRailSheen {
+  0%   { background-position: 0 -40%; }
+  100% { background-position: 0 140%; }
+}
+
+/* Safe flow vs held / gated — give the evidence-scoped claim lane an amber
+   "held" edge and a soft hold pulse so it reads as a blocked lane distinct
+   from the cyan safe path. Copy is unchanged. */
+.awb__gated {
+  position: relative;
+  overflow: hidden;
+}
+.awb__gated::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #fcd34d, rgba(250, 204, 21, 0.22));
+}
+.awb__gated-dot {
+  animation: awbHoldPulse 2.8s ease-in-out infinite;
+}
+.awb__badge--gated {
+  animation: awbHoldPulse 2.8s ease-in-out infinite;
+}
+@keyframes awbHoldPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(252, 211, 77, 0.55); }
+  50%      { box-shadow: 0 0 0 4px rgba(252, 211, 77, 0); }
+}
+
+/* Primary CTA — restrained one-shot sheen on hover only (no idle motion). */
+.awb__cta--primary {
+  position: relative;
+  overflow: hidden;
+}
+.awb__cta--primary::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent, rgba(248, 251, 255, 0.32), transparent);
+  transform: skewX(-18deg);
+  opacity: 0;
+}
+.awb__cta--primary:hover::after {
+  animation: awbCtaSheen 0.9s ease;
+}
+@keyframes awbCtaSheen {
+  0%   { left: -60%; opacity: 0; }
+  22%  { opacity: 1; }
+  100% { left: 130%; opacity: 0; }
+}
+
+/* Reduced motion — disable every command-surface animation added above. */
+@media (prefers-reduced-motion: reduce) {
+  .awb__glow::after,
+  .awb__pipe-link::after,
+  .awb__pipe.is-active::after,
+  .awb__stage::before,
+  .awb__gated-dot,
+  .awb__badge--gated,
+  .awb__cta--primary:hover::after {
+    animation: none !important;
+  }
+  .awb__glow::after { opacity: 0; }
+  .awb__pipe-link::after { opacity: 0; }
+  .awb__stage::before { background-image: none; }
+}
+
+/* Coarse pointer (touch) — keep tablet + mobile static and clean. The hero
+   field is already hidden with .awb__glow; here we also still the localized
+   pulses so nothing animates on touch surfaces. */
+@media (pointer: coarse) {
+  .awb__pipe-link::after,
+  .awb__pipe.is-active::after,
+  .awb__stage::before,
+  .awb__gated-dot,
+  .awb__badge--gated {
+    animation: none !important;
+  }
+  .awb__stage::before { background-image: none; }
+}

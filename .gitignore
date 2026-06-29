@@ -7,3 +7,5 @@ out/
 .wrangler/
 npm-debug.log*
 tsconfig.tsbuildinfo
+test-results/
+playwright-report/
