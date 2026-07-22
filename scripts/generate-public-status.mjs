@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -51,8 +52,8 @@ const repoSpecs = [
     repo: "HawkinsOperations/hawkinsoperations-proof",
     authority: "proof/claim-authority truth",
     dir: join(orgRoot, "hawkinsoperations-proof"),
-    publicPath: "proof/records/reviewer-metrics-pipeline-v1-summary.json",
-    method: "read proof-owned reviewer-safe summary metrics",
+    publicPath: "proof/indexes/DETECTION_PROOF_STATUS_INDEX.yml",
+    method: "derive current proof-record and ProofCard counts from unique non-null paths in the proof-owned current-authority index",
   },
   {
     repo: "HawkinsOperations/hawkinsoperations-website",
@@ -78,19 +79,48 @@ function readJson(repoDir, repoPath) {
   return JSON.parse(readFileSync(fullPath, "utf8"));
 }
 
+function sha256File(path) {
+  return existsSync(path) ? createHash("sha256").update(readFileSync(path)).digest("hex") : null;
+}
+
+function committedText(dir, commit, path) {
+  if (!commit) return null;
+  try {
+    return execFileSync("git", ["-c", `safe.directory=${dir.replaceAll("\\", "/")}`, "-C", dir, "show", `${commit}:${path}`], {
+      encoding: "utf8",
+    });
+  } catch {
+    return null;
+  }
+}
+
+function sha256Text(value) {
+  return value === null ? null : createHash("sha256").update(value, "utf8").digest("hex");
+}
+
 function repoSource(spec) {
-  const available = existsSync(spec.dir);
-  const commit = available ? runGit(spec.dir, ["rev-parse", "HEAD"]) : null;
+  const repoAvailable = existsSync(spec.dir);
+  const repositoryCommit = repoAvailable ? runGit(spec.dir, ["rev-parse", "HEAD"]) : null;
+  const commit = repoAvailable ? runGit(spec.dir, ["log", "-1", "--format=%H", "--", spec.publicPath]) || repositoryCommit : null;
+  const sourceText = repoAvailable ? committedText(spec.dir, commit, spec.publicPath) : null;
+  const available = sourceText !== null;
+  const resolvedRef = repoAvailable ? runGit(spec.dir, ["branch", "--show-current"]) || repositoryCommit : null;
   return {
     repo: spec.repo,
     authority: spec.authority,
     path: spec.publicPath,
     commit,
+    repository_commit: repositoryCommit,
+    resolved_ref: resolvedRef,
+    source_fingerprint_sha256: sha256Text(sourceText),
+    freshness_state: available && commit ? "fresh" : "source_unavailable",
+    historical_snapshot: false,
+    current_authority: true,
     available,
     method: spec.method,
     notes: available
-      ? "Source repository is locally available for generation."
-      : "Source repository unavailable locally; generation must fail closed for metrics that depend on it.",
+      ? "Authoritative source path is locally available at the recorded repository revision."
+      : "Authoritative source path is unavailable locally; dependent metrics fail closed.",
   };
 }
 
@@ -105,11 +135,8 @@ function githubHref(repo, sourcePath, commit) {
 }
 
 function countPublicGovernanceSaves() {
-  const repoDir = websiteRoot;
-  const sourcePath = "src/data/governanceSaves.ts";
-  const fullPath = join(repoDir, sourcePath);
-  if (!existsSync(fullPath)) return null;
-  const source = readFileSync(fullPath, "utf8");
+  const source = committedText(websiteRoot, sourceByRepo["HawkinsOperations/hawkinsoperations-website"]?.commit, "src/data/governanceSaves.ts");
+  if (source === null) return null;
   const records = [...source.matchAll(/\{\s*id: "GS-[\s\S]*?\n\s*\}/g)].map((match) => match[0]);
   if (records.length === 0) return null;
   return records.filter((record) => !record.includes('publicSafety: "PRIVATE_ONLY"')).length;
@@ -122,21 +149,57 @@ const platformRepo = repoSpecs.find((spec) => spec.repo.endsWith("hawkinsoperati
 const validationRepo = repoSpecs.find((spec) => spec.repo.endsWith("hawkinsoperations-validation"));
 const websiteRepo = repoSpecs.find((spec) => spec.repo.endsWith("hawkinsoperations-website"));
 
-const proofSummary = proofRepo && existsSync(proofRepo.dir)
-  ? readJson(proofRepo.dir, "proof/records/reviewer-metrics-pipeline-v1-summary.json")
+let proofSummary = null;
+let lifetimeLedger = null;
+const platformStateText = platformRepo
+  ? committedText(platformRepo.dir, sourceByRepo["HawkinsOperations/hawkinsoperations-platform"]?.commit, platformRepo.publicPath)
   : null;
-const lifetimeLedger = proofRepo && existsSync(proofRepo.dir)
-  ? readJson(proofRepo.dir, "proof/records/lifetime-case-ledger-v1-public-summary.json")
+const validationLedgerText = validationRepo
+  ? committedText(validationRepo.dir, sourceByRepo["HawkinsOperations/hawkinsoperations-validation"]?.commit, validationRepo.publicPath)
   : null;
-const platformState = platformRepo && existsSync(platformRepo.dir)
-  ? readJson(platformRepo.dir, "contracts/reviewer-metrics-pipeline-v1-state.json")
-  : null;
-const validationLedger = validationRepo && existsSync(validationRepo.dir)
-  ? readJson(validationRepo.dir, "activity/detection-activity-ledger-v1.json")
-  : null;
+const platformState = platformStateText === null ? null : JSON.parse(platformStateText);
+const validationLedger = validationLedgerText === null ? null : JSON.parse(validationLedgerText);
 const publicGovernanceSaveCount = countPublicGovernanceSaves();
 
-function sourceUnavailableMetric(id, label, unit, source) {
+function sourceVariant(source, path, method, { historicalSnapshot, currentAuthority }) {
+  const commit = source ? runGit(proofRepo.dir, ["log", "-1", "--format=%H", "--", path]) || source.commit : null;
+  const sourceText = source ? committedText(proofRepo.dir, commit, path) : null;
+  const available = sourceText !== null;
+  return source
+    ? {
+        ...source,
+        path,
+        commit,
+        method,
+        available,
+        source_fingerprint_sha256: sha256Text(sourceText),
+        freshness_state: available && source.commit ? "fresh" : "source_unavailable",
+        historical_snapshot: historicalSnapshot,
+        current_authority: currentAuthority,
+      }
+    : source;
+}
+
+function deriveProofIndexCounts() {
+  const text = proofRepo && proofSource
+    ? committedText(proofRepo.dir, proofSource.commit, "proof/indexes/DETECTION_PROOF_STATUS_INDEX.yml")
+    : null;
+  if (text === null) return null;
+  const historicalSnapshot = /^\s*historical_snapshot:\s*true\s*$/m.test(text);
+  const currentAuthority = /^\s*current_authority:\s*true\s*$/m.test(text);
+  if (historicalSnapshot || !currentAuthority) return null;
+  const records = [...text.matchAll(/^\s+proof_record_path:\s*([^#\r\n]+?)\s*$/gm)]
+    .map((match) => match[1].trim())
+    .filter((value) => value !== "null" && value !== "~");
+  const cards = [...text.matchAll(/^\s+proof_card_path:\s*([^#\r\n]+?)\s*$/gm)]
+    .map((match) => match[1].trim())
+    .filter((value) => value !== "null" && value !== "~");
+  if (new Set(records).size !== records.length || new Set(cards).size !== cards.length) return null;
+  const publicSafeCount = [...text.matchAll(/^\s+public_safe_status:\s*PUBLIC_SAFE_APPROVED\s*$/gm)].length;
+  return { proof_record_count: records.length, proof_card_count: cards.length, public_safe_count: publicSafeCount };
+}
+
+function sourceUnavailableMetric(id, label, unit, source, method) {
   return {
     id,
     label,
@@ -146,13 +209,18 @@ function sourceUnavailableMetric(id, label, unit, source) {
     source_repo: source?.repo ?? "unknown",
     source_path: source?.path ?? "unknown",
     source_commit: source?.commit ?? null,
-    method: source?.method ?? "source unavailable",
+    source_repository_commit: source?.repository_commit ?? null,
+    source_resolved_ref: source?.resolved_ref ?? null,
+    source_fingerprint_sha256: source?.source_fingerprint_sha256 ?? null,
+    method: method ?? source?.method ?? "source unavailable",
     generated_at: generatedAt,
     freshness_status: "source_unavailable",
+    historical_snapshot: source?.historical_snapshot ?? false,
+    current_authority: source?.current_authority ?? false,
     proof_ceiling: proofCeiling,
     claim_status: "source_unavailable",
     not_claiming: notClaiming(),
-    blocked_reason: "Required public source artifact is unavailable or unreadable.",
+    blocked_reason: "Required public source artifact is unavailable, unreadable, or fails its authority derivation contract.",
     display_value: "Unavailable",
     display_label: label,
     detail: "source unavailable; no public metric promoted",
@@ -177,9 +245,9 @@ function notClaiming() {
 
 function metric({ id, label, value, unit = "count", source, method, detail, tone, claimStatus = "bounded_generated_count", blockedReason }) {
   if (typeof value !== "number" || !source?.available || !source.commit) {
-    return sourceUnavailableMetric(id, label, unit, source);
+    return sourceUnavailableMetric(id, label, unit, source, method);
   }
-  const freshnessStatus = "fresh";
+  const freshnessStatus = source.freshness_state;
   return {
     id,
     label,
@@ -189,16 +257,21 @@ function metric({ id, label, value, unit = "count", source, method, detail, tone
     source_repo: source.repo,
     source_path: source.path,
     source_commit: source.commit,
+    source_repository_commit: source.repository_commit,
+    source_resolved_ref: source.resolved_ref,
+    source_fingerprint_sha256: source.source_fingerprint_sha256,
     method,
     generated_at: generatedAt,
     freshness_status: freshnessStatus,
+    historical_snapshot: source.historical_snapshot,
+    current_authority: source.current_authority,
     proof_ceiling: proofCeiling,
     claim_status: claimStatus,
     not_claiming: notClaiming(),
     ...(blockedReason ? { blocked_reason: blockedReason } : {}),
     display_value: String(value),
     display_label: label.replace(/\b\w/g, (letter) => letter.toUpperCase()),
-    detail: `${freshnessStatus} from ${source.path} @ ${shortCommit(source.commit)}`,
+    detail: `${source.historical_snapshot ? "historical snapshot" : freshnessStatus} from ${source.path} @ ${shortCommit(source.commit)}`,
     source_label: `${source.repo.replace("HawkinsOperations/", "")} ${shortCommit(source.commit)}`,
     source_href: githubHref(source.repo, source.path, source.commit),
     tone,
@@ -208,13 +281,27 @@ function metric({ id, label, value, unit = "count", source, method, detail, tone
 const proofSource = sourceByRepo["HawkinsOperations/hawkinsoperations-proof"];
 const platformSource = sourceByRepo["HawkinsOperations/hawkinsoperations-platform"];
 const websiteSource = sourceByRepo["HawkinsOperations/hawkinsoperations-website"];
-const lifetimeLedgerSource = proofSource
-  ? {
-      ...proofSource,
-      path: "proof/records/lifetime-case-ledger-v1-public-summary.json",
-      method: "read proof-owned lifetime case ledger public summary",
-    }
-  : proofSource;
+const proofSummarySource = sourceVariant(
+  proofSource,
+  "proof/records/reviewer-metrics-pipeline-v1-summary.json",
+  "read explicitly historical proof-owned reviewer metrics summary",
+  { historicalSnapshot: true, currentAuthority: false },
+);
+const lifetimeLedgerSource = sourceVariant(
+  proofSource,
+  "proof/records/lifetime-case-ledger-v1-public-summary.json",
+  "read explicitly historical proof-owned lifetime case ledger public summary",
+  { historicalSnapshot: true, currentAuthority: false },
+);
+const proofSummaryText = proofSummarySource
+  ? committedText(proofRepo.dir, proofSummarySource.commit, proofSummarySource.path)
+  : null;
+const lifetimeLedgerText = lifetimeLedgerSource
+  ? committedText(proofRepo.dir, lifetimeLedgerSource.commit, lifetimeLedgerSource.path)
+  : null;
+proofSummary = proofSummaryText === null ? null : JSON.parse(proofSummaryText);
+lifetimeLedger = lifetimeLedgerText === null ? null : JSON.parse(lifetimeLedgerText);
+const proofIndexCounts = deriveProofIndexCounts();
 const proofMetrics = proofSummary?.metrics ?? platformState?.metrics ?? {};
 const ledgerCounts = lifetimeLedger?.ledger_counts ?? {};
 
@@ -232,36 +319,45 @@ const metrics = {
     id: "validation_fires",
     label: "validation fires",
     value: proofMetrics.controlled_validation_fire_count,
-    source: proofSource,
-    method: "read proof-owned reviewer metrics summary controlled_validation_fire_count",
-    detail: "controlled validation activity fires",
+    source: proofSummarySource,
+    method: "read historical proof-owned reviewer metrics summary controlled_validation_fire_count",
+    detail: "historical controlled validation activity fires",
     tone: "green",
   }),
   validation_cases: metric({
     id: "validation_cases",
     label: "validation cases",
     value: proofMetrics.validation_case_count,
-    source: proofSource,
-    method: "read proof-owned reviewer metrics summary validation_case_count",
-    detail: "controlled validation case count",
+    source: proofSummarySource,
+    method: "read historical proof-owned reviewer metrics summary validation_case_count",
+    detail: "historical controlled validation case count",
     tone: "green",
   }),
   proof_records: metric({
     id: "proof_records",
     label: "proof records",
-    value: proofMetrics.proof_record_count,
+    value: proofIndexCounts?.proof_record_count,
     source: proofSource,
-    method: "read proof-owned reviewer metrics summary proof_record_count",
-    detail: "proof-record activity metric",
+    method: "derive count of unique non-null proof_record_path values from current-authority proof status index",
+    detail: "current proof-record path count",
+    tone: "amber",
+  }),
+  proof_cards: metric({
+    id: "proof_cards",
+    label: "ProofCards",
+    value: proofIndexCounts?.proof_card_count,
+    source: proofSource,
+    method: "derive count of unique non-null proof_card_path values from current-authority proof status index",
+    detail: "current ProofCard path count",
     tone: "amber",
   }),
   blocked_claims: metric({
     id: "blocked_claims",
     label: "claims blocked",
     value: proofMetrics.blocked_claim_count,
-    source: proofSource,
-    method: "read proof-owned reviewer metrics summary blocked_claim_count",
-    detail: "reviewer metrics blocked-claim count",
+    source: proofSummarySource,
+    method: "read historical proof-owned reviewer metrics summary blocked_claim_count",
+    detail: "historical reviewer metrics blocked-claim count",
     tone: "red",
   }),
   governed_cases: metric({
@@ -285,9 +381,9 @@ const metrics = {
   public_safe_count: metric({
     id: "public_safe_count",
     label: "public-safe",
-    value: proofMetrics.public_safe_count ?? ledgerCounts.public_safe_count,
+    value: proofIndexCounts?.public_safe_count,
     source: proofSource,
-    method: "read proof-owned reviewer metrics public_safe_count; keep zero unless proof-owned approval exists",
+    method: "derive zero approved public-safe entries from the current-authority proof status index; fail closed otherwise",
     detail: "public-safe count remains zero",
     tone: "neutral",
     claimStatus: "blocked_not_public_safe",
@@ -306,15 +402,19 @@ const sourceUnavailable = sources.filter((source) => !source.available).map((sou
 const metricList = Object.values(metrics);
 const hasUnavailableMetric = metricList.some((item) => item.freshness_status !== "fresh");
 const status = hasUnavailableMetric ? "source_unavailable" : "fresh";
-const websiteCommit = sourceByRepo["HawkinsOperations/hawkinsoperations-website"]?.commit ?? null;
+const websiteCommit = sourceByRepo["HawkinsOperations/hawkinsoperations-website"]?.repository_commit ?? null;
 
 const publicStatus = {
   schema_version: "public-status-v0",
   generated_at: generatedAt,
   generated_by: "scripts/generate-public-status.mjs",
   generator_commit: websiteCommit,
+  generator_fingerprint_sha256: sha256File(join(websiteRoot, "scripts/generate-public-status.mjs")),
   generation_mode: "generated_public_status_data_plane_v0",
   snapshot_label: "Generated public status v0 data plane",
+  snapshot_class: "current_generated_rendering_snapshot",
+  historical_snapshot: false,
+  current_authority: false,
   freshness_window_days: 14,
   freshness: {
     status,
@@ -331,8 +431,13 @@ const publicStatus = {
   source_repos: sources.map((source) => source.repo),
   source_paths: sources.map((source) => `${source.repo.replace("HawkinsOperations/", "")}/${source.path}`),
   source_commit_refs: Object.fromEntries(sources.map((source) => [source.repo.replace("HawkinsOperations/", ""), source.commit])),
+  source_repository_commit_refs: Object.fromEntries(
+    sources.map((source) => [source.repo.replace("HawkinsOperations/", ""), source.repository_commit]),
+  ),
   metric_list: metricList,
   metrics,
+  current_metric_ids: metricList.filter((item) => item.current_authority).map((item) => item.id),
+  historical_metric_ids: metricList.filter((item) => item.historical_snapshot).map((item) => item.id),
   known_gaps: [
     ...sourceUnavailable,
     {
@@ -342,8 +447,8 @@ const publicStatus = {
     },
     {
       id: "hoxline_local_path_artifacts_not_published",
-      status: "unverified",
-      detail: "Hoxline local case-growth artifacts can contain absolute local paths and are not copied into website public JSON.",
+      status: "blocked_boundary",
+      detail: "Local Hoxline execution artifacts are not copied into website public JSON; only sanitized repository-relative source identifiers are allowed.",
     },
     {
       id: "validation_ledger_counts_not_used_to_inflate_public_snapshot",

@@ -8,10 +8,18 @@
     "generated_at",
     "generated_by",
     "generator_commit",
+    "generator_fingerprint_sha256",
+    "snapshot_class",
+    "historical_snapshot",
+    "current_authority",
     "freshness",
     "sources",
+    "source_commit_refs",
+    "source_repository_commit_refs",
     "metric_list",
     "metrics",
+    "current_metric_ids",
+    "historical_metric_ids",
     "known_gaps",
     "proof_ceiling"
   ],
@@ -20,6 +28,10 @@
     "generated_at": { "type": "string", "format": "date-time" },
     "generated_by": { "const": "scripts/generate-public-status.mjs" },
     "generator_commit": { "type": ["string", "null"] },
+    "generator_fingerprint_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "snapshot_class": { "const": "current_generated_rendering_snapshot" },
+    "historical_snapshot": { "const": false },
+    "current_authority": { "const": false },
     "freshness": {
       "type": "object",
       "required": ["status", "max_age_hours", "age_hours"],
@@ -41,6 +53,24 @@
       "type": "object",
       "additionalProperties": { "$ref": "#/$defs/metric" }
     },
+    "source_commit_refs": {
+      "type": "object",
+      "additionalProperties": { "type": ["string", "null"] }
+    },
+    "source_repository_commit_refs": {
+      "type": "object",
+      "additionalProperties": { "type": ["string", "null"] }
+    },
+    "current_metric_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "historical_metric_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
     "known_gaps": {
       "type": "array",
       "items": { "type": "object" }
@@ -53,12 +83,32 @@
   "$defs": {
     "source": {
       "type": "object",
-      "required": ["repo", "authority", "path", "available", "method", "notes"],
+      "required": [
+        "repo",
+        "authority",
+        "path",
+        "commit",
+        "repository_commit",
+        "resolved_ref",
+        "source_fingerprint_sha256",
+        "freshness_state",
+        "historical_snapshot",
+        "current_authority",
+        "available",
+        "method",
+        "notes"
+      ],
       "properties": {
         "repo": { "type": "string" },
         "authority": { "type": "string" },
         "path": { "type": "string" },
         "commit": { "type": ["string", "null"] },
+        "repository_commit": { "type": ["string", "null"] },
+        "resolved_ref": { "type": ["string", "null"] },
+        "source_fingerprint_sha256": { "type": ["string", "null"] },
+        "freshness_state": { "enum": ["fresh", "stale", "source_unavailable", "unverified"] },
+        "historical_snapshot": { "type": "boolean" },
+        "current_authority": { "type": "boolean" },
         "available": { "type": "boolean" },
         "method": { "type": "string" },
         "notes": { "type": "string" }
@@ -74,9 +124,14 @@
         "authority",
         "source_repo",
         "source_path",
+        "source_repository_commit",
+        "source_resolved_ref",
+        "source_fingerprint_sha256",
         "method",
         "generated_at",
         "freshness_status",
+        "historical_snapshot",
+        "current_authority",
         "proof_ceiling",
         "claim_status",
         "not_claiming",
@@ -94,9 +149,14 @@
         "source_repo": { "type": "string" },
         "source_path": { "type": "string" },
         "source_commit": { "type": ["string", "null"] },
+        "source_repository_commit": { "type": ["string", "null"] },
+        "source_resolved_ref": { "type": ["string", "null"] },
+        "source_fingerprint_sha256": { "type": ["string", "null"] },
         "method": { "type": "string" },
         "generated_at": { "type": "string", "format": "date-time" },
         "freshness_status": { "enum": ["fresh", "stale", "source_unavailable", "unverified"] },
+        "historical_snapshot": { "type": "boolean" },
+        "current_authority": { "type": "boolean" },
         "proof_ceiling": { "type": "string" },
         "claim_status": { "type": "string" },
         "not_claiming": { "type": "array", "items": { "type": "string" } },
