@@ -217,8 +217,11 @@ function semanticIssues(candidate, { now = new Date(), checkLocalSources = true 
     const currentPathCommit = runGit(repoDir, ["log", "-1", "--format=%H", "--", path]);
     const currentRepositoryCommit = runGit(repoDir, ["rev-parse", "HEAD"]);
     const repositoryCommit = source.source_repository_commit ?? source.repository_commit;
+    const directParent = runGit(repoDir, ["rev-parse", "HEAD^"]);
+    const boundedHoxlineSnapshotCycle = repo === "HawkinsOperations/hoxline" &&
+      repositoryCommit === directParent && commit === currentPathCommit;
     if (commit !== currentPathCommit) issues.push(`${repo}/${path} records ${commit} but current source-path revision is ${currentPathCommit}.`);
-    if (repo !== "HawkinsOperations/hawkinsoperations-website" && repositoryCommit !== currentRepositoryCommit) {
+    if (repo !== "HawkinsOperations/hawkinsoperations-website" && repositoryCommit !== currentRepositoryCommit && !boundedHoxlineSnapshotCycle) {
       issues.push(`${repo}/${path} records repository revision ${repositoryCommit} but current HEAD is ${currentRepositoryCommit}.`);
     }
     const revisionText = committedText(repoDir, commit, path);
@@ -427,6 +430,16 @@ if ((process.argv.includes("--self-test") || ownerSelfTestOnly) && status) {
         value.metric_list.find((metric) => metric.id === "proof_records").source_fingerprint_sha256 = hostileFingerprint;
       },
       expected: "stated committed revision",
+      checkLocalSources: true,
+    },
+    {
+      name: "unreachable repository revision",
+      mutate: (value) => {
+        const source = value.sources.find((item) => item.repo === "HawkinsOperations/hoxline");
+        source.repository_commit = "f".repeat(40);
+        value.source_repository_commit_refs.hoxline = source.repository_commit;
+      },
+      expected: "current HEAD",
       checkLocalSources: true,
     },
   ];
