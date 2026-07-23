@@ -421,8 +421,19 @@ function reviewedLineageMatchesWithIdentity(
     (
       candidateRevision === currentRevision ||
       (
-        runGit(dir, ["merge-base", "--is-ancestor", identity.revision, candidateRevision]) !== null &&
-        runGit(dir, ["merge-base", "--is-ancestor", candidateRevision, currentRevision]) !== null
+        (
+          runGit(dir, ["merge-base", "--is-ancestor", identity.revision, candidateRevision]) !== null &&
+          runGit(dir, ["merge-base", "--is-ancestor", candidateRevision, currentRevision]) !== null
+        ) ||
+        (
+          (
+            candidateRevision !== identity.contentRevision ||
+            role === "current"
+          ) &&
+          runGit(dir, ["merge-base", "--is-ancestor", identity.contentRevision, candidateRevision]) !== null &&
+          runGit(dir, ["merge-base", "--is-ancestor", candidateRevision, identity.revision]) !== null &&
+          runGit(dir, ["merge-base", "--is-ancestor", identity.revision, currentRevision]) !== null
+        )
       )
     );
   const candidateCarriesReviewedContentLineage =
@@ -639,6 +650,36 @@ function revisionRelationshipSelfTest() {
       reviewedIdentity,
     )) {
       fail("revision relationship self-test rejected an unchanged authority blob on a reviewed descendant.");
+    }
+    if (!reviewedLineageMatchesWithIdentity(
+      "HawkinsOperations/hawkinsoperations-validation",
+      fixture,
+      current,
+      reviewedFinal,
+      "authority.txt",
+      fixtureGit(["rev-parse", `${reviewedFinal}:authority.txt`]),
+      "current",
+      reviewedIdentity,
+    )) {
+      fail(
+        "reviewed lineage self-test rejected a content-bound current observation "
+        + "that predates the final reviewed tip.",
+      );
+    }
+    if (!reviewedLineageMatchesWithIdentity(
+      "HawkinsOperations/hawkinsoperations-validation",
+      fixture,
+      base,
+      reviewedFinal,
+      "authority.txt",
+      fixtureGit(["rev-parse", `${reviewedFinal}:authority.txt`]),
+      "current",
+      reviewedIdentity,
+    )) {
+      fail(
+        "reviewed lineage self-test rejected the manifest-selected content "
+        + "revision as its generation-time current observation.",
+      );
     }
     if (!revisionMatchesWithIdentity(
       "HawkinsOperations/hawkinsoperations-website",
