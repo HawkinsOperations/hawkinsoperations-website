@@ -252,8 +252,15 @@ function reviewedSourceIdentities() {
   }
 }
 
-function reviewedLineageMatches(spec, candidateRevision, currentRevision, path, currentBlob, role) {
-  const identity = reviewedSourceIdentities()?.get(spec.repo);
+function reviewedLineageMatches(
+  spec,
+  candidateRevision,
+  currentRevision,
+  path,
+  currentBlob,
+  role,
+  identity = reviewedSourceIdentities()?.get(spec.repo),
+) {
   const expectedByRole = {
     source: identity?.sourceRevision,
     current: identity?.currentObservation,
@@ -281,25 +288,39 @@ function reviewedLineageMatches(spec, candidateRevision, currentRevision, path, 
 
 function revisionMatches(spec, candidateRevision, currentRevision, path, currentBlob, role) {
   const identity = reviewedSourceIdentities()?.get(spec.repo);
-  const reviewedIdentityIsActive = identity &&
-    runGit(spec.dir, ["rev-parse", `${identity.revision}^{tree}`]) === identity.tree &&
-    runGit(spec.dir, ["rev-parse", `${currentRevision}^{tree}`]) === identity.tree;
-  if (reviewedIdentityIsActive) {
-    return reviewedLineageMatches(spec, candidateRevision, currentRevision, path, currentBlob, role);
-  }
-  return selectedRevisionMatchesCurrentTree(spec.dir, candidateRevision, currentRevision);
+  return revisionMatchesWithIdentity(
+    spec.dir,
+    candidateRevision,
+    currentRevision,
+    path,
+    currentBlob,
+    role,
+    identity,
+  );
 }
 
-function selectedRevisionMatchesCurrentTree(dir, selectedRevision, currentRevision) {
-  if (!/^[a-f0-9]{40}$/.test(selectedRevision ?? "") || !/^[a-f0-9]{40}$/.test(currentRevision ?? "")) {
-    return false;
-  }
-  if (selectedRevision === currentRevision) return true;
-  if (runGit(dir, ["merge-base", "--is-ancestor", selectedRevision, currentRevision]) !== null) return true;
-  if (runGit(dir, ["merge-base", "--is-ancestor", currentRevision, selectedRevision]) !== null) return false;
-  const selectedTree = runGit(dir, ["rev-parse", `${selectedRevision}^{tree}`]);
-  const currentTree = runGit(dir, ["rev-parse", `${currentRevision}^{tree}`]);
-  return Boolean(selectedTree && currentTree && selectedTree === currentTree);
+function revisionMatchesWithIdentity(
+  dir,
+  candidateRevision,
+  currentRevision,
+  path,
+  currentBlob,
+  role,
+  identity,
+) {
+  const reviewedIdentityIsActive = identity &&
+    runGit(dir, ["rev-parse", `${identity.revision}^{tree}`]) === identity.tree &&
+    runGit(dir, ["rev-parse", `${currentRevision}^{tree}`]) === identity.tree;
+  if (!reviewedIdentityIsActive) return false;
+  return reviewedLineageMatches(
+    { dir },
+    candidateRevision,
+    currentRevision,
+    path,
+    currentBlob,
+    role,
+    identity,
+  );
 }
 
 function hasTrackedProvenanceChanges(spec) {

@@ -346,33 +346,39 @@ function reviewedLineageMatchesInRepo(repo, dir, candidateRevision, currentRevis
 
 function revisionMatches(repo, dir, candidateRevision, currentRevision, path, currentBlob, role) {
   const identity = reviewedSourceIdentities()?.get(repo);
+  return revisionMatchesWithIdentity(
+    dir,
+    candidateRevision,
+    currentRevision,
+    path,
+    currentBlob,
+    role,
+    identity,
+  );
+}
+
+function revisionMatchesWithIdentity(
+  dir,
+  candidateRevision,
+  currentRevision,
+  path,
+  currentBlob,
+  role,
+  identity,
+) {
   const reviewedIdentityIsActive = identity &&
     runGit(dir, ["rev-parse", `${identity.revision}^{tree}`]) === identity.tree &&
     runGit(dir, ["rev-parse", `${currentRevision}^{tree}`]) === identity.tree;
-  if (reviewedIdentityIsActive) {
-    return reviewedLineageMatchesInRepo(
-      repo,
-      dir,
-      candidateRevision,
-      currentRevision,
-      path,
-      currentBlob,
-      role,
-    );
-  }
-  return selectedRevisionMatchesCurrentTree(dir, candidateRevision, currentRevision);
-}
-
-function selectedRevisionMatchesCurrentTree(dir, selectedRevision, currentRevision) {
-  if (!/^[a-f0-9]{40}$/.test(selectedRevision ?? "") || !/^[a-f0-9]{40}$/.test(currentRevision ?? "")) {
-    return false;
-  }
-  if (selectedRevision === currentRevision) return true;
-  if (runGit(dir, ["merge-base", "--is-ancestor", selectedRevision, currentRevision]) !== null) return true;
-  if (runGit(dir, ["merge-base", "--is-ancestor", currentRevision, selectedRevision]) !== null) return false;
-  const selectedTree = runGit(dir, ["rev-parse", `${selectedRevision}^{tree}`]);
-  const currentTree = runGit(dir, ["rev-parse", `${currentRevision}^{tree}`]);
-  return Boolean(selectedTree && currentTree && selectedTree === currentTree);
+  if (!reviewedIdentityIsActive) return false;
+  return reviewedLineageMatchesWithIdentity(
+    dir,
+    candidateRevision,
+    currentRevision,
+    path,
+    currentBlob,
+    role,
+    identity,
+  );
 }
 
 function revisionRelationshipSelfTest() {
@@ -399,8 +405,6 @@ function revisionRelationshipSelfTest() {
     fixtureGit(["commit", "-m", "controlled current"]);
     const current = fixtureGit(["rev-parse", "HEAD"]);
     const currentTree = fixtureGit(["rev-parse", `${current}^{tree}`]);
-    const sameTreeUnrelated = fixtureGit(["commit-tree", currentTree, "-m", "controlled same-tree identity"]);
-
     writeFileSync(join(fixture, "reviewed-pair.txt"), "reviewed pair\n");
     fixtureGit(["add", "reviewed-pair.txt"]);
     fixtureGit(["commit", "-m", "controlled reviewed final"]);
@@ -418,24 +422,6 @@ function revisionRelationshipSelfTest() {
     const futureTree = fixtureGit(["rev-parse", `${future}^{tree}`]);
     const differentTreeUnrelated = fixtureGit(["commit-tree", futureTree, "-m", "controlled different-tree identity"]);
 
-    if (!selectedRevisionMatchesCurrentTree(fixture, current, current)) {
-      fail("revision relationship self-test rejected current equality.");
-    }
-    if (!selectedRevisionMatchesCurrentTree(fixture, base, current)) {
-      fail("revision relationship self-test rejected selected ancestor of current.");
-    }
-    if (!selectedRevisionMatchesCurrentTree(fixture, sameTreeUnrelated, current)) {
-      fail("revision relationship self-test rejected exact whole-tree equality.");
-    }
-    if (selectedRevisionMatchesCurrentTree(fixture, future, current)) {
-      fail("revision relationship self-test accepted current ancestor of selected.");
-    }
-    if (selectedRevisionMatchesCurrentTree(fixture, sameTreeFuture, current)) {
-      fail("revision relationship self-test accepted same-tree future descendant.");
-    }
-    if (selectedRevisionMatchesCurrentTree(fixture, differentTreeUnrelated, current)) {
-      fail("revision relationship self-test accepted unrelated different-tree same-authority content.");
-    }
     const reviewedIdentity = {
       revision: reviewedFinal,
       tree: reviewedTree,
@@ -454,6 +440,28 @@ function revisionRelationshipSelfTest() {
       reviewedIdentity,
     )) {
       fail("reviewed lineage self-test rejected the exact reviewed-tree projection.");
+    }
+    if (revisionMatchesWithIdentity(
+      fixture,
+      current,
+      projectedEquivalent,
+      "authority.txt",
+      projectedBlob,
+      "source",
+      null,
+    )) {
+      fail("revision relationship self-test accepted a source without reviewed identity.");
+    }
+    if (revisionMatchesWithIdentity(
+      fixture,
+      current,
+      projectedEquivalent,
+      "authority.txt",
+      projectedBlob,
+      "source",
+      { ...reviewedIdentity, tree: "f".repeat(40) },
+    )) {
+      fail("revision relationship self-test accepted an inactive reviewed identity.");
     }
     if (reviewedLineageMatchesWithIdentity(
       fixture,
@@ -578,6 +586,38 @@ const promotionTokens = [
 const privateTokens = ["PRIVATE_RAW", "PRIVATE_EVIDENCE", "RAW_WAZUH_ALERT", "MUFG", "CUSTOMER_IDENTIFIER"];
 const authorityKeyPattern = /(?:ai|analyst).*(?:authority|approval)|final.*authorization|case.*closure|public.*safe.*approved|runtime.*active|signal.*observed/i;
 const exactBoundedAuthorityValues = /^(?:false|blocked|none|not[_ -]?approved|not[_ -]?authorized|not[_ -]?public[_ -]?safe)$/i;
+const exactProofCeiling = "Website rendering/reporting only. Does not prove runtime, signal, production, public-safe proof, customer deployment, final approval, merge readiness, or website-as-proof.";
+const promotionKeyNames = new Set([
+  "runtimeactive",
+  "signalobserved",
+  "publicsafe",
+  "publicsafestatus",
+  "publicsafeapproved",
+  "productionready",
+  "productionstatus",
+  "productiondeployed",
+  "customerdeployed",
+  "socaasdeployed",
+  "aiapproved",
+  "aiapproval",
+  "aiauthority",
+  "aidispositionauthority",
+  "analystapproved",
+  "analystapproval",
+  "analystauthority",
+  "analystdispositionauthority",
+  "finalauthorization",
+  "caseclosed",
+  "caseclosure",
+]);
+const allowedAuthorityKeyNames = new Set([
+  "currentauthority",
+  "authority",
+  "authorityowner",
+  "authorityrole",
+  "sourceauthorityowner",
+  "sourceauthorityrole",
+]);
 const affirmativeClaimPatterns = new Map([
   ["runtime active", /\bruntime\b.{0,24}\b(?:active|live)\b/i],
   ["signal observed", /\bsignal\b.{0,24}\b(?:active|observed)\b/i],
@@ -605,6 +645,7 @@ const exactBlockedClaimValues = new Set([
 
 function affirmativeStringClaims(value, path) {
   const normalized = decodeRepeated(value).normalize("NFKC");
+  if (normalized === exactProofCeiling) return [];
   if (
     ["blocked_claims", "not_claiming"].includes(path.at(-2)) &&
     exactBlockedClaimValues.has(normalized.trim().toLocaleLowerCase("en-US"))
@@ -612,7 +653,7 @@ function affirmativeStringClaims(value, path) {
     return [];
   }
   const issues = [];
-  for (const clause of normalized.split(/(?:[.;!?\r\n]+|\b(?:but|however|although|yet)\b)/i)) {
+  for (const clause of normalized.split(/(?:[,;:\/!?\r\n]+|[—–]+|\b(?:but|however|although|yet|while|whereas)\b)/i)) {
     if (localNegationPattern.test(clause)) continue;
     for (const [label, pattern] of affirmativeClaimPatterns) {
       if (pattern.test(clause)) issues.push(label);
@@ -644,9 +685,30 @@ function recursiveSecurityIssues(value, path = []) {
   }
   if (value && typeof value === "object") {
     for (const [childKey, childValue] of Object.entries(value)) {
+      const normalizedChildKey = childKey
+        .normalize("NFKC")
+        .toLocaleLowerCase("en-US")
+        .replace(/[^a-z0-9]/g, "");
+      const promotionKey = promotionKeyNames.has(normalizedChildKey) ||
+        authorityKeyPattern.test(childKey.normalize("NFKC"));
+      const boundedPublicSafeObject =
+        normalizedChildKey === "publicsafe" &&
+        childValue !== null &&
+        typeof childValue === "object" &&
+        !Array.isArray(childValue) &&
+        Object.keys(childValue).every((key) => ["raw", "label", "value", "count", "detail"].includes(key)) &&
+        childValue.raw === "NOT_PUBLIC_SAFE" &&
+        childValue.label === "Not public-safe" &&
+        (childValue.value === undefined || childValue.value === false) &&
+        (childValue.count === undefined || childValue.count === 0) &&
+        (
+          childValue.detail === undefined ||
+          childValue.detail === "Public-safe runtime proof is not promoted by this website data plane."
+        );
       if (
-        authorityKeyPattern.test(childKey) &&
-        !["current_authority", "authority", "authority_owner", "authority_role", "source_authority_owner", "source_authority_role"].includes(childKey) &&
+        promotionKey &&
+        !allowedAuthorityKeyNames.has(normalizedChildKey) &&
+        !boundedPublicSafeObject &&
         !(
           childValue === false ||
           (typeof childValue === "string" && exactBoundedAuthorityValues.test(childValue))
@@ -718,6 +780,23 @@ function recursiveSecuritySelfTest() {
     const issues = recursiveSecurityIssues({ final_authorization: value });
     if (!issues.some((issue) => issue.includes("attempts authority promotion"))) {
       fail(`recursive security self-test allowed non-bounded authority shape ${JSON.stringify(value)}.`);
+    }
+  }
+  for (const key of [
+    "public_safe",
+    "public_safe_status",
+    "production_ready",
+    "customer_deployed",
+    "socaas_deployed",
+    "analyst_approved",
+    "ai_approved",
+    "case_closed",
+    "ｐｕｂｌｉｃ＿ｓａｆｅ",
+    "ＡＩ＿ｄｉｓｐｏｓｉｔｉｏｎ＿ａｕｔｈｏｒｉｔｙ",
+  ]) {
+    const issues = recursiveSecurityIssues({ [key]: true });
+    if (!issues.some((issue) => issue.includes("attempts authority promotion"))) {
+      fail(`recursive security self-test allowed promotion key ${JSON.stringify(key)}.`);
     }
   }
   for (const phrase of [
