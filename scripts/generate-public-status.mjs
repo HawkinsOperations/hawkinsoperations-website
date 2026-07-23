@@ -153,6 +153,7 @@ function normalizeOrigin(value) {
     .replace(/^git@github\.com:/i, "https://github.com/")
     .replace(/^ssh:\/\/git@github\.com\//i, "https://github.com/")
     .replace(/\/+$/, "")
+    .replace(/\.git$/i, "")
     .toLowerCase();
 }
 
@@ -780,7 +781,6 @@ const publicStatus = {
 };
 
 const serialized = `${JSON.stringify(publicStatus, null, 2)}\n`;
-writeFileSync(join(websiteRoot, "public/data/public-status.json"), serialized);
 
 const tsSource = `export const GENERATED_PUBLIC_STATUS_V0 = ${JSON.stringify(publicStatus, null, 2)} as const;
 
@@ -825,7 +825,23 @@ export function generatedStatusFreshnessLabel(now = new Date()) {
 }
 `;
 
-writeFileSync(join(websiteRoot, "src/data/generated/public-status.generated.ts"), tsSource);
-
-console.log(`Generated ${relative(process.cwd(), join(websiteRoot, "public/data/public-status.json"))}`);
-console.log(`Generated ${relative(process.cwd(), join(websiteRoot, "src/data/generated/public-status.generated.ts"))}`);
+const generatedOutputs = [
+  [join(websiteRoot, "public/data/public-status.json"), serialized],
+  [join(websiteRoot, "src/data/generated/public-status.generated.ts"), tsSource],
+];
+if (checkMode) {
+  const drifted = generatedOutputs
+    .filter(([path, expected]) =>
+      !existsSync(path) || readFileSync(path, "utf8").replace(/\r\n?/g, "\n") !== expected.replace(/\r\n?/g, "\n"))
+    .map(([path]) => relative(process.cwd(), path));
+  if (drifted.length > 0) {
+    console.error(`Generated public status is stale: ${drifted.join(", ")}`);
+    process.exit(1);
+  }
+  for (const [path] of generatedOutputs) console.log(`Verified ${relative(process.cwd(), path)}`);
+} else {
+  for (const [path, content] of generatedOutputs) {
+    writeFileSync(path, content);
+    console.log(`Generated ${relative(process.cwd(), path)}`);
+  }
+}

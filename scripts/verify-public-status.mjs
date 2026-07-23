@@ -196,6 +196,7 @@ function normalizeOrigin(value) {
     .replace(/^git@github\.com:/i, "https://github.com/")
     .replace(/^ssh:\/\/git@github\.com\//i, "https://github.com/")
     .replace(/\/+$/, "")
+    .replace(/\.git$/i, "")
     .toLowerCase();
 }
 
@@ -641,7 +642,9 @@ const tsSource = existsSync(tsPath) ? readFileSync(tsPath, "utf8") : "";
 
 if (status && schema && manifest) {
   for (const issue of semanticIssues(status, { schema, manifest })) fail(issue);
-  if (!tsSource.includes(JSON.stringify(status, null, 2))) fail("generated TypeScript snapshot must reproduce public-status JSON exactly.");
+  if (!tsSource.replace(/\r\n?/g, "\n").includes(JSON.stringify(status, null, 2).replace(/\r\n?/g, "\n"))) {
+    fail("generated TypeScript snapshot must reproduce public-status JSON exactly.");
+  }
   for (const term of [
     "GENERATED_PUBLIC_STATUS_V0",
     "GENERATED_PUBLIC_STATUS_V0_SNAPSHOT",
@@ -798,6 +801,30 @@ if (
     const gitBlobLf = createHash("sha1").update(`blob ${Buffer.byteLength(lf)}\0${lf}`).digest("hex");
     const gitBlobCrlf = createHash("sha1").update(`blob ${Buffer.byteLength(crlf)}\0${crlf}`).digest("hex");
     if (gitBlobLf === gitBlobCrlf) fail("Git blob identity must remain distinct from normalized semantic identity.");
+    const embeddedJson = JSON.stringify({ alpha: "beta", nested: { count: 1 } }, null, 2);
+    const embeddedTsCrlf = `export const STATUS = ${embeddedJson} as const;\n`.replace(/\n/g, "\r\n");
+    if (!embeddedTsCrlf.replace(/\r\n?/g, "\n").includes(embeddedJson.replace(/\r\n?/g, "\n"))) {
+      fail("CRLF TypeScript and LF JSON generated-pair parity failed.");
+    }
+  }
+  if (selfTestModes.has("--self-test") || selfTestModes.has("--owner-self-test-only")) {
+    const expected = normalizeOrigin(expectedOrigin("HawkinsOperations/hawkinsoperations-proof"));
+    for (const accepted of [
+      "https://github.com/HawkinsOperations/hawkinsoperations-proof",
+      "https://github.com/HawkinsOperations/hawkinsoperations-proof.git",
+      "git@github.com:HawkinsOperations/hawkinsoperations-proof.git",
+      "ssh://git@github.com/HawkinsOperations/hawkinsoperations-proof",
+    ]) {
+      if (normalizeOrigin(accepted) !== expected) fail(`origin normalization rejected canonical transport form: ${accepted}`);
+    }
+    for (const spoofed of [
+      "https://github.com/HawkinsOperations/hawkinsoperations-proof-attacker.git",
+      "https://github.com/HawkinsOperations/hawkinsoperations-proof.git.attacker",
+      "https://github.com/HawkinsOperations-attacker/hawkinsoperations-proof.git",
+      "https://github.com/HawkinsOperations/hawkinsoperations-proof/attacker.git",
+    ]) {
+      if (normalizeOrigin(spoofed) === expected) fail(`origin normalization accepted owner or repository suffix spoof: ${spoofed}`);
+    }
   }
 }
 
