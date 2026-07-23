@@ -691,7 +691,10 @@ function decodeRepeated(value) {
 }
 
 function securityScanText(value) {
-  return decodeRepeated(value).normalize("NFKC").replace(/\p{Cf}/gu, "");
+  return decodeRepeated(value)
+    .normalize("NFKD")
+    .replace(/[\t\r\n]/g, " ")
+    .replace(/[\p{M}\p{C}]/gu, "");
 }
 
 function pathIssue(value) {
@@ -861,16 +864,16 @@ const affirmativeClaimPatterns = new Map([
 const localNegationPattern = /(?:\b(?:not|never|no|without|missing|blocked|future|pending|unsupported)\b|\b(?:does|do|must|is|are|was|were|can|cannot|could|should|will|would)\s+not\b|\bnot\s+(?:authorized|approved|promoted)\b|\brequires?\s+separate\b|\bremain(?:s)?\s+(?:a\s+)?separate\b)/i;
 const negativeListIntroPattern = /\b(?:does|do|did|must|is|are|was|were|can|cannot|could|should|will|would)\s+not\s+(?:prove|establish|claim|promote|authorize|assert)\b|\bwithout\s+claiming\b/i;
 const negativeListSuffixPattern = /\bclaims?\s+(?:remain|remains|are|is)\s+(?:blocked|unsupported|not\s+approved)\.?$/i;
-const affirmativeResetAfterNegativeListPatterns = new Map([
-  ["customer deployed", /(?:,\s*|\b(?:and|plus|though)\b\s*)(?:customer|socaas)\b.{0,32}\b(?:deployment\s+)?(?:is|was)\s+(?:active|confirmed|deployed|live|ready)\b/i],
-  ["production ready", /(?:,\s*|\b(?:and|plus|though)\b\s*)production\b.{0,24}\b(?:is|was)\s+(?:active|live|ready)\b/i],
-  ["runtime active", /(?:,\s*|\b(?:and|plus|though)\b\s*)runtime\b.{0,16}\b(?:is|was)\s+active\b/i],
-  ["signal observed", /(?:,\s*|\b(?:and|plus|though)\b\s*)signal\b.{0,16}\b(?:is|was)\s+observed\b/i],
-  ["public safe", /(?:,\s*|\b(?:and|plus|though)\b\s*)public[\s_-]*safe\b.{0,24}\b(?:is|was)\s+(?:approved|confirmed|established|ready|released)\b/i],
-  ["AI authority", /(?:,\s*|\b(?:and|plus|though)\b\s*)ai\b.{0,32}\b(?:(?:is|was)\s+approved|approval\s+(?:is\s+)?granted|authority\s+(?:is\s+)?enabled)\b/i],
-  ["analyst authority", /(?:,\s*|\b(?:and|plus|though)\b\s*)analyst\b.{0,32}\b(?:(?:is|was)\s+approved|approval\s+(?:is\s+)?granted|authority\s+(?:is\s+)?enabled)\b/i],
-  ["final authorization", /(?:,\s*|\b(?:and|plus|though)\b\s*)final\s+authori[sz]ation\b.{0,16}\b(?:is|was)?\s*(?:approved|complete|granted|received)\b/i],
-  ["case closure", /(?:,\s*|\b(?:and|plus|though)\b\s*)(?:case\s+closure\s+(?:(?:is|was)\s+)?(?:approved|complete|granted|received)|case\b.{0,16}\b(?:is|was)\s+closed)\b/i],
+const affirmativeStateAfterNegativeListPatterns = new Map([
+  ["customer deployed", /(?:customer|socaas)\b.{0,32}\b(?:deployment\s+)?(?:is|was)\s+(?:active|confirmed|deployed|live|ready)\b/i],
+  ["production ready", /production\b.{0,24}\b(?:is|was)\s+(?:active|live|ready)\b/i],
+  ["runtime active", /runtime\b.{0,16}\b(?:is|was)\s+active\b/i],
+  ["signal observed", /signal\b.{0,16}\b(?:is|was)\s+observed\b/i],
+  ["public safe", /public[\s_-]*safe\b.{0,24}\b(?:is|was)\s+(?:approved|confirmed|established|ready|released)\b/i],
+  ["AI authority", /ai\b.{0,32}\b(?:(?:is|was)\s+approved|approval\s+(?:is\s+)?granted|authority\s+(?:is\s+)?enabled)\b/i],
+  ["analyst authority", /analyst\b.{0,32}\b(?:(?:is|was)\s+approved|approval\s+(?:is\s+)?granted|authority\s+(?:is\s+)?enabled)\b/i],
+  ["final authorization", /final\s+authori[sz]ation\b.{0,16}\b(?:is|was)?\s*(?:approved|complete|granted|received)\b/i],
+  ["case closure", /(?:case\s+closure\s+(?:(?:is|was)\s+)?(?:approved|complete|granted|received)|case\b.{0,16}\b(?:is|was)\s+closed)\b/i],
 ]);
 const exactBlockedClaimValues = new Set([
   "runtime proof",
@@ -898,19 +901,25 @@ function affirmativeStringClaims(value, path) {
     const suffix = negativeListSuffixPattern.exec(segment);
     if (suffix) {
       const boundedPrefix = `, ${segment.slice(0, suffix.index)}`;
-      for (const [label, pattern] of affirmativeResetAfterNegativeListPatterns) {
+      for (const [label, pattern] of affirmativeStateAfterNegativeListPatterns) {
         if (pattern.test(boundedPrefix)) issues.push(label);
       }
       continue;
     }
     if (intro) {
       const tail = segment.slice(intro.index + intro[0].length);
-      for (const [label, pattern] of affirmativeResetAfterNegativeListPatterns) {
+      for (const [label, pattern] of affirmativeStateAfterNegativeListPatterns) {
         if (pattern.test(tail)) issues.push(label);
       }
       continue;
     }
     for (const clause of segment.split(",")) {
+      for (const [label, pattern] of affirmativeStateAfterNegativeListPatterns) {
+        const match = pattern.exec(clause);
+        if (match && !localNegationPattern.test(clause.slice(0, match.index))) {
+          issues.push(label);
+        }
+      }
       if (localNegationPattern.test(clause)) continue;
       for (const [label, pattern] of affirmativeClaimPatterns) {
         if (pattern.test(clause)) issues.push(label);
@@ -1077,10 +1086,50 @@ function recursiveSecuritySelfTest() {
     "AI\u200B authority is enabled",
     "runtime\u200B is active",
   ];
+  const connectorIndependentAttacks = [
+    ",", "and", "plus", "though", "because", "therefore", "meanwhile",
+    "furthermore", "also", "nevertheless", "nonetheless", "except",
+    "despite that", "in fact", "so", "consequently", "moreover", "then",
+    "still", "even though",
+  ].map((connector) =>
+    connector === ","
+      ? "does not prove runtime, customer deployment is active"
+      : `does not prove runtime ${connector} customer deployment is active`);
+  negationLaunderingAttacks.push(...connectorIndependentAttacks);
+  negationLaunderingAttacks.push(
+    "customer deployment is active and not a typo",
+    "runtime is active and not simulated",
+    "final authorization received and no objections",
+    "AI authority is enabled and not revoked",
+    "public safe is confirmed and not disputed",
+    "case closure approved and not provisional",
+    "production is ready and not delayed",
+    "signal is observed and not inferred",
+    "customer deployment is active without ambiguity",
+  );
   for (const attack of negationLaunderingAttacks) {
     const issues = recursiveSecurityIssues({ detail: attack });
     if (!issues.some((issue) => issue.includes("contains unauthorized"))) {
       fail(`recursive security self-test allowed negation laundering ${JSON.stringify(attack)}.`);
+    }
+  }
+  const combiningMarkTemplates = [
+    "public{mark} safe is confirmed",
+    "case{mark} closure approved",
+    "runtime{mark} is active",
+    "AI{mark} authority is enabled",
+  ];
+  for (const code of ["034F", "0301", "FE0F", "0000", "0008", "001F", "007F"]) {
+    for (const template of combiningMarkTemplates) {
+      const escapedAttack = template.replace("{mark}", `\\u${code}`);
+      const nested = JSON.parse(
+        `{"extensions":[{"notes":[{"deep":"${escapedAttack}"}]}]}`,
+      );
+      const attack = nested.extensions[0].notes[0].deep;
+      const issues = recursiveSecurityIssues(nested);
+      if (!issues.some((issue) => issue.includes("contains unauthorized"))) {
+        fail(`recursive security self-test allowed combining-mark laundering ${JSON.stringify(attack)}.`);
+      }
     }
   }
   const boundedNegativeLists = [
@@ -1089,6 +1138,8 @@ function recursiveSecuritySelfTest() {
     "Runtime, signal, public-safe, live IdP, production identity coverage, autonomous SOC, " +
       "AI-approved disposition, and analyst-approved disposition claims remain blocked.",
     "Café résumé – reviewer note.",
+    "Reviewer 👩‍💻️ note.",
+    "Reviewer note.\n\tStill bounded.",
   ];
   for (const boundedNegativeList of boundedNegativeLists) {
     if (recursiveSecurityIssues({ detail: boundedNegativeList }).length > 0) {
