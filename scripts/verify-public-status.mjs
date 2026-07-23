@@ -823,6 +823,48 @@ function revisionRelationshipSelfTest() {
     )) {
       fail("reviewed lineage self-test accepted a one-sided Hoxline generated-pair projection.");
     }
+    fixtureGit(["checkout", "--detach", current]);
+    writeFileSync(join(hoxlinePairDir, "current-case-growth-index.md"), "# One sided\n");
+    fixtureGit(["add", "examples/case-growth/current-case-growth-index.md"]);
+    fixtureGit(["commit", "-m", "controlled Markdown-only Hoxline projection"]);
+    const markdownOnlyProjectionRevision = fixtureGit(["rev-parse", "HEAD"]);
+    if (observationProjectionAllowed(
+      "HawkinsOperations/hoxline",
+      fixture,
+      current,
+      markdownOnlyProjectionRevision,
+      "current",
+    )) {
+      fail("reviewed lineage self-test accepted a Markdown-only Hoxline generated-pair projection.");
+    }
+    fixtureGit(["checkout", "--detach", current]);
+    writeFileSync(join(pairDir, "public-status.json"), "{\"one_sided\":true}\n");
+    fixtureGit(["add", "public/data/public-status.json"]);
+    fixtureGit(["commit", "-m", "controlled JSON-only Website projection"]);
+    const websiteJsonOnlyRevision = fixtureGit(["rev-parse", "HEAD"]);
+    if (observationProjectionAllowed(
+      "HawkinsOperations/hawkinsoperations-website",
+      fixture,
+      current,
+      websiteJsonOnlyRevision,
+      "current",
+    )) {
+      fail("reviewed lineage self-test accepted a JSON-only Website generated-pair projection.");
+    }
+    fixtureGit(["checkout", "--detach", current]);
+    writeFileSync(join(generatedPairDir, "public-status.generated.ts"), "export const oneSided = true;\n");
+    fixtureGit(["add", "src/data/generated/public-status.generated.ts"]);
+    fixtureGit(["commit", "-m", "controlled TypeScript-only Website projection"]);
+    const websiteTypeScriptOnlyRevision = fixtureGit(["rev-parse", "HEAD"]);
+    if (observationProjectionAllowed(
+      "HawkinsOperations/hawkinsoperations-website",
+      fixture,
+      current,
+      websiteTypeScriptOnlyRevision,
+      "current",
+    )) {
+      fail("reviewed lineage self-test accepted a TypeScript-only Website generated-pair projection.");
+    }
     fixtureGit(["checkout", "--detach", hoxlinePairRevision]);
     writeFileSync(join(fixture, "other.txt"), "unauthorized mixed projection\n");
     fixtureGit(["add", "other.txt"]);
