@@ -473,7 +473,8 @@ function observationProjectionAllowed(repo, dir, candidateRevision, reviewedRevi
   if (runGit(dir, ["rev-parse", `${reviewedRevision}^`]) !== candidateRevision) return false;
   const changed = runGit(dir, ["diff", "--name-only", candidateRevision, reviewedRevision]);
   const paths = changed ? changed.split(/\r?\n/).filter(Boolean) : [];
-  return paths.length > 0 && paths.every((path) => allowed.has(path));
+  return paths.length === allowed.size &&
+    paths.every((path) => allowed.has(path));
 }
 
 function reviewedLineageMatchesInRepo(repo, dir, candidateRevision, currentRevision, path, currentBlob, role) {
@@ -560,9 +561,13 @@ function revisionRelationshipSelfTest() {
     const current = fixtureGit(["rev-parse", "HEAD"]);
     const currentTree = fixtureGit(["rev-parse", `${current}^{tree}`]);
     const pairDir = join(fixture, "public", "data");
+    const generatedPairDir = join(fixture, "src", "data", "generated");
     mkdirSync(pairDir, { recursive: true });
+    mkdirSync(generatedPairDir, { recursive: true });
     writeFileSync(join(pairDir, "public-status.json"), "reviewed pair\n");
-    fixtureGit(["add", "public/data/public-status.json"]);
+    writeFileSync(join(generatedPairDir, "public-status.generated.ts"), "export const reviewed = true;\n");
+    fixtureGit(["add", "public/data/public-status.json",
+      "src/data/generated/public-status.generated.ts"]);
     fixtureGit(["commit", "-m", "controlled reviewed final"]);
     const reviewedFinal = fixtureGit(["rev-parse", "HEAD"]);
     const reviewedTree = fixtureGit(["rev-parse", `${reviewedFinal}^{tree}`]);
@@ -804,6 +809,21 @@ function revisionRelationshipSelfTest() {
     )) {
       fail("reviewed lineage self-test rejected the direct Hoxline generated-pair projection.");
     }
+    fixtureGit(["checkout", "--detach", current]);
+    writeFileSync(join(hoxlinePairDir, "current-case-growth-index.json"), "{\"one_sided\":true}\n");
+    fixtureGit(["add", "examples/case-growth/current-case-growth-index.json"]);
+    fixtureGit(["commit", "-m", "controlled one-sided Hoxline projection"]);
+    const oneSidedProjectionRevision = fixtureGit(["rev-parse", "HEAD"]);
+    if (observationProjectionAllowed(
+      "HawkinsOperations/hoxline",
+      fixture,
+      current,
+      oneSidedProjectionRevision,
+      "current",
+    )) {
+      fail("reviewed lineage self-test accepted a one-sided Hoxline generated-pair projection.");
+    }
+    fixtureGit(["checkout", "--detach", hoxlinePairRevision]);
     writeFileSync(join(fixture, "other.txt"), "unauthorized mixed projection\n");
     fixtureGit(["add", "other.txt"]);
     fixtureGit(["commit", "-m", "controlled mixed projection"]);

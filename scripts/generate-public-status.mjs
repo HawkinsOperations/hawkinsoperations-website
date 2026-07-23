@@ -321,7 +321,8 @@ function observationProjectionAllowed(spec, candidateRevision, reviewedRevision,
   if (runGit(spec.dir, ["rev-parse", `${reviewedRevision}^`]) !== candidateRevision) return false;
   const changed = runGit(spec.dir, ["diff", "--name-only", candidateRevision, reviewedRevision]);
   const paths = changed ? changed.split(/\r?\n/).filter(Boolean) : [];
-  return paths.length > 0 && paths.every((path) => allowed.has(path));
+  return paths.length === allowed.size &&
+    paths.every((path) => allowed.has(path));
 }
 
 function revisionMatches(spec, candidateRevision, currentRevision, path, currentBlob, role) {
