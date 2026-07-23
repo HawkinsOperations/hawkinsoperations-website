@@ -1122,6 +1122,7 @@ function recursiveSecuritySelfTest() {
     { ai_authority: ["APPROVED"] },
     { review_disposition: [true] },
     { final_authorization: [1] },
+    { runtime: { metadata: { state: [true] } } },
     { runtime_state: true },
     { approval_state: true },
     { production_state: true },
@@ -1165,6 +1166,7 @@ function recursiveSecuritySelfTest() {
     { ai_authority: ["BLOCKED"] },
     { review_disposition: ["NOT_APPROVED"] },
     { final_authorization: ["BLOCKED"] },
+    { runtime: { metadata: { state: [false] } } },
   ];
   for (const control of splitAndDirectControls) {
     const issues = recursiveSecurityIssues(control);
