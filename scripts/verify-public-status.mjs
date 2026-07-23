@@ -423,10 +423,6 @@ function reviewedLineageMatchesWithIdentity(
     (
       candidateRevision === currentRevision ||
       (
-        role === "current" &&
-        runGit(dir, ["rev-parse", `${candidateRevision}^{tree}`]) === identity.tree
-      ) ||
-      (
         runGit(dir, ["merge-base", "--is-ancestor", identity.revision, candidateRevision]) !== null &&
         runGit(dir, ["merge-base", "--is-ancestor", candidateRevision, currentRevision]) !== null
       )
