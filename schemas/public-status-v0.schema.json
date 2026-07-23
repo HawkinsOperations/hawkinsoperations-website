@@ -52,8 +52,14 @@
     "schema_version": { "const": "public-status-v0" },
     "generated_at": { "type": "string" },
     "generated_by": { "const": "scripts/generate-public-status.mjs" },
-    "generator_commit": { "$ref": "#/$defs/sha" },
-    "generator_observed_head_sha": { "$ref": "#/$defs/sha" },
+    "generator_commit": {
+      "$ref": "#/$defs/sha",
+      "description": "Website commit observed when the generator ran; a later pair-only descendant is allowed only when the generator blob remains identical."
+    },
+    "generator_observed_head_sha": {
+      "$ref": "#/$defs/sha",
+      "description": "Generation-time Website HEAD observation, distinct from source content identity."
+    },
     "generator_git_blob_sha": { "$ref": "#/$defs/sha" },
     "generator_semantic_fingerprint": { "$ref": "#/$defs/sha256" },
     "generator_fingerprint_sha256": { "$ref": "#/$defs/sha256" },
@@ -299,10 +305,19 @@
         "authoritative_path": { "type": "string" },
         "commit": { "$ref": "#/$defs/sha" },
         "repository_commit": { "$ref": "#/$defs/sha" },
-        "current_observed_head_sha": { "$ref": "#/$defs/sha" },
-        "source_observed_head_sha": { "$ref": "#/$defs/sha" },
+        "current_observed_head_sha": {
+          "$ref": "#/$defs/sha",
+          "description": "Actual repository HEAD observed when this snapshot was generated; verification permits only bounded descendant or exact-tree drift."
+        },
+        "source_observed_head_sha": {
+          "$ref": "#/$defs/sha",
+          "description": "Reviewed immutable revision that supplies the authoritative content identity."
+        },
         "source_observation_kind": { "const": "reviewed_immutable_commit" },
-        "resolved_ref": { "type": "string" },
+        "resolved_ref": {
+          "type": "string",
+          "description": "The reviewed immutable source revision, never an environment-dependent local branch name."
+        },
         "canonical_origin": { "type": "string" },
         "authoritative_git_blob_sha": { "$ref": "#/$defs/sha" },
         "authoritative_content_fingerprint": { "$ref": "#/$defs/sha256" },
@@ -367,12 +382,21 @@
         "source_authority_role": { "type": "string" },
         "source_commit": { "$ref": "#/$defs/sha" },
         "source_repository_commit": { "$ref": "#/$defs/sha" },
-        "source_observed_head_sha": { "$ref": "#/$defs/sha" },
-        "current_observed_head_sha": { "$ref": "#/$defs/sha" },
+        "source_observed_head_sha": {
+          "$ref": "#/$defs/sha",
+          "description": "Reviewed immutable revision that supplies this metric's content identity."
+        },
+        "current_observed_head_sha": {
+          "$ref": "#/$defs/sha",
+          "description": "Actual source repository HEAD observed at generation time."
+        },
         "source_observation_kind": { "const": "reviewed_immutable_commit" },
         "authoritative_git_blob_sha": { "$ref": "#/$defs/sha" },
         "authoritative_content_fingerprint": { "$ref": "#/$defs/sha256" },
-        "source_resolved_ref": { "type": "string" },
+        "source_resolved_ref": {
+          "type": "string",
+          "description": "Reviewed immutable source revision used for content identity."
+        },
         "source_fingerprint_sha256": { "$ref": "#/$defs/sha256" },
         "method": { "type": "string" },
         "generated_at": { "type": "string" },

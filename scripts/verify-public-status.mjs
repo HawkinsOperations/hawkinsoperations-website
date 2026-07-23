@@ -468,9 +468,6 @@ function verifyContentIdentity(record, repo, path, issues) {
     issues.push(`${repo}: current checked HEAD is unavailable.`);
     return;
   }
-  if (record.current_observed_head_sha !== record.source_observed_head_sha) {
-    issues.push(`${repo}/${path}: recorded observed-head fields disagree.`);
-  }
   const resolvedRef = record.resolved_ref ?? record.source_resolved_ref;
   if (resolvedRef !== undefined && resolvedRef !== record.source_observed_head_sha) {
     issues.push(`${repo}/${path}: resolved source ref must equal the selected immutable revision.`);
@@ -493,12 +490,23 @@ function verifyContentIdentity(record, repo, path, issues) {
   }
   const currentBlob = runGit(repoDir, ["rev-parse", `${currentHead}:${path}`]);
   const observedBlob = runGit(repoDir, ["rev-parse", `${record.source_observed_head_sha}:${path}`]);
+  const generationObservedHead = record.current_observed_head_sha;
+  if (!/^[a-f0-9]{40}$/.test(generationObservedHead ?? "") ||
+      runGit(repoDir, ["cat-file", "-t", generationObservedHead]) !== "commit") {
+    issues.push(`${repo}/${path}: generation-time current observation must be an available immutable commit.`);
+  } else if (!selectedRevisionMatchesCurrentTree(repoDir, generationObservedHead, currentHead)) {
+    issues.push(`${repo}/${path}: generation-time current observation is not safely related to current HEAD.`);
+  }
+  const generationObservedBlob = runGit(repoDir, ["rev-parse", `${generationObservedHead}:${path}`]);
   if (!currentBlob) {
     issues.push(`${repo}/${path}: authoritative path is missing from current checked tree.`);
     return;
   }
   if (record.authoritative_git_blob_sha !== currentBlob || observedBlob !== currentBlob) {
     issues.push(`${repo}/${path}: authoritative Git blob does not equal the blob in the checked current tree.`);
+  }
+  if (generationObservedBlob !== currentBlob) {
+    issues.push(`${repo}/${path}: generation-time current observation has different authoritative content.`);
   }
   const currentText = committedText(repoDir, currentHead, path);
   const expectedFingerprint = currentText === null ? null : semanticFingerprint(currentText, path);
@@ -805,6 +813,11 @@ if (
       expected: "resolved source ref must equal the selected immutable revision",
     },
     {
+      name: "future generation-time observation",
+      mutate: (value) => { value.sources[0].current_observed_head_sha = "f".repeat(40); },
+      expected: "generation-time current observation must be an available immutable commit",
+    },
+    {
       name: "forged semantic fingerprint",
       mutate: (value) => { value.sources[0].authoritative_content_fingerprint = "0".repeat(64); },
       expected: "semantic fingerprint",
@@ -856,7 +869,12 @@ if (
   ];
   const modeFilters = {
     "--owner-self-test-only": ["wrong canonical source", "website proof authority", "Hoxline proof authority"],
-    "--source-checkout-test": ["wrong canonical source", "unreachable revision", "branch-name substitution"],
+    "--source-checkout-test": [
+      "wrong canonical source",
+      "unreachable revision",
+      "branch-name substitution",
+      "future generation-time observation",
+    ],
     "--freshness-reachability-test": ["unreachable revision", "future observation", "stale labeled fresh", "source commit time from branch tip"],
     "--dirty-provenance-test": ["dirty source fingerprint substitution", "dirty generator fingerprint substitution"],
     "--nested-claim-test": ["unknown nested shape", "nested public-safe laundering", "nested runtime laundering"],
@@ -909,6 +927,11 @@ if (
   }
   if (selfTestModes.has("--self-test") || selfTestModes.has("--source-checkout-test")) {
     revisionRelationshipSelfTest();
+    if (!(status.sources ?? []).some(
+      (source) => source.current_observed_head_sha !== source.source_observed_head_sha,
+    )) {
+      fail("content identity self-test requires a distinct generation-time current observation.");
+    }
   }
 }
 

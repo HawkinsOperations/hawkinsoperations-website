@@ -180,6 +180,15 @@ function hasTrackedProvenanceChanges(spec) {
   return runGit(spec.dir, ["diff", "--quiet", "HEAD", "--", ...pathspec]) === null;
 }
 
+function boundedCurrentObservation(spec, currentRevision, authoritativeBlob) {
+  if (!checkMode) return currentRevision;
+  const checked = checkedStatus?.sources?.find((source) => source.repo === spec.repo);
+  const recorded = checked?.current_observed_head_sha;
+  if (!selectedRevisionMatchesCurrentTree(spec.dir, recorded, currentRevision)) return currentRevision;
+  const recordedBlob = runGit(spec.dir, ["rev-parse", `${recorded}:${spec.publicPath}`]);
+  return recordedBlob === authoritativeBlob ? recorded : currentRevision;
+}
+
 function repoSource(spec, selectedRevision) {
   const repoAvailable = existsSync(spec.dir);
   const currentObservedHeadSha = repoAvailable ? runGit(spec.dir, ["rev-parse", "HEAD"]) : null;
@@ -198,6 +207,7 @@ function repoSource(spec, selectedRevision) {
     runGit(spec.dir, ["rev-parse", `${selectedRevision}:${spec.publicPath}`]) === authoritativeGitBlobSha &&
     selectedRevisionMatchesCurrentTree(spec.dir, selectedRevision, currentObservedHeadSha);
   const recordedObservedHead = selectedRevisionValid ? selectedRevision : currentObservedHeadSha;
+  const currentObservation = boundedCurrentObservation(spec, currentObservedHeadSha, authoritativeGitBlobSha);
   const sourceCommitTime = recordedObservedHead ? runGit(spec.dir, ["show", "-s", "--format=%cI", recordedObservedHead]) : null;
   const freshnessState = available && originValid && !trackedDirty && selectedRevisionValid ? "fresh" : "source_unavailable";
   return {
@@ -210,7 +220,7 @@ function repoSource(spec, selectedRevision) {
     authoritative_path: spec.publicPath,
     commit: recordedObservedHead,
     repository_commit: recordedObservedHead,
-    current_observed_head_sha: recordedObservedHead,
+    current_observed_head_sha: currentObservation,
     source_observed_head_sha: recordedObservedHead,
     source_observation_kind: "reviewed_immutable_commit",
     resolved_ref: recordedObservedHead,
@@ -249,7 +259,7 @@ function githubHref(repo, sourcePath, commit) {
 function countPublicGovernanceSaves() {
   const source = committedText(
     websiteRoot,
-    sourceByRepo["HawkinsOperations/hawkinsoperations-website"]?.current_observed_head_sha,
+    sourceByRepo["HawkinsOperations/hawkinsoperations-website"]?.source_observed_head_sha,
     "src/data/governanceSaves.ts",
   );
   if (source === null) return null;
@@ -326,7 +336,7 @@ const publicGovernanceSaveCount = countPublicGovernanceSaves();
 
 function sourceVariant(source, path, method, { historicalSnapshot, currentAuthority, consumerOnly = source?.consumer_only ?? false }) {
   const spec = repoSpecs.find((candidate) => candidate.repo === source?.repo);
-  const revision = source?.current_observed_head_sha ?? null;
+  const revision = source?.source_observed_head_sha ?? null;
   const sourceText = source && spec ? committedText(spec.dir, revision, path) : null;
   const available = sourceText !== null;
   const authoritativeGitBlobSha = source && spec ? runGit(spec.dir, ["rev-parse", `${revision}:${path}`]) : null;
@@ -598,6 +608,15 @@ const websiteGeneratorHead = runGit(websiteRoot, ["rev-parse", "HEAD"]);
 const generatorBlobSha = websiteGeneratorHead
   ? runGit(websiteRoot, ["rev-parse", `${websiteGeneratorHead}:scripts/generate-public-status.mjs`])
   : null;
+const checkedGeneratorHead = checkedStatus?.generator_observed_head_sha;
+const checkedGeneratorBlob = checkedGeneratorHead
+  ? runGit(websiteRoot, ["rev-parse", `${checkedGeneratorHead}:scripts/generate-public-status.mjs`])
+  : null;
+const generatorObservation = checkMode &&
+  selectedRevisionMatchesCurrentTree(websiteRoot, checkedGeneratorHead, websiteGeneratorHead) &&
+  checkedGeneratorBlob === generatorBlobSha
+  ? checkedGeneratorHead
+  : websiteGeneratorHead;
 const generatorText = committedText(websiteRoot, websiteGeneratorHead, "scripts/generate-public-status.mjs");
 const generatorFingerprint = generatorText === null
   ? null
@@ -620,8 +639,8 @@ const publicStatus = {
   schema_version: "public-status-v0",
   generated_at: generatedAt,
   generated_by: "scripts/generate-public-status.mjs",
-  generator_commit: websiteGeneratorHead,
-  generator_observed_head_sha: websiteGeneratorHead,
+  generator_commit: generatorObservation,
+  generator_observed_head_sha: generatorObservation,
   generator_git_blob_sha: generatorBlobSha,
   generator_semantic_fingerprint: generatorFingerprint,
   generator_fingerprint_sha256: generatorFingerprint,
