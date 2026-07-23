@@ -34,7 +34,7 @@
     },
     {
       "repository": "HawkinsOperations/hawkinsoperations-website",
-      "revision_source": "github_event_sha",
+      "revision": "1458cf4b2d0fa41a852ef3d9c7c9e3f21cdecb3c",
       "authoritative_path": "schemas/public-status-v0.schema.json"
     }
   ]
