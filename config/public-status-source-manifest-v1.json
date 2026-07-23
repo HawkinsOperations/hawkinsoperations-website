@@ -4,12 +4,12 @@
   "repositories": [
     {
       "repository": "HawkinsOperations/.github",
-      "revision": "fee75e7a88c0b623590786e02f69d4297a0e10b4",
+      "revision": "fa95bbbf0985c57488b32589307eb2cabb99ea00",
       "authoritative_path": "architecture/REPO_AUTHORITY_MAP.md"
     },
     {
       "repository": "HawkinsOperations/hoxline",
-      "revision": "8ddb8eec8102cac6ef5af2e55632354ca0b8e06d",
+      "revision": "3f2cf1b01f68767f9ce312e8cf31cec6a85b5d9a",
       "authoritative_path": "schemas/case-growth-index-v0.schema.json"
     },
     {
@@ -24,17 +24,17 @@
     },
     {
       "repository": "HawkinsOperations/hawkinsoperations-platform",
-      "revision": "dce32809fcee7faef3f92da7139b2781bb9c4330",
+      "revision": "70ba640773e4116b1fa0e80c86c2a2a0f7287ba6",
       "authoritative_path": "contracts/reviewer-metrics-pipeline-v1-state.json"
     },
     {
       "repository": "HawkinsOperations/hawkinsoperations-proof",
-      "revision": "8ff2c1a2f1762e7635fe24194617f110275c2f0c",
+      "revision": "c60882552571c1664549d3e594c6994dc27dce63",
       "authoritative_path": "proof/indexes/DETECTION_PROOF_STATUS_INDEX.yml"
     },
     {
       "repository": "HawkinsOperations/hawkinsoperations-website",
-      "revision": "c0cc916f6b820e05ba48fe4028b8c4c0a24c2e48",
+      "revision": "5856f8e69527b5e61c3953b88a2ad4c088268655",
       "authoritative_path": "schemas/public-status-v0.schema.json"
     }
   ]
