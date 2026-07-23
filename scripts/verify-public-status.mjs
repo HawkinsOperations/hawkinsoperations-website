@@ -251,10 +251,10 @@ function reviewedSourceIdentities() {
       const dir = localRepoPath(repo);
       const path = sourceContracts[repo].path;
       const reviewedRevision = repo === "HawkinsOperations/.github"
-        ? selection?.revision
+        ? commandHead
         : entry?.revision;
       const reviewedTree = repo === "HawkinsOperations/.github"
-        ? runGit(dir, ["rev-parse", `${reviewedRevision}^{tree}`])
+        ? runGit(dir, ["rev-parse", `${commandHead}^{tree}`])
         : entry?.reviewed_tree_sha;
       const contentRevision = entry?.authority_content_revision;
       if (
