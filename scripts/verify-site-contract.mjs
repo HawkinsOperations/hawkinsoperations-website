@@ -1,5 +1,6 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { extname, join, relative } from "node:path";
+import { readStrictJson } from "./strict-json.mjs";
 
 const root = process.cwd();
 
@@ -363,8 +364,8 @@ if (!proofHoDet001Page.includes('title: "HO-DET-001 | HawkinsOperations"')) {
   process.exit(1);
 }
 
-const discoveryProof = JSON.parse(readFileSync(join(root, "public/.well-known/hawkinsoperations-proof.json"), "utf8"));
-const agentSkills = JSON.parse(readFileSync(join(root, "public/.well-known/agent-skills/index.json"), "utf8"));
+const discoveryProof = readStrictJson(join(root, "public/.well-known/hawkinsoperations-proof.json"));
+const agentSkills = readStrictJson(join(root, "public/.well-known/agent-skills/index.json"));
 const agentMarkdown = readFileSync(join(root, "public/agent.md"), "utf8");
 const headersFile = readFileSync(join(root, "public/_headers"), "utf8");
 const robotsText = readFileSync(join(root, "public/robots.txt"), "utf8");
@@ -583,7 +584,7 @@ if (failures.length > 0) {
 }
 
 const publicStatusSource = readFileSync(join(root, "src/data/generated/public-status.generated.ts"), "utf8");
-const publicStatusJson = JSON.parse(readFileSync(join(root, "public/data/public-status.json"), "utf8"));
+const publicStatusJson = readStrictJson(join(root, "public/data/public-status.json"));
 const publicSurfaceIdentities = readFileSync(join(root, "src/data/publicSurfaceIdentities.ts"), "utf8");
 const proofOfWorkCounterRail = readFileSync(join(root, "components/command-center/ProofOfWorkCounterRail.tsx"), "utf8");
 const hoxlineEngineRoom = readFileSync(join(root, "components/hoxline/HoxlineEngineRoom.tsx"), "utf8");

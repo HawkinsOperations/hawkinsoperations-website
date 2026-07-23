@@ -19,6 +19,7 @@
     "public-status:freshness-reachability-test": "node scripts/verify-public-status.mjs --freshness-reachability-test",
     "public-status:dirty-provenance-test": "node scripts/verify-public-status.mjs --dirty-provenance-test",
     "public-status:nested-claim-test": "node scripts/verify-public-status.mjs --nested-claim-test",
+    "public-status:strict-json-test": "node scripts/verify-public-status.mjs --strict-json-test",
     "public-status:eol-self-test": "node scripts/verify-public-status.mjs --eol-self-test",
     "generate:brand-assets": "node scripts/generate-brand-assets.mjs"
   },

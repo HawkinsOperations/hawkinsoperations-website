@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { tmpdir } from "node:os";
+import { readStrictJson, strictJsonParse } from "./strict-json.mjs";
 
 const root = process.cwd();
 const orgRoot = dirname(root);
@@ -164,7 +165,7 @@ function canonicalJson(value) {
 function normalizeSemanticText(value, path = "") {
   const normalizedEol = value.replace(/\r\n?/g, "\n");
   if (path.endsWith(".json")) {
-    return `${JSON.stringify(canonicalJson(JSON.parse(normalizedEol)))}\n`;
+    return `${JSON.stringify(canonicalJson(strictJsonParse(normalizedEol, path)))}\n`;
   }
   return `${normalizedEol.split("\n").map((line) => line.replace(/[ \t]+$/g, "")).join("\n").replace(/\n*$/, "")}\n`;
 }
@@ -206,59 +207,108 @@ function expectedOrigin(repo) {
   return `https://github.com/${repo}.git`;
 }
 
-let reviewedWebsiteIdentityCache;
+let reviewedSourceIdentitiesCache;
 
-function reviewedWebsiteIdentity() {
-  if (reviewedWebsiteIdentityCache !== undefined) return reviewedWebsiteIdentityCache;
-  reviewedWebsiteIdentityCache = null;
+function reviewedSourceIdentities() {
+  if (reviewedSourceIdentitiesCache !== undefined) return reviewedSourceIdentitiesCache;
+  reviewedSourceIdentitiesCache = null;
   const commandRepo = join(orgRoot, ".github");
-  if (!existsSync(commandRepo)) return reviewedWebsiteIdentityCache;
+  if (!existsSync(commandRepo)) return reviewedSourceIdentitiesCache;
   if (normalizeOrigin(runGit(commandRepo, ["remote", "get-url", "origin"])) !==
       normalizeOrigin(expectedOrigin("HawkinsOperations/.github"))) {
-    return reviewedWebsiteIdentityCache;
+    return reviewedSourceIdentitiesCache;
   }
   const commandHead = runGit(commandRepo, ["rev-parse", "HEAD"]);
   if (!commandHead ||
       runGit(commandRepo, ["diff", "--quiet", "HEAD", "--", commandManifestRelativePath]) === null) {
-    return reviewedWebsiteIdentityCache;
+    return reviewedSourceIdentitiesCache;
   }
   const manifestText = committedText(commandRepo, commandHead, commandManifestRelativePath);
   try {
-    const manifest = JSON.parse(manifestText);
+    const manifest = strictJsonParse(manifestText, `${commandManifestRelativePath}@${commandHead}`);
     const entries = manifest?.repositories ?? [];
-    const websiteEntries = entries.filter(
-      (entry) => entry.canonical_repository === "HawkinsOperations/hawkinsoperations-website",
+    const byRepository = new Map(entries.map((entry) => [entry.canonical_repository, entry]));
+    const selectionManifest = readStrictJson(manifestPath);
+    const selectionEntries = selectionManifest?.repositories ?? [];
+    const selectionByRepository = new Map(
+      selectionEntries.map((entry) => [entry.repository, entry]),
     );
-    const entry = websiteEntries[0];
+    const websiteEntry = byRepository.get("HawkinsOperations/hawkinsoperations-website");
+    const commandCenterEntry = byRepository.get("HawkinsOperations/.github");
     if (manifest?.schema !== "hawkinsoperations-convergence-source-manifest-v1" ||
         manifest?.constraints?.exact_repository_count !== 7 ||
         entries.length !== 7 ||
-        new Set(entries.map((candidate) => candidate.canonical_repository)).size !== 7 ||
-        websiteEntries.length !== 1 ||
-        entry?.repository !== "hawkinsoperations-website" ||
-        !/^[a-f0-9]{40}$/.test(entry?.revision ?? "") ||
-        !/^[a-f0-9]{40}$/.test(entry?.reviewed_tree_sha ?? "")) {
-      return reviewedWebsiteIdentityCache;
+        byRepository.size !== 7 ||
+        !/^[a-f0-9]{40}$/.test(websiteEntry?.revision ?? "") ||
+        !/^[a-f0-9]{40}$/.test(websiteEntry?.reviewed_tree_sha ?? "") ||
+        commandCenterEntry?.revision_source !== "github_event_sha" ||
+        commandCenterEntry?.tree_source !== "github_event_tree" ||
+        selectionEntries.length !== 7 ||
+        selectionByRepository.size !== 7 ||
+        entries.some((entry) =>
+          !exactSourceRepos.includes(entry.canonical_repository) ||
+          (entry.canonical_repository === "HawkinsOperations/.github"
+            ? !/^[a-f0-9]{40}$/.test(
+              selectionByRepository.get(entry.canonical_repository)?.revision ?? "",
+            )
+            : (
+              !/^[a-f0-9]{40}$/.test(entry?.revision ?? "") ||
+              !/^[a-f0-9]{40}$/.test(entry?.reviewed_tree_sha ?? "")
+            ))
+        )) {
+      return reviewedSourceIdentitiesCache;
     }
-    const reviewedStatusText = committedText(root, entry.revision, "public/data/public-status.json");
-    const reviewedStatus = JSON.parse(reviewedStatusText);
-    const websiteSource = reviewedStatus?.sources?.find(
-      (source) => source.repo === "HawkinsOperations/hawkinsoperations-website",
+    const currentWebsiteTree = runGit(root, ["rev-parse", "HEAD^{tree}"]);
+    if (currentWebsiteTree !== websiteEntry.reviewed_tree_sha) {
+      return reviewedSourceIdentitiesCache;
+    }
+    const reviewedStatusText = committedText(
+      root,
+      websiteEntry.revision,
+      "public/data/public-status.json",
     );
-    reviewedWebsiteIdentityCache = {
-      revision: entry.revision,
-      tree: entry.reviewed_tree_sha,
-      sourceRevision: websiteSource?.source_observed_head_sha,
-      currentObservation: websiteSource?.current_observed_head_sha,
-      generatorObservation: reviewedStatus?.generator_observed_head_sha,
-    };
-    return reviewedWebsiteIdentityCache;
+    const reviewedStatus = strictJsonParse(
+      reviewedStatusText,
+      `public/data/public-status.json@${websiteEntry.revision}`,
+    );
+    if (!Array.isArray(reviewedStatus?.sources) || reviewedStatus.sources.length !== 7) {
+      return reviewedSourceIdentitiesCache;
+    }
+    const reviewedSources = new Map(reviewedStatus.sources.map((source) => [source.repo, source]));
+    if (reviewedSources.size !== 7) return reviewedSourceIdentitiesCache;
+    reviewedSourceIdentitiesCache = new Map(entries.map((entry) => {
+      const reviewedSource = reviewedSources.get(entry.canonical_repository);
+      const revision = entry.canonical_repository === "HawkinsOperations/.github"
+        ? selectionByRepository.get(entry.canonical_repository)?.revision
+        : entry.revision;
+      const tree = entry.canonical_repository === "HawkinsOperations/.github"
+        ? runGit(commandRepo, ["rev-parse", `${revision}^{tree}`])
+        : entry.reviewed_tree_sha;
+      return [entry.canonical_repository, {
+        revision,
+        tree,
+        sourceRevision: reviewedSource?.source_observed_head_sha,
+        currentObservation: reviewedSource?.current_observed_head_sha,
+        generatorObservation: entry.canonical_repository === "HawkinsOperations/hawkinsoperations-website"
+          ? reviewedStatus?.generator_observed_head_sha
+          : undefined,
+      }];
+    }));
+    return reviewedSourceIdentitiesCache;
   } catch {
-    return reviewedWebsiteIdentityCache;
+    return reviewedSourceIdentitiesCache;
   }
 }
 
-function reviewedLineageMatchesInRepo(dir, candidateRevision, currentRevision, path, currentBlob, role, identity) {
+function reviewedLineageMatchesWithIdentity(
+  dir,
+  candidateRevision,
+  currentRevision,
+  path,
+  currentBlob,
+  role,
+  identity,
+) {
   const expectedByRole = {
     source: identity?.sourceRevision,
     current: identity?.currentObservation,
@@ -269,7 +319,8 @@ function reviewedLineageMatchesInRepo(dir, candidateRevision, currentRevision, p
       runGit(dir, ["cat-file", "-t", identity.revision]) !== "commit") {
     return false;
   }
-  if (runGit(dir, ["merge-base", "--is-ancestor", currentRevision, candidateRevision]) !== null ||
+  if ((currentRevision !== candidateRevision &&
+      runGit(dir, ["merge-base", "--is-ancestor", currentRevision, candidateRevision]) !== null) ||
       runGit(dir, ["merge-base", "--is-ancestor", candidateRevision, identity.revision]) === null) {
     return false;
   }
@@ -281,27 +332,35 @@ function reviewedLineageMatchesInRepo(dir, candidateRevision, currentRevision, p
     runGit(dir, ["rev-parse", `${identity.revision}:${path}`]) === currentBlob;
 }
 
-function reviewedWebsiteLineageMatches(candidateRevision, currentRevision, path, currentBlob, role) {
-  return reviewedLineageMatchesInRepo(
-    root,
+function reviewedLineageMatchesInRepo(repo, dir, candidateRevision, currentRevision, path, currentBlob, role) {
+  return reviewedLineageMatchesWithIdentity(
+    dir,
     candidateRevision,
     currentRevision,
     path,
     currentBlob,
     role,
-    reviewedWebsiteIdentity(),
+    reviewedSourceIdentities()?.get(repo),
   );
 }
 
-function websiteRevisionMatches(candidateRevision, currentRevision, path, currentBlob, role) {
-  const identity = reviewedWebsiteIdentity();
+function revisionMatches(repo, dir, candidateRevision, currentRevision, path, currentBlob, role) {
+  const identity = reviewedSourceIdentities()?.get(repo);
   const reviewedIdentityIsActive = identity &&
-    runGit(root, ["rev-parse", `${identity.revision}^{tree}`]) === identity.tree &&
-    runGit(root, ["rev-parse", `${currentRevision}^{tree}`]) === identity.tree;
+    runGit(dir, ["rev-parse", `${identity.revision}^{tree}`]) === identity.tree &&
+    runGit(dir, ["rev-parse", `${currentRevision}^{tree}`]) === identity.tree;
   if (reviewedIdentityIsActive) {
-    return reviewedWebsiteLineageMatches(candidateRevision, currentRevision, path, currentBlob, role);
+    return reviewedLineageMatchesInRepo(
+      repo,
+      dir,
+      candidateRevision,
+      currentRevision,
+      path,
+      currentBlob,
+      role,
+    );
   }
-  return selectedRevisionMatchesCurrentTree(root, candidateRevision, currentRevision);
+  return selectedRevisionMatchesCurrentTree(dir, candidateRevision, currentRevision);
 }
 
 function selectedRevisionMatchesCurrentTree(dir, selectedRevision, currentRevision) {
@@ -385,7 +444,7 @@ function revisionRelationshipSelfTest() {
       generatorObservation: current,
     };
     const projectedBlob = fixtureGit(["rev-parse", `${projectedEquivalent}:authority.txt`]);
-    if (!reviewedLineageMatchesInRepo(
+    if (!reviewedLineageMatchesWithIdentity(
       fixture,
       current,
       projectedEquivalent,
@@ -396,7 +455,7 @@ function revisionRelationshipSelfTest() {
     )) {
       fail("reviewed lineage self-test rejected the exact reviewed-tree projection.");
     }
-    if (reviewedLineageMatchesInRepo(
+    if (reviewedLineageMatchesWithIdentity(
       fixture,
       base,
       projectedEquivalent,
@@ -407,7 +466,7 @@ function revisionRelationshipSelfTest() {
     )) {
       fail("reviewed lineage self-test accepted an arbitrary same-blob ancestor.");
     }
-    if (reviewedLineageMatchesInRepo(
+    if (reviewedLineageMatchesWithIdentity(
       fixture,
       reviewedFinal,
       projectedEquivalent,
@@ -418,7 +477,7 @@ function revisionRelationshipSelfTest() {
     )) {
       fail("reviewed lineage self-test accepted reviewed-tree revision substitution.");
     }
-    if (reviewedLineageMatchesInRepo(
+    if (reviewedLineageMatchesWithIdentity(
       fixture,
       current,
       differentTreeUnrelated,
@@ -429,7 +488,7 @@ function revisionRelationshipSelfTest() {
     )) {
       fail("reviewed lineage self-test accepted a wrong current repository tree.");
     }
-    if (reviewedLineageMatchesInRepo(
+    if (reviewedLineageMatchesWithIdentity(
       fixture,
       "f".repeat(40),
       projectedEquivalent,
@@ -440,7 +499,7 @@ function revisionRelationshipSelfTest() {
     )) {
       fail("reviewed lineage self-test accepted an unreachable recorded observation.");
     }
-    if (reviewedLineageMatchesInRepo(
+    if (reviewedLineageMatchesWithIdentity(
       fixture,
       current,
       projectedEquivalent,
@@ -457,7 +516,7 @@ function revisionRelationshipSelfTest() {
       tree: currentTree,
       generatorObservation: sameTreeFuture,
     };
-    if (reviewedLineageMatchesInRepo(
+    if (reviewedLineageMatchesWithIdentity(
       fixture,
       sameTreeFuture,
       current,
@@ -518,30 +577,64 @@ const promotionTokens = [
 ];
 const privateTokens = ["PRIVATE_RAW", "PRIVATE_EVIDENCE", "RAW_WAZUH_ALERT", "MUFG", "CUSTOMER_IDENTIFIER"];
 const authorityKeyPattern = /(?:ai|analyst).*(?:authority|approval)|final.*authorization|case.*closure|public.*safe.*approved|runtime.*active|signal.*observed/i;
-const explicitlyBoundedKeys = new Set([
-  "proof_ceiling",
-  "not_claiming",
-  "does_not_prove",
-  "blocked_reason",
-  "known_gaps",
-  "detail",
-  "statement",
-  "no_proof_promotion_statement",
+const exactBoundedAuthorityValues = /^(?:false|blocked|none|not[_ -]?approved|not[_ -]?authorized|not[_ -]?public[_ -]?safe)$/i;
+const affirmativeClaimPatterns = new Map([
+  ["runtime active", /\bruntime\b.{0,24}\b(?:active|live)\b/i],
+  ["signal observed", /\bsignal\b.{0,24}\b(?:active|observed)\b/i],
+  ["public safe", /\bpublic[\s_-]*safe\b.{0,32}\b(?:approved|confirmed|established|release|runtime\s+proof)\b/i],
+  ["production ready", /\bproduction\b.{0,32}\b(?:active|confirmed|deployed|deployment|live|ready|readiness|status)\b/i],
+  ["customer deployed", /\b(?:customer|socaas)\b.{0,48}\bdeploy(?:ed|ment|ing)?\b|\bdeploy(?:ed|ment|ing)?\b.{0,48}\b(?:customer|socaas)\b/i],
+  ["AI authority", /\bai\b.{0,40}\b(?:approval|authority|disposition)\b.{0,24}\b(?:approved|enabled|granted)\b|\bai\b.{0,40}\b(?:approved|authorized)\b.{0,24}\b(?:case|decision|disposition)\b|\bai[\s_-]+authority\b/i],
+  ["analyst authority", /\banalyst\b.{0,40}\b(?:approval|authority|disposition)\b.{0,24}\b(?:approved|enabled|granted)\b|\banalyst\b.{0,40}\b(?:approved|authorized)\b.{0,24}\b(?:case|decision|disposition)\b|\banalyst[\s_-]+authority\b/i],
+  ["final authorization", /\bfinal\s+authori[sz]ation\b.{0,32}\b(?:approved|complete|granted|received)\b|\bfinal(?:[\s_-]+human)?[\s_-]+authorization\b/i],
+  ["case closure", /\bcase\s+closure\b.{0,32}\b(?:approved|complete|granted|received)\b|\bcase\b.{0,16}\b(?:is|was)?\s*closed\b/i],
+  ["website as proof", /\bwebsite(?:[\s_-]+rendering)?[\s_-]+(?:as|is)[\s_-]+proof\b/i],
+  ["green CI as approval", /\bgreen[\s_-]+ci[\s_-]+(?:as|is)[\s_-]+approval\b/i],
 ]);
+const localNegationPattern = /(?:\b(?:not|never|no|without|missing|blocked|future|pending|unsupported)\b|\b(?:does|do|must|is|are|was|were|can|cannot|could|should|will|would)\s+not\b|\bnot\s+(?:authorized|approved|promoted)\b|\brequires?\s+separate\b|\bremain(?:s)?\s+(?:a\s+)?separate\b)/i;
+const exactBlockedClaimValues = new Set([
+  "runtime proof",
+  "signal proof",
+  "production readiness",
+  "customer deployment",
+  "public-safe runtime proof",
+  "ai approval",
+  "analyst approval",
+  "website-as-proof",
+]);
+
+function affirmativeStringClaims(value, path) {
+  const normalized = decodeRepeated(value).normalize("NFKC");
+  if (
+    ["blocked_claims", "not_claiming"].includes(path.at(-2)) &&
+    exactBlockedClaimValues.has(normalized.trim().toLocaleLowerCase("en-US"))
+  ) {
+    return [];
+  }
+  const issues = [];
+  for (const clause of normalized.split(/(?:[.;!?\r\n]+|\b(?:but|however|although|yet)\b)/i)) {
+    if (localNegationPattern.test(clause)) continue;
+    for (const [label, pattern] of affirmativeClaimPatterns) {
+      if (pattern.test(clause)) issues.push(label);
+    }
+  }
+  return issues;
+}
 
 function recursiveSecurityIssues(value, path = []) {
   const issues = [];
-  const key = path.at(-1) ?? "";
   if (typeof value === "string") {
     const pathProblem = pathIssue(value);
     if (pathProblem) issues.push(`${path.join(".") || "<root>"} contains ${pathProblem}.`);
-    if (!path.some((part) => explicitlyBoundedKeys.has(part))) {
-      for (const token of promotionTokens) {
-        if (value.toUpperCase().includes(token)) issues.push(`${path.join(".")} contains unauthorized promotion token ${token}.`);
-      }
-      for (const token of privateTokens) {
-        if (value.toUpperCase().includes(token)) issues.push(`${path.join(".")} contains private marker ${token}.`);
-      }
+    const decodedUpper = decodeRepeated(value).toUpperCase();
+    for (const token of promotionTokens) {
+      if (decodedUpper.includes(token)) issues.push(`${path.join(".")} contains unauthorized promotion token ${token}.`);
+    }
+    for (const token of privateTokens) {
+      if (decodedUpper.includes(token)) issues.push(`${path.join(".")} contains private marker ${token}.`);
+    }
+    for (const claim of affirmativeStringClaims(value, path)) {
+      issues.push(`${path.join(".") || "<root>"} contains unauthorized ${claim} wording.`);
     }
     return issues;
   }
@@ -554,7 +647,10 @@ function recursiveSecurityIssues(value, path = []) {
       if (
         authorityKeyPattern.test(childKey) &&
         !["current_authority", "authority", "authority_owner", "authority_role", "source_authority_owner", "source_authority_role"].includes(childKey) &&
-        (childValue === true || (typeof childValue === "string" && !/^(?:false|blocked|none|not[_ -]?approved)$/i.test(childValue)))
+        !(
+          childValue === false ||
+          (typeof childValue === "string" && exactBoundedAuthorityValues.test(childValue))
+        )
       ) {
         issues.push(`${[...path, childKey].join(".")} attempts authority promotion.`);
       }
@@ -562,6 +658,91 @@ function recursiveSecurityIssues(value, path = []) {
     }
   }
   return issues;
+}
+
+function strictJsonSelfTest() {
+  const duplicateCases = [
+    ["top-level revision", '{"revision":"a","revision":"b"}', "revision"],
+    ["nested owner", '{"source":{"authority_owner":"good","authority_owner":"spoofed"}}', "authority_owner"],
+    ["nested path", '{"source":{"path":"safe.json","path":"../private.json"}}', "path"],
+    ["nested claim", '{"metadata":{"claim_status":"blocked","claim_status":"PUBLIC_SAFE_APPROVED"}}', "claim_status"],
+    ["nested status", '{"metadata":{"status":"blocked","status":"RUNTIME_ACTIVE"}}', "status"],
+    ["deep array object", '{"items":[{"owner":"good","owner":"spoofed"}]}', "owner"],
+    ["escaped-key alias", '{"owner":"good","\\u006fwner":"spoofed"}', "owner"],
+    ["case-folded key alias", '{"owner":"good","OWNER":"spoofed"}', "OWNER"],
+    ["compatibility key alias", '{"owner":"good","ｏｗｎｅｒ":"spoofed"}', "ｏｗｎｅｒ"],
+  ];
+  for (const [name, text, key] of duplicateCases) {
+    try {
+      strictJsonParse(text, `controlled-${name}`);
+      fail(`strict JSON self-test accepted duplicate ${name}.`);
+    } catch (error) {
+      if (!String(error.message).includes(`duplicate object key "${key}"`)) {
+        fail(`strict JSON self-test produced the wrong duplicate diagnostic for ${name}.`);
+      }
+    }
+  }
+  const valid = strictJsonParse(
+    '{"revision":"a","source":{"authority_owner":"good","path":"safe.json"},"items":[1,true,null]}',
+    "controlled-valid",
+  );
+  if (valid.revision !== "a" || valid.source.path !== "safe.json" || valid.items.length !== 3) {
+    fail("strict JSON self-test rejected or corrupted a valid nested document.");
+  }
+}
+
+function recursiveSecuritySelfTest() {
+  for (const key of [
+    "detail",
+    "statement",
+    "not_claiming",
+    "does_not_prove",
+    "blocked_reason",
+    "known_gaps",
+    "no_proof_promotion_statement",
+  ]) {
+    for (const token of ["PUBLIC_SAFE_APPROVED", "PRIVATE_EVIDENCE"]) {
+      const issues = recursiveSecurityIssues({ [key]: { nested: [{ value: token }] } });
+      if (!issues.some((issue) => issue.includes(token))) {
+        fail(`recursive security self-test allowed ${token} beneath ${key}.`);
+      }
+    }
+  }
+  for (const value of ["false", "blocked", "none", "not approved", "not authorized", "not public safe"]) {
+    const issues = recursiveSecurityIssues({ final_authorization: value });
+    if (issues.length > 0) {
+      fail(`recursive security self-test rejected exact bounded authority value ${JSON.stringify(value)}.`);
+    }
+  }
+  for (const value of [true, 1, { nested: "approved" }, ["approved"]]) {
+    const issues = recursiveSecurityIssues({ final_authorization: value });
+    if (!issues.some((issue) => issue.includes("attempts authority promotion"))) {
+      fail(`recursive security self-test allowed non-bounded authority shape ${JSON.stringify(value)}.`);
+    }
+  }
+  for (const phrase of [
+    "runtime is active",
+    "signal was observed",
+    "production is ready",
+    "customer environment deployed",
+    "AI disposition authority enabled",
+    "analyst approval granted",
+    "final authorization received",
+    "case was closed",
+    "website is proof",
+    "green CI is approval",
+  ]) {
+    const issues = recursiveSecurityIssues({ detail: { nested: [{ value: phrase }] } });
+    if (!issues.some((issue) => issue.includes("unauthorized"))) {
+      fail(`recursive security self-test allowed affirmative wording ${JSON.stringify(phrase)}.`);
+    }
+  }
+  const crossClause = recursiveSecurityIssues({
+    detail: "Runtime is not active, but customer environment deployed.",
+  });
+  if (!crossClause.some((issue) => issue.includes("customer deployed"))) {
+    fail("recursive security self-test allowed cross-clause negation laundering.");
+  }
 }
 
 function schemaNode(schema, documentSchema) {
@@ -680,15 +861,15 @@ function verifyContentIdentity(record, repo, path, issues) {
     issues.push(`${repo}/${path}: recorded source revision is unreachable.`);
     return;
   }
-  const sourceRevisionMatches = repo === "HawkinsOperations/hawkinsoperations-website"
-    ? websiteRevisionMatches(
-      record.source_observed_head_sha,
-      currentHead,
-      path,
-      runGit(repoDir, ["rev-parse", `${currentHead}:${path}`]),
-      "source",
-    )
-    : selectedRevisionMatchesCurrentTree(repoDir, record.source_observed_head_sha, currentHead);
+  const sourceRevisionMatches = revisionMatches(
+    repo,
+    repoDir,
+    record.source_observed_head_sha,
+    currentHead,
+    path,
+    runGit(repoDir, ["rev-parse", `${currentHead}:${path}`]),
+    "source",
+  );
   if (!sourceRevisionMatches) {
     issues.push(
       `${repo}/${path}: selected source revision must equal current HEAD, be its ancestor, or have the exact current repository tree.`,
@@ -700,15 +881,15 @@ function verifyContentIdentity(record, repo, path, issues) {
   if (!/^[a-f0-9]{40}$/.test(generationObservedHead ?? "") ||
       runGit(repoDir, ["cat-file", "-t", generationObservedHead]) !== "commit") {
     issues.push(`${repo}/${path}: generation-time current observation must be an available immutable commit.`);
-  } else if (!(repo === "HawkinsOperations/hawkinsoperations-website"
-    ? websiteRevisionMatches(
-      generationObservedHead,
-      currentHead,
-      path,
-      runGit(repoDir, ["rev-parse", `${currentHead}:${path}`]),
-      "current",
-    )
-    : selectedRevisionMatchesCurrentTree(repoDir, generationObservedHead, currentHead))) {
+  } else if (!revisionMatches(
+    repo,
+    repoDir,
+    generationObservedHead,
+    currentHead,
+    path,
+    runGit(repoDir, ["rev-parse", `${currentHead}:${path}`]),
+    "current",
+  )) {
     issues.push(`${repo}/${path}: generation-time current observation is not safely related to current HEAD.`);
   }
   const generationObservedBlob = runGit(repoDir, ["rev-parse", `${generationObservedHead}:${path}`]);
@@ -892,7 +1073,9 @@ function semanticIssues(candidate, { now = new Date(), checkLocalSources = true,
   if (runGit(root, ["cat-file", "-t", generatorHead]) !== "commit") {
     issues.push("generator observed head must be an available immutable reviewed revision.");
   }
-  if (!websiteRevisionMatches(
+  if (!revisionMatches(
+    "HawkinsOperations/hawkinsoperations-website",
+    root,
     generatorHead,
     currentWebsiteHead,
     "scripts/generate-public-status.mjs",
@@ -936,9 +1119,9 @@ let status = null;
 let schema = null;
 let manifest = null;
 try {
-  status = JSON.parse(readFileSync(jsonPath, "utf8"));
-  schema = JSON.parse(readFileSync(schemaPath, "utf8"));
-  manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+  status = readStrictJson(jsonPath);
+  schema = readStrictJson(schemaPath);
+  manifest = readStrictJson(manifestPath);
 } catch (error) {
   fail(`Public status, schema, or source manifest is not valid JSON: ${error.message}`);
 }
@@ -965,9 +1148,15 @@ if (
   status &&
   schema &&
   manifest &&
-  ["--self-test", "--owner-self-test-only", "--source-checkout-test", "--freshness-reachability-test", "--dirty-provenance-test", "--nested-claim-test", "--eol-self-test"]
+  ["--self-test", "--owner-self-test-only", "--source-checkout-test", "--freshness-reachability-test", "--dirty-provenance-test", "--nested-claim-test", "--strict-json-test", "--eol-self-test"]
     .some((mode) => selfTestModes.has(mode))
 ) {
+  if (selfTestModes.has("--self-test") || selfTestModes.has("--strict-json-test")) {
+    strictJsonSelfTest();
+  }
+  if (selfTestModes.has("--self-test") || selfTestModes.has("--nested-claim-test")) {
+    recursiveSecuritySelfTest();
+  }
   const hostileCases = [
     {
       name: "unknown nested shape",
@@ -1098,6 +1287,7 @@ if (
     "--freshness-reachability-test": ["unreachable revision", "future observation", "stale labeled fresh", "source commit time from branch tip"],
     "--dirty-provenance-test": ["dirty source fingerprint substitution", "dirty generator fingerprint substitution"],
     "--nested-claim-test": ["unknown nested shape", "nested public-safe laundering", "nested runtime laundering"],
+    "--strict-json-test": [],
   };
   let selected = hostileCases;
   for (const [mode, names] of Object.entries(modeFilters)) {

@@ -34,9 +34,13 @@ jobs:
         id: manifest
         shell: bash
         run: |
-          node <<'NODE'
-          const fs = require("node:fs");
-          const manifest = JSON.parse(fs.readFileSync("config/public-status-source-manifest-v1.json", "utf8"));
+          node --input-type=module <<'NODE'
+          import fs from "node:fs";
+          import { strictJsonParse } from "./scripts/strict-json.mjs";
+          const manifest = strictJsonParse(
+            fs.readFileSync("config/public-status-source-manifest-v1.json", "utf8"),
+            "config/public-status-source-manifest-v1.json",
+          );
           const names = {
             "HawkinsOperations/.github": "org",
             "HawkinsOperations/hoxline": "hoxline",
@@ -157,6 +161,9 @@ jobs:
 
       - name: Verify nested claim rejection
         run: npm run public-status:nested-claim-test
+
+      - name: Verify duplicate-key rejection
+        run: npm run public-status:strict-json-test
 
       - name: Verify CRLF and LF identity separation
         run: npm run public-status:eol-self-test

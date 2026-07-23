@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import { readStrictJson, strictJsonParse } from "./strict-json.mjs";
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const websiteRoot = join(scriptDir, "..");
@@ -11,7 +12,7 @@ const sourceManifestPath = join(websiteRoot, "config/public-status-source-manife
 const checkedStatusPath = join(websiteRoot, "public/data/public-status.json");
 const checkMode = process.argv.includes("--check");
 const checkedStatus = checkMode && existsSync(checkedStatusPath)
-  ? JSON.parse(readFileSync(checkedStatusPath, "utf8"))
+  ? readStrictJson(checkedStatusPath)
   : null;
 const checkedGeneratedAt = checkedStatus?.generated_at ?? null;
 const generatedAt = checkedGeneratedAt ?? new Date().toISOString();
@@ -104,7 +105,7 @@ function runGit(dir, args) {
 function readJson(repoDir, repoPath) {
   const fullPath = join(repoDir, repoPath);
   if (!existsSync(fullPath)) return null;
-  return JSON.parse(readFileSync(fullPath, "utf8"));
+  return readStrictJson(fullPath);
 }
 
 function sha256File(path) {
@@ -138,7 +139,7 @@ function canonicalJson(value) {
 function normalizeSemanticText(value, path) {
   const normalizedEol = value.replace(/\r\n?/g, "\n");
   if (path.endsWith(".json")) {
-    return `${JSON.stringify(canonicalJson(JSON.parse(normalizedEol)))}\n`;
+    return `${JSON.stringify(canonicalJson(strictJsonParse(normalizedEol, path)))}\n`;
   }
   return `${normalizedEol.split("\n").map((line) => line.replace(/[ \t]+$/g, "")).join("\n").replace(/\n*$/, "")}\n`;
 }
@@ -158,97 +159,135 @@ function normalizeOrigin(value) {
 }
 
 const commandManifestRelativePath = "governance/CONVERGENCE_SOURCE_MANIFEST.json";
-let reviewedWebsiteIdentityCache;
+let reviewedSourceIdentitiesCache;
 
-function reviewedWebsiteIdentity() {
-  if (reviewedWebsiteIdentityCache !== undefined) return reviewedWebsiteIdentityCache;
-  reviewedWebsiteIdentityCache = null;
+function reviewedSourceIdentities() {
+  if (reviewedSourceIdentitiesCache !== undefined) return reviewedSourceIdentitiesCache;
+  reviewedSourceIdentitiesCache = null;
   const commandRepo = join(orgRoot, ".github");
-  if (!existsSync(commandRepo)) return reviewedWebsiteIdentityCache;
+  if (!existsSync(commandRepo)) return reviewedSourceIdentitiesCache;
   if (normalizeOrigin(runGit(commandRepo, ["remote", "get-url", "origin"])) !==
       normalizeOrigin(canonicalOrigin("HawkinsOperations/.github"))) {
-    return reviewedWebsiteIdentityCache;
+    return reviewedSourceIdentitiesCache;
   }
   const commandHead = runGit(commandRepo, ["rev-parse", "HEAD"]);
   if (!commandHead ||
       runGit(commandRepo, ["diff", "--quiet", "HEAD", "--", commandManifestRelativePath]) === null) {
-    return reviewedWebsiteIdentityCache;
+    return reviewedSourceIdentitiesCache;
   }
   const manifestText = committedText(commandRepo, commandHead, commandManifestRelativePath);
   try {
-    const manifest = JSON.parse(manifestText);
+    const manifest = strictJsonParse(manifestText, `${commandManifestRelativePath}@${commandHead}`);
     const entries = manifest?.repositories ?? [];
-    const websiteEntries = entries.filter(
-      (entry) => entry.canonical_repository === "HawkinsOperations/hawkinsoperations-website",
+    const byRepository = new Map(entries.map((entry) => [entry.canonical_repository, entry]));
+    const selectionManifest = readStrictJson(sourceManifestPath);
+    const selectionEntries = selectionManifest?.repositories ?? [];
+    const selectionByRepository = new Map(
+      selectionEntries.map((entry) => [entry.repository, entry]),
     );
-    const entry = websiteEntries[0];
+    const websiteEntry = byRepository.get("HawkinsOperations/hawkinsoperations-website");
+    const commandCenterEntry = byRepository.get("HawkinsOperations/.github");
     if (manifest?.schema !== "hawkinsoperations-convergence-source-manifest-v1" ||
         manifest?.constraints?.exact_repository_count !== 7 ||
         entries.length !== 7 ||
-        new Set(entries.map((candidate) => candidate.canonical_repository)).size !== 7 ||
-        websiteEntries.length !== 1 ||
-        entry?.repository !== "hawkinsoperations-website" ||
-        !/^[a-f0-9]{40}$/.test(entry?.revision ?? "") ||
-        !/^[a-f0-9]{40}$/.test(entry?.reviewed_tree_sha ?? "")) {
-      return reviewedWebsiteIdentityCache;
+        byRepository.size !== 7 ||
+        !/^[a-f0-9]{40}$/.test(websiteEntry?.revision ?? "") ||
+        !/^[a-f0-9]{40}$/.test(websiteEntry?.reviewed_tree_sha ?? "") ||
+        commandCenterEntry?.revision_source !== "github_event_sha" ||
+        commandCenterEntry?.tree_source !== "github_event_tree" ||
+        selectionEntries.length !== 7 ||
+        selectionByRepository.size !== 7 ||
+        entries.some((entry) =>
+          !repoSpecs.some((spec) => spec.repo === entry.canonical_repository) ||
+          (entry.canonical_repository === "HawkinsOperations/.github"
+            ? !/^[a-f0-9]{40}$/.test(
+              selectionByRepository.get(entry.canonical_repository)?.revision ?? "",
+            )
+            : (
+              !/^[a-f0-9]{40}$/.test(entry?.revision ?? "") ||
+              !/^[a-f0-9]{40}$/.test(entry?.reviewed_tree_sha ?? "")
+            ))
+        )) {
+      return reviewedSourceIdentitiesCache;
+    }
+    const currentWebsiteTree = runGit(websiteRoot, ["rev-parse", "HEAD^{tree}"]);
+    if (currentWebsiteTree !== websiteEntry.reviewed_tree_sha) {
+      return reviewedSourceIdentitiesCache;
     }
     const reviewedStatusText = committedText(
       websiteRoot,
-      entry.revision,
+      websiteEntry.revision,
       "public/data/public-status.json",
     );
-    const reviewedStatus = JSON.parse(reviewedStatusText);
-    const websiteSource = reviewedStatus?.sources?.find(
-      (source) => source.repo === "HawkinsOperations/hawkinsoperations-website",
+    const reviewedStatus = strictJsonParse(
+      reviewedStatusText,
+      `public/data/public-status.json@${websiteEntry.revision}`,
     );
-    reviewedWebsiteIdentityCache = {
-      revision: entry.revision,
-      tree: entry.reviewed_tree_sha,
-      sourceRevision: websiteSource?.source_observed_head_sha,
-      currentObservation: websiteSource?.current_observed_head_sha,
-      generatorObservation: reviewedStatus?.generator_observed_head_sha,
-    };
-    return reviewedWebsiteIdentityCache;
+    if (!Array.isArray(reviewedStatus?.sources) || reviewedStatus.sources.length !== 7) {
+      return reviewedSourceIdentitiesCache;
+    }
+    const reviewedSources = new Map(reviewedStatus.sources.map((source) => [source.repo, source]));
+    if (reviewedSources.size !== 7) return reviewedSourceIdentitiesCache;
+    reviewedSourceIdentitiesCache = new Map(entries.map((entry) => {
+      const reviewedSource = reviewedSources.get(entry.canonical_repository);
+      const revision = entry.canonical_repository === "HawkinsOperations/.github"
+        ? selectionByRepository.get(entry.canonical_repository)?.revision
+        : entry.revision;
+      const tree = entry.canonical_repository === "HawkinsOperations/.github"
+        ? runGit(commandRepo, ["rev-parse", `${revision}^{tree}`])
+        : entry.reviewed_tree_sha;
+      return [entry.canonical_repository, {
+        revision,
+        tree,
+        sourceRevision: reviewedSource?.source_observed_head_sha,
+        currentObservation: reviewedSource?.current_observed_head_sha,
+        generatorObservation: entry.canonical_repository === "HawkinsOperations/hawkinsoperations-website"
+          ? reviewedStatus?.generator_observed_head_sha
+          : undefined,
+      }];
+    }));
+    return reviewedSourceIdentitiesCache;
   } catch {
-    return reviewedWebsiteIdentityCache;
+    return reviewedSourceIdentitiesCache;
   }
 }
 
-function reviewedWebsiteLineageMatches(candidateRevision, currentRevision, path, currentBlob, role) {
-  const identity = reviewedWebsiteIdentity();
+function reviewedLineageMatches(spec, candidateRevision, currentRevision, path, currentBlob, role) {
+  const identity = reviewedSourceIdentities()?.get(spec.repo);
   const expectedByRole = {
     source: identity?.sourceRevision,
     current: identity?.currentObservation,
     generator: identity?.generatorObservation,
   };
   if (!identity || candidateRevision !== expectedByRole[role]) return false;
-  if (runGit(websiteRoot, ["cat-file", "-t", candidateRevision]) !== "commit" ||
-      runGit(websiteRoot, ["cat-file", "-t", identity.revision]) !== "commit") {
+  if (runGit(spec.dir, ["cat-file", "-t", candidateRevision]) !== "commit" ||
+      runGit(spec.dir, ["cat-file", "-t", identity.revision]) !== "commit") {
     return false;
   }
-  if (runGit(websiteRoot, ["merge-base", "--is-ancestor", currentRevision, candidateRevision]) !== null) {
+  if (currentRevision !== candidateRevision &&
+      runGit(spec.dir, ["merge-base", "--is-ancestor", currentRevision, candidateRevision]) !== null) {
     return false;
   }
-  if (runGit(websiteRoot, ["merge-base", "--is-ancestor", candidateRevision, identity.revision]) === null) {
+  if (runGit(spec.dir, ["merge-base", "--is-ancestor", candidateRevision, identity.revision]) === null) {
     return false;
   }
-  if (runGit(websiteRoot, ["rev-parse", `${identity.revision}^{tree}`]) !== identity.tree ||
-      runGit(websiteRoot, ["rev-parse", `${currentRevision}^{tree}`]) !== identity.tree) {
+  if (runGit(spec.dir, ["rev-parse", `${identity.revision}^{tree}`]) !== identity.tree ||
+      runGit(spec.dir, ["rev-parse", `${currentRevision}^{tree}`]) !== identity.tree) {
     return false;
   }
-  return runGit(websiteRoot, ["rev-parse", `${candidateRevision}:${path}`]) === currentBlob &&
-    runGit(websiteRoot, ["rev-parse", `${identity.revision}:${path}`]) === currentBlob;
+  return runGit(spec.dir, ["rev-parse", `${candidateRevision}:${path}`]) === currentBlob &&
+    runGit(spec.dir, ["rev-parse", `${identity.revision}:${path}`]) === currentBlob;
 }
 
-function websiteRevisionMatches(candidateRevision, currentRevision, path, currentBlob, role) {
-  const identity = reviewedWebsiteIdentity();
+function revisionMatches(spec, candidateRevision, currentRevision, path, currentBlob, role) {
+  const identity = reviewedSourceIdentities()?.get(spec.repo);
   const reviewedIdentityIsActive = identity &&
-    runGit(websiteRoot, ["rev-parse", `${identity.revision}^{tree}`]) === identity.tree &&
-    runGit(websiteRoot, ["rev-parse", `${currentRevision}^{tree}`]) === identity.tree;
+    runGit(spec.dir, ["rev-parse", `${identity.revision}^{tree}`]) === identity.tree &&
+    runGit(spec.dir, ["rev-parse", `${currentRevision}^{tree}`]) === identity.tree;
   if (reviewedIdentityIsActive) {
-    return reviewedWebsiteLineageMatches(candidateRevision, currentRevision, path, currentBlob, role);
+    return reviewedLineageMatches(spec, candidateRevision, currentRevision, path, currentBlob, role);
   }
-  return selectedRevisionMatchesCurrentTree(websiteRoot, candidateRevision, currentRevision);
+  return selectedRevisionMatchesCurrentTree(spec.dir, candidateRevision, currentRevision);
 }
 
 function selectedRevisionMatchesCurrentTree(dir, selectedRevision, currentRevision) {
@@ -278,9 +317,14 @@ function boundedCurrentObservation(spec, currentRevision, authoritativeBlob) {
   if (!checkMode) return currentRevision;
   const checked = checkedStatus?.sources?.find((source) => source.repo === spec.repo);
   const recorded = checked?.current_observed_head_sha;
-  const observationMatches = spec.repo === "HawkinsOperations/hawkinsoperations-website"
-    ? websiteRevisionMatches(recorded, currentRevision, spec.publicPath, authoritativeBlob, "current")
-    : selectedRevisionMatchesCurrentTree(spec.dir, recorded, currentRevision);
+  const observationMatches = revisionMatches(
+    spec,
+    recorded,
+    currentRevision,
+    spec.publicPath,
+    authoritativeBlob,
+    "current",
+  );
   if (!observationMatches) {
     return currentRevision;
   }
@@ -304,15 +348,14 @@ function repoSource(spec, selectedRevision) {
   const selectedRevisionValid = /^[a-f0-9]{40}$/.test(selectedRevision ?? "") &&
     runGit(spec.dir, ["cat-file", "-t", selectedRevision]) === "commit" &&
     runGit(spec.dir, ["rev-parse", `${selectedRevision}:${spec.publicPath}`]) === authoritativeGitBlobSha &&
-    (spec.repo === "HawkinsOperations/hawkinsoperations-website"
-      ? websiteRevisionMatches(
-        selectedRevision,
-        currentObservedHeadSha,
-        spec.publicPath,
-        authoritativeGitBlobSha,
-        "source",
-      )
-      : selectedRevisionMatchesCurrentTree(spec.dir, selectedRevision, currentObservedHeadSha));
+    revisionMatches(
+      spec,
+      selectedRevision,
+      currentObservedHeadSha,
+      spec.publicPath,
+      authoritativeGitBlobSha,
+      "source",
+    );
   const recordedObservedHead = selectedRevisionValid ? selectedRevision : currentObservedHeadSha;
   const currentObservation = boundedCurrentObservation(spec, currentObservedHeadSha, authoritativeGitBlobSha);
   const sourceCommitTime = recordedObservedHead ? runGit(spec.dir, ["show", "-s", "--format=%cI", recordedObservedHead]) : null;
@@ -378,7 +421,7 @@ function countPublicGovernanceSaves() {
 if (!existsSync(sourceManifestPath)) {
   throw new Error("Required immutable source manifest is missing.");
 }
-const sourceManifest = JSON.parse(readFileSync(sourceManifestPath, "utf8"));
+const sourceManifest = readStrictJson(sourceManifestPath);
 const manifestEntries = sourceManifest.repositories;
 if (
   sourceManifest.manifest_version !== "public-status-source-manifest-v1" ||
@@ -413,7 +456,8 @@ for (const spec of repoSpecs) {
     if (process.env.GITHUB_SHA && process.env.GITHUB_SHA !== websiteHead) {
       throw new Error("Website checkout HEAD does not equal the immutable GitHub event SHA.");
     }
-    if (!websiteRevisionMatches(
+    if (!revisionMatches(
+      spec,
       entry.revision,
       websiteHead,
       spec.publicPath,
@@ -444,8 +488,12 @@ const platformStateText = platformRepo
 const validationLedgerText = validationRepo
   ? committedText(validationRepo.dir, sourceByRepo["HawkinsOperations/hawkinsoperations-validation"]?.commit, validationRepo.publicPath)
   : null;
-const platformState = platformStateText === null ? null : JSON.parse(platformStateText);
-const validationLedger = validationLedgerText === null ? null : JSON.parse(validationLedgerText);
+const platformState = platformStateText === null
+  ? null
+  : strictJsonParse(platformStateText, "contracts/reviewer-metrics-pipeline-v1-state.json");
+const validationLedger = validationLedgerText === null
+  ? null
+  : strictJsonParse(validationLedgerText, "activity/detection-activity-ledger-v1.json");
 const publicGovernanceSaveCount = countPublicGovernanceSaves();
 
 function sourceVariant(source, path, method, { historicalSnapshot, currentAuthority, consumerOnly = source?.consumer_only ?? false }) {
@@ -615,8 +663,12 @@ const proofSummaryText = proofSummarySource
 const lifetimeLedgerText = lifetimeLedgerSource
   ? committedText(proofRepo.dir, lifetimeLedgerSource.commit, lifetimeLedgerSource.path)
   : null;
-proofSummary = proofSummaryText === null ? null : JSON.parse(proofSummaryText);
-lifetimeLedger = lifetimeLedgerText === null ? null : JSON.parse(lifetimeLedgerText);
+proofSummary = proofSummaryText === null
+  ? null
+  : strictJsonParse(proofSummaryText, "proof/records/reviewer-metrics-pipeline-v1-summary.json");
+lifetimeLedger = lifetimeLedgerText === null
+  ? null
+  : strictJsonParse(lifetimeLedgerText, "proof/records/lifetime-case-ledger-v1-public-summary.json");
 const proofIndexCounts = deriveProofIndexCounts();
 const proofMetrics = proofSummary?.metrics ?? platformState?.metrics ?? {};
 const ledgerCounts = lifetimeLedger?.ledger_counts ?? {};
@@ -727,7 +779,8 @@ const checkedGeneratorBlob = checkedGeneratorHead
   ? runGit(websiteRoot, ["rev-parse", `${checkedGeneratorHead}:scripts/generate-public-status.mjs`])
   : null;
 const generatorObservation = checkMode &&
-  websiteRevisionMatches(
+  revisionMatches(
+    websiteRepo,
     checkedGeneratorHead,
     websiteGeneratorHead,
     "scripts/generate-public-status.mjs",
