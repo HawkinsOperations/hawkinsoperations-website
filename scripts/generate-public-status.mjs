@@ -219,15 +219,26 @@ function reviewedSourceIdentities() {
         runGit(spec.dir, ["cat-file", "-t", reviewedRevision]) !== "commit" ||
         runGit(spec.dir, ["cat-file", "-t", commandContentRevision]) !== "commit" ||
         runGit(spec.dir, ["cat-file", "-t", contentRevision]) !== "commit" ||
-        runGit(spec.dir, ["rev-parse", `${reviewedRevision}^{tree}`]) !== reviewedTree ||
-        runGit(spec.dir, ["merge-base", "--is-ancestor", commandContentRevision, reviewedRevision]) === null ||
-        runGit(spec.dir, ["merge-base", "--is-ancestor", contentRevision, reviewedRevision]) === null
+        runGit(spec.dir, ["rev-parse", `${reviewedRevision}^{tree}`]) !== reviewedTree
       ) {
         return reviewedSourceIdentitiesCache;
       }
       const reviewedBlob = runGit(spec.dir, ["rev-parse", `${reviewedRevision}:${spec.publicPath}`]);
+      const commandContentBlob = runGit(spec.dir, ["rev-parse", `${commandContentRevision}:${spec.publicPath}`]);
       const contentBlob = runGit(spec.dir, ["rev-parse", `${contentRevision}:${spec.publicPath}`]);
-      if (!reviewedBlob || reviewedBlob !== contentBlob) return reviewedSourceIdentitiesCache;
+      const rewrittenCommandCenter = spec.repo === "HawkinsOperations/.github";
+      if (
+        !reviewedBlob ||
+        reviewedBlob !== commandContentBlob ||
+        reviewedBlob !== contentBlob ||
+        (
+          !rewrittenCommandCenter &&
+          (
+            runGit(spec.dir, ["merge-base", "--is-ancestor", commandContentRevision, reviewedRevision]) === null ||
+            runGit(spec.dir, ["merge-base", "--is-ancestor", contentRevision, reviewedRevision]) === null
+          )
+        )
+      ) return reviewedSourceIdentitiesCache;
       identities.set(spec.repo, {
         revision: reviewedRevision,
         tree: reviewedTree,
@@ -260,6 +271,7 @@ function reviewedLineageMatches(
     ["current", "generator"].includes(role) &&
     (
       candidateRevision === currentRevision ||
+      runGit(spec.dir, ["rev-parse", `${candidateRevision}^{tree}`]) === identity.tree ||
       (
         runGit(spec.dir, ["merge-base", "--is-ancestor", identity.revision, candidateRevision]) !== null &&
         runGit(spec.dir, ["merge-base", "--is-ancestor", candidateRevision, currentRevision]) !== null
@@ -288,6 +300,9 @@ function reviewedLineageMatches(
   }
   if (
     !candidateIsReviewedObservation &&
+    !(spec.repo === "HawkinsOperations/.github" &&
+      role === "source" &&
+      candidateRevision === identity.contentRevision) &&
     runGit(spec.dir, ["merge-base", "--is-ancestor", candidateRevision, identity.revision]) === null
   ) {
     return false;
@@ -321,7 +336,7 @@ function observationProjectionAllowed(spec, candidateRevision, reviewedRevision,
   const commandCenterProjection = spec.repo === "HawkinsOperations/.github";
   if (
     commandCenterProjection
-      ? runGit(spec.dir, ["merge-base", "--is-ancestor", candidateRevision, reviewedRevision]) === null
+      ? runGit(spec.dir, ["cat-file", "-t", candidateRevision]) !== "commit"
       : runGit(spec.dir, ["rev-parse", `${reviewedRevision}^`]) !== candidateRevision
   ) return false;
   const changed = runGit(spec.dir, ["diff", "--name-only", candidateRevision, reviewedRevision]);

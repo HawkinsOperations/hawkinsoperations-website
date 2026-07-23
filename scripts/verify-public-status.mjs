@@ -369,15 +369,26 @@ function reviewedSourceIdentities() {
         runGit(dir, ["cat-file", "-t", reviewedRevision]) !== "commit" ||
         runGit(dir, ["cat-file", "-t", commandContentRevision]) !== "commit" ||
         runGit(dir, ["cat-file", "-t", contentRevision]) !== "commit" ||
-        runGit(dir, ["rev-parse", `${reviewedRevision}^{tree}`]) !== reviewedTree ||
-        runGit(dir, ["merge-base", "--is-ancestor", commandContentRevision, reviewedRevision]) === null ||
-        runGit(dir, ["merge-base", "--is-ancestor", contentRevision, reviewedRevision]) === null
+        runGit(dir, ["rev-parse", `${reviewedRevision}^{tree}`]) !== reviewedTree
       ) {
         return reviewedSourceIdentitiesCache;
       }
       const reviewedBlob = runGit(dir, ["rev-parse", `${reviewedRevision}:${path}`]);
+      const commandContentBlob = runGit(dir, ["rev-parse", `${commandContentRevision}:${path}`]);
       const contentBlob = runGit(dir, ["rev-parse", `${contentRevision}:${path}`]);
-      if (!reviewedBlob || reviewedBlob !== contentBlob) return reviewedSourceIdentitiesCache;
+      const rewrittenCommandCenter = repo === "HawkinsOperations/.github";
+      if (
+        !reviewedBlob ||
+        reviewedBlob !== commandContentBlob ||
+        reviewedBlob !== contentBlob ||
+        (
+          !rewrittenCommandCenter &&
+          (
+            runGit(dir, ["merge-base", "--is-ancestor", commandContentRevision, reviewedRevision]) === null ||
+            runGit(dir, ["merge-base", "--is-ancestor", contentRevision, reviewedRevision]) === null
+          )
+        )
+      ) return reviewedSourceIdentitiesCache;
       identities.set(repo, {
         revision: reviewedRevision,
         tree: reviewedTree,
@@ -411,6 +422,7 @@ function reviewedLineageMatchesWithIdentity(
     ["current", "generator"].includes(role) &&
     (
       candidateRevision === currentRevision ||
+      runGit(dir, ["rev-parse", `${candidateRevision}^{tree}`]) === identity.tree ||
       (
         runGit(dir, ["merge-base", "--is-ancestor", identity.revision, candidateRevision]) !== null &&
         runGit(dir, ["merge-base", "--is-ancestor", candidateRevision, currentRevision]) !== null
@@ -440,6 +452,9 @@ function reviewedLineageMatchesWithIdentity(
       runGit(dir, ["merge-base", "--is-ancestor", currentRevision, candidateRevision]) !== null) ||
       (
         !candidateIsReviewedObservation &&
+        !(repo === "HawkinsOperations/.github" &&
+          role === "source" &&
+          candidateRevision === identity.contentRevision) &&
         runGit(dir, ["merge-base", "--is-ancestor", candidateRevision, identity.revision]) === null
       )) {
     return false;
@@ -473,7 +488,7 @@ function observationProjectionAllowed(repo, dir, candidateRevision, reviewedRevi
   const commandCenterProjection = repo === "HawkinsOperations/.github";
   if (
     commandCenterProjection
-      ? runGit(dir, ["merge-base", "--is-ancestor", candidateRevision, reviewedRevision]) === null
+      ? runGit(dir, ["cat-file", "-t", candidateRevision]) !== "commit"
       : runGit(dir, ["rev-parse", `${reviewedRevision}^`]) !== candidateRevision
   ) return false;
   const changed = runGit(dir, ["diff", "--name-only", candidateRevision, reviewedRevision]);
@@ -680,6 +695,23 @@ function revisionRelationshipSelfTest() {
       fail("revision relationship self-test accepted a current observation with changed authority.");
     }
     const projectedBlob = fixtureGit(["rev-parse", `${projectedEquivalent}:authority.txt`]);
+    const rewrittenCommandCenterIdentity = {
+      ...reviewedIdentity,
+      revision: projectedEquivalent,
+      tree: reviewedTree,
+    };
+    if (!revisionMatchesWithIdentity(
+      "HawkinsOperations/.github",
+      fixture,
+      base,
+      projectedEquivalent,
+      "authority.txt",
+      projectedBlob,
+      "source",
+      rewrittenCommandCenterIdentity,
+    )) {
+      fail("reviewed lineage self-test rejected exact command-center content after identity rewrite.");
+    }
     if (!reviewedLineageMatchesWithIdentity(
       "HawkinsOperations/hawkinsoperations-website",
       fixture,
@@ -815,6 +847,7 @@ function revisionRelationshipSelfTest() {
       fail("reviewed lineage self-test rejected the direct Hoxline generated-pair projection.");
     }
     fixtureGit(["checkout", "--detach", current]);
+    mkdirSync(hoxlinePairDir, { recursive: true });
     writeFileSync(join(hoxlinePairDir, "current-case-growth-index.json"), "{\"one_sided\":true}\n");
     fixtureGit(["add", "examples/case-growth/current-case-growth-index.json"]);
     fixtureGit(["commit", "-m", "controlled one-sided Hoxline projection"]);
@@ -829,6 +862,7 @@ function revisionRelationshipSelfTest() {
       fail("reviewed lineage self-test accepted a one-sided Hoxline generated-pair projection.");
     }
     fixtureGit(["checkout", "--detach", current]);
+    mkdirSync(hoxlinePairDir, { recursive: true });
     writeFileSync(join(hoxlinePairDir, "current-case-growth-index.md"), "# One sided\n");
     fixtureGit(["add", "examples/case-growth/current-case-growth-index.md"]);
     fixtureGit(["commit", "-m", "controlled Markdown-only Hoxline projection"]);
@@ -843,6 +877,7 @@ function revisionRelationshipSelfTest() {
       fail("reviewed lineage self-test accepted a Markdown-only Hoxline generated-pair projection.");
     }
     fixtureGit(["checkout", "--detach", current]);
+    mkdirSync(pairDir, { recursive: true });
     writeFileSync(join(pairDir, "public-status.json"), "{\"one_sided\":true}\n");
     fixtureGit(["add", "public/data/public-status.json"]);
     fixtureGit(["commit", "-m", "controlled JSON-only Website projection"]);
@@ -857,6 +892,7 @@ function revisionRelationshipSelfTest() {
       fail("reviewed lineage self-test accepted a JSON-only Website generated-pair projection.");
     }
     fixtureGit(["checkout", "--detach", current]);
+    mkdirSync(generatedPairDir, { recursive: true });
     writeFileSync(join(generatedPairDir, "public-status.generated.ts"), "export const oneSided = true;\n");
     fixtureGit(["add", "src/data/generated/public-status.generated.ts"]);
     fixtureGit(["commit", "-m", "controlled TypeScript-only Website projection"]);
@@ -888,6 +924,25 @@ function revisionRelationshipSelfTest() {
       "current",
     )) {
       fail("reviewed lineage self-test rejected a manifest-only command-center observation chain.");
+    }
+    const projectedCommandCenterTree = fixtureGit([
+      "rev-parse",
+      `${commandCenterProjectionRevision}^{tree}`,
+    ]);
+    const rewrittenCommandCenterProjection = fixtureGit([
+      "commit-tree",
+      projectedCommandCenterTree,
+      "-m",
+      "controlled rewritten command-center projection",
+    ]);
+    if (!observationProjectionAllowed(
+      "HawkinsOperations/.github",
+      fixture,
+      current,
+      rewrittenCommandCenterProjection,
+      "current",
+    )) {
+      fail("reviewed lineage self-test rejected a rewritten manifest-only command-center projection.");
     }
     writeFileSync(join(fixture, "other.txt"), "unauthorized command-center projection\n");
     fixtureGit(["add", "other.txt"]);
