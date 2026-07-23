@@ -690,9 +690,13 @@ function decodeRepeated(value) {
   return current;
 }
 
+function securityScanText(value) {
+  return decodeRepeated(value).normalize("NFKC").replace(/\p{Cf}/gu, "");
+}
+
 function pathIssue(value) {
   if (typeof value !== "string") return null;
-  const decoded = decodeRepeated(value);
+  const decoded = securityScanText(value);
   const slash = decoded.replaceAll("\\", "/");
   if (decoded.includes("\0")) return "NUL byte";
   if (/(?:^|[^A-Za-z])[a-z]:[\\/]/i.test(decoded)) return "Windows drive absolute path";
@@ -855,6 +859,19 @@ const affirmativeClaimPatterns = new Map([
   ["green CI as approval", /\bgreen[\s_-]+ci[\s_-]+(?:as|is)[\s_-]+approval\b/i],
 ]);
 const localNegationPattern = /(?:\b(?:not|never|no|without|missing|blocked|future|pending|unsupported)\b|\b(?:does|do|must|is|are|was|were|can|cannot|could|should|will|would)\s+not\b|\bnot\s+(?:authorized|approved|promoted)\b|\brequires?\s+separate\b|\bremain(?:s)?\s+(?:a\s+)?separate\b)/i;
+const negativeListIntroPattern = /\b(?:does|do|did|must|is|are|was|were|can|cannot|could|should|will|would)\s+not\s+(?:prove|establish|claim|promote|authorize|assert)\b|\bwithout\s+claiming\b/i;
+const negativeListSuffixPattern = /\bclaims?\s+(?:remain|remains|are|is)\s+(?:blocked|unsupported|not\s+approved)\.?$/i;
+const affirmativeResetAfterNegativeListPatterns = new Map([
+  ["customer deployed", /(?:,\s*|\b(?:and|plus|though)\b\s*)(?:customer|socaas)\b.{0,32}\b(?:deployment\s+)?(?:is|was)\s+(?:active|confirmed|deployed|live|ready)\b/i],
+  ["production ready", /(?:,\s*|\b(?:and|plus|though)\b\s*)production\b.{0,24}\b(?:is|was)\s+(?:active|live|ready)\b/i],
+  ["runtime active", /(?:,\s*|\b(?:and|plus|though)\b\s*)runtime\b.{0,16}\b(?:is|was)\s+active\b/i],
+  ["signal observed", /(?:,\s*|\b(?:and|plus|though)\b\s*)signal\b.{0,16}\b(?:is|was)\s+observed\b/i],
+  ["public safe", /(?:,\s*|\b(?:and|plus|though)\b\s*)public[\s_-]*safe\b.{0,24}\b(?:is|was)\s+(?:approved|confirmed|established|ready|released)\b/i],
+  ["AI authority", /(?:,\s*|\b(?:and|plus|though)\b\s*)ai\b.{0,32}\b(?:(?:is|was)\s+approved|approval\s+(?:is\s+)?granted|authority\s+(?:is\s+)?enabled)\b/i],
+  ["analyst authority", /(?:,\s*|\b(?:and|plus|though)\b\s*)analyst\b.{0,32}\b(?:(?:is|was)\s+approved|approval\s+(?:is\s+)?granted|authority\s+(?:is\s+)?enabled)\b/i],
+  ["final authorization", /(?:,\s*|\b(?:and|plus|though)\b\s*)final\s+authori[sz]ation\b.{0,16}\b(?:is|was)?\s*(?:approved|complete|granted|received)\b/i],
+  ["case closure", /(?:,\s*|\b(?:and|plus|though)\b\s*)(?:case\s+closure\s+(?:(?:is|was)\s+)?(?:approved|complete|granted|received)|case\b.{0,16}\b(?:is|was)\s+closed)\b/i],
+]);
 const exactBlockedClaimValues = new Set([
   "runtime proof",
   "signal proof",
@@ -867,7 +884,7 @@ const exactBlockedClaimValues = new Set([
 ]);
 
 function affirmativeStringClaims(value, path) {
-  const normalized = decodeRepeated(value).normalize("NFKC");
+  const normalized = securityScanText(value);
   if (normalized === exactProofCeiling) return [];
   if (
     ["blocked_claims", "not_claiming"].includes(path.at(-2)) &&
@@ -876,13 +893,31 @@ function affirmativeStringClaims(value, path) {
     return [];
   }
   const issues = [];
-  for (const clause of normalized.split(/(?:[,;:\/!?\r\n]+|[—–]+|\b(?:but|however|although|yet|while|whereas)\b)/i)) {
-    if (localNegationPattern.test(clause)) continue;
-    for (const [label, pattern] of affirmativeClaimPatterns) {
-      if (pattern.test(clause)) issues.push(label);
+  for (const segment of normalized.split(/(?:[;:\/!?\r\n]+|[—–]+|\b(?:but|however|although|yet|while|whereas)\b)/i)) {
+    const intro = negativeListIntroPattern.exec(segment);
+    const suffix = negativeListSuffixPattern.exec(segment);
+    if (suffix) {
+      const boundedPrefix = `, ${segment.slice(0, suffix.index)}`;
+      for (const [label, pattern] of affirmativeResetAfterNegativeListPatterns) {
+        if (pattern.test(boundedPrefix)) issues.push(label);
+      }
+      continue;
+    }
+    if (intro) {
+      const tail = segment.slice(intro.index + intro[0].length);
+      for (const [label, pattern] of affirmativeResetAfterNegativeListPatterns) {
+        if (pattern.test(tail)) issues.push(label);
+      }
+      continue;
+    }
+    for (const clause of segment.split(",")) {
+      if (localNegationPattern.test(clause)) continue;
+      for (const [label, pattern] of affirmativeClaimPatterns) {
+        if (pattern.test(clause)) issues.push(label);
+      }
     }
   }
-  return issues;
+  return [...new Set(issues)];
 }
 
 function recursiveSecurityIssues(value, path = []) {
@@ -903,15 +938,14 @@ function recursiveSecurityIssues(value, path = []) {
   if (typeof value === "string") {
     const pathProblem = pathIssue(value);
     if (pathProblem) issues.push(`${path.join(".") || "<root>"} contains ${pathProblem}.`);
-    const decodedUpper = decodeRepeated(value).toUpperCase();
+    const decodedUpper = securityScanText(value).toUpperCase();
     for (const token of promotionTokens) {
       if (decodedUpper.includes(token)) issues.push(`${path.join(".")} contains unauthorized promotion token ${token}.`);
     }
     for (const token of privateTokens) {
       if (decodedUpper.includes(token)) issues.push(`${path.join(".")} contains private marker ${token}.`);
     }
-    const decodedNormalized = decodeRepeated(value)
-      .normalize("NFKC")
+    const decodedNormalized = securityScanText(value)
       .toLocaleLowerCase("en-US")
       .replace(/[^a-z0-9]/g, "");
     for (const token of privateNormalizedTokens) {
@@ -1028,6 +1062,39 @@ function strictJsonSelfTest() {
 }
 
 function recursiveSecuritySelfTest() {
+  const negationLaunderingAttacks = [
+    "does not prove runtime, customer deployment is active",
+    "does not prove runtime, AI authority is enabled",
+    "does not prove runtime, analyst approval granted",
+    "does not prove runtime, public safe is confirmed",
+    "does not prove runtime, final authorization received",
+    "does not prove runtime, case closure approved",
+    "does not prove runtime and customer deployment is active",
+    "does not prove runtime plus public safe is confirmed",
+    "does not prove runtime though case closure is approved",
+    "public\u200B safe is confirmed",
+    "case\u200B closure approved",
+    "AI\u200B authority is enabled",
+    "runtime\u200B is active",
+  ];
+  for (const attack of negationLaunderingAttacks) {
+    const issues = recursiveSecurityIssues({ detail: attack });
+    if (!issues.some((issue) => issue.includes("contains unauthorized"))) {
+      fail(`recursive security self-test allowed negation laundering ${JSON.stringify(attack)}.`);
+    }
+  }
+  const boundedNegativeLists = [
+    "This does not prove runtime-active status, signal-observed status, production-ready status, " +
+      "public-safe status, AI-approved status, analyst-approved status, final authorization, or case closure.",
+    "Runtime, signal, public-safe, live IdP, production identity coverage, autonomous SOC, " +
+      "AI-approved disposition, and analyst-approved disposition claims remain blocked.",
+    "Café résumé – reviewer note.",
+  ];
+  for (const boundedNegativeList of boundedNegativeLists) {
+    if (recursiveSecurityIssues({ detail: boundedNegativeList }).length > 0) {
+      fail(`recursive security self-test rejected bounded negative authority list ${JSON.stringify(boundedNegativeList)}.`);
+    }
+  }
   for (const key of [
     "detail",
     "statement",
