@@ -428,8 +428,12 @@ function reviewedLineageMatchesWithIdentity(
       runGit(dir, ["merge-base", "--is-ancestor", candidateRevision, identity.revision]) === null) {
     return false;
   }
+  const currentTree = runGit(dir, ["rev-parse", `${currentRevision}^{tree}`]);
   if (runGit(dir, ["rev-parse", `${identity.revision}^{tree}`]) !== identity.tree ||
-      runGit(dir, ["rev-parse", `${currentRevision}^{tree}`]) !== identity.tree) {
+      (
+        currentTree !== identity.tree &&
+        runGit(dir, ["merge-base", "--is-ancestor", identity.revision, currentRevision]) === null
+      )) {
     return false;
   }
   return runGit(dir, ["rev-parse", `${candidateRevision}:${path}`]) === currentBlob &&
@@ -489,9 +493,15 @@ function revisionMatchesWithIdentity(
   role,
   identity,
 ) {
+  const currentTree = identity
+    ? runGit(dir, ["rev-parse", `${currentRevision}^{tree}`])
+    : null;
   const reviewedIdentityIsActive = identity &&
     runGit(dir, ["rev-parse", `${identity.revision}^{tree}`]) === identity.tree &&
-    runGit(dir, ["rev-parse", `${currentRevision}^{tree}`]) === identity.tree;
+    (
+      currentTree === identity.tree ||
+      runGit(dir, ["merge-base", "--is-ancestor", identity.revision, currentRevision]) !== null
+    );
   if (!reviewedIdentityIsActive) return false;
   return reviewedLineageMatchesWithIdentity(
     repo,
@@ -556,6 +566,48 @@ function revisionRelationshipSelfTest() {
       currentObservation: current,
       generatorObservation: current,
     };
+    fixtureGit(["checkout", "--detach", reviewedFinal]);
+    writeFileSync(join(fixture, "other.txt"), "post-review unrelated change\n");
+    fixtureGit(["add", "other.txt"]);
+    fixtureGit(["commit", "-m", "controlled unchanged-authority descendant"]);
+    const unchangedAuthorityDescendant = fixtureGit(["rev-parse", "HEAD"]);
+    const unchangedAuthorityBlob = fixtureGit([
+      "rev-parse",
+      `${unchangedAuthorityDescendant}:authority.txt`,
+    ]);
+    if (!revisionMatchesWithIdentity(
+      "HawkinsOperations/hawkinsoperations-website",
+      fixture,
+      base,
+      unchangedAuthorityDescendant,
+      "authority.txt",
+      unchangedAuthorityBlob,
+      "source",
+      reviewedIdentity,
+    )) {
+      fail("revision relationship self-test rejected an unchanged authority blob on a reviewed descendant.");
+    }
+    fixtureGit(["checkout", "--detach", reviewedFinal]);
+    writeFileSync(join(fixture, "authority.txt"), "changed authority\n");
+    fixtureGit(["add", "authority.txt"]);
+    fixtureGit(["commit", "-m", "controlled changed-authority descendant"]);
+    const changedAuthorityDescendant = fixtureGit(["rev-parse", "HEAD"]);
+    const changedAuthorityBlob = fixtureGit([
+      "rev-parse",
+      `${changedAuthorityDescendant}:authority.txt`,
+    ]);
+    if (revisionMatchesWithIdentity(
+      "HawkinsOperations/hawkinsoperations-website",
+      fixture,
+      base,
+      changedAuthorityDescendant,
+      "authority.txt",
+      changedAuthorityBlob,
+      "source",
+      reviewedIdentity,
+    )) {
+      fail("revision relationship self-test accepted a changed authority blob on a reviewed descendant.");
+    }
     const projectedBlob = fixtureGit(["rev-parse", `${projectedEquivalent}:authority.txt`]);
     if (!reviewedLineageMatchesWithIdentity(
       "HawkinsOperations/hawkinsoperations-website",

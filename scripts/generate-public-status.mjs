@@ -275,8 +275,12 @@ function reviewedLineageMatches(
   if (runGit(spec.dir, ["merge-base", "--is-ancestor", candidateRevision, identity.revision]) === null) {
     return false;
   }
+  const currentTree = runGit(spec.dir, ["rev-parse", `${currentRevision}^{tree}`]);
   if (runGit(spec.dir, ["rev-parse", `${identity.revision}^{tree}`]) !== identity.tree ||
-      runGit(spec.dir, ["rev-parse", `${currentRevision}^{tree}`]) !== identity.tree) {
+      (
+        currentTree !== identity.tree &&
+        runGit(spec.dir, ["merge-base", "--is-ancestor", identity.revision, currentRevision]) === null
+      )) {
     return false;
   }
   return runGit(spec.dir, ["rev-parse", `${candidateRevision}:${path}`]) === currentBlob &&
@@ -321,9 +325,15 @@ function revisionMatchesWithIdentity(
   role,
   identity,
 ) {
+  const currentTree = identity
+    ? runGit(spec.dir, ["rev-parse", `${currentRevision}^{tree}`])
+    : null;
   const reviewedIdentityIsActive = identity &&
     runGit(spec.dir, ["rev-parse", `${identity.revision}^{tree}`]) === identity.tree &&
-    runGit(spec.dir, ["rev-parse", `${currentRevision}^{tree}`]) === identity.tree;
+    (
+      currentTree === identity.tree ||
+      runGit(spec.dir, ["merge-base", "--is-ancestor", identity.revision, currentRevision]) !== null
+    );
   if (!reviewedIdentityIsActive) return false;
   return reviewedLineageMatches(
     spec,
