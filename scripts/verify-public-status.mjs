@@ -150,6 +150,85 @@ function runGit(dir, args) {
   }
 }
 
+function trackedVocabularyFindings(dir = root) {
+  const retired = ["syn", "thetic"].join("");
+  const findings = [];
+  let tracked;
+  try {
+    tracked = execFileSync(
+      "git",
+      ["-c", `safe.directory=${dir.replaceAll("\\", "/")}`, "-C", dir, "ls-files", "-z"],
+      { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] },
+    );
+  } catch {
+    return ["tracked-source vocabulary check could not enumerate Git-tracked files."];
+  }
+  const trackedPaths = tracked.split("\0").filter(Boolean);
+  for (const path of trackedPaths) {
+    if (path.toLocaleLowerCase("en-US").includes(retired)) {
+      findings.push(`retired fixture vocabulary appears in tracked filename: ${path}`);
+    }
+  }
+  try {
+    const output = execFileSync(
+      "git",
+      [
+        "-c",
+        `safe.directory=${dir.replaceAll("\\", "/")}`,
+        "-C",
+        dir,
+        "grep",
+        "-n",
+        "-I",
+        "-i",
+        "-F",
+        retired,
+        "--",
+        ".",
+      ],
+      { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] },
+    ).trim();
+    if (output) {
+      findings.push(
+        ...output.split(/\r?\n/).map(
+          (line) => `retired fixture vocabulary appears in tracked content: ${line}`,
+        ),
+      );
+    }
+  } catch (error) {
+    if (error?.status !== 1) {
+      findings.push("tracked-source vocabulary content scan failed before producing a decision.");
+    }
+  }
+  return findings;
+}
+
+function trackedVocabularySelfTest() {
+  const retired = ["syn", "thetic"].join("");
+  const testRoot = mkdtempSync(join(tmpdir(), "public-status-vocabulary-"));
+  try {
+    execFileSync("git", ["-C", testRoot, "init", "--quiet"], {
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    const contentPath = join(testRoot, "content-fixture.txt");
+    const filenamePath = join(testRoot, `fixture-${retired}.txt`);
+    writeFileSync(contentPath, `controlled-test boundary rejects ${retired}\n`, "utf8");
+    writeFileSync(filenamePath, "controlled-test boundary\n", "utf8");
+    execFileSync("git", ["-C", testRoot, "add", "--", contentPath, filenamePath], {
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    const findings = trackedVocabularyFindings(testRoot);
+    if (!findings.some((item) => item.includes("tracked content"))) {
+      fail("tracked-source vocabulary self-test accepted retired content.");
+    }
+    if (!findings.some((item) => item.includes("tracked filename"))) {
+      fail("tracked-source vocabulary self-test accepted a retired filename.");
+    }
+  } finally {
+    rmSync(testRoot, { recursive: true, force: true });
+  }
+}
+
 function sha256Text(value) {
   return value === null ? null : createHash("sha256").update(value, "utf8").digest("hex");
 }
@@ -1315,6 +1394,17 @@ function semanticIssues(candidate, { now = new Date(), checkLocalSources = true,
   return [...new Set(issues)];
 }
 
+if (process.argv.includes("--vocabulary-self-test")) {
+  for (const issue of trackedVocabularyFindings()) fail(issue);
+  trackedVocabularySelfTest();
+  if (failures.length > 0) {
+    console.error(`Tracked-source vocabulary verification failed:\n${[...new Set(failures)].map((line) => `- ${line}`).join("\n")}`);
+    process.exit(1);
+  }
+  console.log("Tracked-source vocabulary verification passed.");
+  process.exit(0);
+}
+
 for (const path of [jsonPath, tsPath, schemaPath, manifestPath]) {
   if (!existsSync(path)) fail(`Missing required public-status file: ${path}`);
 }
@@ -1348,6 +1438,7 @@ if (status && schema && manifest) {
 }
 
 const selfTestModes = new Set(process.argv.slice(2));
+for (const issue of trackedVocabularyFindings()) fail(issue);
 if (
   status &&
   schema &&
@@ -1355,6 +1446,9 @@ if (
   ["--self-test", "--owner-self-test-only", "--source-checkout-test", "--freshness-reachability-test", "--dirty-provenance-test", "--nested-claim-test", "--strict-json-test", "--eol-self-test"]
     .some((mode) => selfTestModes.has(mode))
 ) {
+  if (selfTestModes.has("--self-test")) {
+    trackedVocabularySelfTest();
+  }
   if (selfTestModes.has("--self-test") || selfTestModes.has("--strict-json-test")) {
     strictJsonSelfTest();
   }
