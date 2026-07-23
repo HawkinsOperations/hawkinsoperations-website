@@ -157,6 +157,100 @@ function normalizeOrigin(value) {
     .toLowerCase();
 }
 
+const commandManifestRelativePath = "governance/CONVERGENCE_SOURCE_MANIFEST.json";
+let reviewedWebsiteIdentityCache;
+
+function reviewedWebsiteIdentity() {
+  if (reviewedWebsiteIdentityCache !== undefined) return reviewedWebsiteIdentityCache;
+  reviewedWebsiteIdentityCache = null;
+  const commandRepo = join(orgRoot, ".github");
+  if (!existsSync(commandRepo)) return reviewedWebsiteIdentityCache;
+  if (normalizeOrigin(runGit(commandRepo, ["remote", "get-url", "origin"])) !==
+      normalizeOrigin(canonicalOrigin("HawkinsOperations/.github"))) {
+    return reviewedWebsiteIdentityCache;
+  }
+  const commandHead = runGit(commandRepo, ["rev-parse", "HEAD"]);
+  if (!commandHead ||
+      runGit(commandRepo, ["diff", "--quiet", "HEAD", "--", commandManifestRelativePath]) === null) {
+    return reviewedWebsiteIdentityCache;
+  }
+  const manifestText = committedText(commandRepo, commandHead, commandManifestRelativePath);
+  try {
+    const manifest = JSON.parse(manifestText);
+    const entries = manifest?.repositories ?? [];
+    const websiteEntries = entries.filter(
+      (entry) => entry.canonical_repository === "HawkinsOperations/hawkinsoperations-website",
+    );
+    const entry = websiteEntries[0];
+    if (manifest?.schema !== "hawkinsoperations-convergence-source-manifest-v1" ||
+        manifest?.constraints?.exact_repository_count !== 7 ||
+        entries.length !== 7 ||
+        new Set(entries.map((candidate) => candidate.canonical_repository)).size !== 7 ||
+        websiteEntries.length !== 1 ||
+        entry?.repository !== "hawkinsoperations-website" ||
+        !/^[a-f0-9]{40}$/.test(entry?.revision ?? "") ||
+        !/^[a-f0-9]{40}$/.test(entry?.reviewed_tree_sha ?? "")) {
+      return reviewedWebsiteIdentityCache;
+    }
+    const reviewedStatusText = committedText(
+      websiteRoot,
+      entry.revision,
+      "public/data/public-status.json",
+    );
+    const reviewedStatus = JSON.parse(reviewedStatusText);
+    const websiteSource = reviewedStatus?.sources?.find(
+      (source) => source.repo === "HawkinsOperations/hawkinsoperations-website",
+    );
+    reviewedWebsiteIdentityCache = {
+      revision: entry.revision,
+      tree: entry.reviewed_tree_sha,
+      sourceRevision: websiteSource?.source_observed_head_sha,
+      currentObservation: websiteSource?.current_observed_head_sha,
+      generatorObservation: reviewedStatus?.generator_observed_head_sha,
+    };
+    return reviewedWebsiteIdentityCache;
+  } catch {
+    return reviewedWebsiteIdentityCache;
+  }
+}
+
+function reviewedWebsiteLineageMatches(candidateRevision, currentRevision, path, currentBlob, role) {
+  const identity = reviewedWebsiteIdentity();
+  const expectedByRole = {
+    source: identity?.sourceRevision,
+    current: identity?.currentObservation,
+    generator: identity?.generatorObservation,
+  };
+  if (!identity || candidateRevision !== expectedByRole[role]) return false;
+  if (runGit(websiteRoot, ["cat-file", "-t", candidateRevision]) !== "commit" ||
+      runGit(websiteRoot, ["cat-file", "-t", identity.revision]) !== "commit") {
+    return false;
+  }
+  if (runGit(websiteRoot, ["merge-base", "--is-ancestor", currentRevision, candidateRevision]) !== null) {
+    return false;
+  }
+  if (runGit(websiteRoot, ["merge-base", "--is-ancestor", candidateRevision, identity.revision]) === null) {
+    return false;
+  }
+  if (runGit(websiteRoot, ["rev-parse", `${identity.revision}^{tree}`]) !== identity.tree ||
+      runGit(websiteRoot, ["rev-parse", `${currentRevision}^{tree}`]) !== identity.tree) {
+    return false;
+  }
+  return runGit(websiteRoot, ["rev-parse", `${candidateRevision}:${path}`]) === currentBlob &&
+    runGit(websiteRoot, ["rev-parse", `${identity.revision}:${path}`]) === currentBlob;
+}
+
+function websiteRevisionMatches(candidateRevision, currentRevision, path, currentBlob, role) {
+  const identity = reviewedWebsiteIdentity();
+  const reviewedIdentityIsActive = identity &&
+    runGit(websiteRoot, ["rev-parse", `${identity.revision}^{tree}`]) === identity.tree &&
+    runGit(websiteRoot, ["rev-parse", `${currentRevision}^{tree}`]) === identity.tree;
+  if (reviewedIdentityIsActive) {
+    return reviewedWebsiteLineageMatches(candidateRevision, currentRevision, path, currentBlob, role);
+  }
+  return selectedRevisionMatchesCurrentTree(websiteRoot, candidateRevision, currentRevision);
+}
+
 function selectedRevisionMatchesCurrentTree(dir, selectedRevision, currentRevision) {
   if (!/^[a-f0-9]{40}$/.test(selectedRevision ?? "") || !/^[a-f0-9]{40}$/.test(currentRevision ?? "")) {
     return false;
@@ -184,7 +278,12 @@ function boundedCurrentObservation(spec, currentRevision, authoritativeBlob) {
   if (!checkMode) return currentRevision;
   const checked = checkedStatus?.sources?.find((source) => source.repo === spec.repo);
   const recorded = checked?.current_observed_head_sha;
-  if (!selectedRevisionMatchesCurrentTree(spec.dir, recorded, currentRevision)) return currentRevision;
+  const observationMatches = spec.repo === "HawkinsOperations/hawkinsoperations-website"
+    ? websiteRevisionMatches(recorded, currentRevision, spec.publicPath, authoritativeBlob, "current")
+    : selectedRevisionMatchesCurrentTree(spec.dir, recorded, currentRevision);
+  if (!observationMatches) {
+    return currentRevision;
+  }
   const recordedBlob = runGit(spec.dir, ["rev-parse", `${recorded}:${spec.publicPath}`]);
   return recordedBlob === authoritativeBlob ? recorded : currentRevision;
 }
@@ -205,7 +304,15 @@ function repoSource(spec, selectedRevision) {
   const selectedRevisionValid = /^[a-f0-9]{40}$/.test(selectedRevision ?? "") &&
     runGit(spec.dir, ["cat-file", "-t", selectedRevision]) === "commit" &&
     runGit(spec.dir, ["rev-parse", `${selectedRevision}:${spec.publicPath}`]) === authoritativeGitBlobSha &&
-    selectedRevisionMatchesCurrentTree(spec.dir, selectedRevision, currentObservedHeadSha);
+    (spec.repo === "HawkinsOperations/hawkinsoperations-website"
+      ? websiteRevisionMatches(
+        selectedRevision,
+        currentObservedHeadSha,
+        spec.publicPath,
+        authoritativeGitBlobSha,
+        "source",
+      )
+      : selectedRevisionMatchesCurrentTree(spec.dir, selectedRevision, currentObservedHeadSha));
   const recordedObservedHead = selectedRevisionValid ? selectedRevision : currentObservedHeadSha;
   const currentObservation = boundedCurrentObservation(spec, currentObservedHeadSha, authoritativeGitBlobSha);
   const sourceCommitTime = recordedObservedHead ? runGit(spec.dir, ["show", "-s", "--format=%cI", recordedObservedHead]) : null;
@@ -302,11 +409,18 @@ for (const spec of repoSpecs) {
     throw new Error(`Checked source selection differs from immutable manifest for ${spec.repo}.`);
   }
   if (spec.repo === "HawkinsOperations/hawkinsoperations-website") {
-    if (process.env.GITHUB_SHA && process.env.GITHUB_SHA !== runGit(spec.dir, ["rev-parse", "HEAD"])) {
+    const websiteHead = runGit(spec.dir, ["rev-parse", "HEAD"]);
+    if (process.env.GITHUB_SHA && process.env.GITHUB_SHA !== websiteHead) {
       throw new Error("Website checkout HEAD does not equal the immutable GitHub event SHA.");
     }
-    if (runGit(spec.dir, ["merge-base", "--is-ancestor", entry.revision, runGit(spec.dir, ["rev-parse", "HEAD"])]) === null) {
-      throw new Error("Website immutable content revision must be reachable from the checked event revision.");
+    if (!websiteRevisionMatches(
+      entry.revision,
+      websiteHead,
+      spec.publicPath,
+      source.authoritative_git_blob_sha,
+      "source",
+    )) {
+      throw new Error("Website immutable content revision is outside the reviewed Website lineage.");
     }
   }
 }
@@ -613,7 +727,13 @@ const checkedGeneratorBlob = checkedGeneratorHead
   ? runGit(websiteRoot, ["rev-parse", `${checkedGeneratorHead}:scripts/generate-public-status.mjs`])
   : null;
 const generatorObservation = checkMode &&
-  selectedRevisionMatchesCurrentTree(websiteRoot, checkedGeneratorHead, websiteGeneratorHead) &&
+  websiteRevisionMatches(
+    checkedGeneratorHead,
+    websiteGeneratorHead,
+    "scripts/generate-public-status.mjs",
+    generatorBlobSha,
+    "generator",
+  ) &&
   checkedGeneratorBlob === generatorBlobSha
   ? checkedGeneratorHead
   : websiteGeneratorHead;

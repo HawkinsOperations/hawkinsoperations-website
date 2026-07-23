@@ -11,6 +11,7 @@ const tsPath = join(root, "src/data/generated/public-status.generated.ts");
 const schemaPath = join(root, "schemas/public-status-v0.schema.json");
 const manifestPath = join(root, "config/public-status-source-manifest-v1.json");
 const failures = [];
+const commandManifestRelativePath = "governance/CONVERGENCE_SOURCE_MANIFEST.json";
 
 const sourceContracts = {
   "HawkinsOperations/.github": {
@@ -205,6 +206,104 @@ function expectedOrigin(repo) {
   return `https://github.com/${repo}.git`;
 }
 
+let reviewedWebsiteIdentityCache;
+
+function reviewedWebsiteIdentity() {
+  if (reviewedWebsiteIdentityCache !== undefined) return reviewedWebsiteIdentityCache;
+  reviewedWebsiteIdentityCache = null;
+  const commandRepo = join(orgRoot, ".github");
+  if (!existsSync(commandRepo)) return reviewedWebsiteIdentityCache;
+  if (normalizeOrigin(runGit(commandRepo, ["remote", "get-url", "origin"])) !==
+      normalizeOrigin(expectedOrigin("HawkinsOperations/.github"))) {
+    return reviewedWebsiteIdentityCache;
+  }
+  const commandHead = runGit(commandRepo, ["rev-parse", "HEAD"]);
+  if (!commandHead ||
+      runGit(commandRepo, ["diff", "--quiet", "HEAD", "--", commandManifestRelativePath]) === null) {
+    return reviewedWebsiteIdentityCache;
+  }
+  const manifestText = committedText(commandRepo, commandHead, commandManifestRelativePath);
+  try {
+    const manifest = JSON.parse(manifestText);
+    const entries = manifest?.repositories ?? [];
+    const websiteEntries = entries.filter(
+      (entry) => entry.canonical_repository === "HawkinsOperations/hawkinsoperations-website",
+    );
+    const entry = websiteEntries[0];
+    if (manifest?.schema !== "hawkinsoperations-convergence-source-manifest-v1" ||
+        manifest?.constraints?.exact_repository_count !== 7 ||
+        entries.length !== 7 ||
+        new Set(entries.map((candidate) => candidate.canonical_repository)).size !== 7 ||
+        websiteEntries.length !== 1 ||
+        entry?.repository !== "hawkinsoperations-website" ||
+        !/^[a-f0-9]{40}$/.test(entry?.revision ?? "") ||
+        !/^[a-f0-9]{40}$/.test(entry?.reviewed_tree_sha ?? "")) {
+      return reviewedWebsiteIdentityCache;
+    }
+    const reviewedStatusText = committedText(root, entry.revision, "public/data/public-status.json");
+    const reviewedStatus = JSON.parse(reviewedStatusText);
+    const websiteSource = reviewedStatus?.sources?.find(
+      (source) => source.repo === "HawkinsOperations/hawkinsoperations-website",
+    );
+    reviewedWebsiteIdentityCache = {
+      revision: entry.revision,
+      tree: entry.reviewed_tree_sha,
+      sourceRevision: websiteSource?.source_observed_head_sha,
+      currentObservation: websiteSource?.current_observed_head_sha,
+      generatorObservation: reviewedStatus?.generator_observed_head_sha,
+    };
+    return reviewedWebsiteIdentityCache;
+  } catch {
+    return reviewedWebsiteIdentityCache;
+  }
+}
+
+function reviewedLineageMatchesInRepo(dir, candidateRevision, currentRevision, path, currentBlob, role, identity) {
+  const expectedByRole = {
+    source: identity?.sourceRevision,
+    current: identity?.currentObservation,
+    generator: identity?.generatorObservation,
+  };
+  if (!identity || candidateRevision !== expectedByRole[role]) return false;
+  if (runGit(dir, ["cat-file", "-t", candidateRevision]) !== "commit" ||
+      runGit(dir, ["cat-file", "-t", identity.revision]) !== "commit") {
+    return false;
+  }
+  if (runGit(dir, ["merge-base", "--is-ancestor", currentRevision, candidateRevision]) !== null ||
+      runGit(dir, ["merge-base", "--is-ancestor", candidateRevision, identity.revision]) === null) {
+    return false;
+  }
+  if (runGit(dir, ["rev-parse", `${identity.revision}^{tree}`]) !== identity.tree ||
+      runGit(dir, ["rev-parse", `${currentRevision}^{tree}`]) !== identity.tree) {
+    return false;
+  }
+  return runGit(dir, ["rev-parse", `${candidateRevision}:${path}`]) === currentBlob &&
+    runGit(dir, ["rev-parse", `${identity.revision}:${path}`]) === currentBlob;
+}
+
+function reviewedWebsiteLineageMatches(candidateRevision, currentRevision, path, currentBlob, role) {
+  return reviewedLineageMatchesInRepo(
+    root,
+    candidateRevision,
+    currentRevision,
+    path,
+    currentBlob,
+    role,
+    reviewedWebsiteIdentity(),
+  );
+}
+
+function websiteRevisionMatches(candidateRevision, currentRevision, path, currentBlob, role) {
+  const identity = reviewedWebsiteIdentity();
+  const reviewedIdentityIsActive = identity &&
+    runGit(root, ["rev-parse", `${identity.revision}^{tree}`]) === identity.tree &&
+    runGit(root, ["rev-parse", `${currentRevision}^{tree}`]) === identity.tree;
+  if (reviewedIdentityIsActive) {
+    return reviewedWebsiteLineageMatches(candidateRevision, currentRevision, path, currentBlob, role);
+  }
+  return selectedRevisionMatchesCurrentTree(root, candidateRevision, currentRevision);
+}
+
 function selectedRevisionMatchesCurrentTree(dir, selectedRevision, currentRevision) {
   if (!/^[a-f0-9]{40}$/.test(selectedRevision ?? "") || !/^[a-f0-9]{40}$/.test(currentRevision ?? "")) {
     return false;
@@ -243,6 +342,13 @@ function revisionRelationshipSelfTest() {
     const currentTree = fixtureGit(["rev-parse", `${current}^{tree}`]);
     const sameTreeUnrelated = fixtureGit(["commit-tree", currentTree, "-m", "controlled same-tree identity"]);
 
+    writeFileSync(join(fixture, "reviewed-pair.txt"), "reviewed pair\n");
+    fixtureGit(["add", "reviewed-pair.txt"]);
+    fixtureGit(["commit", "-m", "controlled reviewed final"]);
+    const reviewedFinal = fixtureGit(["rev-parse", "HEAD"]);
+    const reviewedTree = fixtureGit(["rev-parse", `${reviewedFinal}^{tree}`]);
+    const projectedEquivalent = fixtureGit(["commit-tree", reviewedTree, "-m", "controlled projected equivalent"]);
+    fixtureGit(["checkout", "--detach", current]);
     fixtureGit(["commit", "--allow-empty", "-m", "controlled same-tree future"]);
     const sameTreeFuture = fixtureGit(["rev-parse", "HEAD"]);
     fixtureGit(["checkout", "--detach", current]);
@@ -270,6 +376,97 @@ function revisionRelationshipSelfTest() {
     }
     if (selectedRevisionMatchesCurrentTree(fixture, differentTreeUnrelated, current)) {
       fail("revision relationship self-test accepted unrelated different-tree same-authority content.");
+    }
+    const reviewedIdentity = {
+      revision: reviewedFinal,
+      tree: reviewedTree,
+      sourceRevision: base,
+      currentObservation: current,
+      generatorObservation: current,
+    };
+    const projectedBlob = fixtureGit(["rev-parse", `${projectedEquivalent}:authority.txt`]);
+    if (!reviewedLineageMatchesInRepo(
+      fixture,
+      current,
+      projectedEquivalent,
+      "authority.txt",
+      projectedBlob,
+      "generator",
+      reviewedIdentity,
+    )) {
+      fail("reviewed lineage self-test rejected the exact reviewed-tree projection.");
+    }
+    if (reviewedLineageMatchesInRepo(
+      fixture,
+      base,
+      projectedEquivalent,
+      "authority.txt",
+      projectedBlob,
+      "generator",
+      reviewedIdentity,
+    )) {
+      fail("reviewed lineage self-test accepted an arbitrary same-blob ancestor.");
+    }
+    if (reviewedLineageMatchesInRepo(
+      fixture,
+      reviewedFinal,
+      projectedEquivalent,
+      "authority.txt",
+      projectedBlob,
+      "generator",
+      reviewedIdentity,
+    )) {
+      fail("reviewed lineage self-test accepted reviewed-tree revision substitution.");
+    }
+    if (reviewedLineageMatchesInRepo(
+      fixture,
+      current,
+      differentTreeUnrelated,
+      "authority.txt",
+      fixtureGit(["rev-parse", `${differentTreeUnrelated}:authority.txt`]),
+      "generator",
+      reviewedIdentity,
+    )) {
+      fail("reviewed lineage self-test accepted a wrong current repository tree.");
+    }
+    if (reviewedLineageMatchesInRepo(
+      fixture,
+      "f".repeat(40),
+      projectedEquivalent,
+      "authority.txt",
+      projectedBlob,
+      "generator",
+      { ...reviewedIdentity, generatorObservation: "f".repeat(40) },
+    )) {
+      fail("reviewed lineage self-test accepted an unreachable recorded observation.");
+    }
+    if (reviewedLineageMatchesInRepo(
+      fixture,
+      current,
+      projectedEquivalent,
+      "authority.txt",
+      projectedBlob,
+      "generator",
+      { ...reviewedIdentity, tree: "f".repeat(40) },
+    )) {
+      fail("reviewed lineage self-test accepted a forged reviewed tree.");
+    }
+    const futureIdentity = {
+      ...reviewedIdentity,
+      revision: sameTreeFuture,
+      tree: currentTree,
+      generatorObservation: sameTreeFuture,
+    };
+    if (reviewedLineageMatchesInRepo(
+      fixture,
+      sameTreeFuture,
+      current,
+      "authority.txt",
+      fixtureGit(["rev-parse", `${current}:authority.txt`]),
+      "generator",
+      futureIdentity,
+    )) {
+      fail("reviewed lineage self-test accepted current-as-ancestor of the recorded observation.");
     }
   } catch (error) {
     fail(`revision relationship self-test failed to execute: ${error.message}`);
@@ -483,7 +680,16 @@ function verifyContentIdentity(record, repo, path, issues) {
     issues.push(`${repo}/${path}: recorded source revision is unreachable.`);
     return;
   }
-  if (!selectedRevisionMatchesCurrentTree(repoDir, record.source_observed_head_sha, currentHead)) {
+  const sourceRevisionMatches = repo === "HawkinsOperations/hawkinsoperations-website"
+    ? websiteRevisionMatches(
+      record.source_observed_head_sha,
+      currentHead,
+      path,
+      runGit(repoDir, ["rev-parse", `${currentHead}:${path}`]),
+      "source",
+    )
+    : selectedRevisionMatchesCurrentTree(repoDir, record.source_observed_head_sha, currentHead);
+  if (!sourceRevisionMatches) {
     issues.push(
       `${repo}/${path}: selected source revision must equal current HEAD, be its ancestor, or have the exact current repository tree.`,
     );
@@ -494,7 +700,15 @@ function verifyContentIdentity(record, repo, path, issues) {
   if (!/^[a-f0-9]{40}$/.test(generationObservedHead ?? "") ||
       runGit(repoDir, ["cat-file", "-t", generationObservedHead]) !== "commit") {
     issues.push(`${repo}/${path}: generation-time current observation must be an available immutable commit.`);
-  } else if (!selectedRevisionMatchesCurrentTree(repoDir, generationObservedHead, currentHead)) {
+  } else if (!(repo === "HawkinsOperations/hawkinsoperations-website"
+    ? websiteRevisionMatches(
+      generationObservedHead,
+      currentHead,
+      path,
+      runGit(repoDir, ["rev-parse", `${currentHead}:${path}`]),
+      "current",
+    )
+    : selectedRevisionMatchesCurrentTree(repoDir, generationObservedHead, currentHead))) {
     issues.push(`${repo}/${path}: generation-time current observation is not safely related to current HEAD.`);
   }
   const generationObservedBlob = runGit(repoDir, ["rev-parse", `${generationObservedHead}:${path}`]);
@@ -678,7 +892,13 @@ function semanticIssues(candidate, { now = new Date(), checkLocalSources = true,
   if (runGit(root, ["cat-file", "-t", generatorHead]) !== "commit") {
     issues.push("generator observed head must be an available immutable reviewed revision.");
   }
-  if (!selectedRevisionMatchesCurrentTree(root, generatorHead, currentWebsiteHead)) {
+  if (!websiteRevisionMatches(
+    generatorHead,
+    currentWebsiteHead,
+    "scripts/generate-public-status.mjs",
+    runGit(root, ["rev-parse", `${currentWebsiteHead}:scripts/generate-public-status.mjs`]),
+    "generator",
+  )) {
     issues.push("generator observed head must equal current HEAD, be its ancestor, or have the exact current repository tree.");
   }
   const generatorCurrentBlob = runGit(root, ["rev-parse", `${currentWebsiteHead}:scripts/generate-public-status.mjs`]);
