@@ -2017,6 +2017,7 @@ if (
     "--dirty-provenance-test": ["dirty source fingerprint substitution", "dirty generator fingerprint substitution"],
     "--nested-claim-test": ["unknown nested shape", "nested public-safe laundering", "nested runtime laundering"],
     "--strict-json-test": [],
+    "--eol-self-test": [],
   };
   let selected = hostileCases;
   for (const [mode, names] of Object.entries(modeFilters)) {
