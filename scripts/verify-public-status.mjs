@@ -1,6 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { tmpdir } from "node:os";
 import { readStrictJson, strictJsonParse } from "./strict-json.mjs";
@@ -264,7 +264,7 @@ function reviewedSourceIdentities() {
         !/^[a-f0-9]{40}$/.test(reviewedRevision ?? "") ||
         !/^[a-f0-9]{40}$/.test(reviewedTree ?? "") ||
         !/^[a-f0-9]{40}$/.test(contentRevision ?? "") ||
-        selection.revision !== reviewedRevision ||
+        selection.revision !== contentRevision ||
         runGit(dir, ["cat-file", "-t", reviewedRevision]) !== "commit" ||
         runGit(dir, ["cat-file", "-t", contentRevision]) !== "commit" ||
         runGit(dir, ["rev-parse", `${reviewedRevision}^{tree}`]) !== reviewedTree ||
@@ -279,7 +279,7 @@ function reviewedSourceIdentities() {
         revision: reviewedRevision,
         tree: reviewedTree,
         contentRevision,
-        sourceRevision: reviewedRevision,
+        sourceRevision: contentRevision,
         currentObservation: reviewedRevision,
         generatorObservation: repo === "HawkinsOperations/hawkinsoperations-website"
           ? reviewedRevision
@@ -294,6 +294,7 @@ function reviewedSourceIdentities() {
 }
 
 function reviewedLineageMatchesWithIdentity(
+  repo,
   dir,
   candidateRevision,
   currentRevision,
@@ -302,12 +303,19 @@ function reviewedLineageMatchesWithIdentity(
   role,
   identity,
 ) {
-  const expectedByRole = {
-    source: identity?.sourceRevision,
-    current: identity?.currentObservation,
-    generator: identity?.generatorObservation,
-  };
-  if (!identity || candidateRevision !== expectedByRole[role]) return false;
+  if (!identity) return false;
+  if (role === "source" && candidateRevision !== identity.contentRevision) return false;
+  if (role === "generator") {
+    if (!observationProjectionAllowed(repo, dir, candidateRevision, identity.revision, role)) {
+      return false;
+    }
+  } else if (
+    role !== "source" &&
+    candidateRevision !== identity.revision &&
+    !observationProjectionAllowed(repo, dir, candidateRevision, identity.revision, role)
+  ) {
+    return false;
+  }
   if (runGit(dir, ["cat-file", "-t", candidateRevision]) !== "commit" ||
       runGit(dir, ["cat-file", "-t", identity.revision]) !== "commit") {
     return false;
@@ -325,8 +333,25 @@ function reviewedLineageMatchesWithIdentity(
     runGit(dir, ["rev-parse", `${identity.revision}:${path}`]) === currentBlob;
 }
 
+function observationProjectionAllowed(repo, dir, candidateRevision, reviewedRevision, role) {
+  const allowedByRepo = {
+    "HawkinsOperations/.github": new Set(["governance/CONVERGENCE_SOURCE_MANIFEST.json"]),
+    "HawkinsOperations/hawkinsoperations-website": new Set([
+      "public/data/public-status.json",
+      "src/data/generated/public-status.generated.ts",
+    ]),
+  };
+  const allowed = allowedByRepo[repo];
+  if (!allowed || !["current", "generator"].includes(role)) return false;
+  if (runGit(dir, ["rev-parse", `${reviewedRevision}^`]) !== candidateRevision) return false;
+  const changed = runGit(dir, ["diff", "--name-only", candidateRevision, reviewedRevision]);
+  const paths = changed ? changed.split(/\r?\n/).filter(Boolean) : [];
+  return paths.length > 0 && paths.every((path) => allowed.has(path));
+}
+
 function reviewedLineageMatchesInRepo(repo, dir, candidateRevision, currentRevision, path, currentBlob, role) {
   return reviewedLineageMatchesWithIdentity(
+    repo,
     dir,
     candidateRevision,
     currentRevision,
@@ -340,6 +365,7 @@ function reviewedLineageMatchesInRepo(repo, dir, candidateRevision, currentRevis
 function revisionMatches(repo, dir, candidateRevision, currentRevision, path, currentBlob, role) {
   const identity = reviewedSourceIdentities()?.get(repo);
   return revisionMatchesWithIdentity(
+    repo,
     dir,
     candidateRevision,
     currentRevision,
@@ -351,6 +377,7 @@ function revisionMatches(repo, dir, candidateRevision, currentRevision, path, cu
 }
 
 function revisionMatchesWithIdentity(
+  repo,
   dir,
   candidateRevision,
   currentRevision,
@@ -364,6 +391,7 @@ function revisionMatchesWithIdentity(
     runGit(dir, ["rev-parse", `${currentRevision}^{tree}`]) === identity.tree;
   if (!reviewedIdentityIsActive) return false;
   return reviewedLineageMatchesWithIdentity(
+    repo,
     dir,
     candidateRevision,
     currentRevision,
@@ -398,8 +426,10 @@ function revisionRelationshipSelfTest() {
     fixtureGit(["commit", "-m", "controlled current"]);
     const current = fixtureGit(["rev-parse", "HEAD"]);
     const currentTree = fixtureGit(["rev-parse", `${current}^{tree}`]);
-    writeFileSync(join(fixture, "reviewed-pair.txt"), "reviewed pair\n");
-    fixtureGit(["add", "reviewed-pair.txt"]);
+    const pairDir = join(fixture, "public", "data");
+    mkdirSync(pairDir, { recursive: true });
+    writeFileSync(join(pairDir, "public-status.json"), "reviewed pair\n");
+    fixtureGit(["add", "public/data/public-status.json"]);
     fixtureGit(["commit", "-m", "controlled reviewed final"]);
     const reviewedFinal = fixtureGit(["rev-parse", "HEAD"]);
     const reviewedTree = fixtureGit(["rev-parse", `${reviewedFinal}^{tree}`]);
@@ -418,12 +448,14 @@ function revisionRelationshipSelfTest() {
     const reviewedIdentity = {
       revision: reviewedFinal,
       tree: reviewedTree,
+      contentRevision: base,
       sourceRevision: base,
       currentObservation: current,
       generatorObservation: current,
     };
     const projectedBlob = fixtureGit(["rev-parse", `${projectedEquivalent}:authority.txt`]);
     if (!reviewedLineageMatchesWithIdentity(
+      "HawkinsOperations/hawkinsoperations-website",
       fixture,
       current,
       projectedEquivalent,
@@ -435,6 +467,7 @@ function revisionRelationshipSelfTest() {
       fail("reviewed lineage self-test rejected the exact reviewed-tree projection.");
     }
     if (revisionMatchesWithIdentity(
+      "HawkinsOperations/hawkinsoperations-website",
       fixture,
       current,
       projectedEquivalent,
@@ -446,6 +479,7 @@ function revisionRelationshipSelfTest() {
       fail("revision relationship self-test accepted a source without reviewed identity.");
     }
     if (revisionMatchesWithIdentity(
+      "HawkinsOperations/hawkinsoperations-website",
       fixture,
       current,
       projectedEquivalent,
@@ -457,6 +491,7 @@ function revisionRelationshipSelfTest() {
       fail("revision relationship self-test accepted an inactive reviewed identity.");
     }
     if (reviewedLineageMatchesWithIdentity(
+      "HawkinsOperations/hawkinsoperations-website",
       fixture,
       base,
       projectedEquivalent,
@@ -468,6 +503,7 @@ function revisionRelationshipSelfTest() {
       fail("reviewed lineage self-test accepted an arbitrary same-blob ancestor.");
     }
     if (reviewedLineageMatchesWithIdentity(
+      "HawkinsOperations/hawkinsoperations-website",
       fixture,
       reviewedFinal,
       projectedEquivalent,
@@ -479,6 +515,7 @@ function revisionRelationshipSelfTest() {
       fail("reviewed lineage self-test accepted reviewed-tree revision substitution.");
     }
     if (reviewedLineageMatchesWithIdentity(
+      "HawkinsOperations/hawkinsoperations-website",
       fixture,
       current,
       differentTreeUnrelated,
@@ -490,6 +527,7 @@ function revisionRelationshipSelfTest() {
       fail("reviewed lineage self-test accepted a wrong current repository tree.");
     }
     if (reviewedLineageMatchesWithIdentity(
+      "HawkinsOperations/hawkinsoperations-website",
       fixture,
       "f".repeat(40),
       projectedEquivalent,
@@ -501,6 +539,7 @@ function revisionRelationshipSelfTest() {
       fail("reviewed lineage self-test accepted an unreachable recorded observation.");
     }
     if (reviewedLineageMatchesWithIdentity(
+      "HawkinsOperations/hawkinsoperations-website",
       fixture,
       current,
       projectedEquivalent,
@@ -515,9 +554,11 @@ function revisionRelationshipSelfTest() {
       ...reviewedIdentity,
       revision: sameTreeFuture,
       tree: currentTree,
+      contentRevision: base,
       generatorObservation: sameTreeFuture,
     };
     if (reviewedLineageMatchesWithIdentity(
+      "HawkinsOperations/hawkinsoperations-website",
       fixture,
       sameTreeFuture,
       current,
@@ -621,7 +662,7 @@ function compositionalPromotionKey(key) {
     (key.includes("signal") && /(?:observed|status)/.test(key)) ||
     (key.includes("publicsafe") && !key.endsWith("count")) ||
     (key.includes("final") && key.includes("authoriz")) ||
-    (key.includes("case") && /(?:closed|closure)/.test(key)) ||
+    (key.includes("case") && /(?:closed|closure)/.test(key) && !key.endsWith("count")) ||
     /(?:approval|closure|case)status/.test(key) ||
     (/(?:ai|analyst)/.test(key) && /(?:approved|approval|authority|disposition)/.test(key))
   );

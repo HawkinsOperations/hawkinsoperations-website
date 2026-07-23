@@ -214,7 +214,7 @@ function reviewedSourceIdentities() {
         !/^[a-f0-9]{40}$/.test(reviewedRevision ?? "") ||
         !/^[a-f0-9]{40}$/.test(reviewedTree ?? "") ||
         !/^[a-f0-9]{40}$/.test(contentRevision ?? "") ||
-        selection.revision !== reviewedRevision ||
+        selection.revision !== contentRevision ||
         runGit(spec.dir, ["cat-file", "-t", reviewedRevision]) !== "commit" ||
         runGit(spec.dir, ["cat-file", "-t", contentRevision]) !== "commit" ||
         runGit(spec.dir, ["rev-parse", `${reviewedRevision}^{tree}`]) !== reviewedTree ||
@@ -229,7 +229,7 @@ function reviewedSourceIdentities() {
         revision: reviewedRevision,
         tree: reviewedTree,
         contentRevision,
-        sourceRevision: reviewedRevision,
+        sourceRevision: contentRevision,
         currentObservation: reviewedRevision,
         generatorObservation: spec.repo === "HawkinsOperations/hawkinsoperations-website"
           ? reviewedRevision
@@ -252,12 +252,15 @@ function reviewedLineageMatches(
   role,
   identity = reviewedSourceIdentities()?.get(spec.repo),
 ) {
-  const expectedByRole = {
-    source: identity?.sourceRevision,
-    current: identity?.currentObservation,
-    generator: identity?.generatorObservation,
-  };
-  if (!identity || candidateRevision !== expectedByRole[role]) return false;
+  if (!identity) return false;
+  if (role === "source" && candidateRevision !== identity.contentRevision) return false;
+  if (
+    role !== "source" &&
+    candidateRevision !== identity.revision &&
+    !observationProjectionAllowed(spec, candidateRevision, identity.revision, role)
+  ) {
+    return false;
+  }
   if (runGit(spec.dir, ["cat-file", "-t", candidateRevision]) !== "commit" ||
       runGit(spec.dir, ["cat-file", "-t", identity.revision]) !== "commit") {
     return false;
@@ -277,10 +280,26 @@ function reviewedLineageMatches(
     runGit(spec.dir, ["rev-parse", `${identity.revision}:${path}`]) === currentBlob;
 }
 
+function observationProjectionAllowed(spec, candidateRevision, reviewedRevision, role) {
+  const allowedByRepo = {
+    "HawkinsOperations/.github": new Set(["governance/CONVERGENCE_SOURCE_MANIFEST.json"]),
+    "HawkinsOperations/hawkinsoperations-website": new Set([
+      "public/data/public-status.json",
+      "src/data/generated/public-status.generated.ts",
+    ]),
+  };
+  const allowed = allowedByRepo[spec.repo];
+  if (!allowed || !["current", "generator"].includes(role)) return false;
+  if (runGit(spec.dir, ["rev-parse", `${reviewedRevision}^`]) !== candidateRevision) return false;
+  const changed = runGit(spec.dir, ["diff", "--name-only", candidateRevision, reviewedRevision]);
+  const paths = changed ? changed.split(/\r?\n/).filter(Boolean) : [];
+  return paths.length > 0 && paths.every((path) => allowed.has(path));
+}
+
 function revisionMatches(spec, candidateRevision, currentRevision, path, currentBlob, role) {
   const identity = reviewedSourceIdentities()?.get(spec.repo);
   return revisionMatchesWithIdentity(
-    spec.dir,
+    spec,
     candidateRevision,
     currentRevision,
     path,
@@ -291,7 +310,7 @@ function revisionMatches(spec, candidateRevision, currentRevision, path, current
 }
 
 function revisionMatchesWithIdentity(
-  dir,
+  spec,
   candidateRevision,
   currentRevision,
   path,
@@ -300,11 +319,11 @@ function revisionMatchesWithIdentity(
   identity,
 ) {
   const reviewedIdentityIsActive = identity &&
-    runGit(dir, ["rev-parse", `${identity.revision}^{tree}`]) === identity.tree &&
-    runGit(dir, ["rev-parse", `${currentRevision}^{tree}`]) === identity.tree;
+    runGit(spec.dir, ["rev-parse", `${identity.revision}^{tree}`]) === identity.tree &&
+    runGit(spec.dir, ["rev-parse", `${currentRevision}^{tree}`]) === identity.tree;
   if (!reviewedIdentityIsActive) return false;
   return reviewedLineageMatches(
-    { dir },
+    spec,
     candidateRevision,
     currentRevision,
     path,
