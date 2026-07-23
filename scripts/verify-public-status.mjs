@@ -427,19 +427,26 @@ function reviewedLineageMatchesWithIdentity(
         runGit(dir, ["merge-base", "--is-ancestor", candidateRevision, currentRevision]) !== null
       )
     );
+  const candidateCarriesReviewedContentLineage =
+    candidateRevision === identity.contentRevision ||
+    runGit(dir, ["merge-base", "--is-ancestor", identity.contentRevision, candidateRevision]) !== null;
+  const projectedObservation =
+    role !== "source" &&
+    candidateCarriesReviewedContentLineage &&
+    observationProjectionAllowed(repo, dir, candidateRevision, identity.revision, role);
   if (role === "source" && candidateRevision !== identity.contentRevision) return false;
   if (
     role === "generator" &&
     !candidateIsReviewedObservation
   ) {
-    if (!observationProjectionAllowed(repo, dir, candidateRevision, identity.revision, role)) {
+    if (!projectedObservation) {
       return false;
     }
   } else if (
     role !== "source" &&
     !candidateIsReviewedObservation &&
     candidateRevision !== identity.revision &&
-    !observationProjectionAllowed(repo, dir, candidateRevision, identity.revision, role)
+    !projectedObservation
   ) {
     return false;
   }
@@ -451,6 +458,7 @@ function reviewedLineageMatchesWithIdentity(
       runGit(dir, ["merge-base", "--is-ancestor", currentRevision, candidateRevision]) !== null) ||
       (
         !candidateIsReviewedObservation &&
+        !projectedObservation &&
         !(repo === "HawkinsOperations/.github" &&
           role === "source" &&
           candidateRevision === identity.contentRevision) &&
@@ -490,7 +498,10 @@ function observationProjectionAllowed(repo, dir, candidateRevision, reviewedRevi
       ? runGit(dir, ["cat-file", "-t", candidateRevision]) !== "commit"
       : runGit(dir, ["rev-parse", `${reviewedRevision}^`]) !== candidateRevision
   ) return false;
-  const changed = runGit(dir, ["diff", "--name-only", candidateRevision, reviewedRevision]);
+  const changed = runGit(
+    dir,
+    ["diff", "--name-only", "--no-renames", candidateRevision, reviewedRevision],
+  );
   const paths = changed ? changed.split(/\r?\n/).filter(Boolean) : [];
   return paths.length === allowed.size &&
     paths.every((path) => allowed.has(path));
@@ -710,6 +721,110 @@ function revisionRelationshipSelfTest() {
       rewrittenCommandCenterIdentity,
     )) {
       fail("reviewed lineage self-test rejected exact command-center content after identity rewrite.");
+    }
+    fixtureGit(["checkout", "--detach", reviewedFinal]);
+    mkdirSync(join(fixture, "governance"), { recursive: true });
+    writeFileSync(
+      join(fixture, "governance", "CONVERGENCE_SOURCE_MANIFEST.json"),
+      "{\"repositories\":[]}\n",
+    );
+    fixtureGit(["add", "governance/CONVERGENCE_SOURCE_MANIFEST.json"]);
+    fixtureGit(["commit", "-m", "controlled command-center projection"]);
+    const commandCenterFinal = fixtureGit(["rev-parse", "HEAD"]);
+    const commandCenterTree = fixtureGit(["rev-parse", `${commandCenterFinal}^{tree}`]);
+    const projectedCommandCenter = fixtureGit([
+      "commit-tree",
+      commandCenterTree,
+      "-m",
+      "controlled rewritten command-center",
+    ]);
+    const commandCenterAuthorityBlob = fixtureGit([
+      "rev-parse",
+      `${projectedCommandCenter}:authority.txt`,
+    ]);
+    const projectedCommandCenterIdentity = {
+      ...reviewedIdentity,
+      revision: projectedCommandCenter,
+      tree: commandCenterTree,
+    };
+    if (!reviewedLineageMatchesWithIdentity(
+      "HawkinsOperations/.github",
+      fixture,
+      reviewedFinal,
+      projectedCommandCenter,
+      "authority.txt",
+      commandCenterAuthorityBlob,
+      "current",
+      projectedCommandCenterIdentity,
+    )) {
+      fail("reviewed lineage self-test rejected an exact command-center manifest projection.");
+    }
+    const foreignPreManifest = fixtureGit([
+      "commit-tree",
+      reviewedTree,
+      "-m",
+      "controlled foreign pre-manifest identity",
+    ]);
+    if (reviewedLineageMatchesWithIdentity(
+      "HawkinsOperations/.github",
+      fixture,
+      foreignPreManifest,
+      projectedCommandCenter,
+      "authority.txt",
+      commandCenterAuthorityBlob,
+      "current",
+      projectedCommandCenterIdentity,
+    )) {
+      fail("reviewed lineage self-test accepted a foreign exact-path projection.");
+    }
+    fixtureGit(["checkout", "--detach", reviewedFinal]);
+    mkdirSync(join(fixture, "unexpected"), { recursive: true });
+    writeFileSync(
+      join(fixture, "unexpected", "manifest.json"),
+      "{\"repositories\":[]}\n",
+    );
+    fixtureGit(["add", "unexpected/manifest.json"]);
+    fixtureGit(["commit", "-m", "controlled rename-shaped projection source"]);
+    const renameShapedPreManifest = fixtureGit(["rev-parse", "HEAD"]);
+    if (reviewedLineageMatchesWithIdentity(
+      "HawkinsOperations/.github",
+      fixture,
+      renameShapedPreManifest,
+      projectedCommandCenter,
+      "authority.txt",
+      commandCenterAuthorityBlob,
+      "current",
+      projectedCommandCenterIdentity,
+    )) {
+      fail("reviewed lineage self-test accepted a rename-shaped extra-path projection.");
+    }
+    fixtureGit(["checkout", "--detach", commandCenterFinal]);
+    writeFileSync(join(fixture, "unexpected.txt"), "unexpected projection path\n");
+    fixtureGit(["add", "unexpected.txt"]);
+    fixtureGit(["commit", "-m", "controlled command-center projection with extra path"]);
+    const commandCenterExtraFinal = fixtureGit(["rev-parse", "HEAD"]);
+    const commandCenterExtraTree = fixtureGit(["rev-parse", `${commandCenterExtraFinal}^{tree}`]);
+    const projectedCommandCenterExtra = fixtureGit([
+      "commit-tree",
+      commandCenterExtraTree,
+      "-m",
+      "controlled rewritten command-center with extra path",
+    ]);
+    if (reviewedLineageMatchesWithIdentity(
+      "HawkinsOperations/.github",
+      fixture,
+      reviewedFinal,
+      projectedCommandCenterExtra,
+      "authority.txt",
+      fixtureGit(["rev-parse", `${projectedCommandCenterExtra}:authority.txt`]),
+      "current",
+      {
+        ...projectedCommandCenterIdentity,
+        revision: projectedCommandCenterExtra,
+        tree: commandCenterExtraTree,
+      },
+    )) {
+      fail("reviewed lineage self-test accepted a command-center projection with an extra path.");
     }
     if (!reviewedLineageMatchesWithIdentity(
       "HawkinsOperations/hawkinsoperations-website",

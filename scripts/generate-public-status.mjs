@@ -276,16 +276,26 @@ function reviewedLineageMatches(
         runGit(spec.dir, ["merge-base", "--is-ancestor", candidateRevision, currentRevision]) !== null
       )
     );
+  const candidateCarriesReviewedContentLineage =
+    candidateRevision === identity.contentRevision ||
+    runGit(
+      spec.dir,
+      ["merge-base", "--is-ancestor", identity.contentRevision, candidateRevision],
+    ) !== null;
+  const projectedObservation =
+    role !== "source" &&
+    candidateCarriesReviewedContentLineage &&
+    observationProjectionAllowed(spec, candidateRevision, identity.revision, role);
   if (role === "source" && candidateRevision !== identity.contentRevision) return false;
   if (role === "generator" && !candidateIsReviewedObservation) {
-    if (!observationProjectionAllowed(spec, candidateRevision, identity.revision, role)) {
+    if (!projectedObservation) {
       return false;
     }
   } else if (
     role !== "source" &&
     !candidateIsReviewedObservation &&
     candidateRevision !== identity.revision &&
-    !observationProjectionAllowed(spec, candidateRevision, identity.revision, role)
+    !projectedObservation
   ) {
     return false;
   }
@@ -299,6 +309,7 @@ function reviewedLineageMatches(
   }
   if (
     !candidateIsReviewedObservation &&
+    !projectedObservation &&
     !(spec.repo === "HawkinsOperations/.github" &&
       role === "source" &&
       candidateRevision === identity.contentRevision) &&
@@ -338,7 +349,10 @@ function observationProjectionAllowed(spec, candidateRevision, reviewedRevision,
       ? runGit(spec.dir, ["cat-file", "-t", candidateRevision]) !== "commit"
       : runGit(spec.dir, ["rev-parse", `${reviewedRevision}^`]) !== candidateRevision
   ) return false;
-  const changed = runGit(spec.dir, ["diff", "--name-only", candidateRevision, reviewedRevision]);
+  const changed = runGit(
+    spec.dir,
+    ["diff", "--name-only", "--no-renames", candidateRevision, reviewedRevision],
+  );
   const paths = changed ? changed.split(/\r?\n/).filter(Boolean) : [];
   return paths.length === allowed.size &&
     paths.every((path) => allowed.has(path));
