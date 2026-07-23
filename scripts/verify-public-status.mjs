@@ -356,18 +356,21 @@ function reviewedSourceIdentities() {
       const reviewedTree = repo === "HawkinsOperations/.github"
         ? runGit(dir, ["rev-parse", `${commandHead}^{tree}`])
         : entry?.reviewed_tree_sha;
-      const contentRevision = entry?.authority_content_revision;
+      const commandContentRevision = entry?.authority_content_revision;
+      const contentRevision = selection?.revision;
       if (
         !entry ||
         !selection ||
         selection.authoritative_path !== path ||
         !/^[a-f0-9]{40}$/.test(reviewedRevision ?? "") ||
         !/^[a-f0-9]{40}$/.test(reviewedTree ?? "") ||
+        !/^[a-f0-9]{40}$/.test(commandContentRevision ?? "") ||
         !/^[a-f0-9]{40}$/.test(contentRevision ?? "") ||
-        selection.revision !== contentRevision ||
         runGit(dir, ["cat-file", "-t", reviewedRevision]) !== "commit" ||
+        runGit(dir, ["cat-file", "-t", commandContentRevision]) !== "commit" ||
         runGit(dir, ["cat-file", "-t", contentRevision]) !== "commit" ||
         runGit(dir, ["rev-parse", `${reviewedRevision}^{tree}`]) !== reviewedTree ||
+        runGit(dir, ["merge-base", "--is-ancestor", commandContentRevision, reviewedRevision]) === null ||
         runGit(dir, ["merge-base", "--is-ancestor", contentRevision, reviewedRevision]) === null
       ) {
         return reviewedSourceIdentitiesCache;
