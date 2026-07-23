@@ -172,7 +172,6 @@ function selectedRevisionMatchesCurrentTree(dir, selectedRevision, currentRevisi
 function repoSource(spec, selectedRevision) {
   const repoAvailable = existsSync(spec.dir);
   const currentObservedHeadSha = repoAvailable ? runGit(spec.dir, ["rev-parse", "HEAD"]) : null;
-  const resolvedRef = repoAvailable ? runGit(spec.dir, ["branch", "--show-current"]) || currentObservedHeadSha : null;
   const origin = repoAvailable ? runGit(spec.dir, ["remote", "get-url", "origin"]) : null;
   const expectedOrigin = canonicalOrigin(spec.repo);
   const originValid = normalizeOrigin(origin) === normalizeOrigin(expectedOrigin);
@@ -203,7 +202,7 @@ function repoSource(spec, selectedRevision) {
     current_observed_head_sha: recordedObservedHead,
     source_observed_head_sha: recordedObservedHead,
     source_observation_kind: "reviewed_immutable_commit",
-    resolved_ref: resolvedRef,
+    resolved_ref: recordedObservedHead,
     canonical_origin: expectedOrigin,
     authoritative_git_blob_sha: authoritativeGitBlobSha,
     authoritative_content_fingerprint: contentFingerprint,

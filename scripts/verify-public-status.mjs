@@ -471,6 +471,10 @@ function verifyContentIdentity(record, repo, path, issues) {
   if (record.current_observed_head_sha !== record.source_observed_head_sha) {
     issues.push(`${repo}/${path}: recorded observed-head fields disagree.`);
   }
+  const resolvedRef = record.resolved_ref ?? record.source_resolved_ref;
+  if (resolvedRef !== undefined && resolvedRef !== record.source_observed_head_sha) {
+    issues.push(`${repo}/${path}: resolved source ref must equal the selected immutable revision.`);
+  }
   if (!/^[a-f0-9]{40}$/.test(record.source_observed_head_sha ?? "")) {
     issues.push(`${repo}/${path}: source_observed_head_sha must be an immutable commit.`);
     return;
@@ -793,6 +797,11 @@ if (
       expected: "differs from reviewed immutable manifest",
     },
     {
+      name: "branch-name substitution",
+      mutate: (value) => { value.sources[0].resolved_ref = "main"; },
+      expected: "resolved source ref must equal the selected immutable revision",
+    },
+    {
       name: "forged semantic fingerprint",
       mutate: (value) => { value.sources[0].authoritative_content_fingerprint = "0".repeat(64); },
       expected: "semantic fingerprint",
@@ -844,7 +853,7 @@ if (
   ];
   const modeFilters = {
     "--owner-self-test-only": ["wrong canonical source", "website proof authority", "Hoxline proof authority"],
-    "--source-checkout-test": ["wrong canonical source", "unreachable revision"],
+    "--source-checkout-test": ["wrong canonical source", "unreachable revision", "branch-name substitution"],
     "--freshness-reachability-test": ["unreachable revision", "future observation", "stale labeled fresh", "source commit time from branch tip"],
     "--dirty-provenance-test": ["dirty source fingerprint substitution", "dirty generator fingerprint substitution"],
     "--nested-claim-test": ["unknown nested shape", "nested public-safe laundering", "nested runtime laundering"],
