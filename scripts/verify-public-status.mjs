@@ -35,7 +35,9 @@ function runGit(dir, args) {
 }
 
 function sha256File(path) {
-  return existsSync(path) ? createHash("sha256").update(readFileSync(path)).digest("hex") : null;
+  if (!existsSync(path)) return null;
+  const normalizedSource = readFileSync(path, "utf8").replace(/\r\n/g, "\n");
+  return createHash("sha256").update(normalizedSource, "utf8").digest("hex");
 }
 
 function committedText(dir, commit, path) {
