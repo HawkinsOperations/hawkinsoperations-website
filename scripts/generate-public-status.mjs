@@ -169,13 +169,24 @@ function selectedRevisionMatchesCurrentTree(dir, selectedRevision, currentRevisi
   return Boolean(selectedTree && currentTree && selectedTree === currentTree);
 }
 
+function hasTrackedProvenanceChanges(spec) {
+  const pathspec = ["."];
+  if (spec.repo === "HawkinsOperations/hawkinsoperations-website") {
+    pathspec.push(
+      ":(exclude)public/data/public-status.json",
+      ":(exclude)src/data/generated/public-status.generated.ts",
+    );
+  }
+  return runGit(spec.dir, ["diff", "--quiet", "HEAD", "--", ...pathspec]) === null;
+}
+
 function repoSource(spec, selectedRevision) {
   const repoAvailable = existsSync(spec.dir);
   const currentObservedHeadSha = repoAvailable ? runGit(spec.dir, ["rev-parse", "HEAD"]) : null;
   const origin = repoAvailable ? runGit(spec.dir, ["remote", "get-url", "origin"]) : null;
   const expectedOrigin = canonicalOrigin(spec.repo);
   const originValid = normalizeOrigin(origin) === normalizeOrigin(expectedOrigin);
-  const trackedDirty = repoAvailable ? Boolean(runGit(spec.dir, ["status", "--porcelain", "--untracked-files=no"])) : true;
+  const trackedDirty = repoAvailable ? hasTrackedProvenanceChanges(spec) : true;
   const authoritativeGitBlobSha = currentObservedHeadSha
     ? runGit(spec.dir, ["rev-parse", `${currentObservedHeadSha}:${spec.publicPath}`])
     : null;
@@ -583,10 +594,14 @@ const sourceUnavailable = sources.filter((source) => !source.available).map((sou
 const metricList = Object.values(metrics);
 const hasUnavailableMetric = metricList.some((item) => item.freshness_status !== "fresh");
 const status = hasUnavailableMetric ? "source_unavailable" : "fresh";
-const websiteCommit = sourceByRepo["HawkinsOperations/hawkinsoperations-website"]?.repository_commit ?? null;
-const generatorBlobSha = websiteCommit
-  ? runGit(websiteRoot, ["rev-parse", `${websiteCommit}:scripts/generate-public-status.mjs`])
+const websiteGeneratorHead = runGit(websiteRoot, ["rev-parse", "HEAD"]);
+const generatorBlobSha = websiteGeneratorHead
+  ? runGit(websiteRoot, ["rev-parse", `${websiteGeneratorHead}:scripts/generate-public-status.mjs`])
   : null;
+const generatorText = committedText(websiteRoot, websiteGeneratorHead, "scripts/generate-public-status.mjs");
+const generatorFingerprint = generatorText === null
+  ? null
+  : sha256Text(normalizeSemanticText(generatorText, "scripts/generate-public-status.mjs"));
 const sourceManifestDigest = sha256Text(JSON.stringify(canonicalJson(sources.map((source) => ({
   repository: source.repository,
   authority_owner: source.authority_owner,
@@ -605,11 +620,11 @@ const publicStatus = {
   schema_version: "public-status-v0",
   generated_at: generatedAt,
   generated_by: "scripts/generate-public-status.mjs",
-  generator_commit: websiteCommit,
-  generator_observed_head_sha: websiteCommit,
+  generator_commit: websiteGeneratorHead,
+  generator_observed_head_sha: websiteGeneratorHead,
   generator_git_blob_sha: generatorBlobSha,
-  generator_semantic_fingerprint: sha256File(join(websiteRoot, "scripts/generate-public-status.mjs")),
-  generator_fingerprint_sha256: sha256File(join(websiteRoot, "scripts/generate-public-status.mjs")),
+  generator_semantic_fingerprint: generatorFingerprint,
+  generator_fingerprint_sha256: generatorFingerprint,
   source_manifest_digest: sourceManifestDigest,
   generation_mode: "generated_public_status_data_plane_v0",
   snapshot_label: "Generated public status v0 data plane",

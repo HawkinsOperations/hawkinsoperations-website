@@ -670,6 +670,9 @@ function semanticIssues(candidate, { now = new Date(), checkLocalSources = true,
   if (runGit(root, ["cat-file", "-t", generatorHead]) !== "commit") {
     issues.push("generator observed head must be an available immutable reviewed revision.");
   }
+  if (!selectedRevisionMatchesCurrentTree(root, generatorHead, currentWebsiteHead)) {
+    issues.push("generator observed head must equal current HEAD, be its ancestor, or have the exact current repository tree.");
+  }
   const generatorCurrentBlob = runGit(root, ["rev-parse", `${currentWebsiteHead}:scripts/generate-public-status.mjs`]);
   const generatorObservedBlob = runGit(root, ["rev-parse", `${generatorHead}:scripts/generate-public-status.mjs`]);
   if (candidate.generator_git_blob_sha !== generatorCurrentBlob || generatorObservedBlob !== generatorCurrentBlob) {
