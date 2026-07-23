@@ -407,17 +407,27 @@ function reviewedLineageMatchesWithIdentity(
   identity,
 ) {
   if (!identity) return false;
-  const candidateIsCurrentObservation =
+  const candidateIsReviewedObservation =
     ["current", "generator"].includes(role) &&
-    candidateRevision === currentRevision;
+    (
+      candidateRevision === currentRevision ||
+      (
+        runGit(dir, ["merge-base", "--is-ancestor", identity.revision, candidateRevision]) !== null &&
+        runGit(dir, ["merge-base", "--is-ancestor", candidateRevision, currentRevision]) !== null
+      )
+    );
   if (role === "source" && candidateRevision !== identity.contentRevision) return false;
-  if (role === "generator" && !candidateIsCurrentObservation) {
+  if (
+    role === "generator" &&
+    !candidateIsReviewedObservation &&
+    candidateRevision !== identity.revision
+  ) {
     if (!observationProjectionAllowed(repo, dir, candidateRevision, identity.revision, role)) {
       return false;
     }
   } else if (
     role !== "source" &&
-    !candidateIsCurrentObservation &&
+    !candidateIsReviewedObservation &&
     candidateRevision !== identity.revision &&
     !observationProjectionAllowed(repo, dir, candidateRevision, identity.revision, role)
   ) {
@@ -430,7 +440,7 @@ function reviewedLineageMatchesWithIdentity(
   if ((currentRevision !== candidateRevision &&
       runGit(dir, ["merge-base", "--is-ancestor", currentRevision, candidateRevision]) !== null) ||
       (
-        !candidateIsCurrentObservation &&
+        !candidateIsReviewedObservation &&
         runGit(dir, ["merge-base", "--is-ancestor", candidateRevision, identity.revision]) === null
       )) {
     return false;
@@ -605,6 +615,23 @@ function revisionRelationshipSelfTest() {
       reviewedIdentity,
     )) {
       fail("revision relationship self-test rejected the exact current observation with unchanged authority.");
+    }
+    fixtureGit(["checkout", "--detach", unchangedAuthorityDescendant]);
+    writeFileSync(join(fixture, "other.txt"), "post-observation unrelated change\n");
+    fixtureGit(["add", "other.txt"]);
+    fixtureGit(["commit", "-m", "controlled post-observation descendant"]);
+    const postObservationDescendant = fixtureGit(["rev-parse", "HEAD"]);
+    if (!revisionMatchesWithIdentity(
+      "HawkinsOperations/hawkinsoperations-website",
+      fixture,
+      unchangedAuthorityDescendant,
+      postObservationDescendant,
+      "authority.txt",
+      unchangedAuthorityBlob,
+      "current",
+      reviewedIdentity,
+    )) {
+      fail("revision relationship self-test rejected an unchanged recorded observation on a reviewed lineage.");
     }
     fixtureGit(["checkout", "--detach", reviewedFinal]);
     writeFileSync(join(fixture, "authority.txt"), "changed authority\n");
