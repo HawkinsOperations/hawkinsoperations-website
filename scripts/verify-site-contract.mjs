@@ -68,6 +68,33 @@ if (missing.length > 0) {
   process.exit(1);
 }
 
+const publicStatusWorkflow = readFileSync(join(root, ".github/workflows/public-status-sync.yml"), "utf8");
+const workflowFailures = [];
+if ((publicStatusWorkflow.match(/actions\/checkout@[0-9a-f]{40}/g) ?? []).length !== 7) {
+  workflowFailures.push("public-status workflow must contain exactly seven immutable checkout actions.");
+}
+if (!publicStatusWorkflow.includes("actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020")) {
+  workflowFailures.push("public-status workflow must pin the approved immutable setup-node action.");
+}
+if ((publicStatusWorkflow.match(/persist-credentials:\s*false/g) ?? []).length !== 7) {
+  workflowFailures.push("all seven public-status checkouts must disable persisted credentials.");
+}
+if (!/Checkout website event revision[\s\S]*?fetch-depth:\s*0/.test(publicStatusWorkflow)) {
+  workflowFailures.push("website event checkout must fetch full history for selected immutable content reachability.");
+}
+for (const [label, pattern] of [
+  ["mutable action tag", /uses:\s*actions\/(?:checkout|setup-node)@v\d+/],
+  ["write token", /contents:\s*write/],
+  ["pull_request_target", /^\s*pull_request_target\s*:/m],
+  ["continue-on-error", /continue-on-error\s*:/],
+]) {
+  if (pattern.test(publicStatusWorkflow)) workflowFailures.push(`public-status workflow rejects ${label}.`);
+}
+if (workflowFailures.length > 0) {
+  console.error(`Public-status workflow invariant failed:\n${workflowFailures.map((line) => `- ${line}`).join("\n")}`);
+  process.exit(1);
+}
+
 const navigationData = readFileSync(join(root, "src/data/navigation.ts"), "utf8");
 const primaryNavMatch = navigationData.match(/export const primaryNavigation: NavItem\[] = \[([\s\S]*?)\];/);
 const expectedPrimaryNav = [
