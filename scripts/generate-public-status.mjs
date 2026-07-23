@@ -7,7 +7,14 @@ import { fileURLToPath } from "node:url";
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const websiteRoot = join(scriptDir, "..");
 const orgRoot = join(websiteRoot, "..");
-const generatedAt = new Date().toISOString();
+const sourceManifestPath = join(websiteRoot, "config/public-status-source-manifest-v1.json");
+const checkedStatusPath = join(websiteRoot, "public/data/public-status.json");
+const checkMode = process.argv.includes("--check");
+const checkedStatus = checkMode && existsSync(checkedStatusPath)
+  ? JSON.parse(readFileSync(checkedStatusPath, "utf8"))
+  : null;
+const checkedGeneratedAt = checkedStatus?.generated_at ?? null;
+const generatedAt = checkedGeneratedAt ?? new Date().toISOString();
 const maxAgeHours = 14 * 24;
 const proofCeiling =
   "Website rendering/reporting only. Does not prove runtime, signal, production, public-safe proof, customer deployment, final approval, merge readiness, or website-as-proof.";
@@ -15,52 +22,73 @@ const proofCeiling =
 const repoSpecs = [
   {
     repo: "HawkinsOperations/.github",
-    authority: "source truth",
+    authorityOwner: "HawkinsOperations/.github",
+    authorityRole: "orchestration",
+    consumerOnly: false,
+    currentAuthority: true,
     dir: join(orgRoot, ".github"),
     publicPath: "architecture/REPO_AUTHORITY_MAP.md",
     method: "presence and git commit only; no metric derived in v0",
   },
   {
     repo: "HawkinsOperations/hoxline",
-    authority: "Hoxline/product truth",
+    authorityOwner: "HawkinsOperations/hoxline",
+    authorityRole: "review consumer",
+    consumerOnly: true,
+    currentAuthority: false,
     dir: join(orgRoot, "hoxline"),
-    publicPath: "examples/gauntlet/ho-det-001-full-loop-run-v0.json",
-    method: "presence and git commit only; path contains product artifact, no metric derived in v0",
+    publicPath: "schemas/case-growth-index-v0.schema.json",
+    method: "reviewer navigation only; Hoxline output does not establish website or authority-owned metric truth",
   },
   {
     repo: "HawkinsOperations/hawkinsoperations-detections",
-    authority: "source truth",
+    authorityOwner: "HawkinsOperations/hawkinsoperations-detections",
+    authorityRole: "detection source truth",
+    consumerOnly: false,
+    currentAuthority: true,
     dir: join(orgRoot, "hawkinsoperations-detections"),
     publicPath: "detections/DETECTION_PROMOTION_MATRIX.yml",
     method: "presence and git commit only; no metric derived in v0",
   },
   {
     repo: "HawkinsOperations/hawkinsoperations-validation",
-    authority: "validation truth",
+    authorityOwner: "HawkinsOperations/hawkinsoperations-validation",
+    authorityRole: "controlled validation truth",
+    consumerOnly: false,
+    currentAuthority: true,
     dir: join(orgRoot, "hawkinsoperations-validation"),
     publicPath: "activity/detection-activity-ledger-v1.json",
     method: "read-only corroborating source; not used to inflate reviewer-safe public metrics in v0",
   },
   {
     repo: "HawkinsOperations/hawkinsoperations-platform",
-    authority: "platform/ledger truth",
+    authorityOwner: "HawkinsOperations/hawkinsoperations-platform",
+    authorityRole: "contract and mechanical truth",
+    consumerOnly: false,
+    currentAuthority: true,
     dir: join(orgRoot, "hawkinsoperations-platform"),
     publicPath: "contracts/reviewer-metrics-pipeline-v1-state.json",
     method: "read bounded reviewer metrics state when available",
   },
   {
     repo: "HawkinsOperations/hawkinsoperations-proof",
-    authority: "proof/claim-authority truth",
+    authorityOwner: "HawkinsOperations/hawkinsoperations-proof",
+    authorityRole: "proof and claim authority",
+    consumerOnly: false,
+    currentAuthority: true,
     dir: join(orgRoot, "hawkinsoperations-proof"),
     publicPath: "proof/indexes/DETECTION_PROOF_STATUS_INDEX.yml",
     method: "derive current proof-record and ProofCard counts from unique non-null paths in the proof-owned current-authority index",
   },
   {
     repo: "HawkinsOperations/hawkinsoperations-website",
-    authority: "website rendering only",
+    authorityOwner: "HawkinsOperations/hawkinsoperations-website",
+    authorityRole: "rendering consumer",
+    consumerOnly: true,
+    currentAuthority: false,
     dir: websiteRoot,
-    publicPath: "src/data/governanceSaves.ts",
-    method: "count source-controlled public governance-save entries excluding PRIVATE_ONLY",
+    publicPath: "schemas/public-status-v0.schema.json",
+    method: "rendering contract only; website content never establishes proof or cross-repository authority",
   },
 ];
 
@@ -81,14 +109,13 @@ function readJson(repoDir, repoPath) {
 
 function sha256File(path) {
   if (!existsSync(path)) return null;
-  const normalizedSource = readFileSync(path, "utf8").replace(/\r\n/g, "\n");
-  return createHash("sha256").update(normalizedSource, "utf8").digest("hex");
+  return sha256Text(normalizeSemanticText(readFileSync(path, "utf8"), path));
 }
 
-function committedText(dir, commit, path) {
-  if (!commit) return null;
+function committedText(dir, revision, path) {
+  if (!revision) return null;
   try {
-    return execFileSync("git", ["-c", `safe.directory=${dir.replaceAll("\\", "/")}`, "-C", dir, "show", `${commit}:${path}`], {
+    return execFileSync("git", ["-c", `safe.directory=${dir.replaceAll("\\", "/")}`, "-C", dir, "show", `${revision}:${path}`], {
       encoding: "utf8",
     });
   } catch {
@@ -100,29 +127,90 @@ function sha256Text(value) {
   return value === null ? null : createHash("sha256").update(value, "utf8").digest("hex");
 }
 
+function canonicalJson(value) {
+  if (Array.isArray(value)) return value.map(canonicalJson);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonicalJson(value[key])]));
+  }
+  return value;
+}
+
+function normalizeSemanticText(value, path) {
+  const normalizedEol = value.replace(/\r\n?/g, "\n");
+  if (path.endsWith(".json")) {
+    return `${JSON.stringify(canonicalJson(JSON.parse(normalizedEol)))}\n`;
+  }
+  return `${normalizedEol.split("\n").map((line) => line.replace(/[ \t]+$/g, "")).join("\n").replace(/\n*$/, "")}\n`;
+}
+
+function canonicalOrigin(repo) {
+  return `https://github.com/${repo}.git`;
+}
+
+function normalizeOrigin(value) {
+  return value
+    ?.trim()
+    .replace(/^git@github\.com:/i, "https://github.com/")
+    .replace(/^ssh:\/\/git@github\.com\//i, "https://github.com/")
+    .replace(/\/+$/, "")
+    .toLowerCase();
+}
+
 function repoSource(spec) {
   const repoAvailable = existsSync(spec.dir);
-  const repositoryCommit = repoAvailable ? runGit(spec.dir, ["rev-parse", "HEAD"]) : null;
-  const commit = repoAvailable ? runGit(spec.dir, ["log", "-1", "--format=%H", "--", spec.publicPath]) || repositoryCommit : null;
-  const sourceText = repoAvailable ? committedText(spec.dir, commit, spec.publicPath) : null;
+  const currentObservedHeadSha = repoAvailable ? runGit(spec.dir, ["rev-parse", "HEAD"]) : null;
+  const resolvedRef = repoAvailable ? runGit(spec.dir, ["branch", "--show-current"]) || currentObservedHeadSha : null;
+  const origin = repoAvailable ? runGit(spec.dir, ["remote", "get-url", "origin"]) : null;
+  const expectedOrigin = canonicalOrigin(spec.repo);
+  const originValid = normalizeOrigin(origin) === normalizeOrigin(expectedOrigin);
+  const trackedDirty = repoAvailable ? Boolean(runGit(spec.dir, ["status", "--porcelain", "--untracked-files=no"])) : true;
+  const authoritativeGitBlobSha = currentObservedHeadSha
+    ? runGit(spec.dir, ["rev-parse", `${currentObservedHeadSha}:${spec.publicPath}`])
+    : null;
+  const sourceText = repoAvailable ? committedText(spec.dir, currentObservedHeadSha, spec.publicPath) : null;
   const available = sourceText !== null;
-  const resolvedRef = repoAvailable ? runGit(spec.dir, ["branch", "--show-current"]) || repositoryCommit : null;
+  const contentFingerprint = sourceText === null ? null : sha256Text(normalizeSemanticText(sourceText, spec.publicPath));
+  const previous = checkedStatus?.sources?.find((source) => source.repo === spec.repo);
+  const previousRevisionStillValid = previous?.authoritative_git_blob_sha === authoritativeGitBlobSha &&
+    previous?.authoritative_content_fingerprint === contentFingerprint &&
+    runGit(spec.dir, ["cat-file", "-t", previous?.source_observed_head_sha]) === "commit" &&
+    runGit(spec.dir, ["rev-parse", `${previous?.source_observed_head_sha}:${spec.publicPath}`]) === authoritativeGitBlobSha;
+  const recordedObservedHead = previousRevisionStillValid ? previous.source_observed_head_sha : currentObservedHeadSha;
+  const sourceCommitTime = currentObservedHeadSha ? runGit(spec.dir, ["show", "-s", "--format=%cI", currentObservedHeadSha]) : null;
+  const freshnessState = available && originValid && !trackedDirty ? "fresh" : "source_unavailable";
   return {
     repo: spec.repo,
-    authority: spec.authority,
+    repository: spec.repo,
+    authority: spec.authorityRole,
+    authority_owner: spec.authorityOwner,
+    authority_role: spec.authorityRole,
     path: spec.publicPath,
-    commit,
-    repository_commit: repositoryCommit,
+    authoritative_path: spec.publicPath,
+    commit: recordedObservedHead,
+    repository_commit: recordedObservedHead,
+    current_observed_head_sha: recordedObservedHead,
+    source_observed_head_sha: recordedObservedHead,
+    source_observation_kind: "reviewed_immutable_commit",
     resolved_ref: resolvedRef,
-    source_fingerprint_sha256: sha256Text(sourceText),
-    freshness_state: available && commit ? "fresh" : "source_unavailable",
+    canonical_origin: expectedOrigin,
+    authoritative_git_blob_sha: authoritativeGitBlobSha,
+    authoritative_content_fingerprint: contentFingerprint,
+    source_fingerprint_sha256: contentFingerprint,
+    freshness_state: freshnessState,
+    freshness_observation: {
+      state: freshnessState,
+      observed_at: generatedAt,
+      source_commit_time: sourceCommitTime,
+      max_age_hours: maxAgeHours,
+    },
     historical_snapshot: false,
-    current_authority: true,
-    available,
+    current_authority: spec.currentAuthority,
+    consumer_only: spec.consumerOnly,
+    available: available && originValid && !trackedDirty,
     method: spec.method,
-    notes: available
-      ? "Authoritative source path is locally available at the recorded repository revision."
-      : "Authoritative source path is unavailable locally; dependent metrics fail closed.",
+    notes: available && originValid && !trackedDirty
+      ? "The authoritative path blob equals the blob in the checked current tree; the observed head is separate freshness context."
+      : "Source unavailable, repository identity mismatched, or tracked source is dirty; dependent metrics fail closed.",
   };
 }
 
@@ -137,14 +225,66 @@ function githubHref(repo, sourcePath, commit) {
 }
 
 function countPublicGovernanceSaves() {
-  const source = committedText(websiteRoot, sourceByRepo["HawkinsOperations/hawkinsoperations-website"]?.commit, "src/data/governanceSaves.ts");
+  const source = committedText(
+    websiteRoot,
+    sourceByRepo["HawkinsOperations/hawkinsoperations-website"]?.current_observed_head_sha,
+    "src/data/governanceSaves.ts",
+  );
   if (source === null) return null;
   const records = [...source.matchAll(/\{\s*id: "GS-[\s\S]*?\n\s*\}/g)].map((match) => match[0]);
   if (records.length === 0) return null;
   return records.filter((record) => !record.includes('publicSafety: "PRIVATE_ONLY"')).length;
 }
 
+if (!existsSync(sourceManifestPath)) {
+  throw new Error("Required immutable source manifest is missing.");
+}
+const sourceManifest = JSON.parse(readFileSync(sourceManifestPath, "utf8"));
+const manifestEntries = sourceManifest.repositories;
+if (
+  sourceManifest.manifest_version !== "public-status-source-manifest-v1" ||
+  sourceManifest.observation_kind !== "reviewed_immutable_commit" ||
+  Object.keys(sourceManifest).some((key) => !["manifest_version", "observation_kind", "repositories"].includes(key)) ||
+  !Array.isArray(manifestEntries) ||
+  manifestEntries.length !== repoSpecs.length
+) {
+  throw new Error("Source manifest shape or observation kind is invalid.");
+}
+const manifestByRepo = Object.fromEntries(manifestEntries.map((entry) => [entry.repository, entry]));
+if (Object.keys(manifestByRepo).length !== repoSpecs.length) {
+  throw new Error("Source manifest repository identities must be unique.");
+}
+
 const sources = repoSpecs.map(repoSource);
+for (const spec of repoSpecs) {
+  const source = sources.find((candidate) => candidate.repo === spec.repo);
+  const entry = manifestByRepo[spec.repo];
+  if (!entry || entry.authoritative_path !== spec.publicPath) {
+    throw new Error(`Source manifest owner/path mismatch for ${spec.repo}.`);
+  }
+  const allowedEntryKeys = spec.repo === "HawkinsOperations/hawkinsoperations-website"
+    ? ["repository", "revision_source", "authoritative_path"]
+    : ["repository", "revision", "authoritative_path"];
+  if (Object.keys(entry).some((key) => !allowedEntryKeys.includes(key))) {
+    throw new Error(`Source manifest contains an unknown field for ${spec.repo}.`);
+  }
+  if (spec.repo === "HawkinsOperations/hawkinsoperations-website") {
+    if (entry.revision !== undefined || entry.revision_source !== "github_event_sha") {
+      throw new Error("Website manifest entry must bind revision_source=github_event_sha without a self-referential revision.");
+    }
+    if (process.env.GITHUB_SHA && process.env.GITHUB_SHA !== source.current_observed_head_sha) {
+      throw new Error("Website checkout HEAD does not equal the immutable GitHub event SHA.");
+    }
+  } else if (!/^[a-f0-9]{40}$/.test(entry.revision ?? "") || entry.revision !== source.current_observed_head_sha) {
+    throw new Error(`Checked source revision differs from immutable manifest for ${spec.repo}.`);
+  }
+}
+const unavailableSources = sources.filter((source) => !source.available);
+if (unavailableSources.length > 0) {
+  throw new Error(
+    `Public-status generation refused unavailable, dirty, or wrong-origin sources: ${unavailableSources.map((source) => source.repo).join(", ")}`,
+  );
+}
 const sourceByRepo = Object.fromEntries(sources.map((source) => [source.repo, source]));
 const proofRepo = repoSpecs.find((spec) => spec.repo.endsWith("hawkinsoperations-proof"));
 const platformRepo = repoSpecs.find((spec) => spec.repo.endsWith("hawkinsoperations-platform"));
@@ -163,21 +303,28 @@ const platformState = platformStateText === null ? null : JSON.parse(platformSta
 const validationLedger = validationLedgerText === null ? null : JSON.parse(validationLedgerText);
 const publicGovernanceSaveCount = countPublicGovernanceSaves();
 
-function sourceVariant(source, path, method, { historicalSnapshot, currentAuthority }) {
-  const commit = source ? runGit(proofRepo.dir, ["log", "-1", "--format=%H", "--", path]) || source.commit : null;
-  const sourceText = source ? committedText(proofRepo.dir, commit, path) : null;
+function sourceVariant(source, path, method, { historicalSnapshot, currentAuthority, consumerOnly = source?.consumer_only ?? false }) {
+  const spec = repoSpecs.find((candidate) => candidate.repo === source?.repo);
+  const revision = source?.current_observed_head_sha ?? null;
+  const sourceText = source && spec ? committedText(spec.dir, revision, path) : null;
   const available = sourceText !== null;
+  const authoritativeGitBlobSha = source && spec ? runGit(spec.dir, ["rev-parse", `${revision}:${path}`]) : null;
+  const contentFingerprint = sourceText === null ? null : sha256Text(normalizeSemanticText(sourceText, path));
   return source
     ? {
         ...source,
         path,
-        commit,
+        authoritative_path: path,
+        commit: revision,
         method,
         available,
-        source_fingerprint_sha256: sha256Text(sourceText),
-        freshness_state: available && source.commit ? "fresh" : "source_unavailable",
+        authoritative_git_blob_sha: authoritativeGitBlobSha,
+        authoritative_content_fingerprint: contentFingerprint,
+        source_fingerprint_sha256: contentFingerprint,
+        freshness_state: available && source.freshness_state === "fresh" ? "fresh" : "source_unavailable",
         historical_snapshot: historicalSnapshot,
         current_authority: currentAuthority,
+        consumer_only: consumerOnly,
       }
     : source;
 }
@@ -210,8 +357,15 @@ function sourceUnavailableMetric(id, label, unit, source, method) {
     authority: source?.authority ?? "source unavailable",
     source_repo: source?.repo ?? "unknown",
     source_path: source?.path ?? "unknown",
+    source_authority_owner: source?.authority_owner ?? "unknown",
+    source_authority_role: source?.authority_role ?? "unknown",
     source_commit: source?.commit ?? null,
     source_repository_commit: source?.repository_commit ?? null,
+    source_observed_head_sha: source?.source_observed_head_sha ?? null,
+    current_observed_head_sha: source?.current_observed_head_sha ?? null,
+    source_observation_kind: source?.source_observation_kind ?? "reviewed_immutable_commit",
+    authoritative_git_blob_sha: source?.authoritative_git_blob_sha ?? null,
+    authoritative_content_fingerprint: source?.authoritative_content_fingerprint ?? null,
     source_resolved_ref: source?.resolved_ref ?? null,
     source_fingerprint_sha256: source?.source_fingerprint_sha256 ?? null,
     method: method ?? source?.method ?? "source unavailable",
@@ -219,6 +373,7 @@ function sourceUnavailableMetric(id, label, unit, source, method) {
     freshness_status: "source_unavailable",
     historical_snapshot: source?.historical_snapshot ?? false,
     current_authority: source?.current_authority ?? false,
+    consumer_only: source?.consumer_only ?? false,
     proof_ceiling: proofCeiling,
     claim_status: "source_unavailable",
     not_claiming: notClaiming(),
@@ -258,8 +413,15 @@ function metric({ id, label, value, unit = "count", source, method, detail, tone
     authority: source.authority,
     source_repo: source.repo,
     source_path: source.path,
+    source_authority_owner: source.authority_owner,
+    source_authority_role: source.authority_role,
     source_commit: source.commit,
     source_repository_commit: source.repository_commit,
+    source_observed_head_sha: source.source_observed_head_sha,
+    current_observed_head_sha: source.current_observed_head_sha,
+    source_observation_kind: source.source_observation_kind,
+    authoritative_git_blob_sha: source.authoritative_git_blob_sha,
+    authoritative_content_fingerprint: source.authoritative_content_fingerprint,
     source_resolved_ref: source.resolved_ref,
     source_fingerprint_sha256: source.source_fingerprint_sha256,
     method,
@@ -267,6 +429,7 @@ function metric({ id, label, value, unit = "count", source, method, detail, tone
     freshness_status: freshnessStatus,
     historical_snapshot: source.historical_snapshot,
     current_authority: source.current_authority,
+    consumer_only: source.consumer_only,
     proof_ceiling: proofCeiling,
     claim_status: claimStatus,
     not_claiming: notClaiming(),
@@ -283,6 +446,12 @@ function metric({ id, label, value, unit = "count", source, method, detail, tone
 const proofSource = sourceByRepo["HawkinsOperations/hawkinsoperations-proof"];
 const platformSource = sourceByRepo["HawkinsOperations/hawkinsoperations-platform"];
 const websiteSource = sourceByRepo["HawkinsOperations/hawkinsoperations-website"];
+const websiteGovernanceSource = sourceVariant(
+  websiteSource,
+  "src/data/governanceSaves.ts",
+  "count source-controlled public governance-save entries excluding publicSafety PRIVATE_ONLY as render-only website content",
+  { historicalSnapshot: false, currentAuthority: false, consumerOnly: true },
+);
 const proofSummarySource = sourceVariant(
   proofSource,
   "proof/records/reviewer-metrics-pipeline-v1-summary.json",
@@ -312,8 +481,8 @@ const metrics = {
     id: "controls_fired",
     label: "controls fired",
     value: publicGovernanceSaveCount,
-    source: websiteSource,
-    method: "count governance save records excluding publicSafety PRIVATE_ONLY",
+    source: websiteGovernanceSource,
+    method: "count source-controlled public governance-save entries excluding publicSafety PRIVATE_ONLY as render-only website content",
     detail: "public-facing Governance Saves records",
     tone: "cyan",
   }),
@@ -405,13 +574,33 @@ const metricList = Object.values(metrics);
 const hasUnavailableMetric = metricList.some((item) => item.freshness_status !== "fresh");
 const status = hasUnavailableMetric ? "source_unavailable" : "fresh";
 const websiteCommit = sourceByRepo["HawkinsOperations/hawkinsoperations-website"]?.repository_commit ?? null;
+const generatorBlobSha = websiteCommit
+  ? runGit(websiteRoot, ["rev-parse", `${websiteCommit}:scripts/generate-public-status.mjs`])
+  : null;
+const sourceManifestDigest = sha256Text(JSON.stringify(canonicalJson(sources.map((source) => ({
+  repository: source.repository,
+  authority_owner: source.authority_owner,
+  authority_role: source.authority_role,
+  authoritative_path: source.authoritative_path,
+  source_observed_head_sha: source.source_observed_head_sha,
+  source_observation_kind: source.source_observation_kind,
+  authoritative_git_blob_sha: source.authoritative_git_blob_sha,
+  authoritative_content_fingerprint: source.authoritative_content_fingerprint,
+  historical_snapshot: source.historical_snapshot,
+  current_authority: source.current_authority,
+  consumer_only: source.consumer_only,
+})))));
 
 const publicStatus = {
   schema_version: "public-status-v0",
   generated_at: generatedAt,
   generated_by: "scripts/generate-public-status.mjs",
   generator_commit: websiteCommit,
+  generator_observed_head_sha: websiteCommit,
+  generator_git_blob_sha: generatorBlobSha,
+  generator_semantic_fingerprint: sha256File(join(websiteRoot, "scripts/generate-public-status.mjs")),
   generator_fingerprint_sha256: sha256File(join(websiteRoot, "scripts/generate-public-status.mjs")),
+  source_manifest_digest: sourceManifestDigest,
   generation_mode: "generated_public_status_data_plane_v0",
   snapshot_label: "Generated public status v0 data plane",
   snapshot_class: "current_generated_rendering_snapshot",
@@ -436,10 +625,19 @@ const publicStatus = {
   source_repository_commit_refs: Object.fromEntries(
     sources.map((source) => [source.repo.replace("HawkinsOperations/", ""), source.repository_commit]),
   ),
+  source_blob_refs: Object.fromEntries(
+    sources.map((source) => [source.repo.replace("HawkinsOperations/", ""), source.authoritative_git_blob_sha]),
+  ),
+  source_semantic_fingerprint_refs: Object.fromEntries(
+    sources.map((source) => [source.repo.replace("HawkinsOperations/", ""), source.authoritative_content_fingerprint]),
+  ),
+  authority_source_repos: sources.filter((source) => source.current_authority && !source.consumer_only).map((source) => source.repo),
+  consumer_source_repos: sources.filter((source) => source.consumer_only).map((source) => source.repo),
   metric_list: metricList,
   metrics,
   current_metric_ids: metricList.filter((item) => item.current_authority).map((item) => item.id),
   historical_metric_ids: metricList.filter((item) => item.historical_snapshot).map((item) => item.id),
+  render_only_metric_ids: metricList.filter((item) => item.consumer_only).map((item) => item.id),
   known_gaps: [
     ...sourceUnavailable,
     {

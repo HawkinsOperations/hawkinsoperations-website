@@ -45,6 +45,7 @@ const requiredFiles = [
   "src/data/publicSurfaceIdentities.ts",
   "public/data/public-status.json",
   "schemas/public-status-v0.schema.json",
+  "config/public-status-source-manifest-v1.json",
   "scripts/generate-public-status.mjs",
   "scripts/verify-public-status.mjs",
   "docs/public-status-data-plane-v0.md",
@@ -570,6 +571,9 @@ for (const term of [
   "generated_at",
   "generated_by",
   "generator_commit",
+  "generator_git_blob_sha",
+  "generator_semantic_fingerprint",
+  "source_manifest_digest",
   "generation_mode",
   "snapshot_label",
   "freshness",
@@ -578,6 +582,11 @@ for (const term of [
   "source_repos",
   "source_paths",
   "source_commit_refs",
+  "source_blob_refs",
+  "source_semantic_fingerprint_refs",
+  "authority_source_repos",
+  "consumer_source_repos",
+  "render_only_metric_ids",
   "freshness_window_days",
   "stale_evaluation",
   "proof_ceiling",
@@ -630,8 +639,8 @@ if (!publicStatusJson.no_proof_promotion_statement?.includes("snapshot/rendering
 if (!publicStatusJson.source_ownership_message?.includes("proof") || !publicStatusJson.source_ownership_message?.includes("validation")) {
   publicStatusFailures.push("public/data/public-status.json must include source ownership language.");
 }
-if (!Array.isArray(publicStatusJson.sources) || publicStatusJson.sources.length < 7) {
-  publicStatusFailures.push("public/data/public-status.json must include sources[] for repo authority surfaces.");
+if (!Array.isArray(publicStatusJson.sources) || publicStatusJson.sources.length !== 7) {
+  publicStatusFailures.push("public/data/public-status.json must include exactly seven sources[] entries.");
 }
 if (!Array.isArray(publicStatusJson.metric_list) || publicStatusJson.metric_list.length < 8) {
   publicStatusFailures.push("public/data/public-status.json must include metric_list[] for generated metrics.");
@@ -649,6 +658,7 @@ for (const metricKey of [
   "validation_fires",
   "validation_cases",
   "proof_records",
+  "proof_cards",
   "blocked_claims",
   "governed_cases",
   "closed_case_count",
@@ -659,7 +669,20 @@ for (const metricKey of [
     publicStatusFailures.push(`public/data/public-status.json metrics.${metricKey} must include numeric value, display_value, display_label, and source_href.`);
     continue;
   }
-  for (const field of ["authority", "source_repo", "source_path", "source_commit", "method", "freshness_status", "proof_ceiling", "claim_status", "not_claiming"]) {
+  for (const field of [
+    "authority",
+    "source_repo",
+    "source_path",
+    "source_commit",
+    "source_observed_head_sha",
+    "authoritative_git_blob_sha",
+    "authoritative_content_fingerprint",
+    "method",
+    "freshness_status",
+    "proof_ceiling",
+    "claim_status",
+    "not_claiming",
+  ]) {
     if (metric[field] === undefined || metric[field] === null || metric[field] === "") {
       publicStatusFailures.push(`public/data/public-status.json metrics.${metricKey}.${field} is required.`);
     }

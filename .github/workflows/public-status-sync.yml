@@ -1,52 +1,158 @@
-name: Public status sync
+name: Public status convergence
 
 on:
+  pull_request:
   workflow_dispatch:
     inputs:
-      update_branch:
-        description: "Create or update a PR branch if generated public status drifts."
-        required: false
-        default: "false"
-        type: choice
-        options:
-          - "false"
-          - "true"
       run_visual:
-        description: "Run Playwright visual QA after generation."
+        description: "Install Chromium and run Playwright visual QA."
         required: false
-        default: "false"
-        type: choice
-        options:
-          - "false"
-          - "true"
+        default: false
+        type: boolean
   schedule:
     - cron: "17 11 * * 1"
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
-  public-status-sync:
+  public-status-convergence:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: hawkinsoperations-website
     steps:
-      - name: Checkout website
+      - name: Checkout website event revision
         uses: actions/checkout@v4
+        with:
+          path: hawkinsoperations-website
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Read reviewed immutable source manifest
+        id: manifest
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs");
+          const manifest = JSON.parse(fs.readFileSync("config/public-status-source-manifest-v1.json", "utf8"));
+          const names = {
+            "HawkinsOperations/.github": "org",
+            "HawkinsOperations/hoxline": "hoxline",
+            "HawkinsOperations/hawkinsoperations-detections": "detections",
+            "HawkinsOperations/hawkinsoperations-validation": "validation",
+            "HawkinsOperations/hawkinsoperations-platform": "platform",
+            "HawkinsOperations/hawkinsoperations-proof": "proof"
+          };
+          const entries = Object.fromEntries(manifest.repositories.map((entry) => [entry.repository, entry]));
+          if (manifest.manifest_version !== "public-status-source-manifest-v1" ||
+              manifest.observation_kind !== "reviewed_immutable_commit" ||
+              manifest.repositories.length !== 7 ||
+              Object.keys(entries).length !== 7) {
+            throw new Error("invalid or duplicate source manifest");
+          }
+          const website = entries["HawkinsOperations/hawkinsoperations-website"];
+          if (!website || website.revision !== undefined || website.revision_source !== "github_event_sha") {
+            throw new Error("website source must bind to github_event_sha without a tracked self-tip");
+          }
+          const lines = [];
+          for (const [repo, output] of Object.entries(names)) {
+            const revision = entries[repo]?.revision;
+            if (!/^[a-f0-9]{40}$/.test(revision ?? "")) throw new Error(`invalid immutable revision for ${repo}`);
+            lines.push(`${output}=${revision}`);
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `${lines.join("\n")}\n`);
+          NODE
+
+      - name: Checkout organization command center
+        uses: actions/checkout@v4
+        with:
+          repository: HawkinsOperations/.github
+          ref: ${{ steps.manifest.outputs.org }}
+          path: .github
+          persist-credentials: false
+
+      - name: Checkout Hoxline
+        uses: actions/checkout@v4
+        with:
+          repository: HawkinsOperations/hoxline
+          ref: ${{ steps.manifest.outputs.hoxline }}
+          path: hoxline
+          persist-credentials: false
+
+      - name: Checkout detections
+        uses: actions/checkout@v4
+        with:
+          repository: HawkinsOperations/hawkinsoperations-detections
+          ref: ${{ steps.manifest.outputs.detections }}
+          path: hawkinsoperations-detections
+          persist-credentials: false
+
+      - name: Checkout validation
+        uses: actions/checkout@v4
+        with:
+          repository: HawkinsOperations/hawkinsoperations-validation
+          ref: ${{ steps.manifest.outputs.validation }}
+          path: hawkinsoperations-validation
+          persist-credentials: false
+
+      - name: Checkout platform
+        uses: actions/checkout@v4
+        with:
+          repository: HawkinsOperations/hawkinsoperations-platform
+          ref: ${{ steps.manifest.outputs.platform }}
+          path: hawkinsoperations-platform
+          persist-credentials: false
+
+      - name: Checkout proof
+        uses: actions/checkout@v4
+        with:
+          repository: HawkinsOperations/hawkinsoperations-proof
+          ref: ${{ steps.manifest.outputs.proof }}
+          path: hawkinsoperations-proof
+          persist-credentials: false
 
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
+          cache-dependency-path: hawkinsoperations-website/package-lock.json
 
-      - name: Install dependencies
+      - name: Install declared dependencies
         run: npm ci
 
-      - name: Generate public status
+      - name: Reproduce checked public status
+        if: ${{ github.event_name == 'pull_request' }}
+        run: npm run public-status:generate:check
+
+      - name: Refresh scheduled public status observation
+        if: ${{ github.event_name != 'pull_request' }}
         run: npm run public-status:generate
 
       - name: Verify public status
         run: npm run public-status:verify
+
+      - name: Verify source owner contracts
+        run: npm run public-status:owner-self-test
+
+      - name: Run hostile public-status suite
+        run: npm run public-status:self-test
+
+      - name: Verify exact source checkouts
+        run: npm run public-status:source-checkout-test
+
+      - name: Verify freshness and revision reachability
+        run: npm run public-status:freshness-reachability-test
+
+      - name: Verify dirty provenance rejection
+        run: npm run public-status:dirty-provenance-test
+
+      - name: Verify nested claim rejection
+        run: npm run public-status:nested-claim-test
+
+      - name: Verify CRLF and LF identity separation
+        run: npm run public-status:eol-self-test
 
       - name: Check site contract
         run: npm run check:site
@@ -54,35 +160,16 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Build static site
+        run: npm run build
+
+      - name: Verify generated pair is reproducible
+        run: git diff --exit-code -- public/data/public-status.json src/data/generated/public-status.generated.ts
+
       - name: Install Playwright Chromium
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_visual == 'true' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_visual }}
         run: npx playwright install chromium
 
       - name: Run visual QA
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_visual == 'true' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_visual }}
         run: npm run test:visual
-
-      - name: Detect public status drift
-        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.update_branch == 'true') }}
-        run: |
-          git diff --exit-code || {
-            echo "Generated public status drift detected."
-            echo "Re-run this workflow manually with update_branch=true, or run npm run public-status:generate locally and open a PR."
-            exit 1
-          }
-
-      - name: Create public status refresh PR
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.update_branch == 'true' }}
-        uses: peter-evans/create-pull-request@v6
-        with:
-          branch: automation/public-status-data-plane-v0
-          commit-message: Refresh generated public status
-          title: Refresh generated public status
-          body: |
-            Summary:
-            - Regenerates public/data/public-status.json.
-            - Refreshes source-linked freshness metadata.
-            - Does not direct-push to main.
-
-            Proof ceiling:
-            This proves only generated website rendering input and local verification hooks. It does not prove runtime, signal, controlled validation truth, production readiness, customer deployment, public-safe proof, final human approval, merge readiness, or website-as-proof.

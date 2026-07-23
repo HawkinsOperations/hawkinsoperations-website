@@ -11,9 +11,15 @@
     "test:visual:headed": "playwright test --headed",
     "typecheck": "tsc --noEmit",
     "public-status:generate": "node scripts/generate-public-status.mjs",
+    "public-status:generate:check": "node scripts/generate-public-status.mjs --check",
     "public-status:verify": "node scripts/verify-public-status.mjs",
     "public-status:self-test": "node scripts/verify-public-status.mjs --self-test",
     "public-status:owner-self-test": "node scripts/verify-public-status.mjs --owner-self-test-only",
+    "public-status:source-checkout-test": "node scripts/verify-public-status.mjs --source-checkout-test",
+    "public-status:freshness-reachability-test": "node scripts/verify-public-status.mjs --freshness-reachability-test",
+    "public-status:dirty-provenance-test": "node scripts/verify-public-status.mjs --dirty-provenance-test",
+    "public-status:nested-claim-test": "node scripts/verify-public-status.mjs --nested-claim-test",
+    "public-status:eol-self-test": "node scripts/verify-public-status.mjs --eol-self-test",
     "generate:brand-assets": "node scripts/generate-brand-assets.mjs"
   },
   "dependencies": {
