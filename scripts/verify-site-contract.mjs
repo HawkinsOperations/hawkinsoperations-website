@@ -70,6 +70,7 @@ if (missing.length > 0) {
 }
 
 const publicStatusWorkflow = readFileSync(join(root, ".github/workflows/public-status-sync.yml"), "utf8");
+const governanceWorkflow = readFileSync(join(root, ".github/workflows/governance-gate.yml"), "utf8");
 const workflowFailures = [];
 if ((publicStatusWorkflow.match(/actions\/checkout@[0-9a-f]{40}/g) ?? []).length !== 7) {
   workflowFailures.push("public-status workflow must contain exactly seven immutable checkout actions.");
@@ -90,6 +91,23 @@ for (const [label, pattern] of [
   ["continue-on-error", /continue-on-error\s*:/],
 ]) {
   if (pattern.test(publicStatusWorkflow)) workflowFailures.push(`public-status workflow rejects ${label}.`);
+}
+if ((governanceWorkflow.match(/actions\/checkout@11bd71901bbe5b1630ceea73d27597364c9af683/g) ?? []).length !== 2) {
+  workflowFailures.push("governance workflow must pin both checkout actions to the reviewed immutable SHA.");
+}
+if ((governanceWorkflow.match(/persist-credentials:\s*false/g) ?? []).length !== 2) {
+  workflowFailures.push("both governance checkouts must disable persisted credentials.");
+}
+if (!governanceWorkflow.includes("actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020")) {
+  workflowFailures.push("governance workflow must pin the approved immutable setup-node action.");
+}
+for (const [label, pattern] of [
+  ["mutable action tag", /uses:\s*actions\/(?:checkout|setup-node)@v\d+/],
+  ["write token", /contents:\s*write/],
+  ["pull_request_target", /^\s*pull_request_target\s*:/m],
+  ["continue-on-error", /continue-on-error\s*:/],
+]) {
+  if (pattern.test(governanceWorkflow)) workflowFailures.push(`governance workflow rejects ${label}.`);
 }
 if (workflowFailures.length > 0) {
   console.error(`Public-status workflow invariant failed:\n${workflowFailures.map((line) => `- ${line}`).join("\n")}`);

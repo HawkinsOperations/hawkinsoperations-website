@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, extname, join } from "node:path";
 import { tmpdir } from "node:os";
 import { readStrictJson, strictJsonParse } from "./strict-json.mjs";
 
@@ -152,6 +152,12 @@ function runGit(dir, args) {
 
 function trackedVocabularyFindings(dir = root) {
   const retired = ["syn", "thetic"].join("");
+  const binaryExtensions = new Set([
+    ".7z", ".avif", ".avi", ".bz2", ".dll", ".dylib", ".eot", ".exe", ".gif",
+    ".gz", ".ico", ".jpeg", ".jpg", ".mov", ".mp3", ".mp4", ".pdf",
+    ".png", ".pyc", ".so", ".tar", ".tgz", ".ttf", ".wasm", ".webp",
+    ".woff", ".woff2", ".xz", ".zip",
+  ]);
   const findings = [];
   let tracked;
   try {
@@ -165,39 +171,42 @@ function trackedVocabularyFindings(dir = root) {
   }
   const trackedPaths = tracked.split("\0").filter(Boolean);
   for (const path of trackedPaths) {
-    if (path.toLocaleLowerCase("en-US").includes(retired)) {
+    if (path.normalize("NFKC").toLocaleLowerCase("en-US").includes(retired)) {
       findings.push(`retired fixture vocabulary appears in tracked filename: ${path}`);
     }
-  }
-  try {
-    const output = execFileSync(
-      "git",
-      [
-        "-c",
-        `safe.directory=${dir.replaceAll("\\", "/")}`,
-        "-C",
-        dir,
-        "grep",
-        "-n",
-        "-I",
-        "-i",
-        "-F",
-        retired,
-        "--",
-        ".",
-      ],
-      { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] },
-    ).trim();
-    if (output) {
-      findings.push(
-        ...output.split(/\r?\n/).map(
-          (line) => `retired fixture vocabulary appears in tracked content: ${line}`,
-        ),
+    const extension = extname(path).toLocaleLowerCase("en-US");
+    if (binaryExtensions.has(extension)) continue;
+    let blob;
+    try {
+      blob = execFileSync(
+        "git",
+        [
+          "-c",
+          `safe.directory=${dir.replaceAll("\\", "/")}`,
+          "-C",
+          dir,
+          "show",
+          `:${path}`,
+        ],
+        { stdio: ["ignore", "pipe", "pipe"] },
       );
+    } catch {
+      findings.push(`tracked-source vocabulary check could not read indexed content: ${path}`);
+      continue;
     }
-  } catch (error) {
-    if (error?.status !== 1) {
-      findings.push("tracked-source vocabulary content scan failed before producing a decision.");
+    if (blob.includes(0)) {
+      findings.push(`tracked non-binary content contains NUL: ${path}`);
+      continue;
+    }
+    let text;
+    try {
+      text = new TextDecoder("utf-8", { fatal: true }).decode(blob);
+    } catch {
+      findings.push(`tracked non-binary content is not UTF-8: ${path}`);
+      continue;
+    }
+    if (text.normalize("NFKC").toLocaleLowerCase("en-US").includes(retired)) {
+      findings.push(`retired fixture vocabulary appears in tracked content: ${path}`);
     }
   }
   return findings;
@@ -210,11 +219,16 @@ function trackedVocabularySelfTest() {
     execFileSync("git", ["-C", testRoot, "init", "--quiet"], {
       stdio: ["ignore", "pipe", "pipe"],
     });
+    const fullwidth = [...retired]
+      .map((character) => String.fromCodePoint(character.codePointAt(0) + 0xfee0))
+      .join("");
     const contentPath = join(testRoot, "content-fixture.txt");
-    const filenamePath = join(testRoot, `fixture-${retired}.txt`);
-    writeFileSync(contentPath, `controlled-test boundary rejects ${retired}\n`, "utf8");
+    const filenamePath = join(testRoot, `fixture-${fullwidth}.txt`);
+    const utf16Path = join(testRoot, "utf16-fixture.md");
+    writeFileSync(contentPath, `controlled-test boundary rejects ${fullwidth}\n`, "utf8");
     writeFileSync(filenamePath, "controlled-test boundary\n", "utf8");
-    execFileSync("git", ["-C", testRoot, "add", "--", contentPath, filenamePath], {
+    writeFileSync(utf16Path, Buffer.from(`controlled-test ${retired}\n`, "utf16le"));
+    execFileSync("git", ["-C", testRoot, "add", "--", contentPath, filenamePath, utf16Path], {
       stdio: ["ignore", "pipe", "pipe"],
     });
     const findings = trackedVocabularyFindings(testRoot);
@@ -223,6 +237,13 @@ function trackedVocabularySelfTest() {
     }
     if (!findings.some((item) => item.includes("tracked filename"))) {
       fail("tracked-source vocabulary self-test accepted a retired filename.");
+    }
+    if (!findings.some((item) => item.includes("utf16-fixture.md"))) {
+      fail("tracked-source vocabulary self-test accepted UTF-16 text.");
+    }
+    const unreadableFindings = trackedVocabularyFindings(join(testRoot, "missing-repository"));
+    if (!unreadableFindings.some((item) => item.includes("could not enumerate"))) {
+      fail("tracked-source vocabulary self-test accepted an unreadable Git index.");
     }
   } finally {
     rmSync(testRoot, { recursive: true, force: true });
@@ -719,10 +740,15 @@ const promotionKeyNames = new Set([
   "publicsafestatus",
   "publicsafeapproved",
   "productionready",
+  "productionstate",
   "productionstatus",
   "productiondeployed",
   "customerdeployed",
+  "customerstate",
+  "customerstatus",
   "socaasdeployed",
+  "socaasstate",
+  "socaasstatus",
   "aiapproved",
   "aiapproval",
   "aiauthority",
@@ -732,8 +758,14 @@ const promotionKeyNames = new Set([
   "analystauthority",
   "analystdispositionauthority",
   "finalauthorization",
+  "finalauthority",
   "caseclosed",
   "caseclosure",
+  "casestate",
+  "casestatus",
+  "approvalstate",
+  "approvalstatus",
+  "runtimestate",
 ]);
 const allowedAuthorityKeyNames = new Set([
   "currentauthority",
@@ -743,20 +775,25 @@ const allowedAuthorityKeyNames = new Set([
   "sourceauthorityowner",
   "sourceauthorityrole",
 ]);
+const sensitiveAuthoritySegments = new Set([
+  "runtime", "signal", "public", "approval", "production", "customer",
+  "socaas", "ai", "analyst", "review", "final", "case",
+]);
 const affirmativeAuthorityScalar = /^(?:true|1|active|live|observed|approved|authorized|enabled|granted|closed|complete|deployed|productionready|publicsafe)$/i;
 
 function compositionalPromotionKey(key) {
   return (
-    (key.includes("production") && /(?:active|live|ready|deploy|status)/.test(key)) ||
-    (/(?:customer|socaas)/.test(key) && /deploy/.test(key)) ||
-    (key.includes("runtime") && /(?:active|status)/.test(key)) ||
-    (key.includes("signal") && /(?:observed|status)/.test(key)) ||
-    (key.includes("publicsafe") && !key.endsWith("count")) ||
-    (key.includes("final") && key.includes("authoriz")) ||
-    (key.includes("case") && /(?:closed|closure)/.test(key) && !key.endsWith("count")) ||
-    /(?:approval|closure|case)status/.test(key) ||
+    (key.includes("production") && /(?:active|live|ready|deploy|state|status)/.test(key)) ||
+    (/(?:customer|socaas)/.test(key) && /(?:active|deploy|state|status)/.test(key)) ||
+    (key.includes("runtime") && /(?:active|state|status)/.test(key)) ||
+    (key.includes("signal") && /(?:observed|state|status)/.test(key)) ||
+    (key.includes("publicsafe") && !key.includes("count")) ||
+    (key.includes("final") && /(?:authoriz|authority)/.test(key)) ||
+    (key.includes("case") && /(?:closed|closure|state|status)/.test(key) && !key.includes("count")) ||
+    /(?:approvalstate|approvalstatus|closurestatus|casestate|casestatus)/.test(key) ||
     ((key.startsWith("ai") || key.startsWith("analyst")) &&
-      /(?:approved|approval|authority|disposition)/.test(key))
+      /(?:approved|approval|authority|disposition)/.test(key)) ||
+    (key.includes("review") && key.includes("disposition"))
   );
 }
 
@@ -769,6 +806,40 @@ function affirmativeAuthorityValue(value) {
     );
   }
   return value !== null && typeof value === "object";
+}
+
+function normalizedAuthorityPath(path) {
+  return path
+    .filter((part) => !/^\d+$/.test(String(part)))
+    .map((part) => decodeRepeated(String(part))
+      .normalize("NFKC")
+      .toLocaleLowerCase("en-US")
+      .replace(/[^a-z0-9]/g, ""));
+}
+
+function pathCarriesPromotionContext(path) {
+  const segments = normalizedAuthorityPath(path);
+  if (segments.some((segment) =>
+    promotionKeyNames.has(segment) ||
+    authorityKeyPattern.test(segment) ||
+    compositionalPromotionKey(segment))) {
+    return true;
+  }
+  return segments.some((segment, index) =>
+    sensitiveAuthoritySegments.has(segment) &&
+    segments.slice(index + 1).some((terminal) => {
+      const candidate = `${segment}${terminal}`;
+      return promotionKeyNames.has(candidate) ||
+        authorityKeyPattern.test(candidate) ||
+        compositionalPromotionKey(candidate);
+    }));
+}
+
+function explicitlyBoundedAuthorityValue(value) {
+  return value === false ||
+    value === null ||
+    value === 0 ||
+    (typeof value === "string" && exactBoundedAuthorityValues.test(value));
 }
 const affirmativeClaimPatterns = new Map([
   ["runtime active", /\bruntime\b.{0,24}\b(?:active|live)\b/i],
@@ -816,6 +887,19 @@ function affirmativeStringClaims(value, path) {
 
 function recursiveSecurityIssues(value, path = []) {
   const issues = [];
+  const normalizedPath = normalizedAuthorityPath(path);
+  const exactBoundedPublicSafeDetail =
+    normalizedPath.at(-2) === "publicsafe" &&
+    normalizedPath.at(-1) === "detail" &&
+    value === "Public-safe runtime proof is not promoted by this website data plane.";
+  if (
+    (value === null || typeof value !== "object") &&
+    pathCarriesPromotionContext(path) &&
+    !exactBoundedPublicSafeDetail &&
+    !explicitlyBoundedAuthorityValue(value)
+  ) {
+    issues.push(`${path.join(".") || "<root>"} attempts authority promotion.`);
+  }
   if (typeof value === "string") {
     const pathProblem = pathIssue(value);
     if (pathProblem) issues.push(`${path.join(".") || "<root>"} contains ${pathProblem}.`);
@@ -850,12 +934,36 @@ function recursiveSecurityIssues(value, path = []) {
         .normalize("NFKC")
         .toLocaleLowerCase("en-US")
         .replace(/[^a-z0-9]/g, "");
-      const exactPromotionKey = promotionKeyNames.has(normalizedChildKey) ||
-        authorityKeyPattern.test(childKey.normalize("NFKC"));
-      const promotionKey = exactPromotionKey || (
-        compositionalPromotionKey(normalizedChildKey) &&
-        affirmativeAuthorityValue(childValue)
+      const normalizedAncestry = normalizedAuthorityPath(path);
+      const cumulativeKeys = [normalizedChildKey];
+      cumulativeKeys.push(
+        ...normalizedAncestry
+          .filter((segment) => sensitiveAuthoritySegments.has(segment))
+          .map((segment) => `${segment}${normalizedChildKey}`),
       );
+      cumulativeKeys.push(
+        ...normalizedAncestry
+          .filter((segment) =>
+            promotionKeyNames.has(segment) ||
+            authorityKeyPattern.test(segment) ||
+            compositionalPromotionKey(segment))
+          .map((segment) => `${segment}${normalizedChildKey}`),
+      );
+      const scalarAuthorityState =
+        childValue === null || typeof childValue !== "object";
+      const exactPromotionKey = cumulativeKeys.some(
+        (candidate) => promotionKeyNames.has(candidate) ||
+          authorityKeyPattern.test(candidate),
+      );
+      const promotionKey = scalarAuthorityState && (
+        exactPromotionKey || (
+          cumulativeKeys.some(compositionalPromotionKey) &&
+          affirmativeAuthorityValue(childValue)
+        )
+      );
+      const allowedAuthorityKey =
+        allowedAuthorityKeyNames.has(normalizedChildKey) &&
+        !cumulativeKeys.some((candidate) => authorityKeyPattern.test(candidate));
       const boundedPublicSafeObject =
         normalizedChildKey === "publicsafe" &&
         childValue !== null &&
@@ -872,11 +980,10 @@ function recursiveSecurityIssues(value, path = []) {
         );
       if (
         promotionKey &&
-        !allowedAuthorityKeyNames.has(normalizedChildKey) &&
+        !allowedAuthorityKey &&
         !boundedPublicSafeObject &&
         !(
-          childValue === false ||
-          (typeof childValue === "string" && exactBoundedAuthorityValues.test(childValue))
+          explicitlyBoundedAuthorityValue(childValue)
         )
       ) {
         issues.push(`${[...path, childKey].join(".")} attempts authority promotion.`);
@@ -987,6 +1094,98 @@ function recursiveSecuritySelfTest() {
     if (!issues.some((issue) => issue.includes("attempts authority promotion"))) {
       fail(`recursive security self-test allowed compositional key ${JSON.stringify(key)}.`);
     }
+  }
+  const splitAndDirectAttacks = [
+    { runtime: { state: true } },
+    { signal: { observed: true } },
+    { public: { safe: true } },
+    { approval: { status: true } },
+    { production: { active: true } },
+    { customer: { deployed: true } },
+    { socaas: { deployed: true } },
+    { ai: { authority: true } },
+    { analyst: { approval: true } },
+    { review: { disposition: "APPROVED" } },
+    { final: { authorization: true } },
+    { case: { closed: true } },
+    { extensions: [{ final: { authorization: true } }] },
+    { runtime: { metadata: { state: true } } },
+    { final: { review: { authorization: true } } },
+    { ai: { metadata: { authority: true } } },
+    { customer: { review: { deployed: true } } },
+    { review: { metadata: { disposition: "APPROVED" } } },
+    { production_live: { enabled: true } },
+    { ai_authority: { enabled: true } },
+    { review_disposition: { approved: true } },
+    { final_authorization: { granted: true } },
+    { production_live: [true] },
+    { ai_authority: ["APPROVED"] },
+    { review_disposition: [true] },
+    { final_authorization: [1] },
+    { runtime_state: true },
+    { approval_state: true },
+    { production_state: true },
+    { customer_state: true },
+    { socaas_state: true },
+    { final_authority: true },
+    { case_state: true },
+  ];
+  for (const attack of splitAndDirectAttacks) {
+    const issues = recursiveSecurityIssues(attack);
+    if (!issues.some((issue) => issue.includes("attempts authority promotion"))) {
+      fail(`recursive security self-test allowed split/direct authority path ${JSON.stringify(attack)}.`);
+    }
+  }
+  const splitAndDirectControls = [
+    { runtime: { state: false } },
+    { signal: { observed: false } },
+    { public: { safe: "NOT_PUBLIC_SAFE" } },
+    { approval: { status: "NOT_APPROVED" } },
+    { production: { active: "BLOCKED" } },
+    { customer: { deployed: false } },
+    { socaas: { deployed: false } },
+    { ai: { authority: false } },
+    { analyst: { approval: "NOT_APPROVED" } },
+    { review: { disposition: "NOT_APPROVED" } },
+    { final: { authorization: "BLOCKED" } },
+    { case: { closed: false } },
+    { extensions: [{ final: { authorization: "BLOCKED" } }] },
+    { runtime_state: false },
+    { approval_state: "NOT_APPROVED" },
+    { production_state: "BLOCKED" },
+    { customer_state: false },
+    { socaas_state: false },
+    { final_authority: false },
+    { case_state: false },
+    { production_live: { enabled: false } },
+    { ai_authority: { enabled: false } },
+    { review_disposition: { approved: "NOT_APPROVED" } },
+    { final_authorization: { granted: "BLOCKED" } },
+    { production_live: [false] },
+    { ai_authority: ["BLOCKED"] },
+    { review_disposition: ["NOT_APPROVED"] },
+    { final_authorization: ["BLOCKED"] },
+  ];
+  for (const control of splitAndDirectControls) {
+    const issues = recursiveSecurityIssues(control);
+    if (issues.length > 0) {
+      fail(`recursive security self-test rejected bounded authority path ${JSON.stringify(control)}.`);
+    }
+  }
+  const ownedBoundedMetadata = {
+    metrics: {
+      blocked_claims: { authority: "proof-owned blocked boundary" },
+      public_safe_count: { label: "Not public-safe", value: 0 },
+    },
+    source_authority_owner: "HawkinsOperations/hawkinsoperations-proof",
+    source_authority_role: "proof and claim authority",
+    runtime_truth_spine: {
+      runtime_truth: { state: "RUNTIME_EVIDENCE_VERIFIED_PRIVATE" },
+    },
+  };
+  const ownedBoundedIssues = recursiveSecurityIssues(ownedBoundedMetadata);
+  if (ownedBoundedIssues.length > 0) {
+    fail(`recursive security self-test rejected bounded source metadata: ${ownedBoundedIssues.join("; ")}`);
   }
   for (const phrase of [
     "runtime is active",
