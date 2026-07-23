@@ -256,9 +256,13 @@ function reviewedLineageMatches(
   identity = reviewedSourceIdentities()?.get(spec.repo),
 ) {
   if (!identity) return false;
+  const candidateIsCurrentObservation =
+    ["current", "generator"].includes(role) &&
+    candidateRevision === currentRevision;
   if (role === "source" && candidateRevision !== identity.contentRevision) return false;
   if (
     role !== "source" &&
+    !candidateIsCurrentObservation &&
     candidateRevision !== identity.revision &&
     !observationProjectionAllowed(spec, candidateRevision, identity.revision, role)
   ) {
@@ -272,7 +276,10 @@ function reviewedLineageMatches(
       runGit(spec.dir, ["merge-base", "--is-ancestor", currentRevision, candidateRevision]) !== null) {
     return false;
   }
-  if (runGit(spec.dir, ["merge-base", "--is-ancestor", candidateRevision, identity.revision]) === null) {
+  if (
+    !candidateIsCurrentObservation &&
+    runGit(spec.dir, ["merge-base", "--is-ancestor", candidateRevision, identity.revision]) === null
+  ) {
     return false;
   }
   const currentTree = runGit(spec.dir, ["rev-parse", `${currentRevision}^{tree}`]);
