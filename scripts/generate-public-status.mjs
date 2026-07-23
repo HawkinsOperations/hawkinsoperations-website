@@ -157,6 +157,18 @@ function normalizeOrigin(value) {
     .toLowerCase();
 }
 
+function selectedRevisionMatchesCurrentTree(dir, selectedRevision, currentRevision) {
+  if (!/^[a-f0-9]{40}$/.test(selectedRevision ?? "") || !/^[a-f0-9]{40}$/.test(currentRevision ?? "")) {
+    return false;
+  }
+  if (selectedRevision === currentRevision) return true;
+  if (runGit(dir, ["merge-base", "--is-ancestor", selectedRevision, currentRevision]) !== null) return true;
+  if (runGit(dir, ["merge-base", "--is-ancestor", currentRevision, selectedRevision]) !== null) return false;
+  const selectedTree = runGit(dir, ["rev-parse", `${selectedRevision}^{tree}`]);
+  const currentTree = runGit(dir, ["rev-parse", `${currentRevision}^{tree}`]);
+  return Boolean(selectedTree && currentTree && selectedTree === currentTree);
+}
+
 function repoSource(spec, selectedRevision) {
   const repoAvailable = existsSync(spec.dir);
   const currentObservedHeadSha = repoAvailable ? runGit(spec.dir, ["rev-parse", "HEAD"]) : null;
@@ -173,7 +185,8 @@ function repoSource(spec, selectedRevision) {
   const contentFingerprint = sourceText === null ? null : sha256Text(normalizeSemanticText(sourceText, spec.publicPath));
   const selectedRevisionValid = /^[a-f0-9]{40}$/.test(selectedRevision ?? "") &&
     runGit(spec.dir, ["cat-file", "-t", selectedRevision]) === "commit" &&
-    runGit(spec.dir, ["rev-parse", `${selectedRevision}:${spec.publicPath}`]) === authoritativeGitBlobSha;
+    runGit(spec.dir, ["rev-parse", `${selectedRevision}:${spec.publicPath}`]) === authoritativeGitBlobSha &&
+    selectedRevisionMatchesCurrentTree(spec.dir, selectedRevision, currentObservedHeadSha);
   const recordedObservedHead = selectedRevisionValid ? selectedRevision : currentObservedHeadSha;
   const sourceCommitTime = recordedObservedHead ? runGit(spec.dir, ["show", "-s", "--format=%cI", recordedObservedHead]) : null;
   const freshnessState = available && originValid && !trackedDirty && selectedRevisionValid ? "fresh" : "source_unavailable";

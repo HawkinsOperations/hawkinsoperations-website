@@ -1,7 +1,8 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { tmpdir } from "node:os";
 
 const root = process.cwd();
 const orgRoot = dirname(root);
@@ -204,6 +205,79 @@ function expectedOrigin(repo) {
   return `https://github.com/${repo}.git`;
 }
 
+function selectedRevisionMatchesCurrentTree(dir, selectedRevision, currentRevision) {
+  if (!/^[a-f0-9]{40}$/.test(selectedRevision ?? "") || !/^[a-f0-9]{40}$/.test(currentRevision ?? "")) {
+    return false;
+  }
+  if (selectedRevision === currentRevision) return true;
+  if (runGit(dir, ["merge-base", "--is-ancestor", selectedRevision, currentRevision]) !== null) return true;
+  if (runGit(dir, ["merge-base", "--is-ancestor", currentRevision, selectedRevision]) !== null) return false;
+  const selectedTree = runGit(dir, ["rev-parse", `${selectedRevision}^{tree}`]);
+  const currentTree = runGit(dir, ["rev-parse", `${currentRevision}^{tree}`]);
+  return Boolean(selectedTree && currentTree && selectedTree === currentTree);
+}
+
+function revisionRelationshipSelfTest() {
+  const approvedTempRoot = process.env.HAWKINSOPERATIONS_TEST_TMP_ROOT;
+  const parent = approvedTempRoot && existsSync(approvedTempRoot) ? approvedTempRoot : tmpdir();
+  const fixture = mkdtempSync(join(parent, "website-revision-relationship-"));
+  const fixtureGit = (args) => {
+    const result = runGit(fixture, args);
+    if (result === null) throw new Error(`controlled Git fixture command failed: git ${args.join(" ")}`);
+    return result;
+  };
+  try {
+    fixtureGit(["init"]);
+    fixtureGit(["config", "user.name", "HawkinsOperations controlled test"]);
+    fixtureGit(["config", "user.email", "controlled-test.invalid"]);
+    writeFileSync(join(fixture, "authority.txt"), "owned authority\n");
+    writeFileSync(join(fixture, "other.txt"), "base\n");
+    fixtureGit(["add", "authority.txt", "other.txt"]);
+    fixtureGit(["commit", "-m", "controlled base"]);
+    const base = fixtureGit(["rev-parse", "HEAD"]);
+
+    writeFileSync(join(fixture, "other.txt"), "current\n");
+    fixtureGit(["add", "other.txt"]);
+    fixtureGit(["commit", "-m", "controlled current"]);
+    const current = fixtureGit(["rev-parse", "HEAD"]);
+    const currentTree = fixtureGit(["rev-parse", `${current}^{tree}`]);
+    const sameTreeUnrelated = fixtureGit(["commit-tree", currentTree, "-m", "controlled same-tree identity"]);
+
+    fixtureGit(["commit", "--allow-empty", "-m", "controlled same-tree future"]);
+    const sameTreeFuture = fixtureGit(["rev-parse", "HEAD"]);
+    fixtureGit(["checkout", "--detach", current]);
+    writeFileSync(join(fixture, "other.txt"), "future\n");
+    fixtureGit(["add", "other.txt"]);
+    fixtureGit(["commit", "-m", "controlled future"]);
+    const future = fixtureGit(["rev-parse", "HEAD"]);
+    const futureTree = fixtureGit(["rev-parse", `${future}^{tree}`]);
+    const differentTreeUnrelated = fixtureGit(["commit-tree", futureTree, "-m", "controlled different-tree identity"]);
+
+    if (!selectedRevisionMatchesCurrentTree(fixture, current, current)) {
+      fail("revision relationship self-test rejected current equality.");
+    }
+    if (!selectedRevisionMatchesCurrentTree(fixture, base, current)) {
+      fail("revision relationship self-test rejected selected ancestor of current.");
+    }
+    if (!selectedRevisionMatchesCurrentTree(fixture, sameTreeUnrelated, current)) {
+      fail("revision relationship self-test rejected exact whole-tree equality.");
+    }
+    if (selectedRevisionMatchesCurrentTree(fixture, future, current)) {
+      fail("revision relationship self-test accepted current ancestor of selected.");
+    }
+    if (selectedRevisionMatchesCurrentTree(fixture, sameTreeFuture, current)) {
+      fail("revision relationship self-test accepted same-tree future descendant.");
+    }
+    if (selectedRevisionMatchesCurrentTree(fixture, differentTreeUnrelated, current)) {
+      fail("revision relationship self-test accepted unrelated different-tree same-authority content.");
+    }
+  } catch (error) {
+    fail(`revision relationship self-test failed to execute: ${error.message}`);
+  } finally {
+    rmSync(fixture, { recursive: true, force: true });
+  }
+}
+
 function decodeRepeated(value) {
   let current = value;
   for (let index = 0; index < 4; index += 1) {
@@ -377,7 +451,7 @@ function deriveCurrentProofCounts(repoDir, revision, sourcePath, issues) {
   };
 }
 
-function verifyContentIdentity(record, repo, path, issues, { reviewedManifestBound = false } = {}) {
+function verifyContentIdentity(record, repo, path, issues) {
   const repoDir = localRepoPath(repo);
   if (!repoDir) {
     issues.push(`${String(repo)}: non-canonical repository owner rejected before filesystem access.`);
@@ -408,12 +482,10 @@ function verifyContentIdentity(record, repo, path, issues, { reviewedManifestBou
     issues.push(`${repo}/${path}: recorded source revision is unreachable.`);
     return;
   }
-  if (
-    runGit(repoDir, ["merge-base", "--is-ancestor", record.source_observed_head_sha, currentHead]) === null &&
-    !reviewedManifestBound &&
-    repo !== "HawkinsOperations/hawkinsoperations-website"
-  ) {
-    issues.push(`${repo}/${path}: recorded source revision is not reachable from current checked branch.`);
+  if (!selectedRevisionMatchesCurrentTree(repoDir, record.source_observed_head_sha, currentHead)) {
+    issues.push(
+      `${repo}/${path}: selected source revision must equal current HEAD, be its ancestor, or have the exact current repository tree.`,
+    );
   }
   const currentBlob = runGit(repoDir, ["rev-parse", `${currentHead}:${path}`]);
   const observedBlob = runGit(repoDir, ["rev-parse", `${record.source_observed_head_sha}:${path}`]);
@@ -581,15 +653,12 @@ function semanticIssues(candidate, { now = new Date(), checkLocalSources = true,
       } else if (entry.revision !== source.source_observed_head_sha) {
         issues.push(`${source.repo}: recorded source revision differs from reviewed immutable manifest.`);
       }
-      const reviewedManifestBound = entry?.revision === source.source_observed_head_sha;
-      verifyContentIdentity(source, source.repo, source.path, issues, { reviewedManifestBound });
+      verifyContentIdentity(source, source.repo, source.path, issues);
     }
   }
 
   for (const metric of candidate.metric_list ?? []) {
-    const manifestEntry = manifest?.repositories?.find((entry) => entry.repository === metric.source_repo);
-    const reviewedManifestBound = manifestEntry?.revision === metric.source_observed_head_sha;
-    verifyContentIdentity(metric, metric.source_repo, metric.source_path, issues, { reviewedManifestBound });
+    verifyContentIdentity(metric, metric.source_repo, metric.source_path, issues);
   }
   const generatorHead = candidate.generator_observed_head_sha;
   if (candidate.generator_commit !== generatorHead) issues.push("generator_commit must equal generator_observed_head_sha.");
@@ -825,6 +894,9 @@ if (
     ]) {
       if (normalizeOrigin(spoofed) === expected) fail(`origin normalization accepted owner or repository suffix spoof: ${spoofed}`);
     }
+  }
+  if (selfTestModes.has("--self-test") || selfTestModes.has("--source-checkout-test")) {
+    revisionRelationshipSelfTest();
   }
 }
 
