@@ -318,7 +318,12 @@ function observationProjectionAllowed(spec, candidateRevision, reviewedRevision,
   };
   const allowed = allowedByRepo[spec.repo];
   if (!allowed || !["current", "generator"].includes(role)) return false;
-  if (runGit(spec.dir, ["rev-parse", `${reviewedRevision}^`]) !== candidateRevision) return false;
+  const commandCenterProjection = spec.repo === "HawkinsOperations/.github";
+  if (
+    commandCenterProjection
+      ? runGit(spec.dir, ["merge-base", "--is-ancestor", candidateRevision, reviewedRevision]) === null
+      : runGit(spec.dir, ["rev-parse", `${reviewedRevision}^`]) !== candidateRevision
+  ) return false;
   const changed = runGit(spec.dir, ["diff", "--name-only", candidateRevision, reviewedRevision]);
   const paths = changed ? changed.split(/\r?\n/).filter(Boolean) : [];
   return paths.length === allowed.size &&

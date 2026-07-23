@@ -470,7 +470,12 @@ function observationProjectionAllowed(repo, dir, candidateRevision, reviewedRevi
   };
   const allowed = allowedByRepo[repo];
   if (!allowed || !["current", "generator"].includes(role)) return false;
-  if (runGit(dir, ["rev-parse", `${reviewedRevision}^`]) !== candidateRevision) return false;
+  const commandCenterProjection = repo === "HawkinsOperations/.github";
+  if (
+    commandCenterProjection
+      ? runGit(dir, ["merge-base", "--is-ancestor", candidateRevision, reviewedRevision]) === null
+      : runGit(dir, ["rev-parse", `${reviewedRevision}^`]) !== candidateRevision
+  ) return false;
   const changed = runGit(dir, ["diff", "--name-only", candidateRevision, reviewedRevision]);
   const paths = changed ? changed.split(/\r?\n/).filter(Boolean) : [];
   return paths.length === allowed.size &&
@@ -864,6 +869,38 @@ function revisionRelationshipSelfTest() {
       "current",
     )) {
       fail("reviewed lineage self-test accepted a TypeScript-only Website generated-pair projection.");
+    }
+    fixtureGit(["checkout", "--detach", current]);
+    const commandCenterDir = join(fixture, "governance");
+    mkdirSync(commandCenterDir, { recursive: true });
+    writeFileSync(join(commandCenterDir, "CONVERGENCE_SOURCE_MANIFEST.json"), "{\"wave\":1}\n");
+    fixtureGit(["add", "governance/CONVERGENCE_SOURCE_MANIFEST.json"]);
+    fixtureGit(["commit", "-m", "controlled command-center observation wave one"]);
+    writeFileSync(join(commandCenterDir, "CONVERGENCE_SOURCE_MANIFEST.json"), "{\"wave\":2}\n");
+    fixtureGit(["add", "governance/CONVERGENCE_SOURCE_MANIFEST.json"]);
+    fixtureGit(["commit", "-m", "controlled command-center observation wave two"]);
+    const commandCenterProjectionRevision = fixtureGit(["rev-parse", "HEAD"]);
+    if (!observationProjectionAllowed(
+      "HawkinsOperations/.github",
+      fixture,
+      current,
+      commandCenterProjectionRevision,
+      "current",
+    )) {
+      fail("reviewed lineage self-test rejected a manifest-only command-center observation chain.");
+    }
+    writeFileSync(join(fixture, "other.txt"), "unauthorized command-center projection\n");
+    fixtureGit(["add", "other.txt"]);
+    fixtureGit(["commit", "-m", "controlled command-center mixed projection"]);
+    const mixedCommandCenterProjection = fixtureGit(["rev-parse", "HEAD"]);
+    if (observationProjectionAllowed(
+      "HawkinsOperations/.github",
+      fixture,
+      current,
+      mixedCommandCenterProjection,
+      "current",
+    )) {
+      fail("reviewed lineage self-test accepted a command-center projection with a non-manifest change.");
     }
     fixtureGit(["checkout", "--detach", hoxlinePairRevision]);
     writeFileSync(join(fixture, "other.txt"), "unauthorized mixed projection\n");
