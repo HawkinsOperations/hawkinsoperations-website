@@ -264,14 +264,27 @@ function reviewedLineageMatches(
   role,
   identity = reviewedSourceIdentities()?.get(spec.repo),
 ) {
+  // CONTENT_BOUND_OBSERVATION_V1: a recorded current observation may predate
+  // the final reviewed tip only when the selected content revision anchors it.
   if (!identity) return false;
   const candidateIsReviewedObservation =
     ["current", "generator"].includes(role) &&
     (
       candidateRevision === currentRevision ||
       (
-        runGit(spec.dir, ["merge-base", "--is-ancestor", identity.revision, candidateRevision]) !== null &&
-        runGit(spec.dir, ["merge-base", "--is-ancestor", candidateRevision, currentRevision]) !== null
+        (
+          runGit(spec.dir, ["merge-base", "--is-ancestor", identity.revision, candidateRevision]) !== null &&
+          runGit(spec.dir, ["merge-base", "--is-ancestor", candidateRevision, currentRevision]) !== null
+        ) ||
+        (
+          (
+            candidateRevision !== identity.contentRevision ||
+            role === "current"
+          ) &&
+          runGit(spec.dir, ["merge-base", "--is-ancestor", identity.contentRevision, candidateRevision]) !== null &&
+          runGit(spec.dir, ["merge-base", "--is-ancestor", candidateRevision, identity.revision]) !== null &&
+          runGit(spec.dir, ["merge-base", "--is-ancestor", identity.revision, currentRevision]) !== null
+        )
       )
     );
   const candidateCarriesReviewedContentLineage =

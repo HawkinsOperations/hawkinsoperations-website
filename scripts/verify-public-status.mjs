@@ -415,6 +415,8 @@ function reviewedLineageMatchesWithIdentity(
   role,
   identity,
 ) {
+  // CONTENT_BOUND_OBSERVATION_V1: a recorded current observation may predate
+  // the final reviewed tip only when the selected content revision anchors it.
   if (!identity) return false;
   const candidateIsReviewedObservation =
     ["current", "generator"].includes(role) &&

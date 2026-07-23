@@ -71,7 +71,16 @@ if (missing.length > 0) {
 
 const publicStatusWorkflow = readFileSync(join(root, ".github/workflows/public-status-sync.yml"), "utf8");
 const governanceWorkflow = readFileSync(join(root, ".github/workflows/governance-gate.yml"), "utf8");
+const publicStatusGenerator = readFileSync(join(root, "scripts/generate-public-status.mjs"), "utf8");
+const publicStatusVerifier = readFileSync(join(root, "scripts/verify-public-status.mjs"), "utf8");
 const workflowFailures = [];
+const observationContractMarker = "CONTENT_BOUND_OBSERVATION_V1";
+if (!publicStatusGenerator.includes(observationContractMarker) ||
+    !publicStatusVerifier.includes(observationContractMarker)) {
+  workflowFailures.push(
+    "public-status generator and verifier must share the content-bound observation contract.",
+  );
+}
 function publicStatusWorkflowFindings(workflow) {
   const findings = [];
   if ((workflow.match(/actions\/checkout@[0-9a-f]{40}/g) ?? []).length !== 7) {
