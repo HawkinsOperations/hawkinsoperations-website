@@ -311,6 +311,10 @@ function observationProjectionAllowed(spec, candidateRevision, reviewedRevision,
       "public/data/public-status.json",
       "src/data/generated/public-status.generated.ts",
     ]),
+    "HawkinsOperations/hoxline": new Set([
+      "examples/case-growth/current-case-growth-index.json",
+      "examples/case-growth/current-case-growth-index.md",
+    ]),
   };
   const allowed = allowedByRepo[spec.repo];
   if (!allowed || !["current", "generator"].includes(role)) return false;

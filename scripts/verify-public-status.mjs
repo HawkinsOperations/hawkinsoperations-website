@@ -463,6 +463,10 @@ function observationProjectionAllowed(repo, dir, candidateRevision, reviewedRevi
       "public/data/public-status.json",
       "src/data/generated/public-status.generated.ts",
     ]),
+    "HawkinsOperations/hoxline": new Set([
+      "examples/case-growth/current-case-growth-index.json",
+      "examples/case-growth/current-case-growth-index.md",
+    ]),
   };
   const allowed = allowedByRepo[repo];
   if (!allowed || !["current", "generator"].includes(role)) return false;
@@ -780,6 +784,38 @@ function revisionRelationshipSelfTest() {
       futureIdentity,
     )) {
       fail("reviewed lineage self-test accepted current-as-ancestor of the recorded observation.");
+    }
+
+    fixtureGit(["checkout", "--detach", current]);
+    const hoxlinePairDir = join(fixture, "examples", "case-growth");
+    mkdirSync(hoxlinePairDir, { recursive: true });
+    writeFileSync(join(hoxlinePairDir, "current-case-growth-index.json"), "{}\n");
+    writeFileSync(join(hoxlinePairDir, "current-case-growth-index.md"), "# Controlled pair\n");
+    fixtureGit(["add", "examples/case-growth/current-case-growth-index.json",
+      "examples/case-growth/current-case-growth-index.md"]);
+    fixtureGit(["commit", "-m", "controlled Hoxline generated pair"]);
+    const hoxlinePairRevision = fixtureGit(["rev-parse", "HEAD"]);
+    if (!observationProjectionAllowed(
+      "HawkinsOperations/hoxline",
+      fixture,
+      current,
+      hoxlinePairRevision,
+      "current",
+    )) {
+      fail("reviewed lineage self-test rejected the direct Hoxline generated-pair projection.");
+    }
+    writeFileSync(join(fixture, "other.txt"), "unauthorized mixed projection\n");
+    fixtureGit(["add", "other.txt"]);
+    fixtureGit(["commit", "-m", "controlled mixed projection"]);
+    const mixedProjectionRevision = fixtureGit(["rev-parse", "HEAD"]);
+    if (observationProjectionAllowed(
+      "HawkinsOperations/hoxline",
+      fixture,
+      hoxlinePairRevision,
+      mixedProjectionRevision,
+      "current",
+    )) {
+      fail("reviewed lineage self-test accepted a non-pair Hoxline projection.");
     }
   } catch (error) {
     fail(`revision relationship self-test failed to execute: ${error.message}`);
