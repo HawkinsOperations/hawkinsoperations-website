@@ -224,12 +224,10 @@ function reviewedSourceIdentities() {
         return reviewedSourceIdentitiesCache;
       }
       const reviewedBlob = runGit(spec.dir, ["rev-parse", `${reviewedRevision}:${spec.publicPath}`]);
-      const commandContentBlob = runGit(spec.dir, ["rev-parse", `${commandContentRevision}:${spec.publicPath}`]);
       const contentBlob = runGit(spec.dir, ["rev-parse", `${contentRevision}:${spec.publicPath}`]);
       const rewrittenCommandCenter = spec.repo === "HawkinsOperations/.github";
       if (
         !reviewedBlob ||
-        reviewedBlob !== commandContentBlob ||
         reviewedBlob !== contentBlob ||
         (
           !rewrittenCommandCenter &&
