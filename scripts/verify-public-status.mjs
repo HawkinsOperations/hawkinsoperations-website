@@ -618,6 +618,18 @@ const promotionTokens = [
   "CASE_CLOSED",
 ];
 const privateTokens = ["PRIVATE_RAW", "PRIVATE_EVIDENCE", "RAW_WAZUH_ALERT", "MUFG", "CUSTOMER_IDENTIFIER"];
+const privateNormalizedTokens = [
+  "privateraw",
+  "privateevidence",
+  "privatepayload",
+  "rawwazuh",
+  "rawwazuhalert",
+  "rawalert",
+  "endpointlog",
+  "generatedpassword",
+  "mufg",
+  "customeridentifier",
+];
 const authorityKeyPattern = /(?:ai|analyst).*(?:authority|approval)|final.*authorization|case.*closure|public.*safe.*approved|runtime.*active|signal.*observed/i;
 const exactBoundedAuthorityValues = /^(?:false|blocked|none|not[_ -]?approved|not[_ -]?authorized|not[_ -]?public[_ -]?safe)$/i;
 const exactProofCeiling = "Website rendering/reporting only. Does not prove runtime, signal, production, public-safe proof, customer deployment, final approval, merge readiness, or website-as-proof.";
@@ -664,7 +676,8 @@ function compositionalPromotionKey(key) {
     (key.includes("final") && key.includes("authoriz")) ||
     (key.includes("case") && /(?:closed|closure)/.test(key) && !key.endsWith("count")) ||
     /(?:approval|closure|case)status/.test(key) ||
-    (/(?:ai|analyst)/.test(key) && /(?:approved|approval|authority|disposition)/.test(key))
+    ((key.startsWith("ai") || key.startsWith("analyst")) &&
+      /(?:approved|approval|authority|disposition)/.test(key))
   );
 }
 
@@ -734,6 +747,15 @@ function recursiveSecurityIssues(value, path = []) {
     for (const token of privateTokens) {
       if (decodedUpper.includes(token)) issues.push(`${path.join(".")} contains private marker ${token}.`);
     }
+    const decodedNormalized = decodeRepeated(value)
+      .normalize("NFKC")
+      .toLocaleLowerCase("en-US")
+      .replace(/[^a-z0-9]/g, "");
+    for (const token of privateNormalizedTokens) {
+      if (decodedNormalized.includes(token)) {
+        issues.push(`${path.join(".") || "<root>"} contains private marker ${token}.`);
+      }
+    }
     for (const claim of affirmativeStringClaims(value, path)) {
       issues.push(`${path.join(".") || "<root>"} contains unauthorized ${claim} wording.`);
     }
@@ -745,7 +767,7 @@ function recursiveSecurityIssues(value, path = []) {
   }
   if (value && typeof value === "object") {
     for (const [childKey, childValue] of Object.entries(value)) {
-      const normalizedChildKey = childKey
+      const normalizedChildKey = decodeRepeated(childKey)
         .normalize("NFKC")
         .toLocaleLowerCase("en-US")
         .replace(/[^a-z0-9]/g, "");
@@ -797,6 +819,8 @@ function strictJsonSelfTest() {
     ["escaped-key alias", '{"owner":"good","\\u006fwner":"spoofed"}', "owner"],
     ["case-folded key alias", '{"owner":"good","OWNER":"spoofed"}', "OWNER"],
     ["compatibility key alias", '{"owner":"good","ｏｗｎｅｒ":"spoofed"}', "ｏｗｎｅｒ"],
+    ["encoded key alias", '{"owner":"good","%6fwner":"spoofed"}', "%6fwner"],
+    ["double-encoded key alias", '{"owner":"good","%256fwner":"spoofed"}', "%256fwner"],
   ];
   for (const [name, text, key] of duplicateCases) {
     try {
@@ -875,6 +899,10 @@ function recursiveSecuritySelfTest() {
     case_status: "closed",
     public_safe_runtime: true,
     final_authorized: true,
+    "%70roduction_live": true,
+    "%2570roduction_live": true,
+    "%72untime_status": "active",
+    "%66inal_authorized": true,
   })) {
     const issues = recursiveSecurityIssues({ [key]: value });
     if (!issues.some((issue) => issue.includes("attempts authority promotion"))) {
@@ -903,6 +931,21 @@ function recursiveSecuritySelfTest() {
   });
   if (!crossClause.some((issue) => issue.includes("customer deployed"))) {
     fail("recursive security self-test allowed cross-clause negation laundering.");
+  }
+  for (const marker of [
+    "raw_wazuh",
+    "private_evidence",
+    "endpoint_log",
+    "generated_password",
+    "private_payload",
+    "raw-alert",
+    "%72aw_wazuh",
+    "%2572aw_wazuh",
+  ]) {
+    const issues = recursiveSecurityIssues({ detail: marker });
+    if (!issues.some((issue) => issue.includes("private marker"))) {
+      fail(`recursive security self-test allowed private marker ${JSON.stringify(marker)}.`);
+    }
   }
 }
 

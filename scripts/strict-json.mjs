@@ -87,7 +87,17 @@ export function strictJsonParse(text, source = "<json>") {
       whitespace();
       const keyOffset = offset;
       const key = parseString();
-      const normalizedKey = key.normalize("NFKC").toLocaleLowerCase("en-US");
+      let decodedKey = key;
+      for (let index = 0; index < 4; index += 1) {
+        try {
+          const decoded = decodeURIComponent(decodedKey);
+          if (decoded === decodedKey) break;
+          decodedKey = decoded;
+        } catch {
+          break;
+        }
+      }
+      const normalizedKey = decodedKey.normalize("NFKC").toLocaleLowerCase("en-US");
       if (keys.has(normalizedKey)) {
         throw new StrictJsonError(
           `duplicate object key ${JSON.stringify(key)} at ${path}`,
