@@ -71,6 +71,7 @@ jobs:
           repository: HawkinsOperations/.github
           ref: ${{ steps.manifest.outputs.org }}
           path: .github
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Checkout Hoxline
@@ -79,6 +80,7 @@ jobs:
           repository: HawkinsOperations/hoxline
           ref: ${{ steps.manifest.outputs.hoxline }}
           path: hoxline
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Checkout detections
@@ -87,6 +89,7 @@ jobs:
           repository: HawkinsOperations/hawkinsoperations-detections
           ref: ${{ steps.manifest.outputs.detections }}
           path: hawkinsoperations-detections
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Checkout validation
@@ -95,6 +98,7 @@ jobs:
           repository: HawkinsOperations/hawkinsoperations-validation
           ref: ${{ steps.manifest.outputs.validation }}
           path: hawkinsoperations-validation
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Checkout platform
@@ -103,6 +107,7 @@ jobs:
           repository: HawkinsOperations/hawkinsoperations-platform
           ref: ${{ steps.manifest.outputs.platform }}
           path: hawkinsoperations-platform
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Checkout proof
@@ -111,6 +116,7 @@ jobs:
           repository: HawkinsOperations/hawkinsoperations-proof
           ref: ${{ steps.manifest.outputs.proof }}
           path: hawkinsoperations-proof
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Set up Node

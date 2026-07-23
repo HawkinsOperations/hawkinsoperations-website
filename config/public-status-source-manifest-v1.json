@@ -4,12 +4,12 @@
   "repositories": [
     {
       "repository": "HawkinsOperations/.github",
-      "revision": "fa95bbbf0985c57488b32589307eb2cabb99ea00",
+      "revision": "f345b42eb1e3ccf97907a084c5851fb1494a9624",
       "authoritative_path": "architecture/REPO_AUTHORITY_MAP.md"
     },
     {
       "repository": "HawkinsOperations/hoxline",
-      "revision": "3f2cf1b01f68767f9ce312e8cf31cec6a85b5d9a",
+      "revision": "47c72da9f4dbbfb8f4a602136345f5428c497167",
       "authoritative_path": "schemas/case-growth-index-v0.schema.json"
     },
     {
@@ -24,7 +24,7 @@
     },
     {
       "repository": "HawkinsOperations/hawkinsoperations-platform",
-      "revision": "70ba640773e4116b1fa0e80c86c2a2a0f7287ba6",
+      "revision": "d9ffb49baeb96b9f5789a7dc9d56e028909fd89d",
       "authoritative_path": "contracts/reviewer-metrics-pipeline-v1-state.json"
     },
     {
