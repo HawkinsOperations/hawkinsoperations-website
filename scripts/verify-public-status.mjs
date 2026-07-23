@@ -429,7 +429,8 @@ function verifyContentIdentity(record, repo, path, issues, { reviewedManifestBou
     issues.push(`${repo}/${path}: normalized semantic fingerprint does not match current authoritative content.`);
   }
   const expectedCommitTime = runGit(repoDir, ["show", "-s", "--format=%cI", record.source_observed_head_sha]);
-  if (record.freshness_observation?.source_commit_time !== expectedCommitTime) {
+  if (record.freshness_observation !== undefined &&
+      record.freshness_observation?.source_commit_time !== expectedCommitTime) {
     issues.push(`${repo}/${path}: freshness source_commit_time must come from the selected immutable source revision.`);
   }
   const trackedPathDirty = runGit(repoDir, ["diff", "--quiet", "HEAD", "--", path]) === null;
