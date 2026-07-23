@@ -428,6 +428,10 @@ function verifyContentIdentity(record, repo, path, issues, { reviewedManifestBou
   if (record.authoritative_content_fingerprint !== expectedFingerprint || record.source_fingerprint_sha256 !== expectedFingerprint) {
     issues.push(`${repo}/${path}: normalized semantic fingerprint does not match current authoritative content.`);
   }
+  const expectedCommitTime = runGit(repoDir, ["show", "-s", "--format=%cI", record.source_observed_head_sha]);
+  if (record.freshness_observation?.source_commit_time !== expectedCommitTime) {
+    issues.push(`${repo}/${path}: freshness source_commit_time must come from the selected immutable source revision.`);
+  }
   const trackedPathDirty = runGit(repoDir, ["diff", "--quiet", "HEAD", "--", path]) === null;
   if (trackedPathDirty) issues.push(`${repo}/${path}: dirty authoritative source path cannot be accepted.`);
 }
@@ -566,33 +570,23 @@ function semanticIssues(candidate, { now = new Date(), checkLocalSources = true,
     if (Object.keys(manifestByRepo).length !== 7) issues.push("source manifest contains duplicate repository owners.");
     for (const source of candidate.sources ?? []) {
       const entry = manifestByRepo[source.repo];
-      const allowedEntryKeys = source.repo === "HawkinsOperations/hawkinsoperations-website"
-        ? ["repository", "revision_source", "authoritative_path"]
-        : ["repository", "revision", "authoritative_path"];
+      const allowedEntryKeys = ["repository", "revision", "authoritative_path"];
       if (entry && Object.keys(entry).some((key) => !allowedEntryKeys.includes(key))) {
         issues.push(`${source.repo}: source manifest entry has an unknown property.`);
       }
       if (!entry || entry.authoritative_path !== source.path) {
         issues.push(`${source.repo}: source manifest owner/path mismatch.`);
-      } else if (source.repo === "HawkinsOperations/hawkinsoperations-website") {
-        if (entry.revision !== undefined || entry.revision_source !== "github_event_sha") {
-          issues.push("website source manifest must use github_event_sha without a self-tip revision.");
-        }
       } else if (entry.revision !== source.source_observed_head_sha) {
         issues.push(`${source.repo}: recorded source revision differs from reviewed immutable manifest.`);
       }
-      const reviewedManifestBound = source.repo === "HawkinsOperations/hawkinsoperations-website"
-        ? entry?.revision_source === "github_event_sha"
-        : entry?.revision === source.source_observed_head_sha;
+      const reviewedManifestBound = entry?.revision === source.source_observed_head_sha;
       verifyContentIdentity(source, source.repo, source.path, issues, { reviewedManifestBound });
     }
   }
 
   for (const metric of candidate.metric_list ?? []) {
     const manifestEntry = manifest?.repositories?.find((entry) => entry.repository === metric.source_repo);
-    const reviewedManifestBound = metric.source_repo === "HawkinsOperations/hawkinsoperations-website"
-      ? manifestEntry?.revision_source === "github_event_sha"
-      : manifestEntry?.revision === metric.source_observed_head_sha;
+    const reviewedManifestBound = manifestEntry?.revision === metric.source_observed_head_sha;
     verifyContentIdentity(metric, metric.source_repo, metric.source_path, issues, { reviewedManifestBound });
   }
   const generatorHead = candidate.generator_observed_head_sha;
@@ -760,6 +754,11 @@ if (
       expected: "contradicts computed stale",
     },
     {
+      name: "source commit time from branch tip",
+      mutate: (value) => { value.sources[0].freshness_observation.source_commit_time = "2999-01-01T00:00:00Z"; },
+      expected: "selected immutable source revision",
+    },
+    {
       name: "website proof authority",
       mutate: (value) => { value.sources.find((source) => source.repo.endsWith("website")).current_authority = true; },
       expected: "contract mismatch",
@@ -773,7 +772,7 @@ if (
   const modeFilters = {
     "--owner-self-test-only": ["wrong canonical source", "website proof authority", "Hoxline proof authority"],
     "--source-checkout-test": ["wrong canonical source", "unreachable revision"],
-    "--freshness-reachability-test": ["unreachable revision", "future observation", "stale labeled fresh"],
+    "--freshness-reachability-test": ["unreachable revision", "future observation", "stale labeled fresh", "source commit time from branch tip"],
     "--dirty-provenance-test": ["dirty source fingerprint substitution", "dirty generator fingerprint substitution"],
     "--nested-claim-test": ["unknown nested shape", "nested public-safe laundering", "nested runtime laundering"],
   };

@@ -52,8 +52,8 @@ jobs:
             throw new Error("invalid or duplicate source manifest");
           }
           const website = entries["HawkinsOperations/hawkinsoperations-website"];
-          if (!website || website.revision !== undefined || website.revision_source !== "github_event_sha") {
-            throw new Error("website source must bind to github_event_sha without a tracked self-tip");
+          if (!website || !/^[a-f0-9]{40}$/.test(website.revision ?? "")) {
+            throw new Error("website source must bind an explicit reviewed content revision");
           }
           const lines = [];
           for (const [repo, output] of Object.entries(names)) {

@@ -156,7 +156,7 @@ function normalizeOrigin(value) {
     .toLowerCase();
 }
 
-function repoSource(spec) {
+function repoSource(spec, selectedRevision) {
   const repoAvailable = existsSync(spec.dir);
   const currentObservedHeadSha = repoAvailable ? runGit(spec.dir, ["rev-parse", "HEAD"]) : null;
   const resolvedRef = repoAvailable ? runGit(spec.dir, ["branch", "--show-current"]) || currentObservedHeadSha : null;
@@ -170,14 +170,12 @@ function repoSource(spec) {
   const sourceText = repoAvailable ? committedText(spec.dir, currentObservedHeadSha, spec.publicPath) : null;
   const available = sourceText !== null;
   const contentFingerprint = sourceText === null ? null : sha256Text(normalizeSemanticText(sourceText, spec.publicPath));
-  const previous = checkedStatus?.sources?.find((source) => source.repo === spec.repo);
-  const previousRevisionStillValid = previous?.authoritative_git_blob_sha === authoritativeGitBlobSha &&
-    previous?.authoritative_content_fingerprint === contentFingerprint &&
-    runGit(spec.dir, ["cat-file", "-t", previous?.source_observed_head_sha]) === "commit" &&
-    runGit(spec.dir, ["rev-parse", `${previous?.source_observed_head_sha}:${spec.publicPath}`]) === authoritativeGitBlobSha;
-  const recordedObservedHead = previousRevisionStillValid ? previous.source_observed_head_sha : currentObservedHeadSha;
-  const sourceCommitTime = currentObservedHeadSha ? runGit(spec.dir, ["show", "-s", "--format=%cI", currentObservedHeadSha]) : null;
-  const freshnessState = available && originValid && !trackedDirty ? "fresh" : "source_unavailable";
+  const selectedRevisionValid = /^[a-f0-9]{40}$/.test(selectedRevision ?? "") &&
+    runGit(spec.dir, ["cat-file", "-t", selectedRevision]) === "commit" &&
+    runGit(spec.dir, ["rev-parse", `${selectedRevision}:${spec.publicPath}`]) === authoritativeGitBlobSha;
+  const recordedObservedHead = selectedRevisionValid ? selectedRevision : currentObservedHeadSha;
+  const sourceCommitTime = recordedObservedHead ? runGit(spec.dir, ["show", "-s", "--format=%cI", recordedObservedHead]) : null;
+  const freshnessState = available && originValid && !trackedDirty && selectedRevisionValid ? "fresh" : "source_unavailable";
   return {
     repo: spec.repo,
     repository: spec.repo,
@@ -206,11 +204,11 @@ function repoSource(spec) {
     historical_snapshot: false,
     current_authority: spec.currentAuthority,
     consumer_only: spec.consumerOnly,
-    available: available && originValid && !trackedDirty,
+    available: available && originValid && !trackedDirty && selectedRevisionValid,
     method: spec.method,
-    notes: available && originValid && !trackedDirty
+    notes: available && originValid && !trackedDirty && selectedRevisionValid
       ? "The authoritative path blob equals the blob in the checked current tree; the observed head is separate freshness context."
-      : "Source unavailable, repository identity mismatched, or tracked source is dirty; dependent metrics fail closed.",
+      : "Source unavailable, repository identity mismatched, selected immutable revision invalid, or tracked source is dirty; dependent metrics fail closed.",
   };
 }
 
@@ -255,27 +253,28 @@ if (Object.keys(manifestByRepo).length !== repoSpecs.length) {
   throw new Error("Source manifest repository identities must be unique.");
 }
 
-const sources = repoSpecs.map(repoSource);
+const sources = repoSpecs.map((spec) => repoSource(spec, manifestByRepo[spec.repo]?.revision));
 for (const spec of repoSpecs) {
   const source = sources.find((candidate) => candidate.repo === spec.repo);
   const entry = manifestByRepo[spec.repo];
   if (!entry || entry.authoritative_path !== spec.publicPath) {
     throw new Error(`Source manifest owner/path mismatch for ${spec.repo}.`);
   }
-  const allowedEntryKeys = spec.repo === "HawkinsOperations/hawkinsoperations-website"
-    ? ["repository", "revision_source", "authoritative_path"]
-    : ["repository", "revision", "authoritative_path"];
+  const allowedEntryKeys = ["repository", "revision", "authoritative_path"];
   if (Object.keys(entry).some((key) => !allowedEntryKeys.includes(key))) {
     throw new Error(`Source manifest contains an unknown field for ${spec.repo}.`);
   }
+  if (!/^[a-f0-9]{40}$/.test(entry.revision ?? "") || entry.revision !== source.source_observed_head_sha) {
+    throw new Error(`Checked source selection differs from immutable manifest for ${spec.repo}.`);
+  }
   if (spec.repo === "HawkinsOperations/hawkinsoperations-website") {
-    if (entry.revision !== undefined || entry.revision_source !== "github_event_sha") {
-      throw new Error("Website manifest entry must bind revision_source=github_event_sha without a self-referential revision.");
-    }
-    if (process.env.GITHUB_SHA && process.env.GITHUB_SHA !== source.current_observed_head_sha) {
+    if (process.env.GITHUB_SHA && process.env.GITHUB_SHA !== runGit(spec.dir, ["rev-parse", "HEAD"])) {
       throw new Error("Website checkout HEAD does not equal the immutable GitHub event SHA.");
     }
-  } else if (!/^[a-f0-9]{40}$/.test(entry.revision ?? "") || entry.revision !== source.current_observed_head_sha) {
+    if (runGit(spec.dir, ["merge-base", "--is-ancestor", entry.revision, runGit(spec.dir, ["rev-parse", "HEAD"])]) === null) {
+      throw new Error("Website immutable content revision must be reachable from the checked event revision.");
+    }
+  } else if (entry.revision !== runGit(spec.dir, ["rev-parse", "HEAD"])) {
     throw new Error(`Checked source revision differs from immutable manifest for ${spec.repo}.`);
   }
 }
