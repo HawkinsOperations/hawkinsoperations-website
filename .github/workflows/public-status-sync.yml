@@ -15,6 +15,9 @@ on:
 permissions:
   contents: read
 
+env:
+  HAWKINS_WEBSITE_IMMUTABLE_OBSERVED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
 jobs:
   public-status-convergence:
     runs-on: ubuntu-latest
@@ -26,7 +29,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           path: hawkinsoperations-website
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
 

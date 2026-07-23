@@ -72,25 +72,58 @@ if (missing.length > 0) {
 const publicStatusWorkflow = readFileSync(join(root, ".github/workflows/public-status-sync.yml"), "utf8");
 const governanceWorkflow = readFileSync(join(root, ".github/workflows/governance-gate.yml"), "utf8");
 const workflowFailures = [];
-if ((publicStatusWorkflow.match(/actions\/checkout@[0-9a-f]{40}/g) ?? []).length !== 7) {
-  workflowFailures.push("public-status workflow must contain exactly seven immutable checkout actions.");
+function publicStatusWorkflowFindings(workflow) {
+  const findings = [];
+  if ((workflow.match(/actions\/checkout@[0-9a-f]{40}/g) ?? []).length !== 7) {
+    findings.push("public-status workflow must contain exactly seven immutable checkout actions.");
+  }
+  if (!workflow.includes("actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020")) {
+    findings.push("public-status workflow must pin the approved immutable setup-node action.");
+  }
+  if ((workflow.match(/persist-credentials:\s*false/g) ?? []).length !== 7) {
+    findings.push("all seven public-status checkouts must disable persisted credentials.");
+  }
+  if (!/Checkout website event revision[\s\S]*?fetch-depth:\s*0/.test(workflow)) {
+    findings.push("website event checkout must fetch full history for selected immutable content reachability.");
+  }
+  if (!workflow.includes(
+    "HAWKINS_WEBSITE_IMMUTABLE_OBSERVED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}",
+  )) {
+    findings.push("public-status workflow must expose the exact PR head or event SHA as the immutable Website observation.");
+  }
+  if (!/Checkout website event revision[\s\S]*?ref:\s*\$\{\{\s*github\.event\.pull_request\.head\.sha\s*\|\|\s*github\.sha\s*\}\}/.test(workflow)) {
+    findings.push("website event checkout must use the exact PR head instead of GitHub's merge ref.");
+  }
+  for (const [label, pattern] of [
+    ["mutable action tag", /uses:\s*actions\/(?:checkout|setup-node)@v\d+/],
+    ["write token", /contents:\s*write/],
+    ["pull_request_target", /^\s*pull_request_target\s*:/m],
+    ["continue-on-error", /continue-on-error\s*:/],
+  ]) {
+    if (pattern.test(workflow)) findings.push(`public-status workflow rejects ${label}.`);
+  }
+  return findings;
 }
-if (!publicStatusWorkflow.includes("actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020")) {
-  workflowFailures.push("public-status workflow must pin the approved immutable setup-node action.");
-}
-if ((publicStatusWorkflow.match(/persist-credentials:\s*false/g) ?? []).length !== 7) {
-  workflowFailures.push("all seven public-status checkouts must disable persisted credentials.");
-}
-if (!/Checkout website event revision[\s\S]*?fetch-depth:\s*0/.test(publicStatusWorkflow)) {
-  workflowFailures.push("website event checkout must fetch full history for selected immutable content reachability.");
-}
-for (const [label, pattern] of [
-  ["mutable action tag", /uses:\s*actions\/(?:checkout|setup-node)@v\d+/],
-  ["write token", /contents:\s*write/],
-  ["pull_request_target", /^\s*pull_request_target\s*:/m],
-  ["continue-on-error", /continue-on-error\s*:/],
+workflowFailures.push(...publicStatusWorkflowFindings(publicStatusWorkflow));
+for (const [label, hostileWorkflow] of [
+  [
+    "merge-ref substitution",
+    publicStatusWorkflow.replace(
+      "ref: ${{ github.event.pull_request.head.sha || github.sha }}",
+      "ref: ${{ github.sha }}",
+    ),
+  ],
+  [
+    "immutable observation removal",
+    publicStatusWorkflow.replace(
+      "HAWKINS_WEBSITE_IMMUTABLE_OBSERVED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}",
+      "HAWKINS_WEBSITE_OBSERVATION_REMOVED: ${{ github.sha }}",
+    ),
+  ],
 ]) {
-  if (pattern.test(publicStatusWorkflow)) workflowFailures.push(`public-status workflow rejects ${label}.`);
+  if (publicStatusWorkflowFindings(hostileWorkflow).length === 0) {
+    workflowFailures.push(`public-status workflow hostile test did not reject ${label}.`);
+  }
 }
 if ((governanceWorkflow.match(/actions\/checkout@11bd71901bbe5b1630ceea73d27597364c9af683/g) ?? []).length !== 2) {
   workflowFailures.push("governance workflow must pin both checkout actions to the reviewed immutable SHA.");

@@ -550,8 +550,9 @@ for (const spec of repoSpecs) {
   }
   if (spec.repo === "HawkinsOperations/hawkinsoperations-website") {
     const websiteHead = runGit(spec.dir, ["rev-parse", "HEAD"]);
-    if (process.env.GITHUB_SHA && process.env.GITHUB_SHA !== websiteHead) {
-      throw new Error("Website checkout HEAD does not equal the immutable GitHub event SHA.");
+    const immutableObservedSha = process.env.HAWKINS_WEBSITE_IMMUTABLE_OBSERVED_SHA;
+    if (immutableObservedSha && immutableObservedSha !== websiteHead) {
+      throw new Error("Website checkout HEAD does not equal the explicitly selected immutable event revision.");
     }
     if (!revisionMatches(
       spec,
