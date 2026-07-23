@@ -419,8 +419,7 @@ function reviewedLineageMatchesWithIdentity(
   if (role === "source" && candidateRevision !== identity.contentRevision) return false;
   if (
     role === "generator" &&
-    !candidateIsReviewedObservation &&
-    candidateRevision !== identity.revision
+    !candidateIsReviewedObservation
   ) {
     if (!observationProjectionAllowed(repo, dir, candidateRevision, identity.revision, role)) {
       return false;

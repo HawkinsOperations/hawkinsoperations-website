@@ -266,7 +266,11 @@ function reviewedLineageMatches(
       )
     );
   if (role === "source" && candidateRevision !== identity.contentRevision) return false;
-  if (
+  if (role === "generator" && !candidateIsReviewedObservation) {
+    if (!observationProjectionAllowed(spec, candidateRevision, identity.revision, role)) {
+      return false;
+    }
+  } else if (
     role !== "source" &&
     !candidateIsReviewedObservation &&
     candidateRevision !== identity.revision &&
