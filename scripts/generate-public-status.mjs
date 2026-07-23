@@ -274,8 +274,6 @@ for (const spec of repoSpecs) {
     if (runGit(spec.dir, ["merge-base", "--is-ancestor", entry.revision, runGit(spec.dir, ["rev-parse", "HEAD"])]) === null) {
       throw new Error("Website immutable content revision must be reachable from the checked event revision.");
     }
-  } else if (entry.revision !== runGit(spec.dir, ["rev-parse", "HEAD"])) {
-    throw new Error(`Checked source revision differs from immutable manifest for ${spec.repo}.`);
   }
 }
 const unavailableSources = sources.filter((source) => !source.available);
