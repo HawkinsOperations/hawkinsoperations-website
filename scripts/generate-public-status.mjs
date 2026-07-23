@@ -185,67 +185,58 @@ function reviewedSourceIdentities() {
     const selectionByRepository = new Map(
       selectionEntries.map((entry) => [entry.repository, entry]),
     );
-    const websiteEntry = byRepository.get("HawkinsOperations/hawkinsoperations-website");
     const commandCenterEntry = byRepository.get("HawkinsOperations/.github");
     if (manifest?.schema !== "hawkinsoperations-convergence-source-manifest-v1" ||
         manifest?.constraints?.exact_repository_count !== 7 ||
         entries.length !== 7 ||
         byRepository.size !== 7 ||
-        !/^[a-f0-9]{40}$/.test(websiteEntry?.revision ?? "") ||
-        !/^[a-f0-9]{40}$/.test(websiteEntry?.reviewed_tree_sha ?? "") ||
         commandCenterEntry?.revision_source !== "github_event_sha" ||
         commandCenterEntry?.tree_source !== "github_event_tree" ||
         selectionEntries.length !== 7 ||
-        selectionByRepository.size !== 7 ||
-        entries.some((entry) =>
-          !repoSpecs.some((spec) => spec.repo === entry.canonical_repository) ||
-          (entry.canonical_repository === "HawkinsOperations/.github"
-            ? !/^[a-f0-9]{40}$/.test(
-              selectionByRepository.get(entry.canonical_repository)?.revision ?? "",
-            )
-            : (
-              !/^[a-f0-9]{40}$/.test(entry?.revision ?? "") ||
-              !/^[a-f0-9]{40}$/.test(entry?.reviewed_tree_sha ?? "")
-            ))
-        )) {
+        selectionByRepository.size !== 7) {
       return reviewedSourceIdentitiesCache;
     }
-    const currentWebsiteTree = runGit(websiteRoot, ["rev-parse", "HEAD^{tree}"]);
-    if (currentWebsiteTree !== websiteEntry.reviewed_tree_sha) {
-      return reviewedSourceIdentitiesCache;
-    }
-    const reviewedStatusText = committedText(
-      websiteRoot,
-      websiteEntry.revision,
-      "public/data/public-status.json",
-    );
-    const reviewedStatus = strictJsonParse(
-      reviewedStatusText,
-      `public/data/public-status.json@${websiteEntry.revision}`,
-    );
-    if (!Array.isArray(reviewedStatus?.sources) || reviewedStatus.sources.length !== 7) {
-      return reviewedSourceIdentitiesCache;
-    }
-    const reviewedSources = new Map(reviewedStatus.sources.map((source) => [source.repo, source]));
-    if (reviewedSources.size !== 7) return reviewedSourceIdentitiesCache;
-    reviewedSourceIdentitiesCache = new Map(entries.map((entry) => {
-      const reviewedSource = reviewedSources.get(entry.canonical_repository);
-      const revision = entry.canonical_repository === "HawkinsOperations/.github"
-        ? selectionByRepository.get(entry.canonical_repository)?.revision
-        : entry.revision;
-      const tree = entry.canonical_repository === "HawkinsOperations/.github"
-        ? runGit(commandRepo, ["rev-parse", `${revision}^{tree}`])
-        : entry.reviewed_tree_sha;
-      return [entry.canonical_repository, {
-        revision,
-        tree,
-        sourceRevision: reviewedSource?.source_observed_head_sha,
-        currentObservation: reviewedSource?.current_observed_head_sha,
-        generatorObservation: entry.canonical_repository === "HawkinsOperations/hawkinsoperations-website"
-          ? reviewedStatus?.generator_observed_head_sha
+    const identities = new Map();
+    for (const spec of repoSpecs) {
+      const entry = byRepository.get(spec.repo);
+      const selection = selectionByRepository.get(spec.repo);
+      const reviewedRevision = spec.repo === "HawkinsOperations/.github"
+        ? selection?.revision
+        : entry?.revision;
+      const reviewedTree = spec.repo === "HawkinsOperations/.github"
+        ? runGit(spec.dir, ["rev-parse", `${reviewedRevision}^{tree}`])
+        : entry?.reviewed_tree_sha;
+      const contentRevision = entry?.authority_content_revision;
+      if (
+        !entry ||
+        !selection ||
+        selection.authoritative_path !== spec.publicPath ||
+        !/^[a-f0-9]{40}$/.test(reviewedRevision ?? "") ||
+        !/^[a-f0-9]{40}$/.test(reviewedTree ?? "") ||
+        !/^[a-f0-9]{40}$/.test(contentRevision ?? "") ||
+        selection.revision !== reviewedRevision ||
+        runGit(spec.dir, ["cat-file", "-t", reviewedRevision]) !== "commit" ||
+        runGit(spec.dir, ["cat-file", "-t", contentRevision]) !== "commit" ||
+        runGit(spec.dir, ["rev-parse", `${reviewedRevision}^{tree}`]) !== reviewedTree ||
+        runGit(spec.dir, ["merge-base", "--is-ancestor", contentRevision, reviewedRevision]) === null
+      ) {
+        return reviewedSourceIdentitiesCache;
+      }
+      const reviewedBlob = runGit(spec.dir, ["rev-parse", `${reviewedRevision}:${spec.publicPath}`]);
+      const contentBlob = runGit(spec.dir, ["rev-parse", `${contentRevision}:${spec.publicPath}`]);
+      if (!reviewedBlob || reviewedBlob !== contentBlob) return reviewedSourceIdentitiesCache;
+      identities.set(spec.repo, {
+        revision: reviewedRevision,
+        tree: reviewedTree,
+        contentRevision,
+        sourceRevision: reviewedRevision,
+        currentObservation: reviewedRevision,
+        generatorObservation: spec.repo === "HawkinsOperations/hawkinsoperations-website"
+          ? reviewedRevision
           : undefined,
-      }];
-    }));
+      });
+    }
+    reviewedSourceIdentitiesCache = identities;
     return reviewedSourceIdentitiesCache;
   } catch {
     return reviewedSourceIdentitiesCache;

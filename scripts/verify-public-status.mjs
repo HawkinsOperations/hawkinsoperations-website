@@ -233,67 +233,60 @@ function reviewedSourceIdentities() {
     const selectionByRepository = new Map(
       selectionEntries.map((entry) => [entry.repository, entry]),
     );
-    const websiteEntry = byRepository.get("HawkinsOperations/hawkinsoperations-website");
     const commandCenterEntry = byRepository.get("HawkinsOperations/.github");
     if (manifest?.schema !== "hawkinsoperations-convergence-source-manifest-v1" ||
         manifest?.constraints?.exact_repository_count !== 7 ||
         entries.length !== 7 ||
         byRepository.size !== 7 ||
-        !/^[a-f0-9]{40}$/.test(websiteEntry?.revision ?? "") ||
-        !/^[a-f0-9]{40}$/.test(websiteEntry?.reviewed_tree_sha ?? "") ||
         commandCenterEntry?.revision_source !== "github_event_sha" ||
         commandCenterEntry?.tree_source !== "github_event_tree" ||
         selectionEntries.length !== 7 ||
-        selectionByRepository.size !== 7 ||
-        entries.some((entry) =>
-          !exactSourceRepos.includes(entry.canonical_repository) ||
-          (entry.canonical_repository === "HawkinsOperations/.github"
-            ? !/^[a-f0-9]{40}$/.test(
-              selectionByRepository.get(entry.canonical_repository)?.revision ?? "",
-            )
-            : (
-              !/^[a-f0-9]{40}$/.test(entry?.revision ?? "") ||
-              !/^[a-f0-9]{40}$/.test(entry?.reviewed_tree_sha ?? "")
-            ))
-        )) {
+        selectionByRepository.size !== 7) {
       return reviewedSourceIdentitiesCache;
     }
-    const currentWebsiteTree = runGit(root, ["rev-parse", "HEAD^{tree}"]);
-    if (currentWebsiteTree !== websiteEntry.reviewed_tree_sha) {
-      return reviewedSourceIdentitiesCache;
-    }
-    const reviewedStatusText = committedText(
-      root,
-      websiteEntry.revision,
-      "public/data/public-status.json",
-    );
-    const reviewedStatus = strictJsonParse(
-      reviewedStatusText,
-      `public/data/public-status.json@${websiteEntry.revision}`,
-    );
-    if (!Array.isArray(reviewedStatus?.sources) || reviewedStatus.sources.length !== 7) {
-      return reviewedSourceIdentitiesCache;
-    }
-    const reviewedSources = new Map(reviewedStatus.sources.map((source) => [source.repo, source]));
-    if (reviewedSources.size !== 7) return reviewedSourceIdentitiesCache;
-    reviewedSourceIdentitiesCache = new Map(entries.map((entry) => {
-      const reviewedSource = reviewedSources.get(entry.canonical_repository);
-      const revision = entry.canonical_repository === "HawkinsOperations/.github"
-        ? selectionByRepository.get(entry.canonical_repository)?.revision
-        : entry.revision;
-      const tree = entry.canonical_repository === "HawkinsOperations/.github"
-        ? runGit(commandRepo, ["rev-parse", `${revision}^{tree}`])
-        : entry.reviewed_tree_sha;
-      return [entry.canonical_repository, {
-        revision,
-        tree,
-        sourceRevision: reviewedSource?.source_observed_head_sha,
-        currentObservation: reviewedSource?.current_observed_head_sha,
-        generatorObservation: entry.canonical_repository === "HawkinsOperations/hawkinsoperations-website"
-          ? reviewedStatus?.generator_observed_head_sha
+    const identities = new Map();
+    for (const repo of exactSourceRepos) {
+      const entry = byRepository.get(repo);
+      const selection = selectionByRepository.get(repo);
+      const dir = localRepoPath(repo);
+      const path = sourceContracts[repo].path;
+      const reviewedRevision = repo === "HawkinsOperations/.github"
+        ? selection?.revision
+        : entry?.revision;
+      const reviewedTree = repo === "HawkinsOperations/.github"
+        ? runGit(dir, ["rev-parse", `${reviewedRevision}^{tree}`])
+        : entry?.reviewed_tree_sha;
+      const contentRevision = entry?.authority_content_revision;
+      if (
+        !entry ||
+        !selection ||
+        selection.authoritative_path !== path ||
+        !/^[a-f0-9]{40}$/.test(reviewedRevision ?? "") ||
+        !/^[a-f0-9]{40}$/.test(reviewedTree ?? "") ||
+        !/^[a-f0-9]{40}$/.test(contentRevision ?? "") ||
+        selection.revision !== reviewedRevision ||
+        runGit(dir, ["cat-file", "-t", reviewedRevision]) !== "commit" ||
+        runGit(dir, ["cat-file", "-t", contentRevision]) !== "commit" ||
+        runGit(dir, ["rev-parse", `${reviewedRevision}^{tree}`]) !== reviewedTree ||
+        runGit(dir, ["merge-base", "--is-ancestor", contentRevision, reviewedRevision]) === null
+      ) {
+        return reviewedSourceIdentitiesCache;
+      }
+      const reviewedBlob = runGit(dir, ["rev-parse", `${reviewedRevision}:${path}`]);
+      const contentBlob = runGit(dir, ["rev-parse", `${contentRevision}:${path}`]);
+      if (!reviewedBlob || reviewedBlob !== contentBlob) return reviewedSourceIdentitiesCache;
+      identities.set(repo, {
+        revision: reviewedRevision,
+        tree: reviewedTree,
+        contentRevision,
+        sourceRevision: reviewedRevision,
+        currentObservation: reviewedRevision,
+        generatorObservation: repo === "HawkinsOperations/hawkinsoperations-website"
+          ? reviewedRevision
           : undefined,
-      }];
-    }));
+      });
+    }
+    reviewedSourceIdentitiesCache = identities;
     return reviewedSourceIdentitiesCache;
   } catch {
     return reviewedSourceIdentitiesCache;
@@ -618,6 +611,32 @@ const allowedAuthorityKeyNames = new Set([
   "sourceauthorityowner",
   "sourceauthorityrole",
 ]);
+const affirmativeAuthorityScalar = /^(?:true|1|active|live|observed|approved|authorized|enabled|granted|closed|complete|deployed|productionready|publicsafe)$/i;
+
+function compositionalPromotionKey(key) {
+  return (
+    (key.includes("production") && /(?:active|live|ready|deploy|status)/.test(key)) ||
+    (/(?:customer|socaas)/.test(key) && /deploy/.test(key)) ||
+    (key.includes("runtime") && /(?:active|status)/.test(key)) ||
+    (key.includes("signal") && /(?:observed|status)/.test(key)) ||
+    (key.includes("publicsafe") && !key.endsWith("count")) ||
+    (key.includes("final") && key.includes("authoriz")) ||
+    (key.includes("case") && /(?:closed|closure)/.test(key)) ||
+    /(?:approval|closure|case)status/.test(key) ||
+    (/(?:ai|analyst)/.test(key) && /(?:approved|approval|authority|disposition)/.test(key))
+  );
+}
+
+function affirmativeAuthorityValue(value) {
+  if (value === true) return true;
+  if (typeof value === "number") return value !== 0;
+  if (typeof value === "string") {
+    return affirmativeAuthorityScalar.test(
+      value.normalize("NFKC").toLocaleLowerCase("en-US").replace(/[^a-z0-9]/g, ""),
+    );
+  }
+  return value !== null && typeof value === "object";
+}
 const affirmativeClaimPatterns = new Map([
   ["runtime active", /\bruntime\b.{0,24}\b(?:active|live)\b/i],
   ["signal observed", /\bsignal\b.{0,24}\b(?:active|observed)\b/i],
@@ -689,8 +708,12 @@ function recursiveSecurityIssues(value, path = []) {
         .normalize("NFKC")
         .toLocaleLowerCase("en-US")
         .replace(/[^a-z0-9]/g, "");
-      const promotionKey = promotionKeyNames.has(normalizedChildKey) ||
+      const exactPromotionKey = promotionKeyNames.has(normalizedChildKey) ||
         authorityKeyPattern.test(childKey.normalize("NFKC"));
+      const promotionKey = exactPromotionKey || (
+        compositionalPromotionKey(normalizedChildKey) &&
+        affirmativeAuthorityValue(childValue)
+      );
       const boundedPublicSafeObject =
         normalizedChildKey === "publicsafe" &&
         childValue !== null &&
@@ -797,6 +820,24 @@ function recursiveSecuritySelfTest() {
     const issues = recursiveSecurityIssues({ [key]: true });
     if (!issues.some((issue) => issue.includes("attempts authority promotion"))) {
       fail(`recursive security self-test allowed promotion key ${JSON.stringify(key)}.`);
+    }
+  }
+  for (const [key, value] of Object.entries({
+    production_active: true,
+    production_live: true,
+    customer_deployment: true,
+    socaas_deployment: true,
+    runtime_status: "active",
+    signal_status: "observed",
+    approval_status: "approved",
+    closure_status: "closed",
+    case_status: "closed",
+    public_safe_runtime: true,
+    final_authorized: true,
+  })) {
+    const issues = recursiveSecurityIssues({ [key]: value });
+    if (!issues.some((issue) => issue.includes("attempts authority promotion"))) {
+      fail(`recursive security self-test allowed compositional key ${JSON.stringify(key)}.`);
     }
   }
   for (const phrase of [
