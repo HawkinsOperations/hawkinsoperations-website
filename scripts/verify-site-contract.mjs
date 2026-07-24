@@ -118,6 +118,18 @@ function publicStatusWorkflowFindings(workflow) {
   if (!/Checkout website event revision[\s\S]*?ref:\s*\$\{\{\s*github\.event\.pull_request\.head\.sha\s*\|\|\s*github\.sha\s*\}\}/.test(workflow)) {
     findings.push("website event checkout must use the exact PR head instead of GitHub's merge ref.");
   }
+  const nonMutatingGenerationSteps =
+    workflow.match(/run:\s*npm run public-status:generate:check\s*$/gm) ?? [];
+  if (nonMutatingGenerationSteps.length !== 1) {
+    findings.push(
+      "public-status workflow must reproduce generated status exactly once in non-mutating check mode.",
+    );
+  }
+  if (/run:\s*npm run public-status:generate\s*$/m.test(workflow)) {
+    findings.push(
+      "public-status workflow must not rewrite tracked generated status on scheduled or manual runs.",
+    );
+  }
   for (const [label, pattern] of [
     ["mutable action tag", /uses:\s*actions\/(?:checkout|setup-node)@v\d+/],
     ["write token", /contents:\s*write/],
@@ -130,6 +142,13 @@ function publicStatusWorkflowFindings(workflow) {
 }
 workflowFailures.push(...publicStatusWorkflowFindings(publicStatusWorkflow));
 for (const [label, hostileWorkflow] of [
+  [
+    "mutating scheduled generation",
+    publicStatusWorkflow.replace(
+      "run: npm run public-status:generate:check",
+      "run: npm run public-status:generate",
+    ),
+  ],
   [
     "merge-ref substitution",
     publicStatusWorkflow.replace(

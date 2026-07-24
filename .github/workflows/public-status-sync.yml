@@ -103,13 +103,8 @@ jobs:
       - name: Install declared dependencies
         run: npm ci
 
-      - name: Reproduce checked public status
-        if: ${{ github.event_name == 'pull_request' }}
+      - name: Reproduce checked public status without mutation
         run: npm run public-status:generate:check
-
-      - name: Refresh scheduled public status observation
-        if: ${{ github.event_name != 'pull_request' }}
-        run: npm run public-status:generate
 
       - name: Verify public status
         run: npm run public-status:verify
