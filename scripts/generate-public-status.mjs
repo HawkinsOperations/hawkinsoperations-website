@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import { sanitizedGitEnv } from "./git-source-identity.mjs";
 import { readStrictJson, strictJsonParse } from "./strict-json.mjs";
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
@@ -96,7 +97,10 @@ const repoSpecs = [
 function runGit(dir, args) {
   if (!existsSync(dir)) return null;
   try {
-    return execFileSync("git", ["-c", `safe.directory=${dir.replaceAll("\\", "/")}`, "-C", dir, ...args], { encoding: "utf8" }).trim();
+    return execFileSync("git", ["-c", `safe.directory=${dir.replaceAll("\\", "/")}`, "-C", dir, ...args], {
+      encoding: "utf8",
+      env: sanitizedGitEnv(),
+    }).trim();
   } catch {
     return null;
   }
@@ -127,6 +131,7 @@ function committedText(dir, revision, path) {
   try {
     return execFileSync("git", ["-c", `safe.directory=${dir.replaceAll("\\", "/")}`, "-C", dir, "show", `${revision}:${path}`], {
       encoding: "utf8",
+      env: sanitizedGitEnv(),
     });
   } catch {
     return null;

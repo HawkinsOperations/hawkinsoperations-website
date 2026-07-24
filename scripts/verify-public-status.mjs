@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, extname, join } from "node:path";
 import { tmpdir } from "node:os";
+import { sanitizedGitEnv } from "./git-source-identity.mjs";
 import { readStrictJson, strictJsonParse } from "./strict-json.mjs";
 
 const root = process.cwd();
@@ -144,6 +145,7 @@ function runGit(dir, args) {
     return execFileSync("git", ["-c", `safe.directory=${dir.replaceAll("\\", "/")}`, "-C", dir, ...args], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "pipe"],
+      env: sanitizedGitEnv(),
     }).trim();
   } catch {
     return null;
@@ -227,6 +229,7 @@ function trackedVocabularySelfTest() {
   try {
     execFileSync("git", ["-C", testRoot, "init", "--quiet"], {
       stdio: ["ignore", "pipe", "pipe"],
+      env: sanitizedGitEnv(),
     });
     const fullwidth = [...retired]
       .map((character) => String.fromCodePoint(character.codePointAt(0) + 0xfee0))
@@ -239,6 +242,7 @@ function trackedVocabularySelfTest() {
     writeFileSync(utf16Path, Buffer.from(`controlled-test ${retired}\n`, "utf16le"));
     execFileSync("git", ["-C", testRoot, "add", "--", contentPath, filenamePath, utf16Path], {
       stdio: ["ignore", "pipe", "pipe"],
+      env: sanitizedGitEnv(),
     });
     const findings = trackedVocabularyFindings(testRoot);
     if (!findings.some((item) => item.includes("tracked content"))) {
@@ -323,12 +327,22 @@ function storedOriginRewriteSelfTest() {
   const keys = ["GIT_CONFIG_COUNT", "GIT_CONFIG_KEY_0", "GIT_CONFIG_VALUE_0"];
   const previous = new Map(keys.map((key) => [key, process.env[key]]));
   try {
-    execFileSync("git", ["init", "--quiet", fixture], { stdio: "ignore" });
-    execFileSync("git", ["-C", fixture, "remote", "add", "origin", stored], { stdio: "ignore" });
+    execFileSync("git", ["init", "--quiet", fixture], {
+      stdio: "ignore",
+      env: sanitizedGitEnv(),
+    });
+    execFileSync("git", ["-C", fixture, "remote", "add", "origin", stored], {
+      stdio: "ignore",
+      env: sanitizedGitEnv(),
+    });
     process.env.GIT_CONFIG_COUNT = "1";
     process.env.GIT_CONFIG_KEY_0 = `url.${canonical}.insteadOf`;
     process.env.GIT_CONFIG_VALUE_0 = stored;
-    const effective = runGit(fixture, ["remote", "get-url", "origin"]);
+    const effective = execFileSync(
+      "git",
+      ["-C", fixture, "remote", "get-url", "origin"],
+      { encoding: "utf8", env: process.env },
+    ).trim();
     if (effective !== canonical) {
       fail("origin rewrite self-test fixture did not activate.");
     }
@@ -338,7 +352,7 @@ function storedOriginRewriteSelfTest() {
     execFileSync(
       "git",
       ["-C", fixture, "config", "--add", "remote.origin.url", ""],
-      { stdio: "ignore" },
+      { stdio: "ignore", env: sanitizedGitEnv() },
     );
     if (storedOrigin(fixture) !== null) {
       fail("stored origin inspection accepted a nonempty origin followed by an empty duplicate.");
@@ -346,17 +360,17 @@ function storedOriginRewriteSelfTest() {
     execFileSync(
       "git",
       ["-C", fixture, "config", "--unset-all", "remote.origin.url"],
-      { stdio: "ignore" },
+      { stdio: "ignore", env: sanitizedGitEnv() },
     );
     execFileSync(
       "git",
       ["-C", fixture, "config", "--add", "remote.origin.url", ""],
-      { stdio: "ignore" },
+      { stdio: "ignore", env: sanitizedGitEnv() },
     );
     execFileSync(
       "git",
       ["-C", fixture, "config", "--add", "remote.origin.url", canonical],
-      { stdio: "ignore" },
+      { stdio: "ignore", env: sanitizedGitEnv() },
     );
     if (storedOrigin(fixture) !== null) {
       fail("stored origin inspection accepted an empty origin followed by a nonempty duplicate.");
@@ -368,6 +382,70 @@ function storedOriginRewriteSelfTest() {
       else process.env[key] = value;
     }
     rmSync(fixture, { recursive: true, force: true });
+  }
+}
+
+function gitEnvironmentRedirectionSelfTest() {
+  const base = mkdtempSync(join(tmpdir(), "public-status-git-env-"));
+  const target = join(base, "target");
+  const decoy = join(base, "decoy");
+  const keys = [
+    "GIT_DIR",
+    "GIT_WORK_TREE",
+    "GIT_INDEX_FILE",
+    "GIT_OBJECT_DIRECTORY",
+    "GIT_CONFIG_COUNT",
+    "GIT_CONFIG_KEY_0",
+    "GIT_CONFIG_VALUE_0",
+  ];
+  const previous = new Map(keys.map((key) => [key, process.env[key]]));
+  const git = (dir, ...args) => execFileSync(
+    "git",
+    ["-C", dir, ...args],
+    { encoding: "utf8", env: sanitizedGitEnv(), stdio: ["ignore", "pipe", "pipe"] },
+  ).trim();
+  try {
+    mkdirSync(target);
+    mkdirSync(decoy);
+    for (const [repo, origin, content] of [
+      [target, "C:/hostile/target", "target\n"],
+      [decoy, expectedOrigin("HawkinsOperations/hawkinsoperations-website"), "decoy\n"],
+    ]) {
+      git(repo, "init", "--quiet");
+      git(repo, "config", "user.name", "Website Test");
+      git(repo, "config", "user.email", "website-test@example.invalid");
+      git(repo, "remote", "add", "origin", origin);
+      writeFileSync(join(repo, "tracked.txt"), content, "utf8");
+      git(repo, "add", "tracked.txt");
+      git(repo, "commit", "--quiet", "-m", "fixture");
+    }
+    const targetHead = git(target, "rev-parse", "HEAD");
+    const decoyHead = git(decoy, "rev-parse", "HEAD");
+    if (targetHead === decoyHead) fail("Git environment redirection fixture heads must differ.");
+    process.env.GIT_DIR = join(decoy, ".git");
+    process.env.GIT_WORK_TREE = decoy;
+    process.env.GIT_INDEX_FILE = join(decoy, ".git", "index");
+    process.env.GIT_OBJECT_DIRECTORY = join(decoy, ".git", "objects");
+    process.env.GIT_CONFIG_COUNT = "1";
+    process.env.GIT_CONFIG_KEY_0 = "core.repositoryformatversion";
+    process.env.GIT_CONFIG_VALUE_0 = "0";
+    writeFileSync(join(target, "tracked.txt"), "changed\n", "utf8");
+    if (runGit(target, ["rev-parse", "HEAD"]) !== targetHead) {
+      fail("Git source identity accepted ambient repository redirection.");
+    }
+    if (storedOrigin(target) !== "C:/hostile/target") {
+      fail("stored origin inspection accepted ambient repository redirection.");
+    }
+    if (!runGit(target, ["status", "--porcelain"])) {
+      fail("Git dirty provenance accepted ambient index redirection.");
+    }
+  } finally {
+    for (const key of keys) {
+      const value = previous.get(key);
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+    rmSync(base, { recursive: true, force: true });
   }
 }
 
@@ -2457,6 +2535,7 @@ if (
   }
   if (selfTestModes.has("--self-test") || selfTestModes.has("--owner-self-test-only")) {
     storedOriginRewriteSelfTest();
+    gitEnvironmentRedirectionSelfTest();
     const expected = normalizeOrigin(expectedOrigin("HawkinsOperations/hawkinsoperations-proof"));
     for (const accepted of [
       "https://github.com/HawkinsOperations/hawkinsoperations-proof",
