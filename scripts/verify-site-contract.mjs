@@ -115,6 +115,16 @@ function publicStatusWorkflowFindings(workflow) {
       "public-status workflow must bootstrap an immutable command-center manifest and select reviewed repository heads separately from content revisions.",
     );
   }
+  if (!workflow.includes("Fetch immutable Website content identities without changing HEAD") ||
+      !workflow.includes("WEBSITE_CONTENT_SHA: ${{ steps.manifest.outputs.website_content }}") ||
+      !workflow.includes("WEBSITE_AUTHORITY_CONTENT_SHA: ${{ steps.manifest.outputs.website_authority_content }}") ||
+      !workflow.includes('git fetch --no-tags --depth=1 origin "$sha"') ||
+      !workflow.includes('git cat-file -e "${sha}^{commit}"') ||
+      !workflow.includes('test "$(git rev-parse HEAD)" = "$event_sha"')) {
+    findings.push(
+      "public-status workflow must fetch both pinned Website content identities and preserve the exact event HEAD.",
+    );
+  }
   if (!/Checkout website event revision[\s\S]*?ref:\s*\$\{\{\s*github\.event\.pull_request\.head\.sha\s*\|\|\s*github\.sha\s*\}\}/.test(workflow)) {
     findings.push("website event checkout must use the exact PR head instead of GitHub's merge ref.");
   }
@@ -161,6 +171,13 @@ for (const [label, hostileWorkflow] of [
     publicStatusWorkflow.replace(
       "HAWKINS_WEBSITE_IMMUTABLE_OBSERVED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}",
       "HAWKINS_WEBSITE_OBSERVATION_REMOVED: ${{ github.sha }}",
+    ),
+  ],
+  [
+    "website content identity fetch removal",
+    publicStatusWorkflow.replace(
+      'git fetch --no-tags --depth=1 origin "$sha"',
+      'echo "fetch omitted"',
     ),
   ],
   [
@@ -246,10 +263,18 @@ const resolvedCheckoutFixture = resolveReviewedCheckouts({
 });
 if (resolvedCheckoutFixture.org !== checkoutSha("3") ||
     Object.entries(resolvedCheckoutFixture).some(
-      ([name, revision]) => name !== "org" && revision !== checkoutSha("2"),
+      ([name, revision]) =>
+        !["org", "website_content", "website_authority_content"].includes(name) &&
+        revision !== checkoutSha("2"),
     )) {
   workflowFailures.push(
     "reviewed checkout resolver must select reviewed heads and must not fall back to content revisions.",
+  );
+}
+if (resolvedCheckoutFixture.website_content !== checkoutSha("1") ||
+    resolvedCheckoutFixture.website_authority_content !== checkoutSha("1")) {
+  workflowFailures.push(
+    "reviewed checkout resolver must expose both immutable Website content identities for explicit fetch.",
   );
 }
 if ((governanceWorkflow.match(/actions\/checkout@11bd71901bbe5b1630ceea73d27597364c9af683/g) ?? []).length !== 2) {

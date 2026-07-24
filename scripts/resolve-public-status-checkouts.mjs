@@ -142,6 +142,10 @@ export function resolveReviewedCheckouts({
     }
     outputs[output] = revision;
   }
+  const websiteRepository = "HawkinsOperations/hawkinsoperations-website";
+  outputs.website_content = contentEntries[websiteRepository].revision;
+  outputs.website_authority_content =
+    reviewedEntries[websiteRepository].authority_content_revision;
   return outputs;
 }
 
@@ -201,6 +205,10 @@ function selfTest() {
   });
   assert.equal(resolved.org, sha("3"));
   for (const [name, revision] of Object.entries(resolved)) {
+    if (name === "website_content" || name === "website_authority_content") {
+      assert.equal(revision, sha("1"));
+      continue;
+    }
     if (name !== "org") assert.equal(revision, sha("2"));
     assert.notEqual(revision, sha("1"), `${name} must not fall back to content revision`);
   }
