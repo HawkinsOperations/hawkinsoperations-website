@@ -174,6 +174,27 @@ function normalizeOrigin(value) {
 
 const commandManifestRelativePath = "governance/CONVERGENCE_SOURCE_MANIFEST.json";
 let reviewedSourceIdentitiesCache;
+let reviewedSourceIdentityFailure;
+
+function reviewedIdentityFailure({
+  repo,
+  path,
+  reason,
+  contentRevision = null,
+  contentBlob = null,
+  reviewedRevision = null,
+  reviewedBlob = null,
+}) {
+  reviewedSourceIdentityFailure = [
+    `${repo}:${path}: ${reason}`,
+    `content_revision=${contentRevision ?? "<missing>"}`,
+    `content_blob=${contentBlob ?? "<missing>"}`,
+    `reviewed_revision=${reviewedRevision ?? "<missing>"}`,
+    `reviewed_blob=${reviewedBlob ?? "<missing>"}`,
+    "remediation=pin a reviewed manifest whose exact authority blob matches the selected content revision",
+  ].join("; ");
+  return null;
+}
 
 function reviewedSourceIdentities() {
   if (reviewedSourceIdentitiesCache !== undefined) return reviewedSourceIdentitiesCache;
@@ -235,22 +256,45 @@ function reviewedSourceIdentities() {
         runGit(spec.dir, ["cat-file", "-t", contentRevision]) !== "commit" ||
         runGit(spec.dir, ["rev-parse", `${reviewedRevision}^{tree}`]) !== reviewedTree
       ) {
-        return reviewedSourceIdentitiesCache;
+        return reviewedIdentityFailure({
+          repo: spec.repo,
+          path: spec.publicPath,
+          reason: "reviewed source identity is missing, malformed, unreachable, or has a forged tree",
+          contentRevision,
+          reviewedRevision,
+        });
       }
       const reviewedBlob = runGit(spec.dir, ["rev-parse", `${reviewedRevision}:${spec.publicPath}`]);
       const contentBlob = runGit(spec.dir, ["rev-parse", `${contentRevision}:${spec.publicPath}`]);
       const rewrittenCommandCenter = spec.repo === "HawkinsOperations/.github";
+      if (!reviewedBlob || reviewedBlob !== contentBlob) {
+        return reviewedIdentityFailure({
+          repo: spec.repo,
+          path: spec.publicPath,
+          reason: "selected content blob differs from the reviewed current-authority blob",
+          contentRevision,
+          contentBlob,
+          reviewedRevision,
+          reviewedBlob,
+        });
+      }
       if (
-        !reviewedBlob ||
-        reviewedBlob !== contentBlob ||
+        !rewrittenCommandCenter &&
         (
-          !rewrittenCommandCenter &&
-          (
-            runGit(spec.dir, ["merge-base", "--is-ancestor", commandContentRevision, reviewedRevision]) === null ||
-            runGit(spec.dir, ["merge-base", "--is-ancestor", contentRevision, reviewedRevision]) === null
-          )
+          runGit(spec.dir, ["merge-base", "--is-ancestor", commandContentRevision, reviewedRevision]) === null ||
+          runGit(spec.dir, ["merge-base", "--is-ancestor", contentRevision, reviewedRevision]) === null
         )
-      ) return reviewedSourceIdentitiesCache;
+      ) {
+        return reviewedIdentityFailure({
+          repo: spec.repo,
+          path: spec.publicPath,
+          reason: "selected content or declared authority revision is outside the reviewed lineage",
+          contentRevision,
+          contentBlob,
+          reviewedRevision,
+          reviewedBlob,
+        });
+      }
       identities.set(spec.repo, {
         revision: reviewedRevision,
         tree: reviewedTree,
@@ -264,8 +308,10 @@ function reviewedSourceIdentities() {
     }
     reviewedSourceIdentitiesCache = identities;
     return reviewedSourceIdentitiesCache;
-  } catch {
-    return reviewedSourceIdentitiesCache;
+  } catch (error) {
+    reviewedSourceIdentityFailure =
+      `reviewed source identity parsing failed: ${error instanceof Error ? error.message : String(error)}`;
+    return null;
   }
 }
 
@@ -287,54 +333,9 @@ function reviewedLineageMatches(
     return false;
   }
   const currentTree = runGit(spec.dir, ["rev-parse", `${currentRevision}^{tree}`]);
-  const rewriteDiff = runGit(
-    spec.dir,
-    ["diff", "--name-only", "--no-renames", candidateRevision, currentRevision],
-  );
-  const rewritePaths = rewriteDiff === null
-    ? null
-    : rewriteDiff.split(/\r?\n/).filter(Boolean);
-  const rewrittenReviewedObservation =
+  const candidateIsExactObservation =
     ["current", "generator"].includes(role) &&
-    (
-      role !== "generator" ||
-      (
-        candidateRevision !== identity.contentRevision &&
-        candidateRevision !== identity.revision
-      )
-    ) &&
-    currentTree === identity.tree &&
-    runGit(
-      spec.dir,
-      ["merge-base", "--is-ancestor", identity.contentRevision, candidateRevision],
-    ) !== null &&
-    runGit(
-      spec.dir,
-      ["merge-base", "--is-ancestor", candidateRevision, identity.revision],
-    ) !== null &&
-    rewritePaths !== null &&
-    !rewritePaths.includes(path);
-  const candidateIsReviewedObservation =
-    ["current", "generator"].includes(role) &&
-    (
-      candidateRevision === currentRevision ||
-      rewrittenReviewedObservation ||
-      (
-        (
-          runGit(spec.dir, ["merge-base", "--is-ancestor", identity.revision, candidateRevision]) !== null &&
-          runGit(spec.dir, ["merge-base", "--is-ancestor", candidateRevision, currentRevision]) !== null
-        ) ||
-        (
-          (
-            candidateRevision !== identity.contentRevision ||
-            role === "current"
-          ) &&
-          runGit(spec.dir, ["merge-base", "--is-ancestor", identity.contentRevision, candidateRevision]) !== null &&
-          runGit(spec.dir, ["merge-base", "--is-ancestor", candidateRevision, identity.revision]) !== null &&
-          runGit(spec.dir, ["merge-base", "--is-ancestor", identity.revision, currentRevision]) !== null
-        )
-      )
-    );
+    (candidateRevision === currentRevision || candidateRevision === identity.revision);
   const candidateCarriesReviewedContentLineage =
     candidateRevision === identity.contentRevision ||
     runGit(
@@ -346,16 +347,7 @@ function reviewedLineageMatches(
     candidateCarriesReviewedContentLineage &&
     observationProjectionAllowed(spec, candidateRevision, identity.revision, role);
   if (role === "source" && candidateRevision !== identity.contentRevision) return false;
-  if (role === "generator" && !candidateIsReviewedObservation) {
-    if (!projectedObservation) {
-      return false;
-    }
-  } else if (
-    role !== "source" &&
-    !candidateIsReviewedObservation &&
-    candidateRevision !== identity.revision &&
-    !projectedObservation
-  ) {
+  if (role !== "source" && !candidateIsExactObservation && !projectedObservation) {
     return false;
   }
   if (currentRevision !== candidateRevision &&
@@ -363,7 +355,7 @@ function reviewedLineageMatches(
     return false;
   }
   if (
-    !candidateIsReviewedObservation &&
+    !candidateIsExactObservation &&
     !projectedObservation &&
     !(spec.repo === "HawkinsOperations/.github" &&
       role === "source" &&
@@ -397,12 +389,7 @@ function observationProjectionAllowed(spec, candidateRevision, reviewedRevision,
   };
   const allowed = allowedByRepo[spec.repo];
   if (!allowed || !["current", "generator"].includes(role)) return false;
-  const commandCenterProjection = spec.repo === "HawkinsOperations/.github";
-  if (
-    commandCenterProjection
-      ? runGit(spec.dir, ["cat-file", "-t", candidateRevision]) !== "commit"
-      : runGit(spec.dir, ["rev-parse", `${reviewedRevision}^`]) !== candidateRevision
-  ) return false;
+  if (runGit(spec.dir, ["rev-parse", `${reviewedRevision}^`]) !== candidateRevision) return false;
   const changed = runGit(
     spec.dir,
     ["diff", "--name-only", "--no-renames", candidateRevision, reviewedRevision],
@@ -588,6 +575,12 @@ if (
 const manifestByRepo = Object.fromEntries(manifestEntries.map((entry) => [entry.repository, entry]));
 if (Object.keys(manifestByRepo).length !== repoSpecs.length) {
   throw new Error("Source manifest repository identities must be unique.");
+}
+if (!reviewedSourceIdentities()) {
+  throw new Error(
+    reviewedSourceIdentityFailure ??
+      "Reviewed source identities could not be established from the pinned command manifest.",
+  );
 }
 
 const sources = repoSpecs.map((spec) => repoSource(spec, manifestByRepo[spec.repo]?.revision));

@@ -106,7 +106,7 @@ function publicStatusWorkflowFindings(workflow) {
   )) {
     findings.push("public-status workflow must expose the exact PR head or event SHA as the immutable Website observation.");
   }
-  if (!/HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA:\s*[a-f0-9]{40}/.test(workflow) ||
+  if ((workflow.match(/HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA:\s*[a-f0-9]{40}/g) ?? []).length !== 1 ||
       !/Checkout reviewed source manifest[\s\S]*?ref:\s*\$\{\{\s*env\.HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA\s*\}\}/.test(workflow) ||
       !workflow.includes("run: node scripts/resolve-public-status-checkouts.mjs --github-output") ||
       !workflow.includes("run: npm run public-status:checkout-manifest-self-test") ||
@@ -185,6 +185,27 @@ for (const [label, hostileWorkflow] of [
     publicStatusWorkflow.replaceAll(
       "run: node scripts/resolve-public-status-checkouts.mjs --github-output",
       "run: node scripts/resolve-content-checkouts.mjs --github-output",
+    ),
+  ],
+  [
+    "default-branch reviewed manifest substitution",
+    publicStatusWorkflow.replace(
+      /HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA:\s*[a-f0-9]{40}/,
+      "HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA: main",
+    ),
+  ],
+  [
+    "event-ref reviewed manifest substitution",
+    publicStatusWorkflow.replace(
+      /HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA:\s*[a-f0-9]{40}/,
+      "HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA: ${{ github.sha }}",
+    ),
+  ],
+  [
+    "resolver bypass for command checkout",
+    publicStatusWorkflow.replace(
+      "ref: ${{ env.HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA }}",
+      "ref: ${{ steps.manifest.outputs.org }}",
     ),
   ],
 ]) {

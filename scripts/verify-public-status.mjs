@@ -450,6 +450,27 @@ function gitEnvironmentRedirectionSelfTest() {
 }
 
 let reviewedSourceIdentitiesCache;
+let reviewedSourceIdentityFailure;
+
+function reviewedIdentityFailure({
+  repo,
+  path,
+  reason,
+  contentRevision = null,
+  contentBlob = null,
+  reviewedRevision = null,
+  reviewedBlob = null,
+}) {
+  reviewedSourceIdentityFailure = [
+    `${repo}:${path}: ${reason}`,
+    `content_revision=${contentRevision ?? "<missing>"}`,
+    `content_blob=${contentBlob ?? "<missing>"}`,
+    `reviewed_revision=${reviewedRevision ?? "<missing>"}`,
+    `reviewed_blob=${reviewedBlob ?? "<missing>"}`,
+    "remediation=pin a reviewed manifest whose exact authority blob matches the selected content revision",
+  ].join("; ");
+  return null;
+}
 
 function reviewedSourceIdentities() {
   if (reviewedSourceIdentitiesCache !== undefined) return reviewedSourceIdentitiesCache;
@@ -513,22 +534,45 @@ function reviewedSourceIdentities() {
         runGit(dir, ["cat-file", "-t", contentRevision]) !== "commit" ||
         runGit(dir, ["rev-parse", `${reviewedRevision}^{tree}`]) !== reviewedTree
       ) {
-        return reviewedSourceIdentitiesCache;
+        return reviewedIdentityFailure({
+          repo,
+          path,
+          reason: "reviewed source identity is missing, malformed, unreachable, or has a forged tree",
+          contentRevision,
+          reviewedRevision,
+        });
       }
       const reviewedBlob = runGit(dir, ["rev-parse", `${reviewedRevision}:${path}`]);
       const contentBlob = runGit(dir, ["rev-parse", `${contentRevision}:${path}`]);
       const rewrittenCommandCenter = repo === "HawkinsOperations/.github";
+      if (!reviewedBlob || reviewedBlob !== contentBlob) {
+        return reviewedIdentityFailure({
+          repo,
+          path,
+          reason: "selected content blob differs from the reviewed current-authority blob",
+          contentRevision,
+          contentBlob,
+          reviewedRevision,
+          reviewedBlob,
+        });
+      }
       if (
-        !reviewedBlob ||
-        reviewedBlob !== contentBlob ||
+        !rewrittenCommandCenter &&
         (
-          !rewrittenCommandCenter &&
-          (
-            runGit(dir, ["merge-base", "--is-ancestor", commandContentRevision, reviewedRevision]) === null ||
-            runGit(dir, ["merge-base", "--is-ancestor", contentRevision, reviewedRevision]) === null
-          )
+          runGit(dir, ["merge-base", "--is-ancestor", commandContentRevision, reviewedRevision]) === null ||
+          runGit(dir, ["merge-base", "--is-ancestor", contentRevision, reviewedRevision]) === null
         )
-      ) return reviewedSourceIdentitiesCache;
+      ) {
+        return reviewedIdentityFailure({
+          repo,
+          path,
+          reason: "selected content or declared authority revision is outside the reviewed lineage",
+          contentRevision,
+          contentBlob,
+          reviewedRevision,
+          reviewedBlob,
+        });
+      }
       identities.set(repo, {
         revision: reviewedRevision,
         tree: reviewedTree,
@@ -542,8 +586,10 @@ function reviewedSourceIdentities() {
     }
     reviewedSourceIdentitiesCache = identities;
     return reviewedSourceIdentitiesCache;
-  } catch {
-    return reviewedSourceIdentitiesCache;
+  } catch (error) {
+    reviewedSourceIdentityFailure =
+      `reviewed source identity parsing failed: ${error instanceof Error ? error.message : String(error)}`;
+    return null;
   }
 }
 
@@ -566,54 +612,9 @@ function reviewedLineageMatchesWithIdentity(
     return false;
   }
   const currentTree = runGit(dir, ["rev-parse", `${currentRevision}^{tree}`]);
-  const rewriteDiff = runGit(
-    dir,
-    ["diff", "--name-only", "--no-renames", candidateRevision, currentRevision],
-  );
-  const rewritePaths = rewriteDiff === null
-    ? null
-    : rewriteDiff.split(/\r?\n/).filter(Boolean);
-  const rewrittenReviewedObservation =
+  const candidateIsExactObservation =
     ["current", "generator"].includes(role) &&
-    (
-      role !== "generator" ||
-      (
-        candidateRevision !== identity.contentRevision &&
-        candidateRevision !== identity.revision
-      )
-    ) &&
-    currentTree === identity.tree &&
-    runGit(
-      dir,
-      ["merge-base", "--is-ancestor", identity.contentRevision, candidateRevision],
-    ) !== null &&
-    runGit(
-      dir,
-      ["merge-base", "--is-ancestor", candidateRevision, identity.revision],
-    ) !== null &&
-    rewritePaths !== null &&
-    !rewritePaths.includes(path);
-  const candidateIsReviewedObservation =
-    ["current", "generator"].includes(role) &&
-    (
-      candidateRevision === currentRevision ||
-      rewrittenReviewedObservation ||
-      (
-        (
-          runGit(dir, ["merge-base", "--is-ancestor", identity.revision, candidateRevision]) !== null &&
-          runGit(dir, ["merge-base", "--is-ancestor", candidateRevision, currentRevision]) !== null
-        ) ||
-        (
-          (
-            candidateRevision !== identity.contentRevision ||
-            role === "current"
-          ) &&
-          runGit(dir, ["merge-base", "--is-ancestor", identity.contentRevision, candidateRevision]) !== null &&
-          runGit(dir, ["merge-base", "--is-ancestor", candidateRevision, identity.revision]) !== null &&
-          runGit(dir, ["merge-base", "--is-ancestor", identity.revision, currentRevision]) !== null
-        )
-      )
-    );
+    (candidateRevision === currentRevision || candidateRevision === identity.revision);
   const candidateCarriesReviewedContentLineage =
     candidateRevision === identity.contentRevision ||
     runGit(dir, ["merge-base", "--is-ancestor", identity.contentRevision, candidateRevision]) !== null;
@@ -622,25 +623,13 @@ function reviewedLineageMatchesWithIdentity(
     candidateCarriesReviewedContentLineage &&
     observationProjectionAllowed(repo, dir, candidateRevision, identity.revision, role);
   if (role === "source" && candidateRevision !== identity.contentRevision) return false;
-  if (
-    role === "generator" &&
-    !candidateIsReviewedObservation
-  ) {
-    if (!projectedObservation) {
-      return false;
-    }
-  } else if (
-    role !== "source" &&
-    !candidateIsReviewedObservation &&
-    candidateRevision !== identity.revision &&
-    !projectedObservation
-  ) {
+  if (role !== "source" && !candidateIsExactObservation && !projectedObservation) {
     return false;
   }
   if ((currentRevision !== candidateRevision &&
       runGit(dir, ["merge-base", "--is-ancestor", currentRevision, candidateRevision]) !== null) ||
       (
-        !candidateIsReviewedObservation &&
+        !candidateIsExactObservation &&
         !projectedObservation &&
         !(repo === "HawkinsOperations/.github" &&
           role === "source" &&
@@ -674,12 +663,7 @@ function observationProjectionAllowed(repo, dir, candidateRevision, reviewedRevi
   };
   const allowed = allowedByRepo[repo];
   if (!allowed || !["current", "generator"].includes(role)) return false;
-  const commandCenterProjection = repo === "HawkinsOperations/.github";
-  if (
-    commandCenterProjection
-      ? runGit(dir, ["cat-file", "-t", candidateRevision]) !== "commit"
-      : runGit(dir, ["rev-parse", `${reviewedRevision}^`]) !== candidateRevision
-  ) return false;
+  if (runGit(dir, ["rev-parse", `${reviewedRevision}^`]) !== candidateRevision) return false;
   const changed = runGit(
     dir,
     ["diff", "--name-only", "--no-renames", candidateRevision, reviewedRevision],
@@ -825,7 +809,7 @@ function revisionRelationshipSelfTest() {
       fail("revision relationship self-test rejected an unchanged authority blob on a reviewed descendant.");
     }
     if (!reviewedLineageMatchesWithIdentity(
-      "HawkinsOperations/hawkinsoperations-validation",
+      "HawkinsOperations/hawkinsoperations-website",
       fixture,
       current,
       reviewedFinal,
@@ -835,11 +819,11 @@ function revisionRelationshipSelfTest() {
       reviewedIdentity,
     )) {
       fail(
-        "reviewed lineage self-test rejected a content-bound current observation "
-        + "that predates the final reviewed tip.",
+        "reviewed lineage self-test rejected the finite generated-pair wave "
+        + "whose reviewed commit changes exactly both generated outputs.",
       );
     }
-    if (!reviewedLineageMatchesWithIdentity(
+    if (reviewedLineageMatchesWithIdentity(
       "HawkinsOperations/hawkinsoperations-validation",
       fixture,
       base,
@@ -850,8 +834,8 @@ function revisionRelationshipSelfTest() {
       reviewedIdentity,
     )) {
       fail(
-        "reviewed lineage self-test rejected the manifest-selected content "
-        + "revision as its generation-time current observation.",
+        "reviewed lineage self-test accepted an arbitrary content ancestor "
+        + "as a generation-time current observation.",
       );
     }
     if (!revisionMatchesWithIdentity(
@@ -871,7 +855,7 @@ function revisionRelationshipSelfTest() {
     fixtureGit(["add", "other.txt"]);
     fixtureGit(["commit", "-m", "controlled post-observation descendant"]);
     const postObservationDescendant = fixtureGit(["rev-parse", "HEAD"]);
-    if (!revisionMatchesWithIdentity(
+    if (revisionMatchesWithIdentity(
       "HawkinsOperations/hawkinsoperations-website",
       fixture,
       unchangedAuthorityDescendant,
@@ -881,7 +865,19 @@ function revisionRelationshipSelfTest() {
       "current",
       reviewedIdentity,
     )) {
-      fail("revision relationship self-test rejected an unchanged recorded observation on a reviewed lineage.");
+      fail("revision relationship self-test accepted an arbitrary intermediate current observation.");
+    }
+    if (revisionMatchesWithIdentity(
+      "HawkinsOperations/hawkinsoperations-website",
+      fixture,
+      unchangedAuthorityDescendant,
+      postObservationDescendant,
+      "authority.txt",
+      unchangedAuthorityBlob,
+      "generator",
+      reviewedIdentity,
+    )) {
+      fail("revision relationship self-test accepted an arbitrary intermediate generator observation.");
     }
     const postObservationTree = fixtureGit([
       "rev-parse",
@@ -901,14 +897,14 @@ function revisionRelationshipSelfTest() {
     if (!revisionMatchesWithIdentity(
       "HawkinsOperations/hawkinsoperations-website",
       fixture,
-      unchangedAuthorityDescendant,
+      postObservationDescendant,
       rewrittenPostObservation,
       "authority.txt",
       unchangedAuthorityBlob,
       "current",
       rewrittenPostObservationIdentity,
     )) {
-      fail("revision relationship self-test rejected a content-safe squash rewrite.");
+      fail("revision relationship self-test rejected the exact reviewed observation after a content-safe squash rewrite.");
     }
     fixtureGit(["checkout", "--detach", postObservationDescendant]);
     writeFileSync(join(fixture, "authority.txt"), "squash changed authority\n");
@@ -1017,7 +1013,7 @@ function revisionRelationshipSelfTest() {
       revision: projectedCommandCenter,
       tree: commandCenterTree,
     };
-    if (!reviewedLineageMatchesWithIdentity(
+    if (reviewedLineageMatchesWithIdentity(
       "HawkinsOperations/.github",
       fixture,
       reviewedFinal,
@@ -1027,7 +1023,7 @@ function revisionRelationshipSelfTest() {
       "current",
       projectedCommandCenterIdentity,
     )) {
-      fail("reviewed lineage self-test rejected an exact command-center manifest projection.");
+      fail("reviewed lineage self-test accepted a non-ancestor command-center manifest projection.");
     }
     const foreignPreManifest = fixtureGit([
       "commit-tree",
@@ -1106,7 +1102,7 @@ function revisionRelationshipSelfTest() {
       "generator",
       reviewedIdentity,
     )) {
-      fail("reviewed lineage self-test rejected the exact reviewed-tree projection.");
+      fail("reviewed lineage self-test rejected the exact pair projection across a reviewed-tree rewrite.");
     }
     if (revisionMatchesWithIdentity(
       "HawkinsOperations/hawkinsoperations-website",
@@ -1144,7 +1140,7 @@ function revisionRelationshipSelfTest() {
     )) {
       fail("reviewed lineage self-test accepted an arbitrary same-blob ancestor.");
     }
-    if (reviewedLineageMatchesWithIdentity(
+    if (!reviewedLineageMatchesWithIdentity(
       "HawkinsOperations/hawkinsoperations-website",
       fixture,
       reviewedFinal,
@@ -1154,7 +1150,7 @@ function revisionRelationshipSelfTest() {
       "generator",
       reviewedIdentity,
     )) {
-      fail("reviewed lineage self-test accepted reviewed-tree revision substitution.");
+      fail("reviewed lineage self-test rejected the exact reviewed revision across a same-tree rewrite.");
     }
     if (reviewedLineageMatchesWithIdentity(
       "HawkinsOperations/hawkinsoperations-website",
@@ -1296,6 +1292,7 @@ function revisionRelationshipSelfTest() {
     writeFileSync(join(commandCenterDir, "CONVERGENCE_SOURCE_MANIFEST.json"), "{\"wave\":1}\n");
     fixtureGit(["add", "governance/CONVERGENCE_SOURCE_MANIFEST.json"]);
     fixtureGit(["commit", "-m", "controlled command-center observation wave one"]);
+    const commandCenterProjectionParent = fixtureGit(["rev-parse", "HEAD"]);
     writeFileSync(join(commandCenterDir, "CONVERGENCE_SOURCE_MANIFEST.json"), "{\"wave\":2}\n");
     fixtureGit(["add", "governance/CONVERGENCE_SOURCE_MANIFEST.json"]);
     fixtureGit(["commit", "-m", "controlled command-center observation wave two"]);
@@ -1303,11 +1300,20 @@ function revisionRelationshipSelfTest() {
     if (!observationProjectionAllowed(
       "HawkinsOperations/.github",
       fixture,
+      commandCenterProjectionParent,
+      commandCenterProjectionRevision,
+      "current",
+    )) {
+      fail("reviewed lineage self-test rejected a direct manifest-only command-center observation wave.");
+    }
+    if (observationProjectionAllowed(
+      "HawkinsOperations/.github",
+      fixture,
       current,
       commandCenterProjectionRevision,
       "current",
     )) {
-      fail("reviewed lineage self-test rejected a manifest-only command-center observation chain.");
+      fail("reviewed lineage self-test accepted an arbitrary multi-hop command-center ancestor.");
     }
     const projectedCommandCenterTree = fixtureGit([
       "rev-parse",
@@ -1319,14 +1325,14 @@ function revisionRelationshipSelfTest() {
       "-m",
       "controlled rewritten command-center projection",
     ]);
-    if (!observationProjectionAllowed(
+    if (observationProjectionAllowed(
       "HawkinsOperations/.github",
       fixture,
       current,
       rewrittenCommandCenterProjection,
       "current",
     )) {
-      fail("reviewed lineage self-test rejected a rewritten manifest-only command-center projection.");
+      fail("reviewed lineage self-test accepted a non-ancestor rewritten command-center projection.");
     }
     writeFileSync(join(fixture, "other.txt"), "unauthorized command-center projection\n");
     fixtureGit(["add", "other.txt"]);
@@ -1355,6 +1361,28 @@ function revisionRelationshipSelfTest() {
     )) {
       fail("reviewed lineage self-test accepted a non-pair Hoxline projection.");
     }
+    reviewedIdentityFailure({
+      repo: "HawkinsOperations/hawkinsoperations-detections",
+      path: "detections/DETECTION_PROMOTION_MATRIX.yml",
+      reason: "selected content blob differs from the reviewed current-authority blob",
+      contentRevision: "1".repeat(40),
+      contentBlob: "2".repeat(40),
+      reviewedRevision: "3".repeat(40),
+      reviewedBlob: "4".repeat(40),
+    });
+    for (const expected of [
+      "HawkinsOperations/hawkinsoperations-detections:detections/DETECTION_PROMOTION_MATRIX.yml",
+      `content_revision=${"1".repeat(40)}`,
+      `content_blob=${"2".repeat(40)}`,
+      `reviewed_revision=${"3".repeat(40)}`,
+      `reviewed_blob=${"4".repeat(40)}`,
+      "remediation=pin a reviewed manifest",
+    ]) {
+      if (!reviewedSourceIdentityFailure?.includes(expected)) {
+        fail(`reviewed identity diagnostic self-test omitted ${expected}.`);
+      }
+    }
+    reviewedSourceIdentityFailure = undefined;
   } catch (error) {
     fail(`revision relationship self-test failed to execute: ${error.message}`);
   } finally {
@@ -2329,6 +2357,12 @@ function semanticIssues(candidate, { now = new Date(), checkLocalSources = true,
   }
   if (!checkLocalSources) return [...new Set(issues)];
 
+  if (!reviewedSourceIdentities()) {
+    issues.push(
+      reviewedSourceIdentityFailure ??
+        "Reviewed source identities could not be established from the pinned command manifest.",
+    );
+  }
   if (manifest?.manifest_version !== "public-status-source-manifest-v1" ||
       manifest?.observation_kind !== "reviewed_immutable_commit" ||
       manifest?.repositories?.length !== 7 ||
@@ -2407,6 +2441,18 @@ if (process.argv.includes("--vocabulary-self-test")) {
     process.exit(1);
   }
   console.log("Tracked-source vocabulary verification passed.");
+  process.exit(0);
+}
+
+if (process.argv.includes("--revision-relationship-test")) {
+  revisionRelationshipSelfTest();
+  if (failures.length > 0) {
+    console.error(
+      `Revision relationship verification failed:\n${[...new Set(failures)].map((line) => `- ${line}`).join("\n")}`,
+    );
+    process.exit(1);
+  }
+  console.log("Revision relationship verification passed.");
   process.exit(0);
 }
 

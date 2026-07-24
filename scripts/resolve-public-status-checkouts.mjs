@@ -204,6 +204,11 @@ function selfTest() {
     commandManifestSha: sha("3"),
   });
   assert.equal(resolved.org, sha("3"));
+  assert.notEqual(
+    resolved.org,
+    contentManifest.repositories[0].revision,
+    "command manifest checkout must remain separate from command-center authority content",
+  );
   for (const [name, revision] of Object.entries(resolved)) {
     if (name === "website_content" || name === "website_authority_content") {
       assert.equal(revision, sha("1"));
@@ -292,6 +297,27 @@ function selfTest() {
       commandManifestSha: sha("3"),
     }),
     /identity/,
+  );
+  assert.throws(
+    () => resolveReviewedCheckouts({
+      contentManifest,
+      reviewedManifest,
+      commandManifestSha: "main",
+    }),
+    /immutable commit identity/,
+  );
+  const substitutedCommandHead = structuredClone(reviewedManifest);
+  substitutedCommandHead.repositories[0] = {
+    ...substitutedCommandHead.repositories[0],
+    revision: sha("3"),
+  };
+  assert.throws(
+    () => resolveReviewedCheckouts({
+      contentManifest,
+      reviewedManifest: substitutedCommandHead,
+      commandManifestSha: sha("3"),
+    }),
+    /unsupported shape/,
   );
   console.log("Public-status reviewed checkout resolver self-test passed.");
 }
