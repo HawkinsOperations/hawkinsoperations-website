@@ -17,6 +17,7 @@ permissions:
 
 env:
   HAWKINS_WEBSITE_IMMUTABLE_OBSERVED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA: b87acd4487ff779bc0cb8b96c783ada0d712a0ed
 
 jobs:
   public-status-convergence:
@@ -33,16 +34,29 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Read reviewed immutable source manifest
+      - name: Checkout reviewed source manifest
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: HawkinsOperations/.github
+          ref: ${{ env.HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA }}
+          path: .github
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Read content and reviewed-head manifests
         id: manifest
         shell: bash
         run: |
           node --input-type=module <<'NODE'
           import fs from "node:fs";
           import { strictJsonParse } from "./scripts/strict-json.mjs";
-          const manifest = strictJsonParse(
+          const contentManifest = strictJsonParse(
             fs.readFileSync("config/public-status-source-manifest-v1.json", "utf8"),
             "config/public-status-source-manifest-v1.json",
+          );
+          const reviewedManifest = strictJsonParse(
+            fs.readFileSync("../.github/governance/CONVERGENCE_SOURCE_MANIFEST.json", "utf8"),
+            "../.github/governance/CONVERGENCE_SOURCE_MANIFEST.json",
           );
           const names = {
             "HawkinsOperations/.github": "org",
@@ -52,34 +66,43 @@ jobs:
             "HawkinsOperations/hawkinsoperations-platform": "platform",
             "HawkinsOperations/hawkinsoperations-proof": "proof"
           };
-          const entries = Object.fromEntries(manifest.repositories.map((entry) => [entry.repository, entry]));
-          if (manifest.manifest_version !== "public-status-source-manifest-v1" ||
-              manifest.observation_kind !== "reviewed_immutable_commit" ||
-              manifest.repositories.length !== 7 ||
-              Object.keys(entries).length !== 7) {
-            throw new Error("invalid or duplicate source manifest");
+          const contentEntries = Object.fromEntries(
+            contentManifest.repositories.map((entry) => [entry.repository, entry]),
+          );
+          const reviewedEntries = Object.fromEntries(
+            reviewedManifest.repositories.map((entry) => [entry.canonical_repository, entry]),
+          );
+          if (contentManifest.manifest_version !== "public-status-source-manifest-v1" ||
+              contentManifest.observation_kind !== "reviewed_immutable_commit" ||
+              contentManifest.repositories.length !== 7 ||
+              Object.keys(contentEntries).length !== 7 ||
+              reviewedManifest.schema !== "hawkinsoperations-convergence-source-manifest-v1" ||
+              reviewedManifest.constraints?.exact_repository_count !== 7 ||
+              reviewedManifest.repositories.length !== 7 ||
+              Object.keys(reviewedEntries).length !== 7) {
+            throw new Error("invalid or duplicate content/reviewed-head manifest");
           }
-          const website = entries["HawkinsOperations/hawkinsoperations-website"];
+          const website = contentEntries["HawkinsOperations/hawkinsoperations-website"];
           if (!website || !/^[a-f0-9]{40}$/.test(website.revision ?? "")) {
             throw new Error("website source must bind an explicit reviewed content revision");
           }
           const lines = [];
           for (const [repo, output] of Object.entries(names)) {
-            const revision = entries[repo]?.revision;
-            if (!/^[a-f0-9]{40}$/.test(revision ?? "")) throw new Error(`invalid immutable revision for ${repo}`);
+            const content = contentEntries[repo];
+            const reviewed = reviewedEntries[repo];
+            const revision = repo === "HawkinsOperations/.github"
+              ? process.env.HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA
+              : reviewed?.revision;
+            if (!content ||
+                !reviewed ||
+                !/^[a-f0-9]{40}$/.test(content.revision ?? "") ||
+                !/^[a-f0-9]{40}$/.test(revision ?? "")) {
+              throw new Error(`invalid immutable content/reviewed revision for ${repo}`);
+            }
             lines.push(`${output}=${revision}`);
           }
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `${lines.join("\n")}\n`);
           NODE
-
-      - name: Checkout organization command center
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          repository: HawkinsOperations/.github
-          ref: ${{ steps.manifest.outputs.org }}
-          path: .github
-          fetch-depth: 0
-          persist-credentials: false
 
       - name: Checkout Hoxline
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2

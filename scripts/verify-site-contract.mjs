@@ -100,6 +100,14 @@ function publicStatusWorkflowFindings(workflow) {
   )) {
     findings.push("public-status workflow must expose the exact PR head or event SHA as the immutable Website observation.");
   }
+  if (!/HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA:\s*[a-f0-9]{40}/.test(workflow) ||
+      !/Checkout reviewed source manifest[\s\S]*?ref:\s*\$\{\{\s*env\.HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA\s*\}\}/.test(workflow) ||
+      !workflow.includes("../.github/governance/CONVERGENCE_SOURCE_MANIFEST.json") ||
+      !workflow.includes("reviewed?.revision")) {
+    findings.push(
+      "public-status workflow must bootstrap an immutable command-center manifest and select reviewed repository heads separately from content revisions.",
+    );
+  }
   if (!/Checkout website event revision[\s\S]*?ref:\s*\$\{\{\s*github\.event\.pull_request\.head\.sha\s*\|\|\s*github\.sha\s*\}\}/.test(workflow)) {
     findings.push("website event checkout must use the exact PR head instead of GitHub's merge ref.");
   }
@@ -127,6 +135,13 @@ for (const [label, hostileWorkflow] of [
     publicStatusWorkflow.replace(
       "HAWKINS_WEBSITE_IMMUTABLE_OBSERVED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}",
       "HAWKINS_WEBSITE_OBSERVATION_REMOVED: ${{ github.sha }}",
+    ),
+  ],
+  [
+    "reviewed-head manifest removal",
+    publicStatusWorkflow.replaceAll(
+      "../.github/governance/CONVERGENCE_SOURCE_MANIFEST.json",
+      "config/public-status-source-manifest-v1.json",
     ),
   ],
 ]) {
