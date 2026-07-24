@@ -108,6 +108,15 @@ function readJson(repoDir, repoPath) {
   return readStrictJson(fullPath);
 }
 
+function storedOrigin(dir) {
+  const value = runGit(dir, ["config", "--local", "--null", "--get-all", "remote.origin.url"]);
+  if (value === null) return null;
+  const origins = value.split("\0");
+  if (origins.at(-1) === "") origins.pop();
+  const stripped = origins.map((item) => item.trim());
+  return stripped.length === 1 && stripped[0] ? stripped[0] : null;
+}
+
 function sha256File(path) {
   if (!existsSync(path)) return null;
   return sha256Text(normalizeSemanticText(readFileSync(path, "utf8"), path));
@@ -166,7 +175,7 @@ function reviewedSourceIdentities() {
   reviewedSourceIdentitiesCache = null;
   const commandRepo = join(orgRoot, ".github");
   if (!existsSync(commandRepo)) return reviewedSourceIdentitiesCache;
-  if (normalizeOrigin(runGit(commandRepo, ["remote", "get-url", "origin"])) !==
+  if (normalizeOrigin(storedOrigin(commandRepo)) !==
       normalizeOrigin(canonicalOrigin("HawkinsOperations/.github"))) {
     return reviewedSourceIdentitiesCache;
   }
@@ -445,7 +454,7 @@ function boundedCurrentObservation(spec, currentRevision, authoritativeBlob) {
 function repoSource(spec, selectedRevision) {
   const repoAvailable = existsSync(spec.dir);
   const currentObservedHeadSha = repoAvailable ? runGit(spec.dir, ["rev-parse", "HEAD"]) : null;
-  const origin = repoAvailable ? runGit(spec.dir, ["remote", "get-url", "origin"]) : null;
+  const origin = repoAvailable ? storedOrigin(spec.dir) : null;
   const expectedOrigin = canonicalOrigin(spec.repo);
   const originValid = normalizeOrigin(origin) === normalizeOrigin(expectedOrigin);
   const trackedDirty = repoAvailable ? hasTrackedProvenanceChanges(spec) : true;

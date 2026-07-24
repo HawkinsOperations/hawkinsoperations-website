@@ -150,6 +150,15 @@ function runGit(dir, args) {
   }
 }
 
+function storedOrigin(dir) {
+  const value = runGit(dir, ["config", "--local", "--null", "--get-all", "remote.origin.url"]);
+  if (value === null) return null;
+  const origins = value.split("\0");
+  if (origins.at(-1) === "") origins.pop();
+  const stripped = origins.map((item) => item.trim());
+  return stripped.length === 1 && stripped[0] ? stripped[0] : null;
+}
+
 function trackedVocabularyFindings(dir = root) {
   const retired = ["syn", "thetic"].join("");
   const binaryExtensions = new Set([
@@ -307,6 +316,61 @@ function expectedOrigin(repo) {
   return `https://github.com/${repo}.git`;
 }
 
+function storedOriginRewriteSelfTest() {
+  const fixture = mkdtempSync(join(tmpdir(), "public-status-origin-"));
+  const stored = "C:/hostile/local-proof";
+  const canonical = expectedOrigin("HawkinsOperations/hawkinsoperations-proof");
+  const keys = ["GIT_CONFIG_COUNT", "GIT_CONFIG_KEY_0", "GIT_CONFIG_VALUE_0"];
+  const previous = new Map(keys.map((key) => [key, process.env[key]]));
+  try {
+    execFileSync("git", ["init", "--quiet", fixture], { stdio: "ignore" });
+    execFileSync("git", ["-C", fixture, "remote", "add", "origin", stored], { stdio: "ignore" });
+    process.env.GIT_CONFIG_COUNT = "1";
+    process.env.GIT_CONFIG_KEY_0 = `url.${canonical}.insteadOf`;
+    process.env.GIT_CONFIG_VALUE_0 = stored;
+    const effective = runGit(fixture, ["remote", "get-url", "origin"]);
+    if (effective !== canonical) {
+      fail("origin rewrite self-test fixture did not activate.");
+    }
+    if (storedOrigin(fixture) !== stored) {
+      fail("stored origin inspection accepted ambient insteadOf laundering.");
+    }
+    execFileSync(
+      "git",
+      ["-C", fixture, "config", "--add", "remote.origin.url", ""],
+      { stdio: "ignore" },
+    );
+    if (storedOrigin(fixture) !== null) {
+      fail("stored origin inspection accepted a nonempty origin followed by an empty duplicate.");
+    }
+    execFileSync(
+      "git",
+      ["-C", fixture, "config", "--unset-all", "remote.origin.url"],
+      { stdio: "ignore" },
+    );
+    execFileSync(
+      "git",
+      ["-C", fixture, "config", "--add", "remote.origin.url", ""],
+      { stdio: "ignore" },
+    );
+    execFileSync(
+      "git",
+      ["-C", fixture, "config", "--add", "remote.origin.url", canonical],
+      { stdio: "ignore" },
+    );
+    if (storedOrigin(fixture) !== null) {
+      fail("stored origin inspection accepted an empty origin followed by a nonempty duplicate.");
+    }
+  } finally {
+    for (const key of keys) {
+      const value = previous.get(key);
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+    rmSync(fixture, { recursive: true, force: true });
+  }
+}
+
 let reviewedSourceIdentitiesCache;
 
 function reviewedSourceIdentities() {
@@ -314,7 +378,7 @@ function reviewedSourceIdentities() {
   reviewedSourceIdentitiesCache = null;
   const commandRepo = join(orgRoot, ".github");
   if (!existsSync(commandRepo)) return reviewedSourceIdentitiesCache;
-  if (normalizeOrigin(runGit(commandRepo, ["remote", "get-url", "origin"])) !==
+  if (normalizeOrigin(storedOrigin(commandRepo)) !==
       normalizeOrigin(expectedOrigin("HawkinsOperations/.github"))) {
     return reviewedSourceIdentitiesCache;
   }
@@ -1898,7 +1962,7 @@ function verifyContentIdentity(record, repo, path, issues) {
     issues.push(`${repo}: required sibling checkout is missing.`);
     return;
   }
-  const origin = runGit(repoDir, ["remote", "get-url", "origin"]);
+  const origin = storedOrigin(repoDir);
   if (normalizeOrigin(origin) !== normalizeOrigin(expectedOrigin(repo))) issues.push(`${repo}: canonical repository origin mismatch.`);
   const currentHead = runGit(repoDir, ["rev-parse", "HEAD"]);
   if (!currentHead) {
@@ -2392,6 +2456,7 @@ if (
     }
   }
   if (selfTestModes.has("--self-test") || selfTestModes.has("--owner-self-test-only")) {
+    storedOriginRewriteSelfTest();
     const expected = normalizeOrigin(expectedOrigin("HawkinsOperations/hawkinsoperations-proof"));
     for (const accepted of [
       "https://github.com/HawkinsOperations/hawkinsoperations-proof",
