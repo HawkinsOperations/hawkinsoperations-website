@@ -281,10 +281,44 @@ function reviewedLineageMatches(
   // CONTENT_BOUND_OBSERVATION_V1: a recorded current observation may predate
   // the final reviewed tip only when the selected content revision anchors it.
   if (!identity) return false;
+  if (runGit(spec.dir, ["cat-file", "-t", candidateRevision]) !== "commit" ||
+      runGit(spec.dir, ["cat-file", "-t", currentRevision]) !== "commit" ||
+      runGit(spec.dir, ["cat-file", "-t", identity.revision]) !== "commit") {
+    return false;
+  }
+  const currentTree = runGit(spec.dir, ["rev-parse", `${currentRevision}^{tree}`]);
+  const rewriteDiff = runGit(
+    spec.dir,
+    ["diff", "--name-only", "--no-renames", candidateRevision, currentRevision],
+  );
+  const rewritePaths = rewriteDiff === null
+    ? null
+    : rewriteDiff.split(/\r?\n/).filter(Boolean);
+  const rewrittenReviewedObservation =
+    ["current", "generator"].includes(role) &&
+    (
+      role !== "generator" ||
+      (
+        candidateRevision !== identity.contentRevision &&
+        candidateRevision !== identity.revision
+      )
+    ) &&
+    currentTree === identity.tree &&
+    runGit(
+      spec.dir,
+      ["merge-base", "--is-ancestor", identity.contentRevision, candidateRevision],
+    ) !== null &&
+    runGit(
+      spec.dir,
+      ["merge-base", "--is-ancestor", candidateRevision, identity.revision],
+    ) !== null &&
+    rewritePaths !== null &&
+    !rewritePaths.includes(path);
   const candidateIsReviewedObservation =
     ["current", "generator"].includes(role) &&
     (
       candidateRevision === currentRevision ||
+      rewrittenReviewedObservation ||
       (
         (
           runGit(spec.dir, ["merge-base", "--is-ancestor", identity.revision, candidateRevision]) !== null &&
@@ -324,10 +358,6 @@ function reviewedLineageMatches(
   ) {
     return false;
   }
-  if (runGit(spec.dir, ["cat-file", "-t", candidateRevision]) !== "commit" ||
-      runGit(spec.dir, ["cat-file", "-t", identity.revision]) !== "commit") {
-    return false;
-  }
   if (currentRevision !== candidateRevision &&
       runGit(spec.dir, ["merge-base", "--is-ancestor", currentRevision, candidateRevision]) !== null) {
     return false;
@@ -342,7 +372,6 @@ function reviewedLineageMatches(
   ) {
     return false;
   }
-  const currentTree = runGit(spec.dir, ["rev-parse", `${currentRevision}^{tree}`]);
   if (runGit(spec.dir, ["rev-parse", `${identity.revision}^{tree}`]) !== identity.tree ||
       (
         currentTree !== identity.tree &&

@@ -560,10 +560,44 @@ function reviewedLineageMatchesWithIdentity(
   // CONTENT_BOUND_OBSERVATION_V1: a recorded current observation may predate
   // the final reviewed tip only when the selected content revision anchors it.
   if (!identity) return false;
+  if (runGit(dir, ["cat-file", "-t", candidateRevision]) !== "commit" ||
+      runGit(dir, ["cat-file", "-t", currentRevision]) !== "commit" ||
+      runGit(dir, ["cat-file", "-t", identity.revision]) !== "commit") {
+    return false;
+  }
+  const currentTree = runGit(dir, ["rev-parse", `${currentRevision}^{tree}`]);
+  const rewriteDiff = runGit(
+    dir,
+    ["diff", "--name-only", "--no-renames", candidateRevision, currentRevision],
+  );
+  const rewritePaths = rewriteDiff === null
+    ? null
+    : rewriteDiff.split(/\r?\n/).filter(Boolean);
+  const rewrittenReviewedObservation =
+    ["current", "generator"].includes(role) &&
+    (
+      role !== "generator" ||
+      (
+        candidateRevision !== identity.contentRevision &&
+        candidateRevision !== identity.revision
+      )
+    ) &&
+    currentTree === identity.tree &&
+    runGit(
+      dir,
+      ["merge-base", "--is-ancestor", identity.contentRevision, candidateRevision],
+    ) !== null &&
+    runGit(
+      dir,
+      ["merge-base", "--is-ancestor", candidateRevision, identity.revision],
+    ) !== null &&
+    rewritePaths !== null &&
+    !rewritePaths.includes(path);
   const candidateIsReviewedObservation =
     ["current", "generator"].includes(role) &&
     (
       candidateRevision === currentRevision ||
+      rewrittenReviewedObservation ||
       (
         (
           runGit(dir, ["merge-base", "--is-ancestor", identity.revision, candidateRevision]) !== null &&
@@ -603,10 +637,6 @@ function reviewedLineageMatchesWithIdentity(
   ) {
     return false;
   }
-  if (runGit(dir, ["cat-file", "-t", candidateRevision]) !== "commit" ||
-      runGit(dir, ["cat-file", "-t", identity.revision]) !== "commit") {
-    return false;
-  }
   if ((currentRevision !== candidateRevision &&
       runGit(dir, ["merge-base", "--is-ancestor", currentRevision, candidateRevision]) !== null) ||
       (
@@ -619,7 +649,6 @@ function reviewedLineageMatchesWithIdentity(
       )) {
     return false;
   }
-  const currentTree = runGit(dir, ["rev-parse", `${currentRevision}^{tree}`]);
   if (runGit(dir, ["rev-parse", `${identity.revision}^{tree}`]) !== identity.tree ||
       (
         currentTree !== identity.tree &&
@@ -853,6 +882,64 @@ function revisionRelationshipSelfTest() {
       reviewedIdentity,
     )) {
       fail("revision relationship self-test rejected an unchanged recorded observation on a reviewed lineage.");
+    }
+    const postObservationTree = fixtureGit([
+      "rev-parse",
+      `${postObservationDescendant}^{tree}`,
+    ]);
+    const rewrittenPostObservation = fixtureGit([
+      "commit-tree",
+      postObservationTree,
+      "-m",
+      "controlled squash-rewritten current tree",
+    ]);
+    const rewrittenPostObservationIdentity = {
+      ...reviewedIdentity,
+      revision: postObservationDescendant,
+      tree: postObservationTree,
+    };
+    if (!revisionMatchesWithIdentity(
+      "HawkinsOperations/hawkinsoperations-website",
+      fixture,
+      unchangedAuthorityDescendant,
+      rewrittenPostObservation,
+      "authority.txt",
+      unchangedAuthorityBlob,
+      "current",
+      rewrittenPostObservationIdentity,
+    )) {
+      fail("revision relationship self-test rejected a content-safe squash rewrite.");
+    }
+    fixtureGit(["checkout", "--detach", postObservationDescendant]);
+    writeFileSync(join(fixture, "authority.txt"), "squash changed authority\n");
+    fixtureGit(["add", "authority.txt"]);
+    fixtureGit(["commit", "-m", "controlled squash authority mutation"]);
+    const changedSquashReviewed = fixtureGit(["rev-parse", "HEAD"]);
+    const changedSquashTree = fixtureGit([
+      "rev-parse",
+      `${changedSquashReviewed}^{tree}`,
+    ]);
+    const rewrittenChangedSquash = fixtureGit([
+      "commit-tree",
+      changedSquashTree,
+      "-m",
+      "controlled rewritten changed authority",
+    ]);
+    if (revisionMatchesWithIdentity(
+      "HawkinsOperations/hawkinsoperations-website",
+      fixture,
+      unchangedAuthorityDescendant,
+      rewrittenChangedSquash,
+      "authority.txt",
+      fixtureGit(["rev-parse", `${rewrittenChangedSquash}:authority.txt`]),
+      "current",
+      {
+        ...reviewedIdentity,
+        revision: changedSquashReviewed,
+        tree: changedSquashTree,
+      },
+    )) {
+      fail("revision relationship self-test accepted a squash rewrite that changed authority.");
     }
     fixtureGit(["checkout", "--detach", reviewedFinal]);
     writeFileSync(join(fixture, "authority.txt"), "changed authority\n");
