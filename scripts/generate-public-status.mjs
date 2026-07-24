@@ -367,7 +367,8 @@ function reviewedLineageMatches(
   if (runGit(spec.dir, ["rev-parse", `${identity.revision}^{tree}`]) !== identity.tree ||
       (
         currentTree !== identity.tree &&
-        runGit(spec.dir, ["merge-base", "--is-ancestor", identity.revision, currentRevision]) === null
+        runGit(spec.dir, ["merge-base", "--is-ancestor", identity.revision, currentRevision]) === null &&
+        !reviewedCurrentTreeProjectionAllowed(spec, currentRevision, identity)
       )) {
     return false;
   }
@@ -389,14 +390,85 @@ function observationProjectionAllowed(spec, candidateRevision, reviewedRevision,
   };
   const allowed = allowedByRepo[spec.repo];
   if (!allowed || !["current", "generator"].includes(role)) return false;
-  if (runGit(spec.dir, ["rev-parse", `${reviewedRevision}^`]) !== candidateRevision) return false;
   const changed = runGit(
     spec.dir,
     ["diff", "--name-only", "--no-renames", candidateRevision, reviewedRevision],
   );
   const paths = changed ? changed.split(/\r?\n/).filter(Boolean) : [];
-  return paths.length === allowed.size &&
-    paths.every((path) => allowed.has(path));
+  if (paths.length !== allowed.size || !paths.every((path) => allowed.has(path))) {
+    return false;
+  }
+  if (runGit(spec.dir, ["rev-parse", `${reviewedRevision}^`]) === candidateRevision) {
+    return true;
+  }
+  if (spec.repo !== "HawkinsOperations/.github") return false;
+  return commandManifestAuthorityIdentity(spec.dir, candidateRevision) !== null &&
+    commandManifestAuthorityIdentity(spec.dir, candidateRevision) ===
+      commandManifestAuthorityIdentity(spec.dir, reviewedRevision);
+}
+
+function commandManifestAuthorityIdentity(dir, revision) {
+  const path = "governance/CONVERGENCE_SOURCE_MANIFEST.json";
+  const text = committedText(dir, revision, path);
+  if (text === null) return null;
+  try {
+    const manifest = strictJsonParse(text, `${path}@${revision}`);
+    const entries = manifest?.repositories;
+    if (
+      manifest?.schema !== "hawkinsoperations-convergence-source-manifest-v1" ||
+      !Array.isArray(entries) ||
+      entries.length !== 7 ||
+      new Set(entries.map((entry) => entry?.canonical_repository)).size !== 7 ||
+      entries.some((entry) =>
+        typeof entry?.canonical_repository !== "string" ||
+        !/^[a-f0-9]{40}$/.test(entry?.authority_content_revision ?? "")
+      )
+    ) {
+      return null;
+    }
+    return JSON.stringify({
+      schema: manifest.schema,
+      exact_repository_count: manifest?.constraints?.exact_repository_count,
+      read_only: manifest?.constraints?.read_only,
+      consumer_outputs_are_not_authority:
+        manifest?.constraints?.consumer_outputs_are_not_authority,
+      proof_ceiling: manifest?.constraints?.proof_ceiling,
+      authorities: entries
+        .map((entry) => ({
+          repository: entry.canonical_repository,
+          authority_content_revision: entry.authority_content_revision,
+        }))
+        .sort((left, right) => left.repository.localeCompare(right.repository)),
+    });
+  } catch {
+    return null;
+  }
+}
+
+function reviewedCurrentTreeProjectionAllowed(spec, currentRevision, identity) {
+  if (spec.repo !== "HawkinsOperations/hawkinsoperations-website") return false;
+  const allowed = new Set([".github/workflows/public-status-sync.yml"]);
+  const changed = runGit(
+    spec.dir,
+    ["diff", "--name-only", "--no-renames", identity.revision, currentRevision],
+  );
+  const paths = changed ? changed.split(/\r?\n/).filter(Boolean) : [];
+  if (paths.length !== allowed.size || !paths.every((path) => allowed.has(path))) {
+    return false;
+  }
+  const boundPaths = [
+    "schemas/public-status-v0.schema.json",
+    "config/public-status-source-manifest-v1.json",
+    "scripts/generate-public-status.mjs",
+    "scripts/verify-public-status.mjs",
+    "public/data/public-status.json",
+    "src/data/generated/public-status.generated.ts",
+  ];
+  return boundPaths.every(
+    (path) =>
+      runGit(spec.dir, ["rev-parse", `${identity.revision}:${path}`]) ===
+      runGit(spec.dir, ["rev-parse", `${currentRevision}:${path}`]),
+  );
 }
 
 function revisionMatches(spec, candidateRevision, currentRevision, path, currentBlob, role) {
@@ -428,7 +500,8 @@ function revisionMatchesWithIdentity(
     runGit(spec.dir, ["rev-parse", `${identity.revision}^{tree}`]) === identity.tree &&
     (
       currentTree === identity.tree ||
-      runGit(spec.dir, ["merge-base", "--is-ancestor", identity.revision, currentRevision]) !== null
+      runGit(spec.dir, ["merge-base", "--is-ancestor", identity.revision, currentRevision]) !== null ||
+      reviewedCurrentTreeProjectionAllowed(spec, currentRevision, identity)
     );
   if (!reviewedIdentityIsActive) return false;
   return reviewedLineageMatches(

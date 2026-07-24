@@ -641,7 +641,8 @@ function reviewedLineageMatchesWithIdentity(
   if (runGit(dir, ["rev-parse", `${identity.revision}^{tree}`]) !== identity.tree ||
       (
         currentTree !== identity.tree &&
-        runGit(dir, ["merge-base", "--is-ancestor", identity.revision, currentRevision]) === null
+        runGit(dir, ["merge-base", "--is-ancestor", identity.revision, currentRevision]) === null &&
+        !reviewedCurrentTreeProjectionAllowed(repo, dir, currentRevision, identity)
       )) {
     return false;
   }
@@ -663,14 +664,85 @@ function observationProjectionAllowed(repo, dir, candidateRevision, reviewedRevi
   };
   const allowed = allowedByRepo[repo];
   if (!allowed || !["current", "generator"].includes(role)) return false;
-  if (runGit(dir, ["rev-parse", `${reviewedRevision}^`]) !== candidateRevision) return false;
   const changed = runGit(
     dir,
     ["diff", "--name-only", "--no-renames", candidateRevision, reviewedRevision],
   );
   const paths = changed ? changed.split(/\r?\n/).filter(Boolean) : [];
-  return paths.length === allowed.size &&
-    paths.every((path) => allowed.has(path));
+  if (paths.length !== allowed.size || !paths.every((path) => allowed.has(path))) {
+    return false;
+  }
+  if (runGit(dir, ["rev-parse", `${reviewedRevision}^`]) === candidateRevision) {
+    return true;
+  }
+  if (repo !== "HawkinsOperations/.github") return false;
+  return commandManifestAuthorityIdentity(dir, candidateRevision) !== null &&
+    commandManifestAuthorityIdentity(dir, candidateRevision) ===
+      commandManifestAuthorityIdentity(dir, reviewedRevision);
+}
+
+function commandManifestAuthorityIdentity(dir, revision) {
+  const path = "governance/CONVERGENCE_SOURCE_MANIFEST.json";
+  const text = committedText(dir, revision, path);
+  if (text === null) return null;
+  try {
+    const manifest = strictJsonParse(text, `${path}@${revision}`);
+    const entries = manifest?.repositories;
+    if (
+      manifest?.schema !== "hawkinsoperations-convergence-source-manifest-v1" ||
+      !Array.isArray(entries) ||
+      entries.length !== 7 ||
+      new Set(entries.map((entry) => entry?.canonical_repository)).size !== 7 ||
+      entries.some((entry) =>
+        typeof entry?.canonical_repository !== "string" ||
+        !/^[a-f0-9]{40}$/.test(entry?.authority_content_revision ?? "")
+      )
+    ) {
+      return null;
+    }
+    return JSON.stringify({
+      schema: manifest.schema,
+      exact_repository_count: manifest?.constraints?.exact_repository_count,
+      read_only: manifest?.constraints?.read_only,
+      consumer_outputs_are_not_authority:
+        manifest?.constraints?.consumer_outputs_are_not_authority,
+      proof_ceiling: manifest?.constraints?.proof_ceiling,
+      authorities: entries
+        .map((entry) => ({
+          repository: entry.canonical_repository,
+          authority_content_revision: entry.authority_content_revision,
+        }))
+        .sort((left, right) => left.repository.localeCompare(right.repository)),
+    });
+  } catch {
+    return null;
+  }
+}
+
+function reviewedCurrentTreeProjectionAllowed(repo, dir, currentRevision, identity) {
+  if (repo !== "HawkinsOperations/hawkinsoperations-website") return false;
+  const allowed = new Set([".github/workflows/public-status-sync.yml"]);
+  const changed = runGit(
+    dir,
+    ["diff", "--name-only", "--no-renames", identity.revision, currentRevision],
+  );
+  const paths = changed ? changed.split(/\r?\n/).filter(Boolean) : [];
+  if (paths.length !== allowed.size || !paths.every((path) => allowed.has(path))) {
+    return false;
+  }
+  const boundPaths = [
+    "schemas/public-status-v0.schema.json",
+    "config/public-status-source-manifest-v1.json",
+    "scripts/generate-public-status.mjs",
+    "scripts/verify-public-status.mjs",
+    "public/data/public-status.json",
+    "src/data/generated/public-status.generated.ts",
+  ];
+  return boundPaths.every(
+    (path) =>
+      runGit(dir, ["rev-parse", `${identity.revision}:${path}`]) ===
+      runGit(dir, ["rev-parse", `${currentRevision}:${path}`]),
+  );
 }
 
 function reviewedLineageMatchesInRepo(repo, dir, candidateRevision, currentRevision, path, currentBlob, role) {
@@ -717,7 +789,8 @@ function revisionMatchesWithIdentity(
     runGit(dir, ["rev-parse", `${identity.revision}^{tree}`]) === identity.tree &&
     (
       currentTree === identity.tree ||
-      runGit(dir, ["merge-base", "--is-ancestor", identity.revision, currentRevision]) !== null
+      runGit(dir, ["merge-base", "--is-ancestor", identity.revision, currentRevision]) !== null ||
+      reviewedCurrentTreeProjectionAllowed(repo, dir, currentRevision, identity)
     );
   if (!reviewedIdentityIsActive) return false;
   return reviewedLineageMatchesWithIdentity(
@@ -747,7 +820,19 @@ function revisionRelationshipSelfTest() {
     fixtureGit(["config", "user.email", "controlled-test.invalid"]);
     writeFileSync(join(fixture, "authority.txt"), "owned authority\n");
     writeFileSync(join(fixture, "other.txt"), "base\n");
-    fixtureGit(["add", "authority.txt", "other.txt"]);
+    for (const path of [
+      "schemas/public-status-v0.schema.json",
+      "config/public-status-source-manifest-v1.json",
+      "scripts/generate-public-status.mjs",
+      "scripts/verify-public-status.mjs",
+      "public/data/public-status.json",
+      "src/data/generated/public-status.generated.ts",
+      ".github/workflows/public-status-sync.yml",
+    ]) {
+      mkdirSync(join(fixture, path, ".."), { recursive: true });
+      writeFileSync(join(fixture, path), `controlled ${path}\n`);
+    }
+    fixtureGit(["add", "."]);
     fixtureGit(["commit", "-m", "controlled base"]);
     const base = fixtureGit(["rev-parse", "HEAD"]);
 
@@ -787,6 +872,60 @@ function revisionRelationshipSelfTest() {
       currentObservation: current,
       generatorObservation: current,
     };
+    fixtureGit(["checkout", "--detach", reviewedFinal]);
+    writeFileSync(
+      join(fixture, ".github", "workflows", "public-status-sync.yml"),
+      "controlled post-pair workflow pin\n",
+    );
+    fixtureGit(["add", ".github/workflows/public-status-sync.yml"]);
+    fixtureGit(["commit", "-m", "controlled post-pair workflow pin"]);
+    const postPairWorkflow = fixtureGit(["rev-parse", "HEAD"]);
+    const postPairTree = fixtureGit(["rev-parse", `${postPairWorkflow}^{tree}`]);
+    const rewrittenPostPair = fixtureGit([
+      "commit-tree",
+      postPairTree,
+      "-m",
+      "controlled rewritten post-pair tree",
+    ]);
+    if (!revisionMatchesWithIdentity(
+      "HawkinsOperations/hawkinsoperations-website",
+      fixture,
+      current,
+      rewrittenPostPair,
+      "authority.txt",
+      fixtureGit(["rev-parse", `${rewrittenPostPair}:authority.txt`]),
+      "current",
+      reviewedIdentity,
+    )) {
+      fail(
+        "revision relationship self-test rejected a content-safe squash rewrite "
+        + "with only the reviewed post-pair workflow path changed.",
+      );
+    }
+    fixtureGit(["checkout", "--detach", postPairWorkflow]);
+    writeFileSync(join(fixture, "unexpected-post-pair.txt"), "not allowlisted\n");
+    fixtureGit(["add", "unexpected-post-pair.txt"]);
+    fixtureGit(["commit", "-m", "controlled unsafe post-pair rewrite"]);
+    const unsafePostPair = fixtureGit(["rev-parse", "HEAD"]);
+    const unsafePostPairTree = fixtureGit(["rev-parse", `${unsafePostPair}^{tree}`]);
+    const rewrittenUnsafePostPair = fixtureGit([
+      "commit-tree",
+      unsafePostPairTree,
+      "-m",
+      "controlled rewritten unsafe post-pair tree",
+    ]);
+    if (revisionMatchesWithIdentity(
+      "HawkinsOperations/hawkinsoperations-website",
+      fixture,
+      current,
+      rewrittenUnsafePostPair,
+      "authority.txt",
+      fixtureGit(["rev-parse", `${rewrittenUnsafePostPair}:authority.txt`]),
+      "current",
+      reviewedIdentity,
+    )) {
+      fail("revision relationship self-test accepted a post-pair rewrite with an extra path.");
+    }
     fixtureGit(["checkout", "--detach", reviewedFinal]);
     writeFileSync(join(fixture, "other.txt"), "post-review unrelated change\n");
     fixtureGit(["add", "other.txt"]);
