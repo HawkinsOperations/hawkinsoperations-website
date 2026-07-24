@@ -12,11 +12,42 @@ const REPOSITORY_OUTPUTS = Object.freeze({
   "HawkinsOperations/hawkinsoperations-proof": "proof",
 });
 
+const CONTENT_REPOSITORY_ORDER = Object.freeze([
+  "HawkinsOperations/.github",
+  "HawkinsOperations/hoxline",
+  "HawkinsOperations/hawkinsoperations-detections",
+  "HawkinsOperations/hawkinsoperations-validation",
+  "HawkinsOperations/hawkinsoperations-platform",
+  "HawkinsOperations/hawkinsoperations-proof",
+  "HawkinsOperations/hawkinsoperations-website",
+]);
+const REVIEWED_REPOSITORY_ORDER = Object.freeze([
+  "HawkinsOperations/.github",
+  "HawkinsOperations/hawkinsoperations-detections",
+  "HawkinsOperations/hawkinsoperations-validation",
+  "HawkinsOperations/hawkinsoperations-platform",
+  "HawkinsOperations/hawkinsoperations-proof",
+  "HawkinsOperations/hawkinsoperations-website",
+  "HawkinsOperations/hoxline",
+]);
+const AUTHORITY_PATHS = Object.freeze({
+  "HawkinsOperations/.github": "architecture/REPO_AUTHORITY_MAP.md",
+  "HawkinsOperations/hoxline": "schemas/case-growth-index-v0.schema.json",
+  "HawkinsOperations/hawkinsoperations-detections": "detections/DETECTION_PROMOTION_MATRIX.yml",
+  "HawkinsOperations/hawkinsoperations-validation": "activity/detection-activity-ledger-v1.json",
+  "HawkinsOperations/hawkinsoperations-platform": "contracts/reviewer-metrics-pipeline-v1-state.json",
+  "HawkinsOperations/hawkinsoperations-proof": "proof/indexes/DETECTION_PROOF_STATUS_INDEX.yml",
+  "HawkinsOperations/hawkinsoperations-website": "schemas/public-status-v0.schema.json",
+});
 const SHA_PATTERN = /^[a-f0-9]{40}$/;
 
-function uniqueEntries(entries, key, label) {
+function exactEntries(entries, key, label, expectedOrder) {
   if (!Array.isArray(entries) || entries.length !== 7) {
     throw new Error(`${label} must contain exactly seven repositories.`);
+  }
+  const actualOrder = entries.map((entry) => entry?.[key]);
+  if (actualOrder.some((repository, index) => repository !== expectedOrder[index])) {
+    throw new Error(`${label} must contain the exact canonical repository set and order.`);
   }
   const byRepository = Object.fromEntries(entries.map((entry) => [entry?.[key], entry]));
   if (Object.keys(byRepository).length !== 7 || Object.hasOwn(byRepository, "undefined")) {
@@ -31,26 +62,41 @@ export function resolveReviewedCheckouts({
   commandManifestSha,
 }) {
   if (contentManifest?.manifest_version !== "public-status-source-manifest-v1" ||
-      contentManifest?.observation_kind !== "reviewed_immutable_commit") {
+      contentManifest?.observation_kind !== "reviewed_immutable_commit" ||
+      Object.keys(contentManifest).sort().join(",") !==
+        "manifest_version,observation_kind,repositories") {
     throw new Error("Content manifest identity or observation kind is invalid.");
   }
   if (reviewedManifest?.schema !== "hawkinsoperations-convergence-source-manifest-v1" ||
-      reviewedManifest?.constraints?.exact_repository_count !== 7) {
+      reviewedManifest?.manifest_id !== "HAWKINSOPERATIONS_SEVEN_SOURCE_PR_HEAD_MATRIX_V1" ||
+      JSON.stringify(reviewedManifest?.constraints) !== JSON.stringify({
+        exact_repository_count: 7,
+        read_only: true,
+        default_branch_fallback: false,
+        require_detached_exact_revision: true,
+        record_checked_revisions: true,
+        consumer_outputs_are_not_authority: true,
+        proof_ceiling: "CONTROLLED_REPO_CONVERGENCE_AND_LOCAL_FIXTURE_REVIEW_ONLY",
+      }) ||
+      Object.keys(reviewedManifest).sort().join(",") !==
+        "constraints,manifest_id,repositories,schema") {
     throw new Error("Reviewed-head manifest identity or repository count is invalid.");
   }
   if (!SHA_PATTERN.test(commandManifestSha ?? "")) {
     throw new Error("Command-center manifest SHA must be an immutable commit identity.");
   }
 
-  const contentEntries = uniqueEntries(
+  const contentEntries = exactEntries(
     contentManifest.repositories,
     "repository",
     "Content manifest",
+    CONTENT_REPOSITORY_ORDER,
   );
-  const reviewedEntries = uniqueEntries(
+  const reviewedEntries = exactEntries(
     reviewedManifest.repositories,
     "canonical_repository",
     "Reviewed-head manifest",
+    REVIEWED_REPOSITORY_ORDER,
   );
   const commandEntry = reviewedEntries["HawkinsOperations/.github"];
   if (commandEntry?.revision_source !== "github_event_sha" ||
@@ -58,16 +104,36 @@ export function resolveReviewedCheckouts({
     throw new Error("Command-center reviewed identity must be supplied by the pinned event manifest.");
   }
 
-  const outputs = {};
-  for (const [repository, output] of Object.entries(REPOSITORY_OUTPUTS)) {
+  for (const repository of CONTENT_REPOSITORY_ORDER) {
     const content = contentEntries[repository];
     const reviewed = reviewedEntries[repository];
+    const expectedShortRepository = repository.replace("HawkinsOperations/", "");
     if (!content ||
         !reviewed ||
+        reviewed.repository !== expectedShortRepository ||
+        content.authoritative_path !== AUTHORITY_PATHS[repository] ||
+        Object.keys(content).sort().join(",") !==
+          "authoritative_path,repository,revision" ||
         !SHA_PATTERN.test(content.revision ?? "") ||
         !SHA_PATTERN.test(reviewed.authority_content_revision ?? "")) {
       throw new Error(`Invalid immutable content/reviewed identity for ${repository}.`);
     }
+    if (repository === "HawkinsOperations/.github") {
+      if (Object.keys(reviewed).sort().join(",") !==
+            "authority_content_revision,canonical_repository,repository,revision_source,tree_source") {
+        throw new Error("Command-center reviewed entry has an unsupported shape.");
+      }
+    } else if (Object.keys(reviewed).sort().join(",") !==
+        "authority_content_revision,canonical_repository,repository,reviewed_tree_sha,revision" ||
+        !SHA_PATTERN.test(reviewed.revision ?? "") ||
+        !SHA_PATTERN.test(reviewed.reviewed_tree_sha ?? "")) {
+      throw new Error(`Reviewed-head entry has an unsupported shape: ${repository}.`);
+    }
+  }
+
+  const outputs = {};
+  for (const [repository, output] of Object.entries(REPOSITORY_OUTPUTS)) {
+    const reviewed = reviewedEntries[repository];
     const revision = repository === "HawkinsOperations/.github"
       ? commandManifestSha
       : reviewed.revision;
@@ -96,20 +162,37 @@ function selfTest() {
     repositories: repositories.map((repository) => ({
       repository,
       revision: sha("1"),
-      authoritative_path: "authority.json",
+      authoritative_path: AUTHORITY_PATHS[repository],
     })),
   };
   const reviewedManifest = {
     schema: "hawkinsoperations-convergence-source-manifest-v1",
-    constraints: { exact_repository_count: 7 },
-    repositories: repositories.map((canonical_repository) => ({
-      canonical_repository,
-      revision: sha("2"),
-      authority_content_revision: sha("1"),
-      ...(canonical_repository === "HawkinsOperations/.github"
-        ? { revision_source: "github_event_sha", tree_source: "github_event_tree" }
-        : {}),
-    })),
+    manifest_id: "HAWKINSOPERATIONS_SEVEN_SOURCE_PR_HEAD_MATRIX_V1",
+    constraints: {
+      exact_repository_count: 7,
+      read_only: true,
+      default_branch_fallback: false,
+      require_detached_exact_revision: true,
+      record_checked_revisions: true,
+      consumer_outputs_are_not_authority: true,
+      proof_ceiling: "CONTROLLED_REPO_CONVERGENCE_AND_LOCAL_FIXTURE_REVIEW_ONLY",
+    },
+    repositories: REVIEWED_REPOSITORY_ORDER.map((canonical_repository) =>
+      canonical_repository === "HawkinsOperations/.github"
+        ? {
+          repository: ".github",
+          canonical_repository,
+          revision_source: "github_event_sha",
+          tree_source: "github_event_tree",
+          authority_content_revision: sha("1"),
+        }
+        : {
+          repository: canonical_repository.replace("HawkinsOperations/", ""),
+          canonical_repository,
+          revision: sha("2"),
+          authority_content_revision: sha("1"),
+          reviewed_tree_sha: sha("4"),
+        }),
   };
   const resolved = resolveReviewedCheckouts({
     contentManifest,
@@ -130,7 +213,7 @@ function selfTest() {
       reviewedManifest: duplicate,
       commandManifestSha: sha("3"),
     }),
-    /unique/,
+    /exact canonical repository set and order/,
   );
   const missingReviewedRevision = structuredClone(reviewedManifest);
   delete missingReviewedRevision.repositories[1].revision;
@@ -140,7 +223,67 @@ function selfTest() {
       reviewedManifest: missingReviewedRevision,
       commandManifestSha: sha("3"),
     }),
-    /reviewed checkout revision/,
+    /unsupported shape/,
+  );
+  const forgedContentOwner = structuredClone(contentManifest);
+  forgedContentOwner.repositories[6].repository = "HawkinsOperations/attacker";
+  assert.throws(
+    () => resolveReviewedCheckouts({
+      contentManifest: forgedContentOwner,
+      reviewedManifest,
+      commandManifestSha: sha("3"),
+    }),
+    /exact canonical repository set and order/,
+  );
+  const forgedContentPath = structuredClone(contentManifest);
+  forgedContentPath.repositories[2].authoritative_path = "README.md";
+  assert.throws(
+    () => resolveReviewedCheckouts({
+      contentManifest: forgedContentPath,
+      reviewedManifest,
+      commandManifestSha: sha("3"),
+    }),
+    /identity/,
+  );
+  const forgedReviewedOwner = structuredClone(reviewedManifest);
+  forgedReviewedOwner.repositories[5].canonical_repository = "HawkinsOperations/attacker";
+  assert.throws(
+    () => resolveReviewedCheckouts({
+      contentManifest,
+      reviewedManifest: forgedReviewedOwner,
+      commandManifestSha: sha("3"),
+    }),
+    /exact canonical repository set and order/,
+  );
+  const wrongManifestId = structuredClone(reviewedManifest);
+  wrongManifestId.manifest_id = "UNREVIEWED_MATRIX";
+  assert.throws(
+    () => resolveReviewedCheckouts({
+      contentManifest,
+      reviewedManifest: wrongManifestId,
+      commandManifestSha: sha("3"),
+    }),
+    /identity/,
+  );
+  const spoofedShortOwner = structuredClone(reviewedManifest);
+  spoofedShortOwner.repositories[2].repository = "attacker-suffix-spoof";
+  assert.throws(
+    () => resolveReviewedCheckouts({
+      contentManifest,
+      reviewedManifest: spoofedShortOwner,
+      commandManifestSha: sha("3"),
+    }),
+    /identity/,
+  );
+  const alteredConstraints = structuredClone(reviewedManifest);
+  alteredConstraints.constraints.default_branch_fallback = true;
+  assert.throws(
+    () => resolveReviewedCheckouts({
+      contentManifest,
+      reviewedManifest: alteredConstraints,
+      commandManifestSha: sha("3"),
+    }),
+    /identity/,
   );
   console.log("Public-status reviewed checkout resolver self-test passed.");
 }

@@ -167,6 +167,15 @@ const checkoutRepositories = [
   "HawkinsOperations/hawkinsoperations-website",
 ];
 const checkoutSha = (character) => character.repeat(40);
+const checkoutAuthorityPaths = {
+  "HawkinsOperations/.github": "architecture/REPO_AUTHORITY_MAP.md",
+  "HawkinsOperations/hoxline": "schemas/case-growth-index-v0.schema.json",
+  "HawkinsOperations/hawkinsoperations-detections": "detections/DETECTION_PROMOTION_MATRIX.yml",
+  "HawkinsOperations/hawkinsoperations-validation": "activity/detection-activity-ledger-v1.json",
+  "HawkinsOperations/hawkinsoperations-platform": "contracts/reviewer-metrics-pipeline-v1-state.json",
+  "HawkinsOperations/hawkinsoperations-proof": "proof/indexes/DETECTION_PROOF_STATUS_INDEX.yml",
+  "HawkinsOperations/hawkinsoperations-website": "schemas/public-status-v0.schema.json",
+};
 const resolvedCheckoutFixture = resolveReviewedCheckouts({
   contentManifest: {
     manifest_version: "public-status-source-manifest-v1",
@@ -174,20 +183,45 @@ const resolvedCheckoutFixture = resolveReviewedCheckouts({
     repositories: checkoutRepositories.map((repository) => ({
       repository,
       revision: checkoutSha("1"),
-      authoritative_path: "authority.json",
+      authoritative_path: checkoutAuthorityPaths[repository],
     })),
   },
   reviewedManifest: {
     schema: "hawkinsoperations-convergence-source-manifest-v1",
-    constraints: { exact_repository_count: 7 },
-    repositories: checkoutRepositories.map((canonical_repository) => ({
-      canonical_repository,
-      revision: checkoutSha("2"),
-      authority_content_revision: checkoutSha("1"),
-      ...(canonical_repository === "HawkinsOperations/.github"
-        ? { revision_source: "github_event_sha", tree_source: "github_event_tree" }
-        : {}),
-    })),
+    manifest_id: "HAWKINSOPERATIONS_SEVEN_SOURCE_PR_HEAD_MATRIX_V1",
+    constraints: {
+      exact_repository_count: 7,
+      read_only: true,
+      default_branch_fallback: false,
+      require_detached_exact_revision: true,
+      record_checked_revisions: true,
+      consumer_outputs_are_not_authority: true,
+      proof_ceiling: "CONTROLLED_REPO_CONVERGENCE_AND_LOCAL_FIXTURE_REVIEW_ONLY",
+    },
+    repositories: [
+      "HawkinsOperations/.github",
+      "HawkinsOperations/hawkinsoperations-detections",
+      "HawkinsOperations/hawkinsoperations-validation",
+      "HawkinsOperations/hawkinsoperations-platform",
+      "HawkinsOperations/hawkinsoperations-proof",
+      "HawkinsOperations/hawkinsoperations-website",
+      "HawkinsOperations/hoxline",
+    ].map((canonical_repository) =>
+      canonical_repository === "HawkinsOperations/.github"
+        ? {
+          repository: ".github",
+          canonical_repository,
+          revision_source: "github_event_sha",
+          tree_source: "github_event_tree",
+          authority_content_revision: checkoutSha("1"),
+        }
+        : {
+          repository: canonical_repository.replace("HawkinsOperations/", ""),
+          canonical_repository,
+          revision: checkoutSha("2"),
+          authority_content_revision: checkoutSha("1"),
+          reviewed_tree_sha: checkoutSha("4"),
+        }),
   },
   commandManifestSha: checkoutSha("3"),
 });
