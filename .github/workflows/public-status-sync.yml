@@ -17,7 +17,7 @@ permissions:
 
 env:
   HAWKINS_WEBSITE_IMMUTABLE_OBSERVED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA: 5c6127f5acc1031bae2528df3ce1f197da882100
+  HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA: d7c92a8775be17334e2ed64a474299f0439604d9
 
 jobs:
   public-status-convergence:
