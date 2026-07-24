@@ -428,15 +428,23 @@ function commandManifestAuthorityIdentity(dir, revision) {
     }
     return JSON.stringify({
       schema: manifest.schema,
+      manifest_id: manifest.manifest_id,
       exact_repository_count: manifest?.constraints?.exact_repository_count,
       read_only: manifest?.constraints?.read_only,
+      default_branch_fallback: manifest?.constraints?.default_branch_fallback,
+      require_detached_exact_revision:
+        manifest?.constraints?.require_detached_exact_revision,
+      record_checked_revisions: manifest?.constraints?.record_checked_revisions,
       consumer_outputs_are_not_authority:
         manifest?.constraints?.consumer_outputs_are_not_authority,
       proof_ceiling: manifest?.constraints?.proof_ceiling,
       authorities: entries
         .map((entry) => ({
+          repository_name: entry.repository,
           repository: entry.canonical_repository,
           authority_content_revision: entry.authority_content_revision,
+          revision_source: entry.revision_source ?? null,
+          tree_source: entry.tree_source ?? null,
         }))
         .sort((left, right) => left.repository.localeCompare(right.repository)),
     });
