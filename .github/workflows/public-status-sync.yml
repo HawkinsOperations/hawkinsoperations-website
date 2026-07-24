@@ -57,7 +57,7 @@ jobs:
           set -euo pipefail
           event_sha="$(git rev-parse HEAD)"
           for sha in "$WEBSITE_CONTENT_SHA" "$WEBSITE_AUTHORITY_CONTENT_SHA"; do
-            git fetch --no-tags --depth=1 origin "$sha"
+            git fetch --no-tags origin "$sha"
             git cat-file -e "${sha}^{commit}"
           done
           test "$(git rev-parse HEAD)" = "$event_sha"

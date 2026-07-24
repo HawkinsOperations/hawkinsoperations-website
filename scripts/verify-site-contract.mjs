@@ -118,7 +118,8 @@ function publicStatusWorkflowFindings(workflow) {
   if (!workflow.includes("Fetch immutable Website content identities without changing HEAD") ||
       !workflow.includes("WEBSITE_CONTENT_SHA: ${{ steps.manifest.outputs.website_content }}") ||
       !workflow.includes("WEBSITE_AUTHORITY_CONTENT_SHA: ${{ steps.manifest.outputs.website_authority_content }}") ||
-      !workflow.includes('git fetch --no-tags --depth=1 origin "$sha"') ||
+      !workflow.includes('git fetch --no-tags origin "$sha"') ||
+      workflow.includes("git fetch --no-tags --depth=") ||
       !workflow.includes('git cat-file -e "${sha}^{commit}"') ||
       !workflow.includes('test "$(git rev-parse HEAD)" = "$event_sha"')) {
     findings.push(
@@ -176,8 +177,15 @@ for (const [label, hostileWorkflow] of [
   [
     "website content identity fetch removal",
     publicStatusWorkflow.replace(
-      'git fetch --no-tags --depth=1 origin "$sha"',
+      'git fetch --no-tags origin "$sha"',
       'echo "fetch omitted"',
+    ),
+  ],
+  [
+    "shallow website content identity fetch",
+    publicStatusWorkflow.replace(
+      'git fetch --no-tags origin "$sha"',
+      'git fetch --no-tags --depth=1 origin "$sha"',
     ),
   ],
   [
