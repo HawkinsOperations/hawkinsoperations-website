@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { extname, join, relative } from "node:path";
 import { readStrictJson } from "./strict-json.mjs";
+import { resolveReviewedCheckouts } from "./resolve-public-status-checkouts.mjs";
 
 const root = process.cwd();
 
@@ -27,6 +28,7 @@ const requiredFiles = [
   "app/legacy/page.tsx",
   "app/changelog/page.tsx",
   "config/site.ts",
+  "scripts/resolve-public-status-checkouts.mjs",
   "config/blocked-claims.ts",
   "config/proof-loop.ts",
   "config/truth-surfaces.ts",
@@ -73,6 +75,10 @@ const publicStatusWorkflow = readFileSync(join(root, ".github/workflows/public-s
 const governanceWorkflow = readFileSync(join(root, ".github/workflows/governance-gate.yml"), "utf8");
 const publicStatusGenerator = readFileSync(join(root, "scripts/generate-public-status.mjs"), "utf8");
 const publicStatusVerifier = readFileSync(join(root, "scripts/verify-public-status.mjs"), "utf8");
+const publicStatusCheckoutResolver = readFileSync(
+  join(root, "scripts/resolve-public-status-checkouts.mjs"),
+  "utf8",
+);
 const workflowFailures = [];
 const observationContractMarker = "CONTENT_BOUND_OBSERVATION_V1";
 if (!publicStatusGenerator.includes(observationContractMarker) ||
@@ -102,8 +108,9 @@ function publicStatusWorkflowFindings(workflow) {
   }
   if (!/HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA:\s*[a-f0-9]{40}/.test(workflow) ||
       !/Checkout reviewed source manifest[\s\S]*?ref:\s*\$\{\{\s*env\.HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA\s*\}\}/.test(workflow) ||
-      !workflow.includes("../.github/governance/CONVERGENCE_SOURCE_MANIFEST.json") ||
-      !workflow.includes("reviewed?.revision")) {
+      !workflow.includes("run: node scripts/resolve-public-status-checkouts.mjs --github-output") ||
+      !workflow.includes("run: npm run public-status:checkout-manifest-self-test") ||
+      !publicStatusCheckoutResolver.includes("../.github/governance/CONVERGENCE_SOURCE_MANIFEST.json")) {
     findings.push(
       "public-status workflow must bootstrap an immutable command-center manifest and select reviewed repository heads separately from content revisions.",
     );
@@ -140,14 +147,57 @@ for (const [label, hostileWorkflow] of [
   [
     "reviewed-head manifest removal",
     publicStatusWorkflow.replaceAll(
-      "../.github/governance/CONVERGENCE_SOURCE_MANIFEST.json",
-      "config/public-status-source-manifest-v1.json",
+      "run: node scripts/resolve-public-status-checkouts.mjs --github-output",
+      "run: node scripts/resolve-content-checkouts.mjs --github-output",
     ),
   ],
 ]) {
   if (publicStatusWorkflowFindings(hostileWorkflow).length === 0) {
     workflowFailures.push(`public-status workflow hostile test did not reject ${label}.`);
   }
+}
+
+const checkoutRepositories = [
+  "HawkinsOperations/.github",
+  "HawkinsOperations/hoxline",
+  "HawkinsOperations/hawkinsoperations-detections",
+  "HawkinsOperations/hawkinsoperations-validation",
+  "HawkinsOperations/hawkinsoperations-platform",
+  "HawkinsOperations/hawkinsoperations-proof",
+  "HawkinsOperations/hawkinsoperations-website",
+];
+const checkoutSha = (character) => character.repeat(40);
+const resolvedCheckoutFixture = resolveReviewedCheckouts({
+  contentManifest: {
+    manifest_version: "public-status-source-manifest-v1",
+    observation_kind: "reviewed_immutable_commit",
+    repositories: checkoutRepositories.map((repository) => ({
+      repository,
+      revision: checkoutSha("1"),
+      authoritative_path: "authority.json",
+    })),
+  },
+  reviewedManifest: {
+    schema: "hawkinsoperations-convergence-source-manifest-v1",
+    constraints: { exact_repository_count: 7 },
+    repositories: checkoutRepositories.map((canonical_repository) => ({
+      canonical_repository,
+      revision: checkoutSha("2"),
+      authority_content_revision: checkoutSha("1"),
+      ...(canonical_repository === "HawkinsOperations/.github"
+        ? { revision_source: "github_event_sha", tree_source: "github_event_tree" }
+        : {}),
+    })),
+  },
+  commandManifestSha: checkoutSha("3"),
+});
+if (resolvedCheckoutFixture.org !== checkoutSha("3") ||
+    Object.entries(resolvedCheckoutFixture).some(
+      ([name, revision]) => name !== "org" && revision !== checkoutSha("2"),
+    )) {
+  workflowFailures.push(
+    "reviewed checkout resolver must select reviewed heads and must not fall back to content revisions.",
+  );
 }
 if ((governanceWorkflow.match(/actions\/checkout@11bd71901bbe5b1630ceea73d27597364c9af683/g) ?? []).length !== 2) {
   workflowFailures.push("governance workflow must pin both checkout actions to the reviewed immutable SHA.");

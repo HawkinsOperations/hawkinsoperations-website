@@ -46,63 +46,7 @@ jobs:
       - name: Read content and reviewed-head manifests
         id: manifest
         shell: bash
-        run: |
-          node --input-type=module <<'NODE'
-          import fs from "node:fs";
-          import { strictJsonParse } from "./scripts/strict-json.mjs";
-          const contentManifest = strictJsonParse(
-            fs.readFileSync("config/public-status-source-manifest-v1.json", "utf8"),
-            "config/public-status-source-manifest-v1.json",
-          );
-          const reviewedManifest = strictJsonParse(
-            fs.readFileSync("../.github/governance/CONVERGENCE_SOURCE_MANIFEST.json", "utf8"),
-            "../.github/governance/CONVERGENCE_SOURCE_MANIFEST.json",
-          );
-          const names = {
-            "HawkinsOperations/.github": "org",
-            "HawkinsOperations/hoxline": "hoxline",
-            "HawkinsOperations/hawkinsoperations-detections": "detections",
-            "HawkinsOperations/hawkinsoperations-validation": "validation",
-            "HawkinsOperations/hawkinsoperations-platform": "platform",
-            "HawkinsOperations/hawkinsoperations-proof": "proof"
-          };
-          const contentEntries = Object.fromEntries(
-            contentManifest.repositories.map((entry) => [entry.repository, entry]),
-          );
-          const reviewedEntries = Object.fromEntries(
-            reviewedManifest.repositories.map((entry) => [entry.canonical_repository, entry]),
-          );
-          if (contentManifest.manifest_version !== "public-status-source-manifest-v1" ||
-              contentManifest.observation_kind !== "reviewed_immutable_commit" ||
-              contentManifest.repositories.length !== 7 ||
-              Object.keys(contentEntries).length !== 7 ||
-              reviewedManifest.schema !== "hawkinsoperations-convergence-source-manifest-v1" ||
-              reviewedManifest.constraints?.exact_repository_count !== 7 ||
-              reviewedManifest.repositories.length !== 7 ||
-              Object.keys(reviewedEntries).length !== 7) {
-            throw new Error("invalid or duplicate content/reviewed-head manifest");
-          }
-          const website = contentEntries["HawkinsOperations/hawkinsoperations-website"];
-          if (!website || !/^[a-f0-9]{40}$/.test(website.revision ?? "")) {
-            throw new Error("website source must bind an explicit reviewed content revision");
-          }
-          const lines = [];
-          for (const [repo, output] of Object.entries(names)) {
-            const content = contentEntries[repo];
-            const reviewed = reviewedEntries[repo];
-            const revision = repo === "HawkinsOperations/.github"
-              ? process.env.HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA
-              : reviewed?.revision;
-            if (!content ||
-                !reviewed ||
-                !/^[a-f0-9]{40}$/.test(content.revision ?? "") ||
-                !/^[a-f0-9]{40}$/.test(revision ?? "")) {
-              throw new Error(`invalid immutable content/reviewed revision for ${repo}`);
-            }
-            lines.push(`${output}=${revision}`);
-          }
-          fs.appendFileSync(process.env.GITHUB_OUTPUT, `${lines.join("\n")}\n`);
-          NODE
+        run: node scripts/resolve-public-status-checkouts.mjs --github-output
 
       - name: Checkout Hoxline
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -178,6 +122,9 @@ jobs:
 
       - name: Verify exact source checkouts
         run: npm run public-status:source-checkout-test
+
+      - name: Verify reviewed checkout resolver
+        run: npm run public-status:checkout-manifest-self-test
 
       - name: Verify freshness and revision reachability
         run: npm run public-status:freshness-reachability-test
