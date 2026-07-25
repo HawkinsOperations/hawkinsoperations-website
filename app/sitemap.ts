@@ -5,6 +5,7 @@ import { recentGovernedArtifacts } from "@data/recentGovernedArtifacts";
 
 const staticRoutes = [
   "/",
+  "/podcast/",
   "/hoxline/",
   "/proof/",
   "/artifacts/",

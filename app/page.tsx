@@ -56,6 +56,22 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section id="podcast-field-guide" className="cockpit-section--tight">
+        <div className="container">
+          <a className="podcast-home-bridge" href="/podcast/">
+            <div>
+              <p className="cockpit-eyebrow">Podcast field guide</p>
+              <h2>From Logs to AI Triage</h2>
+              <p>
+                A beginner-friendly visual route from raw observations to candidate signals,
+                controlled validation, AI-assisted triage, evidence review, and human decision.
+              </p>
+            </div>
+            <span className="podcast-home-bridge__action">Open the teaching workflow →</span>
+          </a>
+        </div>
+      </section>
+
       <section id="hoxline-product" className="cockpit-section--tight">
         <div className="container">
           <div className="home-section__head mb-6">

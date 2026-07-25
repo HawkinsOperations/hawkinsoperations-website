@@ -46,6 +46,13 @@ export default function Header() {
 
         <div className="flex items-center gap-3">
           <a
+            className="cta cta-quiet podcast-header-link"
+            href="/podcast/"
+            aria-current={isCurrent("/podcast/") ? "page" : undefined}
+          >
+            Podcast guide
+          </a>
+          <a
             className="hidden xl:inline-flex cta cta-quiet"
             href={externalLinks.githubOrg}
             target="_blank"
@@ -59,6 +66,13 @@ export default function Header() {
 
       <nav className="md:hidden border-t border-[var(--moon-border)]" aria-label="Primary navigation mobile">
         <div className="container flex items-center gap-5 overflow-x-auto py-3">
+          <a
+            className="nav-link shrink-0 podcast-mobile-nav-link"
+            href="/podcast/"
+            aria-current={isCurrent("/podcast/") ? "page" : undefined}
+          >
+            Podcast guide
+          </a>
           {primaryNavigation.map((item) => (
             <a
               key={item.href}
