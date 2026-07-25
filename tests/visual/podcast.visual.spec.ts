@@ -32,16 +32,19 @@ test.describe("podcast field guide visual QA", () => {
       await expect(page.getByRole("heading", { name: "From Logs to AI Triage" })).toBeVisible();
       await expect(page.locator(".podcast-card")).toHaveCount(3);
       await expect(page.locator('img[src^="/podcast/"]')).toHaveCount(6);
+      const desktopPodcastNavigation = page.locator(".podcast-header-link");
+      const mobilePodcastNavigation = page.locator(".podcast-mobile-nav-link");
       const podcastNavigation =
-        viewport.width < 768
-          ? page.locator(".podcast-mobile-nav-link")
-          : page.locator(".podcast-header-link");
+        viewport.width < 768 ? mobilePodcastNavigation : desktopPodcastNavigation;
       await expect(podcastNavigation).toBeVisible();
       if (viewport.width < 768) {
+        await expect(desktopPodcastNavigation).toBeHidden();
         const touchTargetHeight = await podcastNavigation.evaluate(
           (element) => element.getBoundingClientRect().height,
         );
         expect(touchTargetHeight).toBeGreaterThanOrEqual(44);
+      } else {
+        await expect(mobilePodcastNavigation).toBeHidden();
       }
       await podcastNavigation.focus();
       const focusOutline = await podcastNavigation.evaluate((element) => {
