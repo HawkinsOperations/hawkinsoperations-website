@@ -1,10 +1,10 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 const viewports = [
-  { name: "desktop-1440", width: 1440, height: 1100 },
-  { name: "laptop-1280", width: 1280, height: 900 },
-  { name: "tablet-1024", width: 1024, height: 900 },
-  { name: "tablet-narrow-834", width: 834, height: 1112 },
+  { name: "desktop-1920", width: 1920, height: 1080 },
+  { name: "desktop-1440", width: 1440, height: 900 },
+  { name: "tablet-768", width: 768, height: 1024 },
+  { name: "mobile-large-430", width: 430, height: 932 },
   { name: "mobile-390", width: 390, height: 844 },
 ];
 
@@ -50,11 +50,13 @@ test.describe("homepage visual QA", () => {
       const headline = page.locator("#awb-title").first();
       const primaryCta = page.getByRole("link", { name: "Open Hoxline" }).first();
       const secondaryCta = page.getByRole("link", { name: "Try Claim Firewall" }).first();
+      const podcastBridge = page.getByRole("link", { name: /Open the teaching workflow/ }).first();
 
       await expect(hero).toBeVisible();
       await expectTextNotClipped(headline);
       await expectTextNotClipped(primaryCta);
       await expectTextNotClipped(secondaryCta);
+      await expectTextNotClipped(podcastBridge);
       await expectNoHorizontalOverflow(page);
 
       await page.screenshot({
