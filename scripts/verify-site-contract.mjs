@@ -52,6 +52,15 @@ const requiredFiles = [
   "docs/live-public-surface-stress-test.md",
   "components/CurrentProofSpine.tsx",
   "components/command-center/HomePresentationMode.tsx",
+  "components/reviewer-guide/SystemTopology.tsx",
+  "components/reviewer-guide/SystemInspector.tsx",
+  "components/reviewer-guide/ScenarioRunner.tsx",
+  "components/reviewer-guide/AuthorityBoundary.tsx",
+  "components/reviewer-guide/TruthSurfaceExplorer.tsx",
+  "components/reviewer-guide/ReviewerConsole.tsx",
+  "components/reviewer-guide/PresentationShell.tsx",
+  "src/data/reviewerGuide.ts",
+  "src/lib/reviewerGuideMachine.ts",
   "components/ReviewerRunPath.tsx",
   "public/.well-known/hawkinsoperations-proof.json",
   "public/.well-known/agent-skills/index.json",
@@ -111,6 +120,21 @@ const governanceSavesCockpit = readFileSync(join(root, "components/GovernanceSav
 const governanceSavesPage = readFileSync(join(root, "app/proof/governance-saves/page.tsx"), "utf8");
 const homePage = readFileSync(join(root, "app/page.tsx"), "utf8");
 const homePresentation = readFileSync(join(root, "components/command-center/HomePresentationMode.tsx"), "utf8");
+const reviewerGuideSourceFiles = [
+  "components/command-center/HomePresentationMode.tsx",
+  "components/reviewer-guide/SystemTopology.tsx",
+  "components/reviewer-guide/SystemInspector.tsx",
+  "components/reviewer-guide/ScenarioRunner.tsx",
+  "components/reviewer-guide/AuthorityBoundary.tsx",
+  "components/reviewer-guide/TruthSurfaceExplorer.tsx",
+  "components/reviewer-guide/ReviewerConsole.tsx",
+  "components/reviewer-guide/PresentationShell.tsx",
+  "src/data/reviewerGuide.ts",
+  "src/lib/reviewerGuideMachine.ts",
+];
+const reviewerGuideSource = reviewerGuideSourceFiles
+  .map((file) => readFileSync(join(root, file), "utf8"))
+  .join("\n");
 
 const governanceFailures = [];
 if (!/export const publicGovernanceSaves = governanceSaves\.filter\(\s*\(save\) => save\.publicSafety !== "PRIVATE_ONLY",\s*\);/s.test(governanceSavesData)) {
@@ -154,28 +178,33 @@ if (homepageLabelFailures.length > 0) {
 
 const reviewerGuideRequiredTerms = [
   "Reviewer Guide",
-  "AI can generate security work faster than organizations can prove it.",
+  "AI can build security work faster than we can prove it.",
   "Enter presentation mode",
   'data-presentation-scene',
-  '"system"',
-  '"ho-det-001"',
-  '"ai-authority"',
-  '"truth-surfaces"',
-  '"reviewer-verification"',
-  '"controls-receipts"',
-  '"closing"',
-  "Human review",
+  "SystemTopology",
+  "SystemInspector",
+  "ScenarioRunner",
+  "AuthorityBoundary",
+  "TruthSurfaceExplorer",
+  "ReviewerConsole",
+  '"controlled_validation"',
+  '"unsupported_runtime_claim"',
+  '"missing_signal_evidence"',
+  "HUMAN_AUTHORITY_REQUIRED",
+  "DECISION=BLOCKED",
+  "REQUIRED_EVIDENCE=RUNTIME_EVIDENCE",
+  "REQUIRED_EVIDENCE=SIGNAL_OBSERVATION_EVIDENCE",
   "CONTROLLED_TEST_VALIDATED",
-  "Website rendering is navigation, not proof authority.",
+  "Website rendering is not proof.",
   "python -B scripts/validate-ho-det-001.py --source-contract skip-if-missing",
   "python -B -m hoxline gauntlet verify",
 ];
 const reviewerGuideFailures = reviewerGuideRequiredTerms
-  .filter((term) => !homePresentation.includes(term))
-  .map((term) => `components/command-center/HomePresentationMode.tsx must include ${term}.`);
+  .filter((term) => !reviewerGuideSource.includes(term))
+  .map((term) => `Reviewer Guide source set must include ${term}.`);
 
 for (const staleName of ["Podcast guide", "Podcast field guide", "From Logs to AI Triage"]) {
-  if (homePresentation.includes(staleName) || homePage.includes(staleName) || navigationSource.includes(staleName)) {
+    if (reviewerGuideSource.includes(staleName) || homePage.includes(staleName) || navigationSource.includes(staleName)) {
     reviewerGuideFailures.push(`Visible homepage/navigation source must not include stale name ${staleName}.`);
   }
 }
@@ -776,6 +805,7 @@ if (publicStatusFailures.length > 0) {
 const hardcodedMetricGuardFiles = [
   "app/page.tsx",
   "components/command-center/HomePresentationMode.tsx",
+  "components/reviewer-guide/PresentationShell.tsx",
   "components/command-center/ProofOfWorkCounterRail.tsx",
   "components/CurrentProofSpine.tsx",
   "components/hoxline/HoxlineEngineRoom.tsx",
