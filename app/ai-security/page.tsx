@@ -6,19 +6,17 @@ import {
   BlockedClaimGrid,
   ClaimBoundaryPanel,
   EvidenceCeilingCard,
-  ProofOpsLoopDiagram,
   ProofOpsPageHero,
   ReviewerLensTabs,
   SignalBlockedBadge,
   type ReviewerLens,
 } from "@components/proofops";
-import { CapabilityMaturityGrid, GauntletExecutionConsole } from "@components/visual-intelligence";
 import { externalLinks } from "@data/navigation";
 import { proofPack } from "@data/proofPackManifest";
 import { registryStats } from "@data/validationRegistry";
 
 export const metadata: Metadata = {
-  title: "AI Security | HawkinsOperations",
+  title: "AI Automation | HawkinsOperations",
   description:
     "A governed AI Security Operations implementation model for AI-assisted detection engineering, deterministic verification, and human authority.",
   alternates: {
@@ -113,7 +111,7 @@ export default function AiSecurityPage() {
     <div className="proofops-page">
       <ProofOpsPageHero
         eyebrow="AI support under ProofOps control"
-        title="AI Security"
+        title="AI Automation"
         accent="without AI authority"
         subtitle="A governed implementation model where AI helps security work move faster, while evidence and human review decide what can be claimed."
         description="This route separates AI support, deterministic verification, human authority, proof ceilings, and blocked claims so the model reads like an operator workflow instead of a long report."
@@ -180,35 +178,10 @@ export default function AiSecurityPage() {
               { label: "Verifier", value: "schema and controlled checks", tone: "green" },
               { label: "Human authority", value: "promotion gate", tone: "amber" },
               { label: "Website", value: "rendering only", tone: "neutral" },
-              { label: "Not claimed", value: "AI-disposition approval", tone: "blocked" },
-              { label: "Not claimed", value: "analyst-disposition approval", tone: "blocked" },
+              { label: "AI disposition", value: "not authorized", tone: "blocked" },
+              { label: "Analyst disposition", value: "not claimed", tone: "blocked" },
             ]}
           />
-        </div>
-      </section>
-
-      <section className="proofops-section">
-        <div className="container">
-          <SectionHeader
-            title="AI support is governed by ProofOps control"
-            eyebrow="Hoxline visual intelligence"
-            description="Gauntlet v0 shows how AI-assisted security work enters a controlled loop, emits reviewer artifacts, and keeps runtime, signal, approval, and public-safe claims gated."
-          />
-          <div className="vi-grid-2">
-            <CapabilityMaturityGrid />
-            <GauntletExecutionConsole />
-          </div>
-        </div>
-      </section>
-
-      <section className="proofops-section">
-        <div className="container">
-          <SectionHeader
-            title="Workflow visualization"
-            eyebrow="Support -> verify -> review -> bound"
-            description="The same Hoxline loop applies to AI-assisted security work: AI helps; evidence gates; humans promote."
-          />
-          <ProofOpsLoopDiagram />
         </div>
       </section>
 
@@ -293,7 +266,7 @@ export default function AiSecurityPage() {
         <div className="container">
           <SectionHeader title="Source-controlled context" eyebrow="Repos" />
           <div className="grid gap-4 md:grid-cols-3">
-            <LinkCard href={externalLinks.reproducibleReviewerPath} title="Reproducible reviewer path" description="Clone-runnable route through all six repos without private runtime access." external />
+            <LinkCard href={externalLinks.reproducibleReviewerPath} title="Reproducible reviewer path" description="Clone-runnable route through all seven repositories without private runtime access." external />
             <LinkCard href={externalLinks.orgRequiredChecksMatrix} title="Required checks matrix" description="Observed checks, report-only controls, and website rendering boundaries." external />
             <LinkCard href={externalLinks.platformDetectionFactoryController} title="Detection Factory Controller v0" description="Bounded reviewer status and plan emitter; platform visibility, not proof promotion." external />
           </div>

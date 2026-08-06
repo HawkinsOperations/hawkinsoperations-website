@@ -41,7 +41,7 @@ export default function GovernanceIntelDashboard() {
       <div className="governance-intel__hero">
         <div>
           <p className="cockpit-eyebrow">Governance Saves Control Dashboard</p>
-          <h2 id="governance-intel-title">{controlsMetric.display_value} unverified claims blocked.</h2>
+          <h1 id="governance-intel-title">{controlsMetric.display_value} documented Governance Saves.</h1>
           <p>
             Control intelligence for claim boundaries, runtime gates, validation hardening, merge
             authority, and reviewer-readable saves.
@@ -49,7 +49,7 @@ export default function GovernanceIntelDashboard() {
         </div>
         <div className="governance-intel__counter">
           <strong>{controlsMetric.display_value}</strong>
-          <span>controls fired</span>
+          <span>public-facing records</span>
           <small>
             {controlsMetric.freshness_status} - {controlsMetric.source_label}
           </small>

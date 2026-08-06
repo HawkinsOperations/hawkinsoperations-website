@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description:
     "Interactive explorer for the public-facing HawkinsOperations Governance Saves subset from GS-001 through GS-080: where merge authority, claim boundaries, runtime gates, validators, AI authority, branch hygiene, evidence protection, release gates, and workflow hardening fired.",
   alternates: {
-    canonical: "/proof/governance-saves/",
+    canonical: "/governance-saves/",
   },
 };
 

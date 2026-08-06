@@ -29,7 +29,7 @@ export default function ControlsPage() {
               <span>Open Hoxline</span>
             </a>
             <a href="/claim-firewall/">
-              <span>Legacy capability route</span>
+              <span>Open Claim Firewall</span>
             </a>
             <span>RENDERING_ONLY website page</span>
           </div>

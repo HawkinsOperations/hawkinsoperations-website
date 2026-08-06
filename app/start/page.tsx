@@ -46,7 +46,7 @@ const phase2Routes = [
     tag: "VALIDATION",
     title: "Validation registry",
     sub: "Controlled-test packages, fixture counts, and blocked runtime / signal / public-safe states.",
-    href: "/proof/#validation-registry",
+    href: "/validation/",
   },
   {
     tag: "PROOF / VERIFIER",
@@ -58,13 +58,13 @@ const phase2Routes = [
     tag: "PLATFORM",
     title: "Platform contracts",
     sub: "SOAR packet, AutoSOC ledger, factory controller, and blocked authority footers.",
-    href: "/pipeline/#platform-contracts",
+    href: "/platform/contracts/",
   },
   {
     tag: "AI GOVERNANCE",
     title: "AI governance boundary",
     sub: "Offline LLM support is support-only labor; human review remains authority.",
-    href: "/pipeline/#llm-boundary",
+    href: "/ai-security/",
   },
 ];
 

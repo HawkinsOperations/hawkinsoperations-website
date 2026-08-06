@@ -10,7 +10,7 @@ export default function DetectionOpsCockpit() {
       <div className="detection-ops-cockpit__hero">
         <div>
           <p className="cockpit-eyebrow">Detection Operations Cockpit</p>
-          <h2 id="detection-ops-title">Detection Operations Cockpit.</h2>
+          <h1 id="detection-ops-title">Detection Operations Cockpit.</h1>
           <p>
             ATT&CK / Kill Chain orientation, source-backed rows, controlled validation, proof
             ceilings, and Hoxline claim control in one routed machine.

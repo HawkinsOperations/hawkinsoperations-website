@@ -41,7 +41,7 @@ export default function LegacyPage() {
           <article className="card p-5">
             <h2 className="text-xl font-semibold text-slate-50">HawkinsOperations</h2>
             <p className="mt-3 text-sm leading-6 text-slate-400">
-              Current governed rebuild and public proof codex.
+              Current governed system and public reviewer / proof-routing surface.
             </p>
           </article>
           <article className="card p-5">
