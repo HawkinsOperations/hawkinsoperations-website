@@ -197,7 +197,7 @@ export default function ProofIndexPage() {
               </span>
               <span className="artifact-tile__link">Open Claim Firewall -&gt;</span>
             </a>
-            <a className="artifact-tile" href="/proof/governance-saves/">
+            <a className="artifact-tile" href="/governance-saves/">
               <span className="artifact-tile__cat">GOVERNANCE SAVES</span>
               <span className="artifact-tile__title">Controls that prevented unsafe truth</span>
               <span className="artifact-tile__desc">
