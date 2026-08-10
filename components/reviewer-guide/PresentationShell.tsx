@@ -69,6 +69,8 @@ function SceneHeader({
   );
 }
 
+const controlledScenario = scenarios.controlled_validation;
+
 export default function PresentationShell() {
   const [machine, machineDispatch] = useReducer(reviewerGuideReducer, undefined, () => createReviewerGuideMachine());
   const snapshot = useMemo(() => machineSnapshot(machine), [machine]);
@@ -80,11 +82,12 @@ export default function PresentationShell() {
   const sceneRefs = useRef<(HTMLElement | null)[]>([]);
   const enterButtonRef = useRef<HTMLButtonElement | null>(null);
   const historyOrigin = useRef<"page" | "direct">("direct");
+  const presentingRef = useRef(false);
+  const [walkthroughStepIndex, setWalkthroughStepIndex] = useState(1);
+  const [walkthroughSelectedNodeId, setWalkthroughSelectedNodeId] = useState<TopologyNodeId>(controlledScenario.steps[1].activeNode);
   const controlsMetric = metricDisplay("controls_fired");
   const activeControl = controlFamilies.find((family) => family.id === activeControlId) ?? controlFamilies[0];
-  const controlledScenario = scenarios.controlled_validation;
-  const walkthroughIndex = machine.scenarioId === "controlled_validation" ? Math.max(1, machine.stepIndex) : 1;
-  const walkthroughSnapshot = scenarioSnapshotAt("controlled_validation", walkthroughIndex, machine.selectedNodeId);
+  const walkthroughSnapshot = scenarioSnapshotAt("controlled_validation", walkthroughStepIndex, walkthroughSelectedNodeId);
   const closingSnapshot = scenarioSnapshotAt("controlled_validation", controlledScenario.steps.length - 1);
 
   const writePresentationUrl = useCallback((sceneIndex: number, method: "push" | "replace", nodeId?: TopologyNodeId, scenarioId?: string) => {
@@ -114,6 +117,7 @@ export default function PresentationShell() {
 
   const enterPresentation = useCallback(() => {
     historyOrigin.current = "page";
+    presentingRef.current = true;
     setActiveSceneIndex(0);
     setPresenting(true);
     writePresentationUrl(0, "push", machine.selectedNodeId, machine.scenarioId);
@@ -127,6 +131,7 @@ export default function PresentationShell() {
       window.history.back();
       return;
     }
+    presentingRef.current = false;
     const url = new URL(window.location.href);
     url.searchParams.delete("present");
     url.searchParams.delete("scene");
@@ -152,9 +157,11 @@ export default function PresentationShell() {
     const syncFromUrl = () => {
       const url = new URL(window.location.href);
       const shouldPresent = url.searchParams.get("present") === "1";
+      const wasPresenting = presentingRef.current;
       const sceneIndex = strictSceneIndex(url.searchParams.get("scene"));
       historyOrigin.current = window.history.state?.__hawkinsPresentation?.origin === "page" ? "page" : "direct";
       setPresenting(shouldPresent);
+      presentingRef.current = shouldPresent;
       setActiveSceneIndex(sceneIndex);
 
       const scenarioParam = url.searchParams.get("scenario");
@@ -178,7 +185,7 @@ export default function PresentationShell() {
       )) {
         writePresentationUrl(sceneIndex, "replace", validNode, validScenario);
       }
-      if (!shouldPresent) window.requestAnimationFrame(() => enterButtonRef.current?.focus());
+      if (!shouldPresent && wasPresenting) window.requestAnimationFrame(() => enterButtonRef.current?.focus());
     };
 
     syncFromUrl();
@@ -308,7 +315,7 @@ export default function PresentationShell() {
           <SceneHeader number="02" label="Concrete walkthrough" id="rg-scene-ho-det-001-title" title="Scrub through one bounded detection workflow." description="HO-DET-001 makes the architecture tangible: source exists, controlled fixtures exercise expected behavior and restraint, evidence is packaged, and human authority remains required." />
           <div className="rg-walkthrough__layout" data-presentation-ignore-keys>
             <div className="rg-walkthrough__main">
-              <div className="rg-walkthrough__topology"><SystemTopology snapshot={walkthroughSnapshot} onSelectNode={(nodeId) => dispatch({ type: "SELECT_NODE", nodeId })} /></div>
+              <div className="rg-walkthrough__topology"><SystemTopology snapshot={walkthroughSnapshot} onSelectNode={setWalkthroughSelectedNodeId} /></div>
               <div className="rg-walkthrough__fixture-branch" aria-label="Controlled fixture branch">
                 <span>Detection source</span><i aria-hidden="true" />
                 <div><strong>Positive fixtures</strong><small>Expected matches</small></div>
@@ -316,22 +323,23 @@ export default function PresentationShell() {
                 <i aria-hidden="true" /><span>Deterministic result</span>
               </div>
               <div className="rg-walkthrough__scrubber">
-                <div><span>HO-DET-001 walkthrough</span><strong>Step {walkthroughIndex} of {controlledScenario.steps.length - 1}</strong></div>
+                <div><span>HO-DET-001 walkthrough</span><strong>Step {walkthroughStepIndex} of {controlledScenario.steps.length - 1}</strong></div>
                 <input
                   type="range"
                   min={1}
                   max={controlledScenario.steps.length - 1}
                   step={1}
-                  value={walkthroughIndex}
+                  value={walkthroughStepIndex}
                   aria-label="HO-DET-001 walkthrough step"
                   onChange={(event) => {
-                    if (machine.scenarioId !== "controlled_validation") dispatch({ type: "SELECT_SCENARIO", scenarioId: "controlled_validation" });
-                    dispatch({ type: "JUMP", stepIndex: Number(event.target.value) });
+                    const nextIndex = Number(event.target.value);
+                    setWalkthroughStepIndex(nextIndex);
+                    setWalkthroughSelectedNodeId(controlledScenario.steps[nextIndex].activeNode);
                   }}
                 />
                 <ol>
                   {controlledScenario.steps.slice(1).map((step, index) => (
-                    <li key={`${step.state}-${step.label}`}><button type="button" aria-current={walkthroughIndex === index + 1 ? "step" : undefined} onClick={() => { if (machine.scenarioId !== "controlled_validation") dispatch({ type: "SELECT_SCENARIO", scenarioId: "controlled_validation" }); dispatch({ type: "JUMP", stepIndex: index + 1 }); }}><span>{index + 1}</span><strong>{step.label}</strong></button></li>
+                    <li key={`${step.state}-${step.label}`}><button type="button" aria-current={walkthroughStepIndex === index + 1 ? "step" : undefined} onClick={() => { const nextIndex = index + 1; setWalkthroughStepIndex(nextIndex); setWalkthroughSelectedNodeId(controlledScenario.steps[nextIndex].activeNode); }}><span>{index + 1}</span><strong>{step.label}</strong></button></li>
                   ))}
                 </ol>
               </div>

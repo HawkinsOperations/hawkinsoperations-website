@@ -3,6 +3,7 @@ import Script from "next/script";
 import Header from "@components/Header";
 import Footer from "@components/Footer";
 import "./globals.css";
+import "../components/reviewer-guide/reviewer-guide.css";
 import { siteUrl } from "@config/site";
 
 const displayName = "HawkinsOperations";

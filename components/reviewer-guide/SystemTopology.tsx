@@ -25,6 +25,42 @@ const mobileCoreNodeIds: TopologyNodeId[] = ["ai-labor", "source", "validation",
 const mobilePublishNodeIds: TopologyNodeId[] = ["proof", "human-review", "public-output"];
 
 function NodeMark({ node }: { node: TopologyNode }) {
+  if (node.id === "ai-labor") {
+    return (
+      <g className="rg-topology__ai-mark" aria-hidden="true">
+        <circle cx={node.x - 50} cy={node.y} r="19" />
+        <circle cx={node.x - 50} cy={node.y} r="5" />
+        <path d={`M ${node.x - 50} ${node.y - 28} V ${node.y - 20} M ${node.x - 50} ${node.y + 20} V ${node.y + 28} M ${node.x - 78} ${node.y} H ${node.x - 70} M ${node.x - 30} ${node.y} H ${node.x - 22}`} />
+      </g>
+    );
+  }
+  if (node.id === "source") {
+    return (
+      <g className="rg-topology__source-mark" aria-hidden="true">
+        <path d={`M ${node.x - 66} ${node.y - 24} H ${node.x - 43} L ${node.x - 33} ${node.y - 14} V ${node.y + 24} H ${node.x - 66} Z`} />
+        <path d={`M ${node.x - 43} ${node.y - 24} V ${node.y - 14} H ${node.x - 33}`} />
+        <path d={`M ${node.x - 58} ${node.y - 2} H ${node.x - 41} M ${node.x - 58} ${node.y + 7} H ${node.x - 41}`} />
+      </g>
+    );
+  }
+  if (node.id === "validation") {
+    return (
+      <g className="rg-topology__validation-mark" aria-hidden="true">
+        <path d={`M ${node.x - 70} ${node.y - 14} H ${node.x - 47} M ${node.x - 70} ${node.y + 14} H ${node.x - 47}`} />
+        <circle cx={node.x - 60} cy={node.y - 14} r="5" />
+        <circle cx={node.x - 60} cy={node.y + 14} r="5" />
+        <path d={`M ${node.x - 45} ${node.y + 1} L ${node.x - 39} ${node.y + 7} L ${node.x - 27} ${node.y - 8}`} />
+      </g>
+    );
+  }
+  if (node.id === "hoxline") {
+    return (
+      <g className="rg-topology__hoxline-mark" aria-hidden="true">
+        <path d={`M ${node.x - 50} ${node.y - 25} L ${node.x - 29} ${node.y - 13} V ${node.y + 13} L ${node.x - 50} ${node.y + 25} L ${node.x - 71} ${node.y + 13} V ${node.y - 13} Z`} />
+        <path d={`M ${node.x - 61} ${node.y} H ${node.x - 39}`} />
+      </g>
+    );
+  }
   if (node.id === "claim-gate") {
     return (
       <g className="rg-topology__gate-mark" aria-hidden="true">
@@ -43,11 +79,17 @@ function NodeMark({ node }: { node: TopologyNode }) {
     );
   }
   if (node.id === "blocked") {
-    return <path className="rg-topology__blocked-mark" d={`M ${node.x - 50} ${node.y - 17} L ${node.x - 33} ${node.y} L ${node.x - 50} ${node.y + 17} L ${node.x - 67} ${node.y} Z`} aria-hidden="true" />;
+    return (
+      <g className="rg-topology__blocked-mark" aria-hidden="true">
+        <path d={`M ${node.x - 68} ${node.y - 18} L ${node.x - 32} ${node.y + 18} M ${node.x - 32} ${node.y - 18} L ${node.x - 68} ${node.y + 18}`} />
+        <path d={`M ${node.x - 78} ${node.y} H ${node.x - 70} M ${node.x - 30} ${node.y} H ${node.x - 20}`} />
+      </g>
+    );
   }
   if (node.id === "proof") {
     return (
       <g className="rg-topology__proof-mark" aria-hidden="true">
+        <rect x={node.x - 72} y={node.y - 23} width="29" height="34" rx="1" />
         <rect x={node.x - 67} y={node.y - 18} width="29" height="34" rx="2" />
         <path d={`M ${node.x - 60} ${node.y - 7} H ${node.x - 44} M ${node.x - 60} ${node.y} H ${node.x - 44} M ${node.x - 60} ${node.y + 7} H ${node.x - 48}`} />
       </g>
@@ -56,8 +98,9 @@ function NodeMark({ node }: { node: TopologyNode }) {
   if (node.id === "public-output") {
     return (
       <g className="rg-topology__terminal-mark" aria-hidden="true">
-        <path d={`M ${node.x - 66} ${node.y - 22} H ${node.x - 32} V ${node.y + 22} H ${node.x - 66}`} />
-        <path d={`M ${node.x - 58} ${node.y} H ${node.x - 38}`} />
+        <path d={`M ${node.x - 67} ${node.y - 22} H ${node.x - 42} V ${node.y + 22} H ${node.x - 67}`} />
+        <path d={`M ${node.x - 57} ${node.y} H ${node.x - 34}`} />
+        <path d={`M ${node.x - 37} ${node.y - 8} L ${node.x - 27} ${node.y} L ${node.x - 37} ${node.y + 8}`} />
       </g>
     );
   }
@@ -90,6 +133,11 @@ export default function SystemTopology({
     [snapshot.scenarioId, variant],
   );
   const miniActiveIndex = visibleNodes.findIndex((node) => node.id === snapshot.activeNodeId);
+  const focusableNodeId = visibleNodes.some((node) => node.id === snapshot.selectedNodeId)
+    ? snapshot.selectedNodeId
+    : visibleNodes.some((node) => node.id === snapshot.activeNodeId)
+      ? snapshot.activeNodeId
+      : visibleNodes[0].id;
 
   const moveFocus = (currentId: TopologyNodeId, direction: -1 | 1) => {
     if (!interactive || !onSelectNode) return;
@@ -141,7 +189,7 @@ export default function SystemTopology({
                   if (element) nodeRefs.current.set(node.id, element);
                 }}
                 role={interactive ? "button" : undefined}
-                tabIndex={interactive ? (selected ? 0 : -1) : undefined}
+                tabIndex={interactive ? (node.id === focusableNodeId ? 0 : -1) : undefined}
                 aria-label={`Select ${node.label}`}
                 aria-controls={interactive ? "reviewer-system-inspector" : undefined}
                 aria-pressed={interactive ? selected : undefined}
@@ -152,6 +200,7 @@ export default function SystemTopology({
                 onClick={interactive ? () => onSelectNode?.(node.id) : undefined}
                 onKeyDown={interactive ? (event) => onNodeKeyDown(event, node.id) : undefined}
               >
+                <rect className="rg-mini-topology__hit" x="36" y={y - 28} width="286" height="56" rx="2" />
                 <circle cx="64" cy={y} r={node.id === "claim-gate" ? 17 : 11} />
                 <text x="98" y={y - 4}>{node.shortLabel}</text>
                 <text x="98" y={y + 18} className="rg-mini-topology__status">{status === "inactive" ? "pending" : status}</text>
@@ -176,12 +225,6 @@ export default function SystemTopology({
         </defs>
 
         <g className="rg-topology__zones" aria-hidden="true">
-          <path d="M 34 42 H 216 V 174 H 34 Z" data-zone="generation" />
-          <path d="M 258 42 H 708 V 174 H 258 Z" data-zone="engineering" />
-          <path d="M 510 216 H 1212 V 350 H 510 Z" data-zone="control" />
-          <path d="M 756 390 H 964 V 520 H 756 Z" data-zone="evidence" />
-          <path d="M 1012 390 H 1208 V 520 H 1012 Z" data-zone="authority" />
-          <path d="M 1238 390 H 1410 V 520 H 1238 Z" data-zone="rendering" />
           <text x="52" y="67">GENERATION</text><text x="276" y="67">ENGINEERING</text><text x="528" y="241">CONTROL</text><text x="774" y="415">EVIDENCE</text><text x="1030" y="415">AUTHORITY</text><text x="1256" y="415">RENDERING</text>
         </g>
 
@@ -212,7 +255,7 @@ export default function SystemTopology({
                   if (element) nodeRefs.current.set(node.id, element);
                 }}
                 role={interactive ? "button" : undefined}
-                tabIndex={interactive ? (selected ? 0 : -1) : undefined}
+                tabIndex={interactive ? (node.id === focusableNodeId ? 0 : -1) : undefined}
                 aria-label={`Select ${node.label}. ${node.doesNotOwn}`}
                 aria-controls={interactive ? "reviewer-system-inspector" : undefined}
                 aria-pressed={interactive ? selected : undefined}

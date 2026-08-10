@@ -51,12 +51,19 @@ export default function TruthSurfaceExplorer() {
           <div className="rg-truth__limit"><dt>Cannot support</dt><dd>{selected.cannotSupport}</dd></div>
           <div><dt>Required next evidence</dt><dd>{selected.nextEvidence}</dd></div>
         </dl>
-        <a href={selected.href} target={selected.href.startsWith("http") ? "_blank" : undefined} rel={selected.href.startsWith("http") ? "noopener noreferrer" : undefined}>Inspect owning route <span aria-hidden="true">↗</span></a>
+        <a href={selected.href} target={selected.href.startsWith("http") ? "_blank" : undefined} rel={selected.href.startsWith("http") ? "noopener noreferrer" : undefined}>Inspect related boundary route <span aria-hidden="true">↗</span></a>
       </aside>
 
       {showForbidden ? (
         <div className="rg-truth__forbidden" aria-label="Forbidden truth substitutions">
           <div><span>Forbidden substitutions</span><strong>These paths do not promote automatically.</strong></div>
+          <svg className="rg-truth__forbidden-arcs" viewBox="0 0 900 150" aria-hidden="true" focusable="false">
+            <path d="M 48 116 C 160 8 264 8 376 116" />
+            <path d="M 206 116 C 314 36 430 36 538 116" />
+            <path d="M 368 116 C 478 8 594 8 704 116" />
+            <path d="M 528 116 C 640 36 752 36 864 116" />
+            <g><path d="M 202 49 l 12 12 M 214 49 l -12 12" /><path d="M 366 70 l 12 12 M 378 70 l -12 12" /><path d="M 532 49 l 12 12 M 544 49 l -12 12" /><path d="M 690 70 l 12 12 M 702 70 l -12 12" /></g>
+          </svg>
           <ul>
             {forbiddenSubstitutions.map((item) => (
               <li key={`${item.from}-${item.to}`}><b>{item.from}</b><span aria-hidden="true">×</span><b>{item.to}</b><small>{item.detail}</small></li>

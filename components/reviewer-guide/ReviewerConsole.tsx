@@ -71,13 +71,15 @@ export default function ReviewerConsole() {
         ))}
       </div>
       <div id="reviewer-console-panel" className="rg-console__body" role="tabpanel" aria-labelledby={`reviewer-console-tab-${activeTab}`}>
-        <div className="rg-console__items" role="list" aria-label={`${activeTab} reviewer actions`}>
+        <ul className="rg-console__items" aria-label={`${activeTab} reviewer actions`}>
           {items.map((item, index) => (
-            <button key={item.label} type="button" role="listitem" aria-pressed={selectedIndex === index} onClick={() => { setSelectedIndex(index); setCopyStatus("idle"); }}>
-              <span>{String(index + 1).padStart(2, "0")}</span><strong>{item.label}</strong><small>{item.owner}</small>
-            </button>
+            <li key={item.label}>
+              <button type="button" aria-pressed={selectedIndex === index} onClick={() => { setSelectedIndex(index); setCopyStatus("idle"); }}>
+                <span>{String(index + 1).padStart(2, "0")}</span><strong>{item.label}</strong><small>{item.owner}</small>
+              </button>
+            </li>
           ))}
-        </div>
+        </ul>
         <div className="rg-console__terminal">
           <div className="rg-console__terminal-head"><span>{activeTab.toUpperCase()} / {selected.owner}</span><i aria-hidden="true" /><i aria-hidden="true" /><i aria-hidden="true" /></div>
           <p>{selected.description}</p>
