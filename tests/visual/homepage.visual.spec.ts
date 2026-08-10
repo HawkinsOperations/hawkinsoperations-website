@@ -293,6 +293,8 @@ test.describe("Interactive Reviewer Guide", () => {
       await consoleUi.getByRole("tab", { name: tab }).click();
       await expect(consoleUi.getByRole("tab", { name: tab })).toHaveAttribute("aria-selected", "true");
     }
+    const expectedVerifierCommand = "python -B -m hoxline gauntlet verify --input examples/gauntlet/ho-det-001-full-loop-run-v0.json";
+    await expect(consoleUi.locator("code")).toHaveText(expectedVerifierCommand);
     await consoleUi.getByRole("tab", { name: "clone" }).click();
     const expectedCommand = "git clone https://github.com/HawkinsOperations/hawkinsoperations-validation.git";
     await consoleUi.getByRole("button", { name: "Copy Clone validation command" }).click();
