@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import Header from "@components/Header";
 import Footer from "@components/Footer";
 import "./globals.css";
+import "../components/reviewer-guide/reviewer-guide.css";
 import { siteUrl } from "@config/site";
 
 const displayName = "HawkinsOperations";
@@ -122,7 +124,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Footer />
         </div>
         {/* Scroll reveal + spotlight pointer tracking — tiny, no dependency. */}
-        <script
+        <Script
+          id="site-interactions"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `
 (function(){

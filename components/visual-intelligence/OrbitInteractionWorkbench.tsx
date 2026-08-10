@@ -285,8 +285,8 @@ function computePoints(count: number, radius: number): Point[] {
   return Array.from({ length: count }, (_, index) => {
     const angle = (Math.PI * 2 * index) / count - Math.PI / 2;
     return {
-      x: 50 + Math.cos(angle) * radius,
-      y: 50 + Math.sin(angle) * radius,
+      x: Number((50 + Math.cos(angle) * radius).toFixed(6)),
+      y: Number((50 + Math.sin(angle) * radius).toFixed(6)),
     };
   });
 }

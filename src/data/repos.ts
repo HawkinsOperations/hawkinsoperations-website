@@ -12,7 +12,7 @@ export type RepoRecord = {
 export const repos: RepoRecord[] = [
   {
     name: "HawkinsOperations/.github",
-    href: externalLinks.githubOrg,
+    href: externalLinks.githubRepo,
     purpose: "Organization profile, reviewer entry points, and governance routing.",
     truthSurface: "Governance routing",
     owns: "START_HERE, organization map, and public review paths.",

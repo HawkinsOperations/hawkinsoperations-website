@@ -16,7 +16,7 @@ export default function ClaimFirewallDemoTheater() {
       <div className="claim-demo-theater__header">
         <div>
           <p className="cockpit-eyebrow">Claim Firewall Intercept Chamber</p>
-          <h2 id="claim-demo-title">Pick a bad claim. Watch the ceiling clamp it.</h2>
+          <h1 id="claim-demo-title">Pick a bad claim. Watch the ceiling clamp it.</h1>
           <p>
             The demo shows how unsupported public wording moves through extraction, evidence ceiling,
             deterministic verification, human review, and final wording.

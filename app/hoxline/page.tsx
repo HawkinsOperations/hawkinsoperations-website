@@ -6,7 +6,6 @@ import {
   BlockedClaimGrid,
   ClaimBoundaryPanel,
   EvidenceCeilingCard,
-  ProofOpsLoopDiagram,
   ProofOpsPageHero,
   ReviewerLensTabs,
   SafeClaimCard,
@@ -14,18 +13,9 @@ import {
   type ReviewerLens,
 } from "@components/proofops";
 import {
-  BoundedMetricsRail,
-  CapabilityMaturityGrid,
   ClaimDecisionMatrixVisual,
-  ComplexityStatsRail,
-  DataPackSourceStrip,
   EvidencePathTimeline,
-  GauntletExecutionConsole,
-  OutputArtifactWall,
-  StageStatusChart,
   StillGatedPanel,
-  VisualIntelligenceHero,
-  VisualModuleRail,
 } from "@components/visual-intelligence";
 import OrbitInteractionWorkbench from "@components/visual-intelligence/OrbitInteractionWorkbench";
 
@@ -93,15 +83,6 @@ const controlSurfaces = [
     title: "Reviewer handoff",
     detail: "The route points reviewers to proof, source, validation, and platform authority before trust is granted.",
   },
-];
-
-const hoxlineAnswer = [
-  ["Generated output", "Useful draft material, never authority."],
-  ["Evidence", "References attached to source-controlled artifacts."],
-  ["Validation", "Controlled behavior checks with explicit fixture scope."],
-  ["Proof records", "Owned by the proof authority surface, not this page."],
-  ["Public rendering", "Readable website surface only."],
-  ["Claim authority", "Hoxline capability for allowed and blocked wording."],
 ];
 
 const claimMatrix = [
@@ -241,45 +222,6 @@ const lenses: ReviewerLens[] = [
 export default function HoxlinePage() {
   return (
     <div className="proofops-page">
-      <section className="proofops-section">
-        <div className="container">
-          <VisualIntelligenceHero />
-          <div className="mt-6">
-            <HoxlineEngineRoom />
-          </div>
-          <div className="mt-5">
-            <DataPackSourceStrip />
-          </div>
-          <div className="mt-5">
-            <ComplexityStatsRail />
-          </div>
-        </div>
-      </section>
-
-      <section className="proofops-section">
-        <div className="container">
-          <SectionHeader
-            title="What Hoxline can verify today"
-            eyebrow="Controlled capability before gated states"
-            description="Capability Visual Data Pack v1 makes the product feel like an engine: it records the canonical HO-DET-001 loop, reviewer outputs, output contract checks, bounded metrics, visual modules, and remaining gates without promoting runtime or signal claims."
-          />
-          <div className="vi-grid-2">
-            <CapabilityMaturityGrid />
-            <StageStatusChart />
-          </div>
-          <div className="mt-5">
-            <BoundedMetricsRail />
-          </div>
-          <div className="mt-5 vi-grid-2">
-            <GauntletExecutionConsole />
-            <OutputArtifactWall />
-          </div>
-          <div className="mt-5">
-            <VisualModuleRail />
-          </div>
-        </div>
-      </section>
-
       <ProofOpsPageHero
         eyebrow="Hoxline by HawkinsOperations"
         title="Hoxline"
@@ -292,7 +234,7 @@ export default function HoxlinePage() {
           { label: "Ceiling", value: "CONTROLLED_TEST_VALIDATED", tone: "amber" },
           { label: "Runtime", value: "gated", tone: "blocked" },
           { label: "Signal", value: "missing evidence", tone: "amber" },
-          { label: "Human review", value: "required", tone: "green" },
+          { label: "Human review", value: "required", tone: "amber" },
         ]}
       >
         <p className="proofops-kicker">Product boundary</p>
@@ -320,6 +262,12 @@ export default function HoxlinePage() {
 
       <section className="proofops-section">
         <div className="container">
+          <HoxlineEngineRoom />
+        </div>
+      </section>
+
+      <section className="proofops-section">
+        <div className="container">
           <SectionHeader
             title="Gauntlet engine"
             eyebrow="Interactive visual intelligence"
@@ -335,46 +283,6 @@ export default function HoxlinePage() {
             <EvidencePathTimeline />
             <ClaimDecisionMatrixVisual />
           </div>
-        </div>
-      </section>
-
-      <section className="proofops-section">
-        <div className="container">
-          <SectionHeader
-            title="The Claim Problem"
-            eyebrow="AI speed meets evidence discipline"
-            description="AI can draft convincing security claims faster than an organization can safely prove them. Hoxline keeps generated output, evidence, validation, telemetry, proof ceilings, and human review from collapsing into one public sentence."
-          />
-          <div className="proofops-grid-3">
-            {[
-              ["Fast output", "AI-assisted work can create detection ideas, summaries, and reviewer notes quickly."],
-              ["Slow authority", "Evidence, validation, telemetry, proof records, and review gates must stay explicit."],
-              ["Claim pressure", "The dangerous step is turning useful output into wording that sounds stronger than the evidence."],
-            ].map(([title, detail]) => (
-              <article key={title} className="proofops-card">
-                <p className="proofops-kicker">Problem</p>
-                <h3>{title}</h3>
-                <p>{detail}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="proofops-section">
-        <div className="container">
-          <ClaimBoundaryPanel
-            title="Product thesis: AI is not the authority. Evidence is."
-            description="Hoxline is the control layer for claim movement. It does not make the website a proof source, does not promote public_safe, and does not convert controlled validation into runtime or signal proof."
-            boundaries={[
-              { label: "AI role", value: "labor and drafting", tone: "cyan" },
-              { label: "Evidence role", value: "authority input", tone: "amber" },
-              { label: "Hoxline role", value: "claim-control layer", tone: "cyan" },
-              { label: "Website role", value: "rendering only", tone: "neutral" },
-              { label: "Current ceiling", value: "CONTROLLED_TEST_VALIDATED", tone: "green" },
-              { label: "Promotion", value: "human_review_required true", tone: "blocked" },
-            ]}
-          />
         </div>
       </section>
 
@@ -397,42 +305,12 @@ export default function HoxlinePage() {
         </div>
       </section>
 
-      <section className="proofops-section">
-        <div className="container">
-          <SectionHeader
-            title="The Hoxline Answer"
-            eyebrow="Separate the layers"
-            description="The product value is not a bigger claim. It is a disciplined route that keeps generated output, evidence, validation, proof records, public rendering, and claim authority in separate compartments."
-          />
-          <div className="proofops-grid-3">
-            {hoxlineAnswer.map(([title, detail]) => (
-              <article key={title} className="proofops-card">
-                <p className="proofops-kicker">Layer</p>
-                <h3>{title}</h3>
-                <p>{detail}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="proofops-section">
-        <div className="container">
-          <SectionHeader
-            title="ProofOps Loop"
-            eyebrow="Interactive control diagram"
-            description="Tap a step to inspect the control. The active step shows what happens, what control applies, and what remains blocked."
-          />
-          <ProofOpsLoopDiagram />
-        </div>
-      </section>
-
       <section id="controlled-demo" className="proofops-section">
         <div className="container">
           <SectionHeader
             title="HO-DET-001 Controlled Demo Spotlight"
             eyebrow="One artifact, one loop, one bounded claim"
-            description="HO-DET-001 is the flagship example for the current route. It demonstrates controlled validation boundaries without promoting runtime, signal, public-safe, production, customer, or final authorization claims."
+            description="HO-DET-001 is the flagship example for the current route. It demonstrates controlled validation boundaries. It does not promote runtime, signal, public-safe, production, customer, or final authorization claims."
           />
           <article className="proofops-flagship">
             <div className="proofops-flagship__grid">

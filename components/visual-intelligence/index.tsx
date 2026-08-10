@@ -153,8 +153,8 @@ export function LoopStatusOrbit({ compact = false }: { compact?: boolean }) {
         {loopStageStatuses.map((stage, index) => {
           const angle = (Math.PI * 2 * index) / loopStageStatuses.length - Math.PI / 2;
           const radius = compact ? 38 : 44;
-          const x = 50 + Math.cos(angle) * radius;
-          const y = 50 + Math.sin(angle) * radius;
+          const x = Number((50 + Math.cos(angle) * radius).toFixed(6));
+          const y = Number((50 + Math.sin(angle) * radius).toFixed(6));
           return (
             <button
               key={stage.id}
@@ -263,8 +263,8 @@ export function AuthorityConstellation({ compact = false }: { compact?: boolean 
       <div className="vi-constellation__map">
         {authoritySurfaces.map((surface, index) => {
           const angle = (Math.PI * 2 * index) / authoritySurfaces.length - Math.PI / 2;
-          const x = 50 + Math.cos(angle) * 38;
-          const y = 50 + Math.sin(angle) * 38;
+          const x = Number((50 + Math.cos(angle) * 38).toFixed(6));
+          const y = Number((50 + Math.sin(angle) * 38).toFixed(6));
           return (
             <button
               key={surface.id}

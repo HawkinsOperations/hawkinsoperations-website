@@ -19,8 +19,8 @@ export default function ReposPage() {
     <>
       <PageHero
         title="Repository map"
-        subtitle="Six repositories. Three planes. Authority flows down only."
-        description="detections → validation → proof feeds the chain. .github and platform overlay it. website renders the receipts; it does not author them."
+        subtitle="Seven repositories. Three planes. Authority remains separated."
+        description="detections → validation → proof feeds the authority chain. .github, Hoxline, and platform retain distinct routing, product-control, and runtime-boundary roles. The website renders receipts; it does not author them."
         badges={[
           { label: "REPO_PLANE_SEPARATION" },
           { label: "SOURCE_DOES_NOT_PROVE_RUNTIME", tone: "warn" },

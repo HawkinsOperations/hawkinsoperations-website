@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description:
     "Interactive explorer for the public-facing HawkinsOperations Governance Saves subset from GS-001 through GS-080: where merge authority, claim boundaries, runtime gates, validators, AI authority, branch hygiene, evidence protection, release gates, and workflow hardening fired.",
   alternates: {
-    canonical: "/proof/governance-saves/",
+    canonical: "/governance-saves/",
   },
 };
 
@@ -53,7 +53,7 @@ export default function GovernanceSavesPage() {
           <SectionHeader title="Continue inspection" eyebrow="Routes" />
           <div className="grid gap-4 md:grid-cols-4">
             <LinkCard href="/proof/" title="Proof ledger" description="Return to proof authority and current promotion gates." />
-            <LinkCard href="/ai-security/" title="AI Security model" description="See how governance saves map to AI Security Operations." />
+            <LinkCard href="/ai-security/" title="AI Automation model" description="See how governance saves map to AI Security Operations." />
             <LinkCard href="/claim-firewall/" title="Claim Firewall" description="Inspect the control surface for blocked wording." />
             <LinkCard href={externalLinks.governanceSavesCandidates} title="Governance saves source" description="Open the source-controlled candidate ledger." external />
           </div>

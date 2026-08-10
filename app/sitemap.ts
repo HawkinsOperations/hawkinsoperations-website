@@ -5,7 +5,6 @@ import { recentGovernedArtifacts } from "@data/recentGovernedArtifacts";
 
 const staticRoutes = [
   "/",
-  "/podcast/",
   "/hoxline/",
   "/proof/",
   "/artifacts/",
@@ -14,10 +13,8 @@ const staticRoutes = [
   "/claim-firewall/",
   "/about/",
   "/pipeline/",
-  "/socaas-ai-security-operations/",
   "/proof/ho-det-001/",
   "/proof/proof-pack-001/",
-  "/proof/governance-saves/",
   "/governance-saves/",
   "/proof/runtime-proof-factory/",
   "/validation/",

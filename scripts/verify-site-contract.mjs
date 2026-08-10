@@ -51,6 +51,16 @@ const requiredFiles = [
   ".github/workflows/public-status-sync.yml",
   "docs/live-public-surface-stress-test.md",
   "components/CurrentProofSpine.tsx",
+  "components/command-center/HomePresentationMode.tsx",
+  "components/reviewer-guide/SystemTopology.tsx",
+  "components/reviewer-guide/SystemInspector.tsx",
+  "components/reviewer-guide/ScenarioRunner.tsx",
+  "components/reviewer-guide/AuthorityBoundary.tsx",
+  "components/reviewer-guide/TruthSurfaceExplorer.tsx",
+  "components/reviewer-guide/ReviewerConsole.tsx",
+  "components/reviewer-guide/PresentationShell.tsx",
+  "src/data/reviewerGuide.ts",
+  "src/lib/reviewerGuideMachine.ts",
   "components/ReviewerRunPath.tsx",
   "public/.well-known/hawkinsoperations-proof.json",
   "public/.well-known/agent-skills/index.json",
@@ -68,9 +78,10 @@ if (missing.length > 0) {
 }
 
 const navigationData = readFileSync(join(root, "src/data/navigation.ts"), "utf8");
+const navigationSource = navigationData;
 const primaryNavMatch = navigationData.match(/export const primaryNavigation: NavItem\[] = \[([\s\S]*?)\];/);
 const expectedPrimaryNav = [
-  { label: "Home", href: "/" },
+  { label: "Reviewer Guide", href: "/" },
   { label: "Hoxline", href: "/hoxline/" },
   { label: "Proof", href: "/proof/" },
   { label: "Detections", href: "/detections/" },
@@ -108,6 +119,22 @@ const governanceSavesExplorer = readFileSync(join(root, "components/GovernanceSa
 const governanceSavesCockpit = readFileSync(join(root, "components/GovernanceSavesCockpit.tsx"), "utf8");
 const governanceSavesPage = readFileSync(join(root, "app/proof/governance-saves/page.tsx"), "utf8");
 const homePage = readFileSync(join(root, "app/page.tsx"), "utf8");
+const homePresentation = readFileSync(join(root, "components/command-center/HomePresentationMode.tsx"), "utf8");
+const reviewerGuideSourceFiles = [
+  "components/command-center/HomePresentationMode.tsx",
+  "components/reviewer-guide/SystemTopology.tsx",
+  "components/reviewer-guide/SystemInspector.tsx",
+  "components/reviewer-guide/ScenarioRunner.tsx",
+  "components/reviewer-guide/AuthorityBoundary.tsx",
+  "components/reviewer-guide/TruthSurfaceExplorer.tsx",
+  "components/reviewer-guide/ReviewerConsole.tsx",
+  "components/reviewer-guide/PresentationShell.tsx",
+  "src/data/reviewerGuide.ts",
+  "src/lib/reviewerGuideMachine.ts",
+];
+const reviewerGuideSource = reviewerGuideSourceFiles
+  .map((file) => readFileSync(join(root, file), "utf8"))
+  .join("\n");
 
 const governanceFailures = [];
 if (!/export const publicGovernanceSaves = governanceSaves\.filter\(\s*\(save\) => save\.publicSafety !== "PRIVATE_ONLY",\s*\);/s.test(governanceSavesData)) {
@@ -138,13 +165,55 @@ if (governanceFailures.length > 0) {
 
 const homepageInternalLabels = [
   "GS-001-GS-080 subset",
-  "CONTROLLED_TEST_VALIDATED",
   "NOT_PUBLIC_SAFE",
   "RENDERING_ONLY",
 ];
-const homepageLabelFailures = homepageInternalLabels.filter((term) => homePage.includes(term));
+const homepageLabelFailures = homepageInternalLabels.filter(
+  (term) => homePage.includes(term) || homePresentation.includes(term),
+);
 if (homepageLabelFailures.length > 0) {
   console.error(`Homepage public-value invariant failed:\n${homepageLabelFailures.map((term) => `- app/page.tsx must not lead with internal label ${term}`).join("\n")}`);
+  process.exit(1);
+}
+
+const reviewerGuideRequiredTerms = [
+  "Reviewer Guide",
+  "AI can build security work faster than we can prove it.",
+  "Enter presentation mode",
+  'data-presentation-scene',
+  "SystemTopology",
+  "SystemInspector",
+  "ScenarioRunner",
+  "AuthorityBoundary",
+  "TruthSurfaceExplorer",
+  "ReviewerConsole",
+  '"controlled_validation"',
+  '"unsupported_runtime_claim"',
+  '"missing_signal_evidence"',
+  "HUMAN_AUTHORITY_REQUIRED",
+  "DECISION=BLOCKED",
+  "REQUIRED_EVIDENCE=RUNTIME_EVIDENCE",
+  "REQUIRED_EVIDENCE=SIGNAL_OBSERVATION_EVIDENCE",
+  "CONTROLLED_TEST_VALIDATED",
+  "Website rendering is not proof.",
+  "python -B scripts/validate-ho-det-001.py --source-contract skip-if-missing",
+  "python -B -m hoxline gauntlet verify",
+];
+const reviewerGuideFailures = reviewerGuideRequiredTerms
+  .filter((term) => !reviewerGuideSource.includes(term))
+  .map((term) => `Reviewer Guide source set must include ${term}.`);
+
+for (const staleName of ["Podcast guide", "Podcast field guide", "From Logs to AI Triage"]) {
+    if (reviewerGuideSource.includes(staleName) || homePage.includes(staleName) || navigationSource.includes(staleName)) {
+    reviewerGuideFailures.push(`Visible homepage/navigation source must not include stale name ${staleName}.`);
+  }
+}
+if (existsSync(join(root, "app/podcast/page.tsx"))) {
+  reviewerGuideFailures.push("app/podcast/page.tsx must be removed; the homepage is the single Reviewer Guide surface.");
+}
+
+if (reviewerGuideFailures.length > 0) {
+  console.error(`Reviewer Guide invariant failed:\n${reviewerGuideFailures.map((line) => `- ${line}`).join("\n")}`);
   process.exit(1);
 }
 
@@ -157,14 +226,12 @@ const hoxlinePage = readFileSync(join(root, "app/hoxline/page.tsx"), "utf8");
 const controlsPage = readFileSync(join(root, "app/controls/page.tsx"), "utf8");
 const claimFirewallComponent = readFileSync(join(root, "components/ClaimFirewall.tsx"), "utf8");
 const proofRecordsData = readFileSync(join(root, "src/data/proofRecords.ts"), "utf8");
-const navigationSource = readFileSync(join(root, "src/data/navigation.ts"), "utf8");
 const hoxlineFrontDoorRequiredTerms = [
   ["src/data/navigation.ts", navigationSource, 'label: "Hoxline"'],
   ["src/data/navigation.ts", navigationSource, 'href: "/hoxline/"'],
   ["src/data/navigation.ts", navigationSource, "hoxline"],
   ["app/hoxline/page.tsx", hoxlinePage, "ProofOps control for the AI security era."],
   ["app/hoxline/page.tsx", hoxlinePage, "AI is not the authority. Evidence is."],
-  ["app/hoxline/page.tsx", hoxlinePage, "The Claim Problem"],
   ["app/hoxline/page.tsx", hoxlinePage, "HO-DET-001 Controlled Demo Spotlight"],
   ["app/hoxline/page.tsx", hoxlinePage, "Authority Architecture"],
   ["app/hoxline/page.tsx", hoxlinePage, "Next Gate"],
@@ -237,7 +304,6 @@ if (lifetimeLedgerFailures.length > 0) {
 }
 
 const currentProofSpineRequiredTerms = [
-  ["app/page.tsx", homePage, "CurrentProofSpine"],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "current-proof-spine"],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "@data/generated/public-status.generated"],
   ["components/CurrentProofSpine.tsx", currentProofSpine, "Generated public-status rendering input"],
@@ -738,6 +804,8 @@ if (publicStatusFailures.length > 0) {
 
 const hardcodedMetricGuardFiles = [
   "app/page.tsx",
+  "components/command-center/HomePresentationMode.tsx",
+  "components/reviewer-guide/PresentationShell.tsx",
   "components/command-center/ProofOfWorkCounterRail.tsx",
   "components/CurrentProofSpine.tsx",
   "components/hoxline/HoxlineEngineRoom.tsx",

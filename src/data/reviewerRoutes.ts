@@ -32,8 +32,7 @@ export const reviewerRoutes: ReviewerRoute[] = [
     doNotInfer: "Do not infer runtime deployment or fleet coverage from a passing controlled-test validation.",
     items: ["Open the validation registry.", "Filter by family.", "Inspect a package drawer."],
     links: [
-      { label: "Validation registry", href: "/proof/#validation-registry" },
-      { label: "Pipeline registry", href: "/pipeline/#validation-registry" },
+      { label: "Validation registry", href: "/validation/" },
       { label: "Validation repo", href: externalLinks.validation, external: true },
     ],
   },
@@ -47,7 +46,7 @@ export const reviewerRoutes: ReviewerRoute[] = [
     items: ["Open Proof Pack 001.", "Read the verifier cards.", "Confirm the proof status index."],
     links: [
       { label: "Proof Pack 001", href: "/proof/#proof-pack-001" },
-      { label: "Verifier cards", href: "/proof/#verifiers" },
+      { label: "Verifier package", href: "/proof/proof-pack-001/" },
       { label: "Proof repo", href: externalLinks.proof, external: true },
     ],
   },
@@ -64,7 +63,7 @@ export const reviewerRoutes: ReviewerRoute[] = [
       "Confirm the AutoSOC ledger metrics.",
     ],
     links: [
-      { label: "Platform contracts", href: "/pipeline/#platform-contracts" },
+      { label: "Platform contracts", href: "/platform/contracts/" },
       { label: "Receipt lane", href: "/pipeline/#receipt-lane" },
       { label: "Platform plane", href: externalLinks.platform, external: true },
     ],
@@ -82,7 +81,7 @@ export const reviewerRoutes: ReviewerRoute[] = [
       "Trace the human-review gate before public wording.",
     ],
     links: [
-      { label: "LLM boundary", href: "/pipeline/#llm-boundary" },
+      { label: "AI labor boundary", href: "/ai-security/" },
       { label: "Claim Firewall", href: "/claim-firewall/" },
       { label: "Control matrix", href: externalLinks.controlMatrix, external: true },
     ],

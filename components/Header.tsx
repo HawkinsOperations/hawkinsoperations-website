@@ -26,12 +26,12 @@ export default function Header() {
           <span className="flex flex-col leading-tight">
             <span className="text-sm font-semibold text-[var(--silver-bright)]">HawkinsOperations</span>
             <span className="mono text-[0.58rem] uppercase tracking-[0.22em] text-[var(--muted)]">
-              Detection Engineering SOC
+              Governed AI Security System
             </span>
           </span>
         </a>
 
-        <nav className="hidden items-center gap-4 lg:gap-7 md:flex" aria-label="Primary navigation">
+        <nav className="hidden items-center gap-4 lg:flex lg:gap-7" aria-label="Primary navigation">
           {primaryNavigation.map((item) => (
             <a
               key={item.href}
@@ -46,14 +46,7 @@ export default function Header() {
 
         <div className="flex items-center gap-3">
           <a
-            className="cta cta-quiet podcast-header-link"
-            href="/podcast/"
-            aria-current={isCurrent("/podcast/") ? "page" : undefined}
-          >
-            Podcast guide
-          </a>
-          <a
-            className="hidden xl:inline-flex cta cta-quiet"
+            className="hidden sm:inline-flex cta cta-quiet"
             href={externalLinks.githubOrg}
             target="_blank"
             rel="noopener noreferrer"
@@ -64,15 +57,8 @@ export default function Header() {
         </div>
       </div>
 
-      <nav className="md:hidden border-t border-[var(--moon-border)]" aria-label="Primary navigation mobile">
+      <nav className="border-t border-[var(--moon-border)] lg:hidden" aria-label="Primary navigation mobile">
         <div className="container flex items-center gap-5 overflow-x-auto py-3">
-          <a
-            className="nav-link shrink-0 podcast-mobile-nav-link"
-            href="/podcast/"
-            aria-current={isCurrent("/podcast/") ? "page" : undefined}
-          >
-            Podcast guide
-          </a>
           {primaryNavigation.map((item) => (
             <a
               key={item.href}

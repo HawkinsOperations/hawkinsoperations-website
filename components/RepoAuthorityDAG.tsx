@@ -2,7 +2,7 @@
  * Three-plane authority DAG.
  *
  * Layout:
- *   Top plane     — governance (.github) and runtime (platform), cross-cutting overlays.
+ *   Top plane     — governance (.github), product control (Hoxline), and runtime (platform).
  *   Middle plane  — authority chain: detections → validation → proof.
  *   Bottom plane  — website (rendering only).
  *
@@ -17,7 +17,7 @@ type Node = {
   num: string;
   name: string;
   role: string;
-  plane: "governance" | "runtime" | "authority" | "render";
+  plane: "governance" | "product" | "runtime" | "authority" | "render";
 };
 
 const W = 980;
@@ -25,11 +25,12 @@ const H = 460;
 
 const nodes: Node[] = [
   { id: "github", x: 140, y: 36, num: "01", name: ".github", role: "governance / reviewer routing", plane: "governance" },
-  { id: "platform", x: 620, y: 36, num: "02", name: "platform", role: "runtime contracts / boundaries", plane: "runtime" },
-  { id: "detections", x: 80, y: 186, num: "03", name: "detections", role: "source logic", plane: "authority" },
-  { id: "validation", x: 380, y: 186, num: "04", name: "validation", role: "tests · fixtures · verifiers", plane: "authority" },
-  { id: "proof", x: 680, y: 186, num: "05", name: "proof", role: "evidence boundary · ceiling", plane: "authority" },
-  { id: "website", x: 380, y: 336, num: "06", name: "website", role: "rendering only · reviewer routing", plane: "render" },
+  { id: "hoxline", x: 380, y: 36, num: "02", name: "hoxline", role: "product / claim-control route", plane: "product" },
+  { id: "platform", x: 620, y: 36, num: "03", name: "platform", role: "runtime contracts / boundaries", plane: "runtime" },
+  { id: "detections", x: 80, y: 186, num: "04", name: "detections", role: "source logic", plane: "authority" },
+  { id: "validation", x: 380, y: 186, num: "05", name: "validation", role: "tests · fixtures · verifiers", plane: "authority" },
+  { id: "proof", x: 680, y: 186, num: "06", name: "proof", role: "evidence boundary · ceiling", plane: "authority" },
+  { id: "website", x: 380, y: 336, num: "07", name: "website", role: "rendering only · reviewer routing", plane: "render" },
 ];
 
 const NW = 240;
@@ -37,6 +38,7 @@ const NH = 78;
 
 const planeStroke: Record<Node["plane"], string> = {
   governance: "var(--silver)",
+  product: "var(--ice-blue)",
   runtime: "var(--silver)",
   authority: "var(--electric-blue)",
   render: "var(--ice-blue)",
@@ -46,7 +48,7 @@ export default function RepoAuthorityDAG() {
   return (
     <div className="repo-dag" aria-label="Repository authority directed graph">
       <div className="repo-dag__viewport">
-        <svg className="repo-dag__svg" viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Six repositories, three planes; authority flows down only">
+        <svg className="repo-dag__svg" viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Seven repositories, three planes; authority remains separated">
           <defs>
             <marker id="rd-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
               <path d="M0,0 L10,5 L0,10 z" fill="var(--electric-blue-bright)" />
@@ -57,7 +59,7 @@ export default function RepoAuthorityDAG() {
           </defs>
 
           {/* Plane labels */}
-          <text x={28} y={70} fontSize={9} fontFamily='"JetBrains Mono", monospace' fill="var(--muted)" letterSpacing="2">PLANE · GOV / RUNTIME</text>
+          <text x={28} y={70} fontSize={9} fontFamily='"JetBrains Mono", monospace' fill="var(--muted)" letterSpacing="2">PLANE · GOV / PRODUCT / RUNTIME</text>
           <text x={28} y={220} fontSize={9} fontFamily='"JetBrains Mono", monospace' fill="var(--electric-blue-bright)" letterSpacing="2">PLANE · AUTHORITY CHAIN</text>
           <text x={28} y={370} fontSize={9} fontFamily='"JetBrains Mono", monospace' fill="var(--ice-blue)" letterSpacing="2">PLANE · RENDERING</text>
 
@@ -81,6 +83,10 @@ export default function RepoAuthorityDAG() {
           {/* Governance overlay dashed lines */}
           {[180, 500, 800].map((tx, i) => (
             <line key={`gov-${i}`} x1={260} y1={36 + NH} x2={tx} y2={186} stroke="var(--silver)" strokeDasharray="4 4" strokeWidth={0.9} opacity={0.6} markerEnd="url(#rd-arrow-quiet)" />
+          ))}
+          {/* Hoxline product-control routing; it does not become proof authority. */}
+          {[500, 800].map((tx, i) => (
+            <line key={`hox-${i}`} x1={500} y1={36 + NH} x2={tx} y2={186} stroke="var(--ice-blue)" strokeDasharray="3 5" strokeWidth={0.9} opacity={0.65} markerEnd="url(#rd-arrow-quiet)" />
           ))}
           {/* Runtime overlay dashed lines */}
           {[500, 800].map((tx, i) => (

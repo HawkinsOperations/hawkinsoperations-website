@@ -6,13 +6,19 @@ import { ceiling } from "@config/site";
 
 export const metadata: Metadata = {
   title: "System History | HawkinsOperations",
-  description: "Conservative HawkinsOperations system history for website governance and proof-codex changes.",
+  description: "Conservative HawkinsOperations system history for website governance and reviewer-routing changes.",
   alternates: {
     canonical: "/changelog/",
   },
 };
 
 const entries = [
+  {
+    label: "2026-08-06",
+    title: "Homepage recomposed as the presentation Reviewer Guide",
+    detail:
+      "The homepage now presents the complete governed workflow before repository detail, adds an accessible URL-addressable presentation mode, and retires the former standalone presentation route. This is a rendering and reviewer-routing change only; it does not promote proof, runtime, signal, production, customer, disposition, or public-safe status.",
+  },
   {
     label: "2026-05-21",
     title: "Validation Registry and Platform Contract reviewer layers added",
@@ -55,7 +61,7 @@ export default function ChangelogPage() {
     <>
       <PageHero
         title="System history"
-        subtitle="A conservative change record for the proof codex."
+        subtitle="A conservative change record for the reviewer-routing surface."
         description="This route records website and governance milestones without promoting runtime, signal, or public proof claims."
         badges={[{ label: ceiling, tone: "warn" }, { label: "RENDERING_ONLY" }]}
       />
@@ -70,11 +76,11 @@ export default function ChangelogPage() {
         />
         <div className="divide-y divide-blue-100/10 border-y border-blue-100/10">
           {entries.map((entry) => (
-            <article key={entry.label} className="grid gap-4 py-7 md:grid-cols-[180px_1fr]">
-              <p className="mono text-xs uppercase text-blue-100">{entry.label}</p>
-              <div>
+            <article key={`${entry.label}-${entry.title}`} className="grid min-w-0 gap-4 py-7 md:grid-cols-[180px_minmax(0,1fr)]">
+              <p className="mono min-w-0 text-xs uppercase text-blue-100">{entry.label}</p>
+              <div className="min-w-0">
                 <h2 className="text-2xl font-semibold text-slate-50">{entry.title}</h2>
-                <p className="mt-3 text-sm leading-6 text-slate-400">{entry.detail}</p>
+                <p className="mt-3 break-words text-sm leading-6 text-slate-400">{entry.detail}</p>
               </div>
             </article>
           ))}

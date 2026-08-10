@@ -22,7 +22,7 @@ export default function RepoAuthorityMapPage() {
     <>
       <PageHero
         title="Repository authority map"
-        subtitle="Six repositories. Separate truth surfaces. Authority does not flow upward from rendering."
+        subtitle="Seven repositories. Separate truth surfaces. Authority does not flow upward from rendering."
         description="This route owns repository responsibility and source-of-truth routing. It is governance navigation, not proof that every repository complied in runtime."
         badges={[
           { label: "REPO_PLANE_SEPARATION" },

@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
 import ProofVaultHero from "@components/ProofVaultHero";
-import BlockedClaimStrip from "@components/BlockedClaimStrip";
-import ControlsFiredGraph from "@components/ControlsFiredGraph";
-import ClaimFirewallSplitPane from "@components/ClaimFirewallSplitPane";
 import ProofPackReceipt from "@components/ProofPackReceipt";
 import ProofManifestConsole from "@components/ProofManifestConsole";
 import RuntimeBoundaryVisual from "@components/RuntimeBoundaryVisual";
@@ -12,7 +9,6 @@ import PromotionGateLadder from "@components/PromotionGateLadder";
 import RecentGovernedArtifacts from "@components/RecentGovernedArtifacts";
 import EvidenceBayScene from "@components/evidence/EvidenceBay";
 import ProofAuthorityBay from "@components/evidence/ProofAuthorityBay";
-import { AuthorityConstellation, ClaimDecisionMatrixVisual } from "@components/visual-intelligence";
 import { promotionRequirements } from "@data/claims";
 import { externalLinks } from "@data/navigation";
 import { lifetimeCaseLedgerV1 } from "@data/proofRecords";
@@ -37,54 +33,6 @@ export default function ProofIndexPage() {
           <ProofAuthorityBay />
           <div className="mt-6" />
           <EvidenceBayScene />
-        </div>
-      </section>
-
-      <section id="hoxline-rendering-reference" className="cockpit-section--tight">
-        <div className="container">
-          <div className="mb-6">
-            <p className="cockpit-eyebrow">Hoxline rendering reference</p>
-            <h2 className="cockpit-headline mt-2" style={{ fontSize: "2rem" }}>
-              Hoxline can visualize the loop. Proof authority stays here.
-            </h2>
-            <p className="muted mt-3 text-sm leading-6 max-w-3xl">
-              Gauntlet v0 output is useful reviewer context for HO-DET-001, but it does not make
-              Hoxline or the website proof authority. Runtime and signal promotion still require
-              separate evidence and review records.
-            </p>
-          </div>
-          <div className="vi-grid-2">
-            <AuthorityConstellation compact />
-            <ClaimDecisionMatrixVisual />
-          </div>
-        </div>
-      </section>
-
-      {/* ── Governance Saves dashboard ───────────────────────────────── */}
-      <section id="governance-saves" className="cockpit-section--tight">
-        <div className="container">
-          <ControlsFiredGraph />
-          <div className="biz-translate" role="note" aria-label="Business translation">
-            <span className="biz-translate__label">In plain English</span>
-            <span>
-              <span className="biz-translate__text">
-                Governance saves are the moments a control fired before bad truth shipped —
-                drift was attempted, the control caught it, and the public surface stayed honest.
-                Private-only records are excluded from this view.
-              </span>
-            </span>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Claim firewall ───────────────────────────────────────────── */}
-      <div id="verifiers" className="legacy-anchor-target" aria-hidden="true" />
-      <section id="claim-firewall" className="cockpit-section--tight">
-        <div className="container">
-          <ClaimFirewallSplitPane />
-          <div className="mt-6">
-            <BlockedClaimStrip variant="compact" />
-          </div>
         </div>
       </section>
 
@@ -249,7 +197,7 @@ export default function ProofIndexPage() {
               </span>
               <span className="artifact-tile__link">Open Claim Firewall -&gt;</span>
             </a>
-            <a className="artifact-tile" href="/proof/governance-saves/">
+            <a className="artifact-tile" href="/governance-saves/">
               <span className="artifact-tile__cat">GOVERNANCE SAVES</span>
               <span className="artifact-tile__title">Controls that prevented unsafe truth</span>
               <span className="artifact-tile__desc">

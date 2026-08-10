@@ -16,7 +16,7 @@ export default function Footer() {
             </div>
           </div>
           <p className="site-footer__lede mt-5 max-w-md text-[0.88rem] leading-7">
-            Public reviewer surface for governed detection engineering. Website rendering is not proof.
+            Reviewer Guide and public routing surface for governed AI Security Operations and detection engineering. Website rendering is not proof.
           </p>
           <p className="mono mt-5 text-[0.64rem] uppercase tracking-[0.2em] text-[var(--silver)]">
             Build loud · Verify hard · Claim tight · Ship receipts

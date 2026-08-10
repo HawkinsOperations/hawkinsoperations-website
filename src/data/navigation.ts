@@ -5,7 +5,7 @@ export type NavItem = {
 };
 
 export const primaryNavigation: NavItem[] = [
-  { label: "Home", href: "/", description: "Reviewer cockpit" },
+  { label: "Reviewer Guide", href: "/", description: "Presentation and system overview" },
   { label: "Hoxline", href: "/hoxline/", description: "Product front door" },
   { label: "Proof", href: "/proof/", description: "Claim authority" },
   { label: "Detections", href: "/detections/", description: "Detection engineering" },
@@ -26,6 +26,7 @@ export const reviewerLinks: NavItem[] = [
 
 export const externalLinks = {
   githubOrg: "https://github.com/HawkinsOperations",
+  githubRepo: "https://github.com/HawkinsOperations/.github",
   startHere: "https://github.com/HawkinsOperations/.github/blob/main/profile/START_HERE.md",
   controlMatrix: "https://github.com/HawkinsOperations/.github/blob/main/governance/CONTROL_STATUS_MATRIX.md",
   orgRequiredChecksMatrix: "https://github.com/HawkinsOperations/.github/blob/main/governance/ORG_REQUIRED_CHECKS_MATRIX.yml",
