@@ -1,52 +1,154 @@
-name: Public status sync
+name: Public status convergence
 
 on:
+  pull_request:
   workflow_dispatch:
     inputs:
-      update_branch:
-        description: "Create or update a PR branch if generated public status drifts."
-        required: false
-        default: "false"
-        type: choice
-        options:
-          - "false"
-          - "true"
       run_visual:
-        description: "Run Playwright visual QA after generation."
+        description: "Install Chromium and run Playwright visual QA."
         required: false
-        default: "false"
-        type: choice
-        options:
-          - "false"
-          - "true"
+        default: false
+        type: boolean
   schedule:
     - cron: "17 11 * * 1"
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
+
+env:
+  HAWKINS_WEBSITE_IMMUTABLE_OBSERVED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA: e523bd1ccec1ece01a305d36908c6c966c249c41
 
 jobs:
-  public-status-sync:
+  public-status-convergence:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: hawkinsoperations-website
     steps:
-      - name: Checkout website
-        uses: actions/checkout@v4
+      - name: Checkout website event revision
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          path: hawkinsoperations-website
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Checkout reviewed source manifest
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: HawkinsOperations/.github
+          ref: ${{ env.HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA }}
+          path: .github
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Read content and reviewed-head manifests
+        id: manifest
+        shell: bash
+        run: node scripts/resolve-public-status-checkouts.mjs --github-output
+
+      - name: Fetch immutable Website content identities without changing HEAD
+        shell: bash
+        env:
+          WEBSITE_CONTENT_SHA: ${{ steps.manifest.outputs.website_content }}
+          WEBSITE_AUTHORITY_CONTENT_SHA: ${{ steps.manifest.outputs.website_authority_content }}
+        run: |
+          set -euo pipefail
+          event_sha="$(git rev-parse HEAD)"
+          for sha in "$WEBSITE_CONTENT_SHA" "$WEBSITE_AUTHORITY_CONTENT_SHA"; do
+            git fetch --no-tags origin "$sha"
+            git cat-file -e "${sha}^{commit}"
+          done
+          test "$(git rev-parse HEAD)" = "$event_sha"
+
+      - name: Checkout Hoxline
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: HawkinsOperations/hoxline
+          ref: ${{ steps.manifest.outputs.hoxline }}
+          path: hoxline
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Checkout detections
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: HawkinsOperations/hawkinsoperations-detections
+          ref: ${{ steps.manifest.outputs.detections }}
+          path: hawkinsoperations-detections
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Checkout validation
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: HawkinsOperations/hawkinsoperations-validation
+          ref: ${{ steps.manifest.outputs.validation }}
+          path: hawkinsoperations-validation
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Checkout platform
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: HawkinsOperations/hawkinsoperations-platform
+          ref: ${{ steps.manifest.outputs.platform }}
+          path: hawkinsoperations-platform
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Checkout proof
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: HawkinsOperations/hawkinsoperations-proof
+          ref: ${{ steps.manifest.outputs.proof }}
+          path: hawkinsoperations-proof
+          fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 20
           cache: npm
+          cache-dependency-path: hawkinsoperations-website/package-lock.json
 
-      - name: Install dependencies
+      - name: Install declared dependencies
         run: npm ci
 
-      - name: Generate public status
-        run: npm run public-status:generate
+      - name: Reproduce checked public status without mutation
+        run: npm run public-status:generate:check
 
       - name: Verify public status
         run: npm run public-status:verify
+
+      - name: Verify source owner contracts
+        run: npm run public-status:owner-self-test
+
+      - name: Run hostile public-status suite
+        run: npm run public-status:self-test
+
+      - name: Verify exact source checkouts
+        run: npm run public-status:source-checkout-test
+
+      - name: Verify reviewed checkout resolver
+        run: npm run public-status:checkout-manifest-self-test
+
+      - name: Verify freshness and revision reachability
+        run: npm run public-status:freshness-reachability-test
+
+      - name: Verify dirty provenance rejection
+        run: npm run public-status:dirty-provenance-test
+
+      - name: Verify nested claim rejection
+        run: npm run public-status:nested-claim-test
+
+      - name: Verify duplicate-key rejection
+        run: npm run public-status:strict-json-test
+
+      - name: Verify CRLF and LF identity separation
+        run: npm run public-status:eol-self-test
 
       - name: Check site contract
         run: npm run check:site
@@ -54,35 +156,16 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Build static site
+        run: npm run build
+
+      - name: Verify generated pair is reproducible
+        run: git diff --exit-code -- public/data/public-status.json src/data/generated/public-status.generated.ts
+
       - name: Install Playwright Chromium
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_visual == 'true' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_visual }}
         run: npx playwright install chromium
 
       - name: Run visual QA
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_visual == 'true' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_visual }}
         run: npm run test:visual
-
-      - name: Detect public status drift
-        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.update_branch == 'true') }}
-        run: |
-          git diff --exit-code || {
-            echo "Generated public status drift detected."
-            echo "Re-run this workflow manually with update_branch=true, or run npm run public-status:generate locally and open a PR."
-            exit 1
-          }
-
-      - name: Create public status refresh PR
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.update_branch == 'true' }}
-        uses: peter-evans/create-pull-request@v6
-        with:
-          branch: automation/public-status-data-plane-v0
-          commit-message: Refresh generated public status
-          title: Refresh generated public status
-          body: |
-            Summary:
-            - Regenerates public/data/public-status.json.
-            - Refreshes source-linked freshness metadata.
-            - Does not direct-push to main.
-
-            Proof ceiling:
-            This proves only generated website rendering input and local verification hooks. It does not prove runtime, signal, controlled validation truth, production readiness, customer deployment, public-safe proof, final human approval, merge readiness, or website-as-proof.

@@ -1,5 +1,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { extname, join, relative } from "node:path";
+import { readStrictJson } from "./strict-json.mjs";
+import { resolveReviewedCheckouts } from "./resolve-public-status-checkouts.mjs";
 
 const root = process.cwd();
 
@@ -26,6 +28,7 @@ const requiredFiles = [
   "app/legacy/page.tsx",
   "app/changelog/page.tsx",
   "config/site.ts",
+  "scripts/resolve-public-status-checkouts.mjs",
   "config/blocked-claims.ts",
   "config/proof-loop.ts",
   "config/truth-surfaces.ts",
@@ -45,6 +48,7 @@ const requiredFiles = [
   "src/data/publicSurfaceIdentities.ts",
   "public/data/public-status.json",
   "schemas/public-status-v0.schema.json",
+  "config/public-status-source-manifest-v1.json",
   "scripts/generate-public-status.mjs",
   "scripts/verify-public-status.mjs",
   "docs/public-status-data-plane-v0.md",
@@ -64,6 +68,263 @@ const requiredFiles = [
 const missing = requiredFiles.filter((file) => !existsSync(join(root, file)));
 if (missing.length > 0) {
   console.error(`Missing required site files:\n${missing.map((file) => `- ${file}`).join("\n")}`);
+  process.exit(1);
+}
+
+const publicStatusWorkflow = readFileSync(join(root, ".github/workflows/public-status-sync.yml"), "utf8");
+const governanceWorkflow = readFileSync(join(root, ".github/workflows/governance-gate.yml"), "utf8");
+const publicStatusGenerator = readFileSync(join(root, "scripts/generate-public-status.mjs"), "utf8");
+const publicStatusVerifier = readFileSync(join(root, "scripts/verify-public-status.mjs"), "utf8");
+const publicStatusCheckoutResolver = readFileSync(
+  join(root, "scripts/resolve-public-status-checkouts.mjs"),
+  "utf8",
+);
+const workflowFailures = [];
+const observationContractMarker = "CONTENT_BOUND_OBSERVATION_V1";
+if (!publicStatusGenerator.includes(observationContractMarker) ||
+    !publicStatusVerifier.includes(observationContractMarker)) {
+  workflowFailures.push(
+    "public-status generator and verifier must share the content-bound observation contract.",
+  );
+}
+function publicStatusWorkflowFindings(workflow) {
+  const findings = [];
+  if ((workflow.match(/actions\/checkout@[0-9a-f]{40}/g) ?? []).length !== 7) {
+    findings.push("public-status workflow must contain exactly seven immutable checkout actions.");
+  }
+  if (!workflow.includes("actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020")) {
+    findings.push("public-status workflow must pin the approved immutable setup-node action.");
+  }
+  if ((workflow.match(/persist-credentials:\s*false/g) ?? []).length !== 7) {
+    findings.push("all seven public-status checkouts must disable persisted credentials.");
+  }
+  if (!/Checkout website event revision[\s\S]*?fetch-depth:\s*0/.test(workflow)) {
+    findings.push("website event checkout must fetch full history for selected immutable content reachability.");
+  }
+  if (!workflow.includes(
+    "HAWKINS_WEBSITE_IMMUTABLE_OBSERVED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}",
+  )) {
+    findings.push("public-status workflow must expose the exact PR head or event SHA as the immutable Website observation.");
+  }
+  if ((workflow.match(/HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA:\s*[a-f0-9]{40}/g) ?? []).length !== 1 ||
+      !/Checkout reviewed source manifest[\s\S]*?ref:\s*\$\{\{\s*env\.HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA\s*\}\}/.test(workflow) ||
+      !workflow.includes("run: node scripts/resolve-public-status-checkouts.mjs --github-output") ||
+      !workflow.includes("run: npm run public-status:checkout-manifest-self-test") ||
+      !publicStatusCheckoutResolver.includes("../.github/governance/CONVERGENCE_SOURCE_MANIFEST.json")) {
+    findings.push(
+      "public-status workflow must bootstrap an immutable command-center manifest and select reviewed repository heads separately from content revisions.",
+    );
+  }
+  if (!workflow.includes("Fetch immutable Website content identities without changing HEAD") ||
+      !workflow.includes("WEBSITE_CONTENT_SHA: ${{ steps.manifest.outputs.website_content }}") ||
+      !workflow.includes("WEBSITE_AUTHORITY_CONTENT_SHA: ${{ steps.manifest.outputs.website_authority_content }}") ||
+      !workflow.includes('git fetch --no-tags origin "$sha"') ||
+      workflow.includes("git fetch --no-tags --depth=") ||
+      !workflow.includes('git cat-file -e "${sha}^{commit}"') ||
+      !workflow.includes('test "$(git rev-parse HEAD)" = "$event_sha"')) {
+    findings.push(
+      "public-status workflow must fetch both pinned Website content identities and preserve the exact event HEAD.",
+    );
+  }
+  if (!/Checkout website event revision[\s\S]*?ref:\s*\$\{\{\s*github\.event\.pull_request\.head\.sha\s*\|\|\s*github\.sha\s*\}\}/.test(workflow)) {
+    findings.push("website event checkout must use the exact PR head instead of GitHub's merge ref.");
+  }
+  const nonMutatingGenerationSteps =
+    workflow.match(/run:\s*npm run public-status:generate:check\s*$/gm) ?? [];
+  if (nonMutatingGenerationSteps.length !== 1) {
+    findings.push(
+      "public-status workflow must reproduce generated status exactly once in non-mutating check mode.",
+    );
+  }
+  if (/run:\s*npm run public-status:generate\s*$/m.test(workflow)) {
+    findings.push(
+      "public-status workflow must not rewrite tracked generated status on scheduled or manual runs.",
+    );
+  }
+  for (const [label, pattern] of [
+    ["mutable action tag", /uses:\s*actions\/(?:checkout|setup-node)@v\d+/],
+    ["write token", /contents:\s*write/],
+    ["pull_request_target", /^\s*pull_request_target\s*:/m],
+    ["continue-on-error", /continue-on-error\s*:/],
+  ]) {
+    if (pattern.test(workflow)) findings.push(`public-status workflow rejects ${label}.`);
+  }
+  return findings;
+}
+workflowFailures.push(...publicStatusWorkflowFindings(publicStatusWorkflow));
+for (const [label, hostileWorkflow] of [
+  [
+    "mutating scheduled generation",
+    publicStatusWorkflow.replace(
+      "run: npm run public-status:generate:check",
+      "run: npm run public-status:generate",
+    ),
+  ],
+  [
+    "merge-ref substitution",
+    publicStatusWorkflow.replace(
+      "ref: ${{ github.event.pull_request.head.sha || github.sha }}",
+      "ref: ${{ github.sha }}",
+    ),
+  ],
+  [
+    "immutable observation removal",
+    publicStatusWorkflow.replace(
+      "HAWKINS_WEBSITE_IMMUTABLE_OBSERVED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}",
+      "HAWKINS_WEBSITE_OBSERVATION_REMOVED: ${{ github.sha }}",
+    ),
+  ],
+  [
+    "website content identity fetch removal",
+    publicStatusWorkflow.replace(
+      'git fetch --no-tags origin "$sha"',
+      'echo "fetch omitted"',
+    ),
+  ],
+  [
+    "shallow website content identity fetch",
+    publicStatusWorkflow.replace(
+      'git fetch --no-tags origin "$sha"',
+      'git fetch --no-tags --depth=1 origin "$sha"',
+    ),
+  ],
+  [
+    "reviewed-head manifest removal",
+    publicStatusWorkflow.replaceAll(
+      "run: node scripts/resolve-public-status-checkouts.mjs --github-output",
+      "run: node scripts/resolve-content-checkouts.mjs --github-output",
+    ),
+  ],
+  [
+    "default-branch reviewed manifest substitution",
+    publicStatusWorkflow.replace(
+      /HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA:\s*[a-f0-9]{40}/,
+      "HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA: main",
+    ),
+  ],
+  [
+    "event-ref reviewed manifest substitution",
+    publicStatusWorkflow.replace(
+      /HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA:\s*[a-f0-9]{40}/,
+      "HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA: ${{ github.sha }}",
+    ),
+  ],
+  [
+    "resolver bypass for command checkout",
+    publicStatusWorkflow.replace(
+      "ref: ${{ env.HAWKINS_REVIEWED_SOURCE_MANIFEST_SHA }}",
+      "ref: ${{ steps.manifest.outputs.org }}",
+    ),
+  ],
+]) {
+  if (publicStatusWorkflowFindings(hostileWorkflow).length === 0) {
+    workflowFailures.push(`public-status workflow hostile test did not reject ${label}.`);
+  }
+}
+
+const checkoutRepositories = [
+  "HawkinsOperations/.github",
+  "HawkinsOperations/hoxline",
+  "HawkinsOperations/hawkinsoperations-detections",
+  "HawkinsOperations/hawkinsoperations-validation",
+  "HawkinsOperations/hawkinsoperations-platform",
+  "HawkinsOperations/hawkinsoperations-proof",
+  "HawkinsOperations/hawkinsoperations-website",
+];
+const checkoutSha = (character) => character.repeat(40);
+const checkoutAuthorityPaths = {
+  "HawkinsOperations/.github": "architecture/REPO_AUTHORITY_MAP.md",
+  "HawkinsOperations/hoxline": "schemas/case-growth-index-v0.schema.json",
+  "HawkinsOperations/hawkinsoperations-detections": "detections/DETECTION_PROMOTION_MATRIX.yml",
+  "HawkinsOperations/hawkinsoperations-validation": "activity/detection-activity-ledger-v1.json",
+  "HawkinsOperations/hawkinsoperations-platform": "contracts/reviewer-metrics-pipeline-v1-state.json",
+  "HawkinsOperations/hawkinsoperations-proof": "proof/indexes/DETECTION_PROOF_STATUS_INDEX.yml",
+  "HawkinsOperations/hawkinsoperations-website": "schemas/public-status-v0.schema.json",
+};
+const resolvedCheckoutFixture = resolveReviewedCheckouts({
+  contentManifest: {
+    manifest_version: "public-status-source-manifest-v1",
+    observation_kind: "reviewed_immutable_commit",
+    repositories: checkoutRepositories.map((repository) => ({
+      repository,
+      revision: checkoutSha("1"),
+      authoritative_path: checkoutAuthorityPaths[repository],
+    })),
+  },
+  reviewedManifest: {
+    schema: "hawkinsoperations-convergence-source-manifest-v1",
+    manifest_id: "HAWKINSOPERATIONS_SEVEN_SOURCE_PR_HEAD_MATRIX_V1",
+    constraints: {
+      exact_repository_count: 7,
+      read_only: true,
+      default_branch_fallback: false,
+      require_detached_exact_revision: true,
+      record_checked_revisions: true,
+      consumer_outputs_are_not_authority: true,
+      proof_ceiling: "CONTROLLED_REPO_CONVERGENCE_AND_LOCAL_FIXTURE_REVIEW_ONLY",
+    },
+    repositories: [
+      "HawkinsOperations/.github",
+      "HawkinsOperations/hawkinsoperations-detections",
+      "HawkinsOperations/hawkinsoperations-validation",
+      "HawkinsOperations/hawkinsoperations-platform",
+      "HawkinsOperations/hawkinsoperations-proof",
+      "HawkinsOperations/hawkinsoperations-website",
+      "HawkinsOperations/hoxline",
+    ].map((canonical_repository) =>
+      canonical_repository === "HawkinsOperations/.github"
+        ? {
+          repository: ".github",
+          canonical_repository,
+          revision_source: "github_event_sha",
+          tree_source: "github_event_tree",
+          authority_content_revision: checkoutSha("1"),
+        }
+        : {
+          repository: canonical_repository.replace("HawkinsOperations/", ""),
+          canonical_repository,
+          revision: checkoutSha("2"),
+          authority_content_revision: checkoutSha("1"),
+          reviewed_tree_sha: checkoutSha("4"),
+        }),
+  },
+  commandManifestSha: checkoutSha("3"),
+});
+if (resolvedCheckoutFixture.org !== checkoutSha("3") ||
+    Object.entries(resolvedCheckoutFixture).some(
+      ([name, revision]) =>
+        !["org", "website_content", "website_authority_content"].includes(name) &&
+        revision !== checkoutSha("2"),
+    )) {
+  workflowFailures.push(
+    "reviewed checkout resolver must select reviewed heads and must not fall back to content revisions.",
+  );
+}
+if (resolvedCheckoutFixture.website_content !== checkoutSha("1") ||
+    resolvedCheckoutFixture.website_authority_content !== checkoutSha("1")) {
+  workflowFailures.push(
+    "reviewed checkout resolver must expose both immutable Website content identities for explicit fetch.",
+  );
+}
+if ((governanceWorkflow.match(/actions\/checkout@11bd71901bbe5b1630ceea73d27597364c9af683/g) ?? []).length !== 2) {
+  workflowFailures.push("governance workflow must pin both checkout actions to the reviewed immutable SHA.");
+}
+if ((governanceWorkflow.match(/persist-credentials:\s*false/g) ?? []).length !== 2) {
+  workflowFailures.push("both governance checkouts must disable persisted credentials.");
+}
+if (!governanceWorkflow.includes("actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020")) {
+  workflowFailures.push("governance workflow must pin the approved immutable setup-node action.");
+}
+for (const [label, pattern] of [
+  ["mutable action tag", /uses:\s*actions\/(?:checkout|setup-node)@v\d+/],
+  ["write token", /contents:\s*write/],
+  ["pull_request_target", /^\s*pull_request_target\s*:/m],
+  ["continue-on-error", /continue-on-error\s*:/],
+]) {
+  if (pattern.test(governanceWorkflow)) workflowFailures.push(`governance workflow rejects ${label}.`);
+}
+if (workflowFailures.length > 0) {
+  console.error(`Public-status workflow invariant failed:\n${workflowFailures.map((line) => `- ${line}`).join("\n")}`);
   process.exit(1);
 }
 
@@ -335,8 +596,8 @@ if (!proofHoDet001Page.includes('title: "HO-DET-001 | HawkinsOperations"')) {
   process.exit(1);
 }
 
-const discoveryProof = JSON.parse(readFileSync(join(root, "public/.well-known/hawkinsoperations-proof.json"), "utf8"));
-const agentSkills = JSON.parse(readFileSync(join(root, "public/.well-known/agent-skills/index.json"), "utf8"));
+const discoveryProof = readStrictJson(join(root, "public/.well-known/hawkinsoperations-proof.json"));
+const agentSkills = readStrictJson(join(root, "public/.well-known/agent-skills/index.json"));
 const agentMarkdown = readFileSync(join(root, "public/agent.md"), "utf8");
 const headersFile = readFileSync(join(root, "public/_headers"), "utf8");
 const robotsText = readFileSync(join(root, "public/robots.txt"), "utf8");
@@ -555,7 +816,7 @@ if (failures.length > 0) {
 }
 
 const publicStatusSource = readFileSync(join(root, "src/data/generated/public-status.generated.ts"), "utf8");
-const publicStatusJson = JSON.parse(readFileSync(join(root, "public/data/public-status.json"), "utf8"));
+const publicStatusJson = readStrictJson(join(root, "public/data/public-status.json"));
 const publicSurfaceIdentities = readFileSync(join(root, "src/data/publicSurfaceIdentities.ts"), "utf8");
 const proofOfWorkCounterRail = readFileSync(join(root, "components/command-center/ProofOfWorkCounterRail.tsx"), "utf8");
 const hoxlineEngineRoom = readFileSync(join(root, "components/hoxline/HoxlineEngineRoom.tsx"), "utf8");
@@ -570,6 +831,9 @@ for (const term of [
   "generated_at",
   "generated_by",
   "generator_commit",
+  "generator_git_blob_sha",
+  "generator_semantic_fingerprint",
+  "source_manifest_digest",
   "generation_mode",
   "snapshot_label",
   "freshness",
@@ -578,6 +842,11 @@ for (const term of [
   "source_repos",
   "source_paths",
   "source_commit_refs",
+  "source_blob_refs",
+  "source_semantic_fingerprint_refs",
+  "authority_source_repos",
+  "consumer_source_repos",
+  "render_only_metric_ids",
   "freshness_window_days",
   "stale_evaluation",
   "proof_ceiling",
@@ -630,8 +899,8 @@ if (!publicStatusJson.no_proof_promotion_statement?.includes("snapshot/rendering
 if (!publicStatusJson.source_ownership_message?.includes("proof") || !publicStatusJson.source_ownership_message?.includes("validation")) {
   publicStatusFailures.push("public/data/public-status.json must include source ownership language.");
 }
-if (!Array.isArray(publicStatusJson.sources) || publicStatusJson.sources.length < 7) {
-  publicStatusFailures.push("public/data/public-status.json must include sources[] for repo authority surfaces.");
+if (!Array.isArray(publicStatusJson.sources) || publicStatusJson.sources.length !== 7) {
+  publicStatusFailures.push("public/data/public-status.json must include exactly seven sources[] entries.");
 }
 if (!Array.isArray(publicStatusJson.metric_list) || publicStatusJson.metric_list.length < 8) {
   publicStatusFailures.push("public/data/public-status.json must include metric_list[] for generated metrics.");
@@ -649,6 +918,7 @@ for (const metricKey of [
   "validation_fires",
   "validation_cases",
   "proof_records",
+  "proof_cards",
   "blocked_claims",
   "governed_cases",
   "closed_case_count",
@@ -659,7 +929,20 @@ for (const metricKey of [
     publicStatusFailures.push(`public/data/public-status.json metrics.${metricKey} must include numeric value, display_value, display_label, and source_href.`);
     continue;
   }
-  for (const field of ["authority", "source_repo", "source_path", "source_commit", "method", "freshness_status", "proof_ceiling", "claim_status", "not_claiming"]) {
+  for (const field of [
+    "authority",
+    "source_repo",
+    "source_path",
+    "source_commit",
+    "source_observed_head_sha",
+    "authoritative_git_blob_sha",
+    "authoritative_content_fingerprint",
+    "method",
+    "freshness_status",
+    "proof_ceiling",
+    "claim_status",
+    "not_claiming",
+  ]) {
     if (metric[field] === undefined || metric[field] === null || metric[field] === "") {
       publicStatusFailures.push(`public/data/public-status.json metrics.${metricKey}.${field} is required.`);
     }

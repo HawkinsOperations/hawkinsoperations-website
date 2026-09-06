@@ -3,62 +3,330 @@
   "$id": "https://hawkinsoperations.com/schemas/public-status-v0.schema.json",
   "title": "HawkinsOperations Public Status v0",
   "type": "object",
+  "additionalProperties": false,
   "required": [
     "schema_version",
     "generated_at",
     "generated_by",
     "generator_commit",
+    "generator_observed_head_sha",
+    "generator_git_blob_sha",
+    "generator_semantic_fingerprint",
+    "generator_fingerprint_sha256",
+    "source_manifest_digest",
+    "generation_mode",
+    "snapshot_label",
+    "snapshot_class",
+    "historical_snapshot",
+    "current_authority",
+    "freshness_window_days",
     "freshness",
+    "stale_evaluation",
     "sources",
+    "source_repos",
+    "source_paths",
+    "source_commit_refs",
+    "source_repository_commit_refs",
+    "source_blob_refs",
+    "source_semantic_fingerprint_refs",
+    "authority_source_repos",
+    "consumer_source_repos",
     "metric_list",
     "metrics",
+    "current_metric_ids",
+    "historical_metric_ids",
+    "render_only_metric_ids",
     "known_gaps",
-    "proof_ceiling"
+    "proof_ceiling",
+    "snapshot_authority",
+    "source_ownership_message",
+    "public_safe",
+    "website_rendering_boundary",
+    "no_proof_promotion_statement",
+    "owning_routes",
+    "raw_status_constants",
+    "hoxline",
+    "reviewer_actions"
   ],
   "properties": {
     "schema_version": { "const": "public-status-v0" },
-    "generated_at": { "type": "string", "format": "date-time" },
+    "generated_at": { "type": "string" },
     "generated_by": { "const": "scripts/generate-public-status.mjs" },
-    "generator_commit": { "type": ["string", "null"] },
-    "freshness": {
+    "generator_commit": {
+      "$ref": "#/$defs/sha",
+      "description": "Website commit observed when the generator ran; a later pair-only descendant is allowed only when the generator blob remains identical."
+    },
+    "generator_observed_head_sha": {
+      "$ref": "#/$defs/sha",
+      "description": "Generation-time Website HEAD observation, distinct from source content identity."
+    },
+    "generator_git_blob_sha": { "$ref": "#/$defs/sha" },
+    "generator_semantic_fingerprint": { "$ref": "#/$defs/sha256" },
+    "generator_fingerprint_sha256": { "$ref": "#/$defs/sha256" },
+    "source_manifest_digest": { "$ref": "#/$defs/sha256" },
+    "generation_mode": { "const": "generated_public_status_data_plane_v0" },
+    "snapshot_label": { "type": "string" },
+    "snapshot_class": { "const": "current_generated_rendering_snapshot" },
+    "historical_snapshot": { "const": false },
+    "current_authority": { "const": false },
+    "freshness_window_days": { "const": 14 },
+    "freshness": { "$ref": "#/$defs/freshness" },
+    "stale_evaluation": {
       "type": "object",
-      "required": ["status", "max_age_hours", "age_hours"],
+      "additionalProperties": false,
+      "required": ["supported", "method", "stale_when_older_than_days"],
       "properties": {
-        "status": { "enum": ["fresh", "stale", "source_unavailable", "unverified"] },
-        "max_age_hours": { "type": "number" },
-        "age_hours": { "type": "number" }
+        "supported": { "const": true },
+        "method": { "type": "string" },
+        "stale_when_older_than_days": { "const": 14 }
       }
     },
     "sources": {
       "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
       "items": { "$ref": "#/$defs/source" }
     },
+    "source_repos": { "$ref": "#/$defs/stringArray" },
+    "source_paths": { "$ref": "#/$defs/stringArray" },
+    "source_commit_refs": { "$ref": "#/$defs/revisionMap" },
+    "source_repository_commit_refs": { "$ref": "#/$defs/revisionMap" },
+    "source_blob_refs": { "$ref": "#/$defs/revisionMap" },
+    "source_semantic_fingerprint_refs": { "$ref": "#/$defs/fingerprintMap" },
+    "authority_source_repos": { "$ref": "#/$defs/stringArray" },
+    "consumer_source_repos": { "$ref": "#/$defs/stringArray" },
     "metric_list": {
       "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
       "items": { "$ref": "#/$defs/metric" }
     },
     "metrics": {
       "type": "object",
-      "additionalProperties": { "$ref": "#/$defs/metric" }
+      "additionalProperties": false,
+      "required": [
+        "controls_fired",
+        "validation_fires",
+        "validation_cases",
+        "proof_records",
+        "proof_cards",
+        "blocked_claims",
+        "governed_cases",
+        "closed_case_count",
+        "public_safe_count"
+      ],
+      "properties": {
+        "controls_fired": { "$ref": "#/$defs/metric" },
+        "validation_fires": { "$ref": "#/$defs/metric" },
+        "validation_cases": { "$ref": "#/$defs/metric" },
+        "proof_records": { "$ref": "#/$defs/metric" },
+        "proof_cards": { "$ref": "#/$defs/metric" },
+        "blocked_claims": { "$ref": "#/$defs/metric" },
+        "governed_cases": { "$ref": "#/$defs/metric" },
+        "closed_case_count": { "$ref": "#/$defs/metric" },
+        "public_safe_count": { "$ref": "#/$defs/metric" }
+      }
     },
+    "current_metric_ids": { "$ref": "#/$defs/stringArray" },
+    "historical_metric_ids": { "$ref": "#/$defs/stringArray" },
+    "render_only_metric_ids": { "$ref": "#/$defs/stringArray" },
     "known_gaps": {
       "type": "array",
-      "items": { "type": "object" }
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/knownGap" }
     },
-    "proof_ceiling": {
+    "proof_ceiling": { "$ref": "#/$defs/rawLabelDetail" },
+    "snapshot_authority": { "type": "string" },
+    "source_ownership_message": { "type": "string" },
+    "public_safe": {
       "type": "object",
-      "required": ["raw", "label", "detail"]
-    }
+      "additionalProperties": false,
+      "required": ["raw", "label", "value", "count", "detail"],
+      "properties": {
+        "raw": { "const": "NOT_PUBLIC_SAFE" },
+        "label": { "type": "string" },
+        "value": { "const": false },
+        "count": { "const": 0 },
+        "detail": { "type": "string" }
+      }
+    },
+    "website_rendering_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["raw", "label", "statement"],
+      "properties": {
+        "raw": { "const": "RENDERING_ONLY" },
+        "label": { "type": "string" },
+        "statement": { "const": "Website rendering is not proof." }
+      }
+    },
+    "no_proof_promotion_statement": { "type": "string" },
+    "owning_routes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "public_status_json",
+        "hoxline",
+        "proof",
+        "validation",
+        "detections",
+        "platform_contracts",
+        "claim_firewall"
+      ],
+      "properties": {
+        "public_status_json": { "type": "string" },
+        "hoxline": { "type": "string" },
+        "proof": { "type": "string" },
+        "validation": { "type": "string" },
+        "detections": { "type": "string" },
+        "platform_contracts": { "type": "string" },
+        "claim_firewall": { "type": "string" }
+      }
+    },
+    "raw_status_constants": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "FRESH",
+        "STALE",
+        "SOURCE_UNAVAILABLE",
+        "UNVERIFIED",
+        "NOT_PUBLIC_SAFE",
+        "RENDERING_ONLY",
+        "RUNTIME_BLOCKED",
+        "RUNTIME_GATED",
+        "SIGNAL_MISSING_EVIDENCE",
+        "HUMAN_REVIEW_REQUIRED"
+      ],
+      "properties": {
+        "FRESH": { "type": "string" },
+        "STALE": { "type": "string" },
+        "SOURCE_UNAVAILABLE": { "type": "string" },
+        "UNVERIFIED": { "type": "string" },
+        "NOT_PUBLIC_SAFE": { "type": "string" },
+        "RENDERING_ONLY": { "type": "string" },
+        "RUNTIME_BLOCKED": { "type": "string" },
+        "RUNTIME_GATED": { "type": "string" },
+        "SIGNAL_MISSING_EVIDENCE": { "type": "string" },
+        "HUMAN_REVIEW_REQUIRED": { "type": "string" }
+      }
+    },
+    "hoxline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runner", "artifact", "proof_ceiling", "runtime", "signal", "human_review", "public_safe"],
+      "properties": {
+        "runner": { "$ref": "#/$defs/rawLabel" },
+        "artifact": { "$ref": "#/$defs/rawLabel" },
+        "proof_ceiling": { "$ref": "#/$defs/rawLabel" },
+        "runtime": { "$ref": "#/$defs/rawLabel" },
+        "signal": { "$ref": "#/$defs/rawLabel" },
+        "human_review": { "$ref": "#/$defs/rawLabel" },
+        "public_safe": { "$ref": "#/$defs/rawLabel" }
+      }
+    },
+    "reviewer_actions": { "$ref": "#/$defs/reviewerActions" }
   },
   "$defs": {
+    "sha": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "stringArray": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "revisionMap": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/sha" }
+    },
+    "fingerprintMap": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/sha256" }
+    },
+    "freshness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "max_age_hours", "age_hours", "evaluated_at"],
+      "properties": {
+        "status": { "enum": ["fresh", "stale", "source_unavailable", "unverified"] },
+        "max_age_hours": { "const": 336 },
+        "age_hours": { "type": "number" },
+        "evaluated_at": { "type": "string" }
+      }
+    },
+    "sourceFreshness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "observed_at", "source_commit_time", "max_age_hours"],
+      "properties": {
+        "state": { "enum": ["fresh", "stale", "source_unavailable", "unverified"] },
+        "observed_at": { "type": "string" },
+        "source_commit_time": { "type": ["string", "null"] },
+        "max_age_hours": { "const": 336 }
+      }
+    },
     "source": {
       "type": "object",
-      "required": ["repo", "authority", "path", "available", "method", "notes"],
+      "additionalProperties": false,
+      "required": [
+        "repo",
+        "repository",
+        "authority",
+        "authority_owner",
+        "authority_role",
+        "path",
+        "authoritative_path",
+        "commit",
+        "repository_commit",
+        "current_observed_head_sha",
+        "source_observed_head_sha",
+        "source_observation_kind",
+        "resolved_ref",
+        "canonical_origin",
+        "authoritative_git_blob_sha",
+        "authoritative_content_fingerprint",
+        "source_fingerprint_sha256",
+        "freshness_state",
+        "freshness_observation",
+        "historical_snapshot",
+        "current_authority",
+        "consumer_only",
+        "available",
+        "method",
+        "notes"
+      ],
       "properties": {
         "repo": { "type": "string" },
+        "repository": { "type": "string" },
         "authority": { "type": "string" },
+        "authority_owner": { "type": "string" },
+        "authority_role": { "type": "string" },
         "path": { "type": "string" },
-        "commit": { "type": ["string", "null"] },
+        "authoritative_path": { "type": "string" },
+        "commit": { "$ref": "#/$defs/sha" },
+        "repository_commit": { "$ref": "#/$defs/sha" },
+        "current_observed_head_sha": {
+          "$ref": "#/$defs/sha",
+          "description": "Actual repository HEAD observed when this snapshot was generated; verification permits only bounded descendant or exact-tree drift."
+        },
+        "source_observed_head_sha": {
+          "$ref": "#/$defs/sha",
+          "description": "Reviewed immutable revision that supplies the authoritative content identity."
+        },
+        "source_observation_kind": { "const": "reviewed_immutable_commit" },
+        "resolved_ref": {
+          "type": "string",
+          "description": "The reviewed immutable source revision, never an environment-dependent local branch name."
+        },
+        "canonical_origin": { "type": "string" },
+        "authoritative_git_blob_sha": { "$ref": "#/$defs/sha" },
+        "authoritative_content_fingerprint": { "$ref": "#/$defs/sha256" },
+        "source_fingerprint_sha256": { "$ref": "#/$defs/sha256" },
+        "freshness_state": { "enum": ["fresh", "stale", "source_unavailable", "unverified"] },
+        "freshness_observation": { "$ref": "#/$defs/sourceFreshness" },
+        "historical_snapshot": { "type": "boolean" },
+        "current_authority": { "type": "boolean" },
+        "consumer_only": { "type": "boolean" },
         "available": { "type": "boolean" },
         "method": { "type": "string" },
         "notes": { "type": "string" }
@@ -66,6 +334,7 @@
     },
     "metric": {
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "id",
         "label",
@@ -74,16 +343,32 @@
         "authority",
         "source_repo",
         "source_path",
+        "source_authority_owner",
+        "source_authority_role",
+        "source_commit",
+        "source_repository_commit",
+        "source_observed_head_sha",
+        "current_observed_head_sha",
+        "source_observation_kind",
+        "authoritative_git_blob_sha",
+        "authoritative_content_fingerprint",
+        "source_resolved_ref",
+        "source_fingerprint_sha256",
         "method",
         "generated_at",
         "freshness_status",
+        "historical_snapshot",
+        "current_authority",
+        "consumer_only",
         "proof_ceiling",
         "claim_status",
         "not_claiming",
         "display_value",
         "display_label",
+        "detail",
         "source_label",
-        "source_href"
+        "source_href",
+        "tone"
       ],
       "properties": {
         "id": { "type": "string" },
@@ -93,13 +378,35 @@
         "authority": { "type": "string" },
         "source_repo": { "type": "string" },
         "source_path": { "type": "string" },
-        "source_commit": { "type": ["string", "null"] },
+        "source_authority_owner": { "type": "string" },
+        "source_authority_role": { "type": "string" },
+        "source_commit": { "$ref": "#/$defs/sha" },
+        "source_repository_commit": { "$ref": "#/$defs/sha" },
+        "source_observed_head_sha": {
+          "$ref": "#/$defs/sha",
+          "description": "Reviewed immutable revision that supplies this metric's content identity."
+        },
+        "current_observed_head_sha": {
+          "$ref": "#/$defs/sha",
+          "description": "Actual source repository HEAD observed at generation time."
+        },
+        "source_observation_kind": { "const": "reviewed_immutable_commit" },
+        "authoritative_git_blob_sha": { "$ref": "#/$defs/sha" },
+        "authoritative_content_fingerprint": { "$ref": "#/$defs/sha256" },
+        "source_resolved_ref": {
+          "type": "string",
+          "description": "Reviewed immutable source revision used for content identity."
+        },
+        "source_fingerprint_sha256": { "$ref": "#/$defs/sha256" },
         "method": { "type": "string" },
-        "generated_at": { "type": "string", "format": "date-time" },
+        "generated_at": { "type": "string" },
         "freshness_status": { "enum": ["fresh", "stale", "source_unavailable", "unverified"] },
+        "historical_snapshot": { "type": "boolean" },
+        "current_authority": { "type": "boolean" },
+        "consumer_only": { "type": "boolean" },
         "proof_ceiling": { "type": "string" },
         "claim_status": { "type": "string" },
-        "not_claiming": { "type": "array", "items": { "type": "string" } },
+        "not_claiming": { "$ref": "#/$defs/stringArray" },
         "blocked_reason": { "type": "string" },
         "display_value": { "type": "string" },
         "display_label": { "type": "string" },
@@ -107,6 +414,85 @@
         "source_label": { "type": "string" },
         "source_href": { "type": "string" },
         "tone": { "type": "string" }
+      }
+    },
+    "knownGap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "detail"],
+      "properties": {
+        "id": { "type": "string" },
+        "status": { "type": "string" },
+        "source_repo": { "type": "string" },
+        "source_path": { "type": "string" },
+        "detail": { "type": "string" }
+      }
+    },
+    "rawLabel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["raw", "label"],
+      "properties": {
+        "raw": { "type": "string" },
+        "label": { "type": "string" }
+      }
+    },
+    "rawLabelDetail": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["raw", "label", "detail"],
+      "properties": {
+        "raw": { "type": "string" },
+        "label": { "type": "string" },
+        "detail": { "type": "string" }
+      }
+    },
+    "reviewLink": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "href", "detail"],
+      "properties": {
+        "label": { "type": "string" },
+        "href": { "type": "string" },
+        "detail": { "type": "string" }
+      }
+    },
+    "reviewCommand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "repo", "working_directory", "command", "source_basis"],
+      "properties": {
+        "label": { "type": "string" },
+        "repo": { "type": "string" },
+        "working_directory": { "type": "string" },
+        "command": { "type": "string" },
+        "source_basis": { "type": "string" }
+      }
+    },
+    "reviewerActions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inspect_online", "download_json", "clone_repo", "run_commands"],
+      "properties": {
+        "inspect_online": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/reviewLink" }
+        },
+        "download_json": { "$ref": "#/$defs/reviewLink" },
+        "clone_repo": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["label", "working_directory", "command"],
+          "properties": {
+            "label": { "type": "string" },
+            "working_directory": { "type": "string" },
+            "command": { "type": "string" }
+          }
+        },
+        "run_commands": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/reviewCommand" }
+        }
       }
     }
   }
