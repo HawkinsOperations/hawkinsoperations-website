@@ -1,8 +1,10 @@
 {
   "schema_version": "public-status-v0",
-  "generated_at": "2026-06-29T04:40:22.395Z",
+  "generated_at": "2026-10-03T00:27:30.014Z",
   "generated_by": "scripts/generate-public-status.mjs",
-  "generator_commit": "834c3d266a423c1202591ccf87b92b56b1502d09",
+  "generator_commit": "7f5b2bf461e35d542e96793fcf04e5354e301c12",
+  "generator_fingerprint_sha256": "874f1d39f1d1fd928eb2e051fd88ee05ebc685dca07e08654849b9202efa426d",
+  "source_selection": "reviewed_immutable_commit",
   "generation_mode": "generated_public_status_data_plane_v0",
   "snapshot_label": "Generated public status v0 data plane",
   "freshness_window_days": 14,
@@ -10,7 +12,7 @@
     "status": "fresh",
     "max_age_hours": 336,
     "age_hours": 0,
-    "evaluated_at": "2026-06-29T04:40:22.395Z"
+    "evaluated_at": "2026-10-03T00:27:30.014Z"
   },
   "stale_evaluation": {
     "supported": true,
@@ -23,63 +25,70 @@
       "authority": "source truth",
       "path": "architecture/REPO_AUTHORITY_MAP.md",
       "commit": "872ae1241f6712e8314e4b133c2381df7bb6e390",
+      "authoritative_git_blob_sha": "6b501058920468e423da7e6786ff8ef8e1a19327",
       "available": true,
       "method": "presence and git commit only; no metric derived in v0",
-      "notes": "Source repository is locally available for generation."
+      "notes": "Reviewed immutable source snapshot; generated freshness is snapshot age, not live runtime state."
     },
     {
       "repo": "HawkinsOperations/hoxline",
       "authority": "Hoxline/product truth",
       "path": "examples/gauntlet/ho-det-001-full-loop-run-v0.json",
       "commit": "bed34b8704f476075d65ec50095bb37121cb635b",
+      "authoritative_git_blob_sha": "756588beffb45da59d7644fc6f79162c8a375570",
       "available": true,
       "method": "presence and git commit only; path contains product artifact, no metric derived in v0",
-      "notes": "Source repository is locally available for generation."
+      "notes": "Reviewed immutable source snapshot; generated freshness is snapshot age, not live runtime state."
     },
     {
       "repo": "HawkinsOperations/hawkinsoperations-detections",
       "authority": "source truth",
       "path": "detections/DETECTION_PROMOTION_MATRIX.yml",
       "commit": "9be6760a134b2f56d46133f550329260cb35643e",
+      "authoritative_git_blob_sha": "1b6241909df06347a8a1ecddbc3374230d01404e",
       "available": true,
       "method": "presence and git commit only; no metric derived in v0",
-      "notes": "Source repository is locally available for generation."
+      "notes": "Reviewed immutable source snapshot; generated freshness is snapshot age, not live runtime state."
     },
     {
       "repo": "HawkinsOperations/hawkinsoperations-validation",
       "authority": "validation truth",
       "path": "activity/detection-activity-ledger-v1.json",
       "commit": "ea5ee1c8bcdfcd0caab689cb7cbcb3113df655ae",
+      "authoritative_git_blob_sha": "d3461b20a455605ff2e61a102bbee8c6545b1e6e",
       "available": true,
       "method": "read-only corroborating source; not used to inflate reviewer-safe public metrics in v0",
-      "notes": "Source repository is locally available for generation."
+      "notes": "Reviewed immutable source snapshot; generated freshness is snapshot age, not live runtime state."
     },
     {
       "repo": "HawkinsOperations/hawkinsoperations-platform",
       "authority": "platform/ledger truth",
       "path": "contracts/reviewer-metrics-pipeline-v1-state.json",
       "commit": "58ed6fc6122264d99ecf993c0f537e15ea75d78e",
+      "authoritative_git_blob_sha": "05cb0bd517aa4af42ec0c91fcdfb6fe79f0c201f",
       "available": true,
       "method": "read bounded reviewer metrics state when available",
-      "notes": "Source repository is locally available for generation."
+      "notes": "Reviewed immutable source snapshot; generated freshness is snapshot age, not live runtime state."
     },
     {
       "repo": "HawkinsOperations/hawkinsoperations-proof",
       "authority": "proof/claim-authority truth",
       "path": "proof/records/reviewer-metrics-pipeline-v1-summary.json",
       "commit": "70c679276b42dfc154d53bf4ce9f129aa0638c78",
+      "authoritative_git_blob_sha": "2efa2c1a28a2ad6b98d286ef738931a6ee868d68",
       "available": true,
       "method": "read proof-owned reviewer-safe summary metrics",
-      "notes": "Source repository is locally available for generation."
+      "notes": "Reviewed immutable source snapshot; generated freshness is snapshot age, not live runtime state."
     },
     {
       "repo": "HawkinsOperations/hawkinsoperations-website",
       "authority": "website rendering only",
       "path": "src/data/governanceSaves.ts",
-      "commit": "834c3d266a423c1202591ccf87b92b56b1502d09",
+      "commit": "fe617fbfac7c7e98a1b6ce8209bf22b725be29ce",
+      "authoritative_git_blob_sha": "8c5e608d0199a8399c83483da2b30089d9fe5ece",
       "available": true,
       "method": "count source-controlled public governance-save entries excluding PRIVATE_ONLY",
-      "notes": "Source repository is locally available for generation."
+      "notes": "Reviewed immutable source snapshot; generated freshness is snapshot age, not live runtime state."
     }
   ],
   "source_repos": [
@@ -107,7 +116,25 @@
     "hawkinsoperations-validation": "ea5ee1c8bcdfcd0caab689cb7cbcb3113df655ae",
     "hawkinsoperations-platform": "58ed6fc6122264d99ecf993c0f537e15ea75d78e",
     "hawkinsoperations-proof": "70c679276b42dfc154d53bf4ce9f129aa0638c78",
-    "hawkinsoperations-website": "834c3d266a423c1202591ccf87b92b56b1502d09"
+    "hawkinsoperations-website": "fe617fbfac7c7e98a1b6ce8209bf22b725be29ce"
+  },
+  "ledger_snapshot": {
+    "counts": {
+      "total_ledger_events": 4,
+      "total_cases": 4,
+      "public_safe_count": 0,
+      "closed_case_count": 0,
+      "correction_event_count": 0,
+      "superseding_event_count": 0
+    },
+    "appended_detection_ids": [
+      "HO-DET-001",
+      "HO-DET-011",
+      "HO-DET-012"
+    ],
+    "source_repo": "HawkinsOperations/hawkinsoperations-proof",
+    "source_path": "proof/records/lifetime-case-ledger-v1-public-summary.json",
+    "source_commit": "70c679276b42dfc154d53bf4ce9f129aa0638c78"
   },
   "metric_list": [
     {
@@ -118,9 +145,9 @@
       "authority": "website rendering only",
       "source_repo": "HawkinsOperations/hawkinsoperations-website",
       "source_path": "src/data/governanceSaves.ts",
-      "source_commit": "834c3d266a423c1202591ccf87b92b56b1502d09",
+      "source_commit": "fe617fbfac7c7e98a1b6ce8209bf22b725be29ce",
       "method": "count governance save records excluding publicSafety PRIVATE_ONLY",
-      "generated_at": "2026-06-29T04:40:22.395Z",
+      "generated_at": "2026-10-03T00:27:30.014Z",
       "freshness_status": "fresh",
       "proof_ceiling": "Website rendering/reporting only. Does not prove runtime, signal, production, public-safe proof, customer deployment, final approval, merge readiness, or website-as-proof.",
       "claim_status": "bounded_generated_count",
@@ -136,9 +163,9 @@
       ],
       "display_value": "72",
       "display_label": "Controls Fired",
-      "detail": "fresh from src/data/governanceSaves.ts @ 834c3d2",
-      "source_label": "hawkinsoperations-website 834c3d2",
-      "source_href": "https://github.com/HawkinsOperations/hawkinsoperations-website/blob/834c3d266a423c1202591ccf87b92b56b1502d09/src/data/governanceSaves.ts",
+      "detail": "fresh from src/data/governanceSaves.ts @ fe617fb",
+      "source_label": "hawkinsoperations-website fe617fb",
+      "source_href": "https://github.com/HawkinsOperations/hawkinsoperations-website/blob/fe617fbfac7c7e98a1b6ce8209bf22b725be29ce/src/data/governanceSaves.ts",
       "tone": "cyan"
     },
     {
@@ -151,7 +178,7 @@
       "source_path": "proof/records/reviewer-metrics-pipeline-v1-summary.json",
       "source_commit": "70c679276b42dfc154d53bf4ce9f129aa0638c78",
       "method": "read proof-owned reviewer metrics summary controlled_validation_fire_count",
-      "generated_at": "2026-06-29T04:40:22.395Z",
+      "generated_at": "2026-10-03T00:27:30.014Z",
       "freshness_status": "fresh",
       "proof_ceiling": "Website rendering/reporting only. Does not prove runtime, signal, production, public-safe proof, customer deployment, final approval, merge readiness, or website-as-proof.",
       "claim_status": "bounded_generated_count",
@@ -182,7 +209,7 @@
       "source_path": "proof/records/reviewer-metrics-pipeline-v1-summary.json",
       "source_commit": "70c679276b42dfc154d53bf4ce9f129aa0638c78",
       "method": "read proof-owned reviewer metrics summary validation_case_count",
-      "generated_at": "2026-06-29T04:40:22.395Z",
+      "generated_at": "2026-10-03T00:27:30.014Z",
       "freshness_status": "fresh",
       "proof_ceiling": "Website rendering/reporting only. Does not prove runtime, signal, production, public-safe proof, customer deployment, final approval, merge readiness, or website-as-proof.",
       "claim_status": "bounded_generated_count",
@@ -213,7 +240,7 @@
       "source_path": "proof/records/reviewer-metrics-pipeline-v1-summary.json",
       "source_commit": "70c679276b42dfc154d53bf4ce9f129aa0638c78",
       "method": "read proof-owned reviewer metrics summary proof_record_count",
-      "generated_at": "2026-06-29T04:40:22.395Z",
+      "generated_at": "2026-10-03T00:27:30.014Z",
       "freshness_status": "fresh",
       "proof_ceiling": "Website rendering/reporting only. Does not prove runtime, signal, production, public-safe proof, customer deployment, final approval, merge readiness, or website-as-proof.",
       "claim_status": "bounded_generated_count",
@@ -244,7 +271,7 @@
       "source_path": "proof/records/reviewer-metrics-pipeline-v1-summary.json",
       "source_commit": "70c679276b42dfc154d53bf4ce9f129aa0638c78",
       "method": "read proof-owned reviewer metrics summary blocked_claim_count",
-      "generated_at": "2026-06-29T04:40:22.395Z",
+      "generated_at": "2026-10-03T00:27:30.014Z",
       "freshness_status": "fresh",
       "proof_ceiling": "Website rendering/reporting only. Does not prove runtime, signal, production, public-safe proof, customer deployment, final approval, merge readiness, or website-as-proof.",
       "claim_status": "bounded_generated_count",
@@ -275,7 +302,7 @@
       "source_path": "proof/records/lifetime-case-ledger-v1-public-summary.json",
       "source_commit": "70c679276b42dfc154d53bf4ce9f129aa0638c78",
       "method": "read proof-owned lifetime case ledger public summary total_cases",
-      "generated_at": "2026-06-29T04:40:22.395Z",
+      "generated_at": "2026-10-03T00:27:30.014Z",
       "freshness_status": "fresh",
       "proof_ceiling": "Website rendering/reporting only. Does not prove runtime, signal, production, public-safe proof, customer deployment, final approval, merge readiness, or website-as-proof.",
       "claim_status": "bounded_generated_count",
@@ -306,7 +333,7 @@
       "source_path": "proof/records/lifetime-case-ledger-v1-public-summary.json",
       "source_commit": "70c679276b42dfc154d53bf4ce9f129aa0638c78",
       "method": "read proof-owned lifetime case ledger public summary closed_case_count",
-      "generated_at": "2026-06-29T04:40:22.395Z",
+      "generated_at": "2026-10-03T00:27:30.014Z",
       "freshness_status": "fresh",
       "proof_ceiling": "Website rendering/reporting only. Does not prove runtime, signal, production, public-safe proof, customer deployment, final approval, merge readiness, or website-as-proof.",
       "claim_status": "bounded_generated_count",
@@ -337,7 +364,7 @@
       "source_path": "proof/records/reviewer-metrics-pipeline-v1-summary.json",
       "source_commit": "70c679276b42dfc154d53bf4ce9f129aa0638c78",
       "method": "read proof-owned reviewer metrics public_safe_count; keep zero unless proof-owned approval exists",
-      "generated_at": "2026-06-29T04:40:22.395Z",
+      "generated_at": "2026-10-03T00:27:30.014Z",
       "freshness_status": "fresh",
       "proof_ceiling": "Website rendering/reporting only. Does not prove runtime, signal, production, public-safe proof, customer deployment, final approval, merge readiness, or website-as-proof.",
       "claim_status": "blocked_not_public_safe",
@@ -369,9 +396,9 @@
       "authority": "website rendering only",
       "source_repo": "HawkinsOperations/hawkinsoperations-website",
       "source_path": "src/data/governanceSaves.ts",
-      "source_commit": "834c3d266a423c1202591ccf87b92b56b1502d09",
+      "source_commit": "fe617fbfac7c7e98a1b6ce8209bf22b725be29ce",
       "method": "count governance save records excluding publicSafety PRIVATE_ONLY",
-      "generated_at": "2026-06-29T04:40:22.395Z",
+      "generated_at": "2026-10-03T00:27:30.014Z",
       "freshness_status": "fresh",
       "proof_ceiling": "Website rendering/reporting only. Does not prove runtime, signal, production, public-safe proof, customer deployment, final approval, merge readiness, or website-as-proof.",
       "claim_status": "bounded_generated_count",
@@ -387,9 +414,9 @@
       ],
       "display_value": "72",
       "display_label": "Controls Fired",
-      "detail": "fresh from src/data/governanceSaves.ts @ 834c3d2",
-      "source_label": "hawkinsoperations-website 834c3d2",
-      "source_href": "https://github.com/HawkinsOperations/hawkinsoperations-website/blob/834c3d266a423c1202591ccf87b92b56b1502d09/src/data/governanceSaves.ts",
+      "detail": "fresh from src/data/governanceSaves.ts @ fe617fb",
+      "source_label": "hawkinsoperations-website fe617fb",
+      "source_href": "https://github.com/HawkinsOperations/hawkinsoperations-website/blob/fe617fbfac7c7e98a1b6ce8209bf22b725be29ce/src/data/governanceSaves.ts",
       "tone": "cyan"
     },
     "validation_fires": {
@@ -402,7 +429,7 @@
       "source_path": "proof/records/reviewer-metrics-pipeline-v1-summary.json",
       "source_commit": "70c679276b42dfc154d53bf4ce9f129aa0638c78",
       "method": "read proof-owned reviewer metrics summary controlled_validation_fire_count",
-      "generated_at": "2026-06-29T04:40:22.395Z",
+      "generated_at": "2026-10-03T00:27:30.014Z",
       "freshness_status": "fresh",
       "proof_ceiling": "Website rendering/reporting only. Does not prove runtime, signal, production, public-safe proof, customer deployment, final approval, merge readiness, or website-as-proof.",
       "claim_status": "bounded_generated_count",
@@ -433,7 +460,7 @@
       "source_path": "proof/records/reviewer-metrics-pipeline-v1-summary.json",
       "source_commit": "70c679276b42dfc154d53bf4ce9f129aa0638c78",
       "method": "read proof-owned reviewer metrics summary validation_case_count",
-      "generated_at": "2026-06-29T04:40:22.395Z",
+      "generated_at": "2026-10-03T00:27:30.014Z",
       "freshness_status": "fresh",
       "proof_ceiling": "Website rendering/reporting only. Does not prove runtime, signal, production, public-safe proof, customer deployment, final approval, merge readiness, or website-as-proof.",
       "claim_status": "bounded_generated_count",
@@ -464,7 +491,7 @@
       "source_path": "proof/records/reviewer-metrics-pipeline-v1-summary.json",
       "source_commit": "70c679276b42dfc154d53bf4ce9f129aa0638c78",
       "method": "read proof-owned reviewer metrics summary proof_record_count",
-      "generated_at": "2026-06-29T04:40:22.395Z",
+      "generated_at": "2026-10-03T00:27:30.014Z",
       "freshness_status": "fresh",
       "proof_ceiling": "Website rendering/reporting only. Does not prove runtime, signal, production, public-safe proof, customer deployment, final approval, merge readiness, or website-as-proof.",
       "claim_status": "bounded_generated_count",
@@ -495,7 +522,7 @@
       "source_path": "proof/records/reviewer-metrics-pipeline-v1-summary.json",
       "source_commit": "70c679276b42dfc154d53bf4ce9f129aa0638c78",
       "method": "read proof-owned reviewer metrics summary blocked_claim_count",
-      "generated_at": "2026-06-29T04:40:22.395Z",
+      "generated_at": "2026-10-03T00:27:30.014Z",
       "freshness_status": "fresh",
       "proof_ceiling": "Website rendering/reporting only. Does not prove runtime, signal, production, public-safe proof, customer deployment, final approval, merge readiness, or website-as-proof.",
       "claim_status": "bounded_generated_count",
@@ -526,7 +553,7 @@
       "source_path": "proof/records/lifetime-case-ledger-v1-public-summary.json",
       "source_commit": "70c679276b42dfc154d53bf4ce9f129aa0638c78",
       "method": "read proof-owned lifetime case ledger public summary total_cases",
-      "generated_at": "2026-06-29T04:40:22.395Z",
+      "generated_at": "2026-10-03T00:27:30.014Z",
       "freshness_status": "fresh",
       "proof_ceiling": "Website rendering/reporting only. Does not prove runtime, signal, production, public-safe proof, customer deployment, final approval, merge readiness, or website-as-proof.",
       "claim_status": "bounded_generated_count",
@@ -557,7 +584,7 @@
       "source_path": "proof/records/lifetime-case-ledger-v1-public-summary.json",
       "source_commit": "70c679276b42dfc154d53bf4ce9f129aa0638c78",
       "method": "read proof-owned lifetime case ledger public summary closed_case_count",
-      "generated_at": "2026-06-29T04:40:22.395Z",
+      "generated_at": "2026-10-03T00:27:30.014Z",
       "freshness_status": "fresh",
       "proof_ceiling": "Website rendering/reporting only. Does not prove runtime, signal, production, public-safe proof, customer deployment, final approval, merge readiness, or website-as-proof.",
       "claim_status": "bounded_generated_count",
@@ -588,7 +615,7 @@
       "source_path": "proof/records/reviewer-metrics-pipeline-v1-summary.json",
       "source_commit": "70c679276b42dfc154d53bf4ce9f129aa0638c78",
       "method": "read proof-owned reviewer metrics public_safe_count; keep zero unless proof-owned approval exists",
-      "generated_at": "2026-06-29T04:40:22.395Z",
+      "generated_at": "2026-10-03T00:27:30.014Z",
       "freshness_status": "fresh",
       "proof_ceiling": "Website rendering/reporting only. Does not prove runtime, signal, production, public-safe proof, customer deployment, final approval, merge readiness, or website-as-proof.",
       "claim_status": "blocked_not_public_safe",

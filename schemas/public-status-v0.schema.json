@@ -13,55 +13,223 @@
     "metric_list",
     "metrics",
     "known_gaps",
-    "proof_ceiling"
+    "proof_ceiling",
+    "generator_fingerprint_sha256",
+    "source_selection",
+    "ledger_snapshot"
   ],
   "properties": {
-    "schema_version": { "const": "public-status-v0" },
-    "generated_at": { "type": "string", "format": "date-time" },
-    "generated_by": { "const": "scripts/generate-public-status.mjs" },
-    "generator_commit": { "type": ["string", "null"] },
+    "schema_version": {
+      "const": "public-status-v0"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "generated_by": {
+      "const": "scripts/generate-public-status.mjs"
+    },
+    "generator_commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
     "freshness": {
       "type": "object",
-      "required": ["status", "max_age_hours", "age_hours"],
+      "required": [
+        "status",
+        "max_age_hours",
+        "age_hours"
+      ],
       "properties": {
-        "status": { "enum": ["fresh", "stale", "source_unavailable", "unverified"] },
-        "max_age_hours": { "type": "number" },
-        "age_hours": { "type": "number" }
+        "status": {
+          "enum": [
+            "fresh",
+            "stale",
+            "source_unavailable",
+            "unverified"
+          ]
+        },
+        "max_age_hours": {
+          "type": "number"
+        },
+        "age_hours": {
+          "type": "number"
+        }
       }
     },
     "sources": {
       "type": "array",
-      "items": { "$ref": "#/$defs/source" }
+      "items": {
+        "$ref": "#/$defs/source"
+      },
+      "minItems": 7,
+      "maxItems": 7
     },
     "metric_list": {
       "type": "array",
-      "items": { "$ref": "#/$defs/metric" }
+      "items": {
+        "$ref": "#/$defs/metric"
+      }
     },
     "metrics": {
       "type": "object",
-      "additionalProperties": { "$ref": "#/$defs/metric" }
+      "additionalProperties": {
+        "$ref": "#/$defs/metric"
+      },
+      "properties": {
+        "public_safe_count": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/metric"
+            },
+            {
+              "properties": {
+                "value": {
+                  "const": 0
+                }
+              }
+            }
+          ]
+        }
+      }
     },
     "known_gaps": {
       "type": "array",
-      "items": { "type": "object" }
+      "items": {
+        "type": "object"
+      }
     },
     "proof_ceiling": {
       "type": "object",
-      "required": ["raw", "label", "detail"]
+      "required": [
+        "raw",
+        "label",
+        "detail"
+      ]
+    },
+    "generator_fingerprint_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "source_selection": {
+      "const": "reviewed_immutable_commit"
+    },
+    "ledger_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "counts",
+        "appended_detection_ids",
+        "source_repo",
+        "source_path",
+        "source_commit"
+      ],
+      "properties": {
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "total_ledger_events",
+            "total_cases",
+            "public_safe_count",
+            "closed_case_count",
+            "correction_event_count",
+            "superseding_event_count"
+          ],
+          "properties": {
+            "total_ledger_events": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "total_cases": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "public_safe_count": {
+              "const": 0
+            },
+            "closed_case_count": {
+              "const": 0
+            },
+            "correction_event_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "superseding_event_count": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "appended_detection_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^HO-DET-[0-9]{3}$"
+          }
+        },
+        "source_repo": {
+          "const": "HawkinsOperations/hawkinsoperations-proof"
+        },
+        "source_path": {
+          "const": "proof/records/lifetime-case-ledger-v1-public-summary.json"
+        },
+        "source_commit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        }
+      }
     }
   },
   "$defs": {
     "source": {
       "type": "object",
-      "required": ["repo", "authority", "path", "available", "method", "notes"],
+      "required": [
+        "repo",
+        "authority",
+        "path",
+        "available",
+        "method",
+        "notes",
+        "commit",
+        "authoritative_git_blob_sha"
+      ],
       "properties": {
-        "repo": { "type": "string" },
-        "authority": { "type": "string" },
-        "path": { "type": "string" },
-        "commit": { "type": ["string", "null"] },
-        "available": { "type": "boolean" },
-        "method": { "type": "string" },
-        "notes": { "type": "string" }
+        "repo": {
+          "enum": [
+            "HawkinsOperations/.github",
+            "HawkinsOperations/hoxline",
+            "HawkinsOperations/hawkinsoperations-detections",
+            "HawkinsOperations/hawkinsoperations-validation",
+            "HawkinsOperations/hawkinsoperations-platform",
+            "HawkinsOperations/hawkinsoperations-proof",
+            "HawkinsOperations/hawkinsoperations-website"
+          ]
+        },
+        "authority": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "commit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "available": {
+          "const": true
+        },
+        "method": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "authoritative_git_blob_sha": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        }
       }
     },
     "metric": {
@@ -83,30 +251,84 @@
         "display_value",
         "display_label",
         "source_label",
-        "source_href"
+        "source_href",
+        "source_commit"
       ],
       "properties": {
-        "id": { "type": "string" },
-        "label": { "type": "string" },
-        "value": { "type": ["number", "null"] },
-        "unit": { "type": "string" },
-        "authority": { "type": "string" },
-        "source_repo": { "type": "string" },
-        "source_path": { "type": "string" },
-        "source_commit": { "type": ["string", "null"] },
-        "method": { "type": "string" },
-        "generated_at": { "type": "string", "format": "date-time" },
-        "freshness_status": { "enum": ["fresh", "stale", "source_unavailable", "unverified"] },
-        "proof_ceiling": { "type": "string" },
-        "claim_status": { "type": "string" },
-        "not_claiming": { "type": "array", "items": { "type": "string" } },
-        "blocked_reason": { "type": "string" },
-        "display_value": { "type": "string" },
-        "display_label": { "type": "string" },
-        "detail": { "type": "string" },
-        "source_label": { "type": "string" },
-        "source_href": { "type": "string" },
-        "tone": { "type": "string" }
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "value": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unit": {
+          "type": "string"
+        },
+        "authority": {
+          "type": "string"
+        },
+        "source_repo": {
+          "type": "string"
+        },
+        "source_path": {
+          "type": "string"
+        },
+        "source_commit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "method": {
+          "type": "string"
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "freshness_status": {
+          "enum": [
+            "fresh",
+            "stale",
+            "source_unavailable",
+            "unverified"
+          ]
+        },
+        "proof_ceiling": {
+          "type": "string"
+        },
+        "claim_status": {
+          "type": "string"
+        },
+        "not_claiming": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "blocked_reason": {
+          "type": "string"
+        },
+        "display_value": {
+          "type": "string"
+        },
+        "display_label": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "source_label": {
+          "type": "string"
+        },
+        "source_href": {
+          "type": "string"
+        },
+        "tone": {
+          "type": "string"
+        }
       }
     }
   }

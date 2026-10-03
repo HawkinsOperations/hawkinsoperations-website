@@ -202,7 +202,6 @@ const lifetimeLedgerRequiredTerms = [
   ["app/proof/page.tsx", proofPage, "SCHEMA_CONTRACT_VERIFIER_EXISTS_ONLY"],
   ["app/proof/page.tsx", proofPage, "lifetimeCaseLedgerV1.appendedDetections.join"],
 
-
   ["app/proof/page.tsx", proofPage, "VERIFICATION STATUS"],
   ["app/proof/page.tsx", proofPage, "Workflow-status indicators only"],
   ["app/proof/page.tsx", proofPage, "lifetime-ledger-public-summary"],
@@ -214,9 +213,6 @@ const lifetimeLedgerRequiredTerms = [
   ["src/data/proofRecords.ts", proofRecordsData, "lifetimeCaseLedgerV1"],
   ["src/data/proofRecords.ts", proofRecordsData, "counts: publicStatus.ledger_snapshot.counts"],
   ["src/data/proofRecords.ts", proofRecordsData, "appendedDetections: publicStatus.ledger_snapshot.appended_detection_ids"],
-
-
-
 
   ["src/data/proofRecords.ts", proofRecordsData, "NOT_PUBLIC_SAFE"],
   ["src/data/proofRecords.ts", proofRecordsData, "SCHEMA_CONTRACT_VERIFIER_EXISTS_ONLY"],
