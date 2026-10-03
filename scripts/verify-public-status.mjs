@@ -19,7 +19,7 @@ function fail(message) {
 
 function hasForbiddenLocalPath(value) {
   if (typeof value === "string") {
-    return /[a-z]:[\\/]/i.test(value) || /^\\\\[^\\/]/.test(value) || /^file:\/\//i.test(value);
+    return /\b[a-z]:[\\/]/i.test(value) || /^\\\\[^\\/]/.test(value) || /^file:\/\//i.test(value);
   }
   if (Array.isArray(value)) return value.some(hasForbiddenLocalPath);
   if (value && typeof value === "object") return Object.values(value).some(hasForbiddenLocalPath);
@@ -114,6 +114,12 @@ for (const term of [
 }
 
 if (status) {
+  const ledger = status.ledger_snapshot;
+  const countKeys = ["closed_case_count", "correction_event_count", "public_safe_count", "superseding_event_count", "total_cases", "total_ledger_events"];
+  if (!ledger || Object.keys(ledger).sort().join(",") !== "appended_detection_ids,counts,source_commit,source_path,source_repo" || Object.keys(ledger.counts ?? {}).sort().join(",") !== countKeys.join(",") || Object.values(ledger.counts ?? {}).some(value => !Number.isSafeInteger(value) || value < 0)) fail("Ledger snapshot must contain exactly the whitelisted bounded count fields.");
+  if (ledger?.counts?.public_safe_count !== 0 || ledger?.counts?.closed_case_count !== 0) fail("Ledger public-safe and closed counts must remain zero.");
+  if (ledger?.counts?.total_cases !== status.metrics?.governed_cases?.value) fail("Ledger cases must agree with the generated governed-case metric.");
+  if (!Array.isArray(ledger?.appended_detection_ids) || new Set(ledger.appended_detection_ids).size !== ledger.appended_detection_ids.length || ledger.appended_detection_ids.some(id => typeof id !== "string" || !/^HO-DET-\d{3}$/.test(id))) fail("Ledger detection IDs must be unique bounded identifiers.");
   if (status.source_selection !== "reviewed_immutable_commit") fail("Immutable reviewed source selection is required.");
   if (!/^[a-f0-9]{64}$/.test(status.generator_fingerprint_sha256 ?? "")) fail("Generator content fingerprint is required.");
   if (JSON.stringify(status.metric_list) !== JSON.stringify(Object.values(status.metrics ?? {}))) fail("metric_list must exactly match metrics.");
@@ -148,6 +154,10 @@ function selfTest() {
   const tsFor = value => "export const GENERATED_PUBLIC_STATUS_V0 = " + JSON.stringify(value) + " as const;\n" + ["GENERATED_PUBLIC_STATUS_V0_SNAPSHOT", "generatedStatusFreshnessLabel", "isGeneratedStatusStale", "metricDisplay"].join("\n");
   assert.deepEqual(validateStatus(original, readFileSync(tsPath, "utf8")), []);
   const reject = (mutate, pattern) => { const data = structuredClone(original); mutate(data); data.metric_list = Object.values(data.metrics); assert.ok(validateStatus(data, tsFor(data)).some(message => pattern.test(message)), "Hostile mutation must be rejected: " + pattern); };
+  reject(data => data.ledger_snapshot.counts.closed_case_count = 1, /Ledger public-safe and closed/);
+  reject(data => data.ledger_snapshot.counts.total_cases += 1, /must agree/);
+  reject(data => data.ledger_snapshot.counts.extra_count = 1, /whitelisted/);
+  reject(data => data.ledger_snapshot.appended_detection_ids.push("C:/private/runtime.json"), /bounded identifiers|absolute local paths/);
   reject(data => data.metrics.public_safe_count.value = 1, /public_safe_count must remain zero/);
   reject(data => data.metrics.public_safe_count.value = null, /public_safe_count must remain zero/);
   reject(data => data.public_safe.value = true, /public_safe.value/);
@@ -187,6 +197,8 @@ if (process.argv.includes("--self-test")) {
     const selected = checked.get(source.repo);
     if (!selected || source.commit !== selected.revision || source.path !== SOURCE_PATHS[source.repo][0] || source.available !== true || source.authoritative_git_blob_sha !== selected.authoritative_paths[source.path]) errors.push("Generated source identity drift: " + source.repo);
   }
+  const ledgerSource = checked.get(status.ledger_snapshot?.source_repo);
+  if (!ledgerSource || status.ledger_snapshot.source_repo !== "HawkinsOperations/hawkinsoperations-proof" || status.ledger_snapshot.source_path !== "proof/records/lifetime-case-ledger-v1-public-summary.json" || status.ledger_snapshot.source_commit !== ledgerSource.revision) errors.push("Ledger snapshot owner identity drift.");
   for (const metric of Object.values(status.metrics ?? {})) {
     const source = checked.get(metric.source_repo);
     if (!source || metric.source_commit !== source.revision || !Object.hasOwn(source.authoritative_paths, metric.source_path)) errors.push("Metric source identity drift: " + metric.id);

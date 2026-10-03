@@ -310,6 +310,22 @@ const sourceUnavailable = sources.filter((source) => !source.available).map((sou
   detail: source.notes,
 }));
 
+const ledgerCountKeys = ["total_ledger_events", "total_cases", "public_safe_count", "closed_case_count", "correction_event_count", "superseding_event_count"];
+const boundedLedgerCounts = Object.fromEntries(ledgerCountKeys.map(key => {
+  const value = ledgerCounts[key];
+  if (!Number.isSafeInteger(value) || value < 0) throw new Error("Proof-owned ledger count is unavailable or invalid: " + key);
+  return [key, value];
+}));
+if (boundedLedgerCounts.public_safe_count !== 0 || boundedLedgerCounts.closed_case_count !== 0) throw new Error("Proof-owned ledger public-safe and closed counts must remain zero without separate approval.");
+const appendedDetectionIds = lifetimeLedger?.appended_detection_ids;
+if (!Array.isArray(appendedDetectionIds) || new Set(appendedDetectionIds).size !== appendedDetectionIds.length || appendedDetectionIds.some(id => typeof id !== "string" || !/^HO-DET-\d{3}$/.test(id))) throw new Error("Proof-owned appended detection identifiers are invalid.");
+const ledgerSnapshot = {
+  counts: boundedLedgerCounts,
+  appended_detection_ids: appendedDetectionIds,
+  source_repo: lifetimeLedgerSource.repo,
+  source_path: lifetimeLedgerSource.path,
+  source_commit: lifetimeLedgerSource.commit,
+};
 const metricList = Object.values(metrics);
 const hasUnavailableMetric = metricList.some((item) => item.freshness_status !== "fresh");
 const status = hasUnavailableMetric ? "source_unavailable" : "fresh";
@@ -353,6 +369,7 @@ const publicStatus = {
   source_repos: sources.map((source) => source.repo),
   source_paths: sources.map((source) => `${source.repo.replace("HawkinsOperations/", "")}/${source.path}`),
   source_commit_refs: Object.fromEntries(sources.map((source) => [source.repo.replace("HawkinsOperations/", ""), source.commit])),
+  ledger_snapshot: ledgerSnapshot,
   metric_list: metricList,
   metrics,
   known_gaps: [

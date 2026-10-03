@@ -130,14 +130,14 @@ export default function ProofIndexPage() {
             </article>
             <article className="artifact-tile">
               <span className="artifact-tile__cat">COUNT SNAPSHOT</span>
-              <span className="artifact-tile__title">total_ledger_events=6</span>
+              <span className="artifact-tile__title">total_ledger_events={lifetimeCaseLedgerV1.counts.total_ledger_events}</span>
               <span className="artifact-tile__desc">
-                total_cases=6 · public_safe_count=0 · closed_case_count=0
+                total_cases={lifetimeCaseLedgerV1.counts.total_cases} · public_safe_count={lifetimeCaseLedgerV1.counts.public_safe_count} · closed_case_count={lifetimeCaseLedgerV1.counts.closed_case_count}
               </span>
             </article>
             <article className="artifact-tile">
               <span className="artifact-tile__cat">APPENDED DETECTIONS</span>
-              <span className="artifact-tile__title">HO-DET-001, HO-DET-011, HO-DET-012</span>
+              <span className="artifact-tile__title">{lifetimeCaseLedgerV1.appendedDetections.join(", ")}</span>
               <span className="artifact-tile__desc">Tracked by proof-owned summary references, not by website authority.</span>
             </article>
             <article className="artifact-tile">

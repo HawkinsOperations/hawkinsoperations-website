@@ -41,4 +41,6 @@ The generator reads committed inputs at those revisions, never dirty worktree co
 
 To refresh: review current owner commits and consumed blob identities, update the existing manifest, commit repaired generator source before generation when its content changes, run generation and all checks, and submit the pair for human review. Preserve generator commit history when merging so its recorded ancestor remains verifiable. No historical convergence PR stack is required.
 
+The ledger panel consumes the same generated snapshot as the metrics. Its projection contains only six bounded count fields, unique sanitized detection identifiers, and the proof-owned source identity; the full summary and its raw/private boundary records are not copied. Public-safe and closed counts remain zero. Literal ledger numbers in the proof page are rejected to prevent a second authority source.
+
 Rollback restores this focused repair commit set; the previous workflow remains fail-closed but lacks the source graph. This does not authorize public proof promotion, runtime execution, ledger changes, schedule enablement, deployment, disposition, or closure.
