@@ -1,0 +1,57 @@
+{
+  "manifest_version": "public-status-source-manifest-v1",
+  "observation_kind": "reviewed_immutable_commit",
+  "generated_at": "2026-10-03T00:27:30.014Z",
+  "repositories": [
+    {
+      "repository": "HawkinsOperations/.github",
+      "revision": "872ae1241f6712e8314e4b133c2381df7bb6e390",
+      "authoritative_paths": {
+        "architecture/REPO_AUTHORITY_MAP.md": "6b501058920468e423da7e6786ff8ef8e1a19327"
+      }
+    },
+    {
+      "repository": "HawkinsOperations/hoxline",
+      "revision": "bed34b8704f476075d65ec50095bb37121cb635b",
+      "authoritative_paths": {
+        "examples/gauntlet/ho-det-001-full-loop-run-v0.json": "756588beffb45da59d7644fc6f79162c8a375570"
+      }
+    },
+    {
+      "repository": "HawkinsOperations/hawkinsoperations-detections",
+      "revision": "9be6760a134b2f56d46133f550329260cb35643e",
+      "authoritative_paths": {
+        "detections/DETECTION_PROMOTION_MATRIX.yml": "1b6241909df06347a8a1ecddbc3374230d01404e"
+      }
+    },
+    {
+      "repository": "HawkinsOperations/hawkinsoperations-validation",
+      "revision": "ea5ee1c8bcdfcd0caab689cb7cbcb3113df655ae",
+      "authoritative_paths": {
+        "activity/detection-activity-ledger-v1.json": "d3461b20a455605ff2e61a102bbee8c6545b1e6e"
+      }
+    },
+    {
+      "repository": "HawkinsOperations/hawkinsoperations-platform",
+      "revision": "58ed6fc6122264d99ecf993c0f537e15ea75d78e",
+      "authoritative_paths": {
+        "contracts/reviewer-metrics-pipeline-v1-state.json": "05cb0bd517aa4af42ec0c91fcdfb6fe79f0c201f"
+      }
+    },
+    {
+      "repository": "HawkinsOperations/hawkinsoperations-proof",
+      "revision": "70c679276b42dfc154d53bf4ce9f129aa0638c78",
+      "authoritative_paths": {
+        "proof/records/reviewer-metrics-pipeline-v1-summary.json": "2efa2c1a28a2ad6b98d286ef738931a6ee868d68",
+        "proof/records/lifetime-case-ledger-v1-public-summary.json": "418ad57a703da695f6a7fc019d5601d6d3622b1f"
+      }
+    },
+    {
+      "repository": "HawkinsOperations/hawkinsoperations-website",
+      "revision": "fe617fbfac7c7e98a1b6ce8209bf22b725be29ce",
+      "authoritative_paths": {
+        "src/data/governanceSaves.ts": "8c5e608d0199a8399c83483da2b30089d9fe5ece"
+      }
+    }
+  ]
+}

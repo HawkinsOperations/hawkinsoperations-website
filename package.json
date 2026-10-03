@@ -12,7 +12,11 @@
     "typecheck": "tsc --noEmit",
     "public-status:generate": "node scripts/generate-public-status.mjs",
     "public-status:verify": "node scripts/verify-public-status.mjs",
-    "generate:brand-assets": "node scripts/generate-brand-assets.mjs"
+    "generate:brand-assets": "node scripts/generate-brand-assets.mjs",
+    "public-status:generate:check": "node scripts/generate-public-status.mjs --check",
+    "public-status:source-checkout-test": "node scripts/resolve-public-status-checkouts.mjs",
+    "public-status:checkout-manifest-self-test": "node scripts/resolve-public-status-checkouts.mjs --self-test",
+    "public-status:self-test": "node scripts/verify-public-status.mjs --self-test"
   },
   "dependencies": {
     "next": "14.2.35",

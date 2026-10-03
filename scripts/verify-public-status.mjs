@@ -1,4 +1,9 @@
 import { existsSync, readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { readStrictJson, strictJsonParse } from "./strict-json.mjs";
+import { readSourceManifest, verifySourceCheckouts, SOURCE_PATHS, git } from "./resolve-public-status-checkouts.mjs";
 import { join } from "node:path";
 
 const root = process.cwd();
@@ -14,20 +19,15 @@ function fail(message) {
 
 function hasForbiddenLocalPath(value) {
   if (typeof value === "string") {
-    return /[A-Z]:\\/.test(value) || value.includes("C:/");
+    return /[a-z]:[\\/]/i.test(value) || /^\\\\[^\\/]/.test(value) || /^file:\/\//i.test(value);
   }
   if (Array.isArray(value)) return value.some(hasForbiddenLocalPath);
   if (value && typeof value === "object") return Object.values(value).some(hasForbiddenLocalPath);
   return false;
 }
 
-for (const path of [jsonPath, tsPath, schemaPath]) {
-  if (!existsSync(path)) fail(`Missing required public-status file: ${path}`);
-}
-
-const status = existsSync(jsonPath) ? JSON.parse(readFileSync(jsonPath, "utf8")) : null;
-const tsSource = existsSync(tsPath) ? readFileSync(tsPath, "utf8") : "";
-
+export function validateStatus(status, tsSource) {
+failures.length = 0;
 if (status) {
   if (status.schema_version !== "public-status-v0") fail("schema_version must be public-status-v0.");
   if (status.generated_by !== "scripts/generate-public-status.mjs") fail("generated_by must point to the generator script.");
@@ -113,9 +113,91 @@ for (const term of [
   if (!tsSource.includes(term)) fail(`generated TypeScript status must include ${term}.`);
 }
 
-if (failures.length > 0) {
-  console.error(`Public status verification failed:\n${failures.map((line) => `- ${line}`).join("\n")}`);
-  process.exit(1);
+if (status) {
+  if (status.source_selection !== "reviewed_immutable_commit") fail("Immutable reviewed source selection is required.");
+  if (!/^[a-f0-9]{64}$/.test(status.generator_fingerprint_sha256 ?? "")) fail("Generator content fingerprint is required.");
+  if (JSON.stringify(status.metric_list) !== JSON.stringify(Object.values(status.metrics ?? {}))) fail("metric_list must exactly match metrics.");
+  if (status.public_safe?.count !== 0) fail("public_safe.count must remain zero.");
+  for (const metric of Object.values(status.metrics ?? {})) {
+    if (!Number.isSafeInteger(metric.value) || metric.value < 0) fail("Every generated count must be a non-negative safe integer from an available reviewed source.");
+  }
+  const walk = (value, key = "") => {
+    if (value && typeof value === "object") {
+      for (const [childKey, child] of Object.entries(value)) {
+        if (/^(public_safe|public_safe_approved|production_ready|runtime_active|signal_observed|ai_approved_disposition|analyst_approved_disposition|case_closed)$/i.test(childKey) && child === true) fail("Nested promotion rejected: " + childKey);
+        walk(child, childKey);
+      }
+    } else if (typeof value === "string" && /\b(?:production[-_ ]ready|runtime[-_ ]active|signal[-_ ]observed|public[-_ ]safe[-_ ]approved|AI[-_ ]approved disposition|analyst[-_ ]approved disposition|case closure approved)\b/i.test(value)) {
+      const promotions = value.matchAll(/\b(?:production[-_ ]ready|runtime[-_ ]active|signal[-_ ]observed|public[-_ ]safe[-_ ]approved|AI[-_ ]approved disposition|analyst[-_ ]approved disposition|case closure approved)\b/gi);
+      for (const match of promotions) {
+        const prefix = value.slice(0, match.index);
+        if (!/(?:\bnot|\bno|\bblocked|\bmust not|\bdoes not (?:claim|prove|promote))\s+$/i.test(prefix)) fail("Nested promotion language rejected at " + key);
+      }
+    }
+  };
+  walk(status);
+  const match = tsSource.match(/^export const GENERATED_PUBLIC_STATUS_V0 = ([\s\S]+?) as const;/);
+  try {
+    if (!match || JSON.stringify(strictJsonParse(match[1], "generated TypeScript JSON")) !== JSON.stringify(status)) fail("Generated JSON and TypeScript data must be identical.");
+  } catch (error) { fail(error.message); }
 }
-
-console.log("Public status verification passed.");
+return [...failures];
+}
+function selfTest() {
+  const original = readStrictJson(jsonPath);
+  const tsFor = value => "export const GENERATED_PUBLIC_STATUS_V0 = " + JSON.stringify(value) + " as const;\n" + ["GENERATED_PUBLIC_STATUS_V0_SNAPSHOT", "generatedStatusFreshnessLabel", "isGeneratedStatusStale", "metricDisplay"].join("\n");
+  assert.deepEqual(validateStatus(original, readFileSync(tsPath, "utf8")), []);
+  const reject = (mutate, pattern) => { const data = structuredClone(original); mutate(data); data.metric_list = Object.values(data.metrics); assert.ok(validateStatus(data, tsFor(data)).some(message => pattern.test(message)), "Hostile mutation must be rejected: " + pattern); };
+  reject(data => data.metrics.public_safe_count.value = 1, /public_safe_count must remain zero/);
+  reject(data => data.metrics.public_safe_count.value = null, /public_safe_count must remain zero/);
+  reject(data => data.public_safe.value = true, /public_safe.value/);
+  reject(data => data.public_safe.count = 1, /public_safe.count/);
+  reject(data => data.metrics.validation_cases.value = -1, /non-negative safe integer/);
+  reject(data => data.attacker = { deep: { production_ready: true } }, /Nested promotion/);
+  reject(data => data.attacker = { deep: { text: "production-ready" } }, /Nested promotion language/);
+  reject(data => data.attacker = { text: "not stale and production-ready" }, /Nested promotion language/);
+  reject(data => data.attacker = { text: "no delays; runtime-active" }, /Nested promotion language/);
+  reject(data => data.attacker = { text: "not production-ready but runtime-active" }, /Nested promotion language/);
+  reject(data => data.attacker = { private_path: "C:\\private\\runtime.json" }, /absolute local paths/);
+  reject(data => data.attacker = { private_path: "c:\\private\\runtime.json" }, /absolute local paths/);
+  reject(data => data.attacker = { private_path: "D:/private/runtime.json" }, /absolute local paths/);
+  const mismatchedTs = tsFor({ ...original, snapshot_label: "forged" });
+  assert.ok(validateStatus(original, mismatchedTs).some(message => /must be identical/.test(message)));
+  for (const malformed of ['{"value":0,"value":1}', '{"Public_Safe":false,"public_safe":true}', '{"value":NaN}', '{"value":1e999}', '{"value":0} trailing']) assert.throws(() => strictJsonParse(malformed));
+  assert.deepEqual(strictJsonParse('{\r\n"value":0\r\n}'), strictJsonParse('{\n"value":0\n}'));
+  const helperSource = readFileSync(tsPath, "utf8").slice(readFileSync(tsPath, "utf8").indexOf("export function generatedStatusAgeHours")).replaceAll("export function", "function");
+  const helpers = new Function("publicStatus", helperSource + "; return { isGeneratedStatusStale, generatedStatusFreshnessLabel }; ")(original);
+  const timestamp = Date.parse(original.generated_at);
+  assert.equal(helpers.isGeneratedStatusStale(new Date(timestamp + 336 * 3600000)), false);
+  assert.equal(helpers.isGeneratedStatusStale(new Date(timestamp + 337 * 3600000)), true);
+  assert.match(helpers.generatedStatusFreshnessLabel(new Date(timestamp + 337 * 3600000)), /Reviewed snapshot .*age evaluated at render\/build .*stale/);
+  console.log("Public status hostile tests passed (nonzero/unavailable public-safe, negative count, nested claims, private paths, pair drift, malformed/duplicate JSON, CRLF/LF).");
+}
+if (process.argv.includes("--self-test")) {
+  selfTest();
+} else {
+  for (const path of [jsonPath, tsPath, schemaPath]) assert.ok(existsSync(path), "Missing required public-status file: " + path);
+  const status = readStrictJson(jsonPath);
+  const tsSource = readFileSync(tsPath, "utf8");
+  const errors = validateStatus(status, tsSource);
+  const manifest = readSourceManifest(root);
+  const checked = verifySourceCheckouts(root, manifest);
+  if (JSON.stringify(status.sources?.map(source => source.repo)) !== JSON.stringify(Object.keys(SOURCE_PATHS))) errors.push("sources must contain the exact canonical source set.");
+  for (const source of status.sources ?? []) {
+    const selected = checked.get(source.repo);
+    if (!selected || source.commit !== selected.revision || source.path !== SOURCE_PATHS[source.repo][0] || source.available !== true || source.authoritative_git_blob_sha !== selected.authoritative_paths[source.path]) errors.push("Generated source identity drift: " + source.repo);
+  }
+  for (const metric of Object.values(status.metrics ?? {})) {
+    const source = checked.get(metric.source_repo);
+    if (!source || metric.source_commit !== source.revision || !Object.hasOwn(source.authoritative_paths, metric.source_path)) errors.push("Metric source identity drift: " + metric.id);
+  }
+  try {
+    const generatorPath = "scripts/generate-public-status.mjs";
+    git(root, ["merge-base", "--is-ancestor", status.generator_commit, git(root, ["rev-parse", "HEAD"])]);
+    const committedGenerator = git(root, ["show", status.generator_commit + ":" + generatorPath]).replace(/\r\n?/g, "\n") + "\n";
+    if (createHash("sha256").update(committedGenerator).digest("hex") !== status.generator_fingerprint_sha256) errors.push("Generator commit/fingerprint identity drift.");
+  } catch { errors.push("Generator revision is malformed, unreachable, or outside the event lineage."); }
+  if (errors.length) throw new Error("Public status verification failed:\n" + errors.map(message => "- " + message).join("\n"));
+  execFileSync(process.execPath, [join(root, "scripts/generate-public-status.mjs"), "--check"], { cwd: root, stdio: "inherit" });
+  console.log("Public status verification passed; public-safe remains zero and website rendering is not proof.");
+}
