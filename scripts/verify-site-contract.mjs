@@ -200,9 +200,8 @@ const lifetimeLedgerRequiredTerms = [
   ["app/proof/page.tsx", proofPage, "closed_case_count"],
   ["app/proof/page.tsx", proofPage, "NOT_PUBLIC_SAFE"],
   ["app/proof/page.tsx", proofPage, "SCHEMA_CONTRACT_VERIFIER_EXISTS_ONLY"],
-  ["app/proof/page.tsx", proofPage, "HO-DET-001"],
-  ["app/proof/page.tsx", proofPage, "HO-DET-011"],
-  ["app/proof/page.tsx", proofPage, "HO-DET-012"],
+  ["app/proof/page.tsx", proofPage, "lifetimeCaseLedgerV1.appendedDetections.join"],
+
   ["app/proof/page.tsx", proofPage, "VERIFICATION STATUS"],
   ["app/proof/page.tsx", proofPage, "Workflow-status indicators only"],
   ["app/proof/page.tsx", proofPage, "lifetime-ledger-public-summary"],
@@ -212,12 +211,9 @@ const lifetimeLedgerRequiredTerms = [
   ["app/proof/page.tsx", proofPage, "badges are workflow-status indicators only"],
   ["app/proof/page.tsx", proofPage, "no runtime, signal, public-safe runtime proof, SOCaaS, production, autonomous SOC, disposition, or case-closure claim is made"],
   ["src/data/proofRecords.ts", proofRecordsData, "lifetimeCaseLedgerV1"],
-  ["src/data/proofRecords.ts", proofRecordsData, "total_ledger_events: 6"],
-  ["src/data/proofRecords.ts", proofRecordsData, "total_cases: 6"],
-  ["src/data/proofRecords.ts", proofRecordsData, "public_safe_count: 0"],
-  ["src/data/proofRecords.ts", proofRecordsData, "closed_case_count: 0"],
-  ["src/data/proofRecords.ts", proofRecordsData, "correction_event_count: 0"],
-  ["src/data/proofRecords.ts", proofRecordsData, "superseding_event_count: 0"],
+  ["src/data/proofRecords.ts", proofRecordsData, "counts: publicStatus.ledger_snapshot.counts"],
+  ["src/data/proofRecords.ts", proofRecordsData, "appendedDetections: publicStatus.ledger_snapshot.appended_detection_ids"],
+
   ["src/data/proofRecords.ts", proofRecordsData, "NOT_PUBLIC_SAFE"],
   ["src/data/proofRecords.ts", proofRecordsData, "SCHEMA_CONTRACT_VERIFIER_EXISTS_ONLY"],
   ["src/data/navigation.ts", navigationSource, "lifetimeLedgerSummary"],
@@ -230,6 +226,8 @@ const lifetimeLedgerRequiredTerms = [
 const lifetimeLedgerFailures = lifetimeLedgerRequiredTerms
   .filter(([, source, term]) => !source.includes(term))
   .map(([file, , term]) => `${file} must include ${term}.`);
+
+if (/\b(?:total_ledger_events|total_cases|public_safe_count|closed_case_count)\s*=\s*\d/.test(proofPage)) lifetimeLedgerFailures.push("Ledger page must render generated proof-owned counts rather than literal numbers.");
 
 if (lifetimeLedgerFailures.length > 0) {
   console.error(`Lifetime Case Ledger render invariant failed:\n${lifetimeLedgerFailures.map((line) => `- ${line}`).join("\n")}`);

@@ -1,4 +1,8 @@
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
+import { readStrictJson, strictJsonParse } from "./strict-json.mjs";
+import { sanitizedGitEnv } from "./git-source-identity.mjs";
+import { readSourceManifest, verifySourceCheckouts, committedSource, git } from "./resolve-public-status-checkouts.mjs";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -6,7 +10,10 @@ import { fileURLToPath } from "node:url";
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const websiteRoot = join(scriptDir, "..");
 const orgRoot = join(websiteRoot, "..");
-const generatedAt = new Date().toISOString();
+const manifest = readSourceManifest(websiteRoot);
+const checkedSources = verifySourceCheckouts(websiteRoot, manifest);
+const checkMode = process.argv.includes("--check");
+const generatedAt = manifest.generated_at;
 const maxAgeHours = 14 * 24;
 const proofCeiling =
   "Website rendering/reporting only. Does not prove runtime, signal, production, public-safe proof, customer deployment, final approval, merge readiness, or website-as-proof.";
@@ -66,7 +73,7 @@ const repoSpecs = [
 function runGit(dir, args) {
   if (!existsSync(dir)) return null;
   try {
-    return execFileSync("git", ["-c", `safe.directory=${dir.replaceAll("\\", "/")}`, "-C", dir, ...args], { encoding: "utf8" }).trim();
+    return execFileSync("git", ["-c", `safe.directory=${dir.replaceAll("\\", "/")}`, "-C", dir, ...args], { encoding: "utf8", env: sanitizedGitEnv() }).trim();
   } catch {
     return null;
   }
@@ -75,22 +82,22 @@ function runGit(dir, args) {
 function readJson(repoDir, repoPath) {
   const fullPath = join(repoDir, repoPath);
   if (!existsSync(fullPath)) return null;
-  return JSON.parse(readFileSync(fullPath, "utf8"));
+  const repository = repoSpecs.find(spec => spec.dir === repoDir)?.repo;
+  return strictJsonParse(committedSource(checkedSources, repository, repoPath), repoPath);
 }
 
 function repoSource(spec) {
-  const available = existsSync(spec.dir);
-  const commit = available ? runGit(spec.dir, ["rev-parse", "HEAD"]) : null;
+  const selected = checkedSources.get(spec.repo);
+  const commit = selected.revision;
   return {
     repo: spec.repo,
     authority: spec.authority,
     path: spec.publicPath,
     commit,
-    available,
+    authoritative_git_blob_sha: selected.authoritative_paths[spec.publicPath],
+    available: true,
     method: spec.method,
-    notes: available
-      ? "Source repository is locally available for generation."
-      : "Source repository unavailable locally; generation must fail closed for metrics that depend on it.",
+    notes: "Reviewed immutable source snapshot; generated freshness is snapshot age, not live runtime state.",
   };
 }
 
@@ -109,7 +116,7 @@ function countPublicGovernanceSaves() {
   const sourcePath = "src/data/governanceSaves.ts";
   const fullPath = join(repoDir, sourcePath);
   if (!existsSync(fullPath)) return null;
-  const source = readFileSync(fullPath, "utf8");
+  const source = committedSource(checkedSources, "HawkinsOperations/hawkinsoperations-website", sourcePath);
   const records = [...source.matchAll(/\{\s*id: "GS-[\s\S]*?\n\s*\}/g)].map((match) => match[0]);
   if (records.length === 0) return null;
   return records.filter((record) => !record.includes('publicSafety: "PRIVATE_ONLY"')).length;
@@ -215,7 +222,7 @@ const lifetimeLedgerSource = proofSource
       method: "read proof-owned lifetime case ledger public summary",
     }
   : proofSource;
-const proofMetrics = proofSummary?.metrics ?? platformState?.metrics ?? {};
+const proofMetrics = proofSummary?.metrics ?? {};
 const ledgerCounts = lifetimeLedger?.ledger_counts ?? {};
 
 const metrics = {
@@ -303,16 +310,47 @@ const sourceUnavailable = sources.filter((source) => !source.available).map((sou
   detail: source.notes,
 }));
 
+const ledgerCountKeys = ["total_ledger_events", "total_cases", "public_safe_count", "closed_case_count", "correction_event_count", "superseding_event_count"];
+const boundedLedgerCounts = Object.fromEntries(ledgerCountKeys.map(key => {
+  const value = ledgerCounts[key];
+  if (!Number.isSafeInteger(value) || value < 0) throw new Error("Proof-owned ledger count is unavailable or invalid: " + key);
+  return [key, value];
+}));
+if (boundedLedgerCounts.public_safe_count !== 0 || boundedLedgerCounts.closed_case_count !== 0) throw new Error("Proof-owned ledger public-safe and closed counts must remain zero without separate approval.");
+const appendedDetectionIds = lifetimeLedger?.appended_detection_ids;
+if (!Array.isArray(appendedDetectionIds) || new Set(appendedDetectionIds).size !== appendedDetectionIds.length || appendedDetectionIds.some(id => typeof id !== "string" || !/^HO-DET-\d{3}$/.test(id))) throw new Error("Proof-owned appended detection identifiers are invalid.");
+const ledgerSnapshot = {
+  counts: boundedLedgerCounts,
+  appended_detection_ids: appendedDetectionIds,
+  source_repo: lifetimeLedgerSource.repo,
+  source_path: lifetimeLedgerSource.path,
+  source_commit: lifetimeLedgerSource.commit,
+};
 const metricList = Object.values(metrics);
 const hasUnavailableMetric = metricList.some((item) => item.freshness_status !== "fresh");
 const status = hasUnavailableMetric ? "source_unavailable" : "fresh";
-const websiteCommit = sourceByRepo["HawkinsOperations/hawkinsoperations-website"]?.commit ?? null;
+const generatorPath = "scripts/generate-public-status.mjs";
+const generatorText = readFileSync(join(websiteRoot, generatorPath), "utf8").replace(/\r\n?/g, "\n");
+const generatorFingerprint = createHash("sha256").update(generatorText).digest("hex");
+const checkedStatus = existsSync(join(websiteRoot, "public/data/public-status.json"))
+  ? readStrictJson(join(websiteRoot, "public/data/public-status.json")) : null;
+let websiteCommit = git(websiteRoot, ["rev-parse", "HEAD"]);
+if (checkedStatus?.generator_fingerprint_sha256 === generatorFingerprint && /^[a-f0-9]{40}$/.test(checkedStatus.generator_commit ?? "")) {
+  try {
+    git(websiteRoot, ["merge-base", "--is-ancestor", checkedStatus.generator_commit, websiteCommit]);
+    const committedGenerator = git(websiteRoot, ["show", checkedStatus.generator_commit + ":" + generatorPath]).replace(/\r\n?/g, "\n") + "\n";
+    if (createHash("sha256").update(committedGenerator).digest("hex") === generatorFingerprint) websiteCommit = checkedStatus.generator_commit;
+  } catch { /* A forged or unreachable identity cannot become the generator anchor. */ }
+}
+
 
 const publicStatus = {
   schema_version: "public-status-v0",
   generated_at: generatedAt,
   generated_by: "scripts/generate-public-status.mjs",
   generator_commit: websiteCommit,
+  generator_fingerprint_sha256: generatorFingerprint,
+  source_selection: "reviewed_immutable_commit",
   generation_mode: "generated_public_status_data_plane_v0",
   snapshot_label: "Generated public status v0 data plane",
   freshness_window_days: 14,
@@ -331,6 +369,7 @@ const publicStatus = {
   source_repos: sources.map((source) => source.repo),
   source_paths: sources.map((source) => `${source.repo.replace("HawkinsOperations/", "")}/${source.path}`),
   source_commit_refs: Object.fromEntries(sources.map((source) => [source.repo.replace("HawkinsOperations/", ""), source.commit])),
+  ledger_snapshot: ledgerSnapshot,
   metric_list: metricList,
   metrics,
   known_gaps: [
@@ -364,7 +403,7 @@ const publicStatus = {
     raw: "NOT_PUBLIC_SAFE",
     label: "Not public-safe",
     value: false,
-    count: metrics.public_safe_count.value ?? 0,
+    count: metrics.public_safe_count.value,
     detail: "Public-safe runtime proof is not promoted by this website data plane.",
   },
   website_rendering_boundary: {
@@ -478,7 +517,7 @@ const publicStatus = {
 };
 
 const serialized = `${JSON.stringify(publicStatus, null, 2)}\n`;
-writeFileSync(join(websiteRoot, "public/data/public-status.json"), serialized);
+
 
 const tsSource = `export const GENERATED_PUBLIC_STATUS_V0 = ${JSON.stringify(publicStatus, null, 2)} as const;
 
@@ -516,14 +555,23 @@ export function isGeneratedStatusStale(now = new Date()) {
 }
 
 export function generatedStatusFreshnessLabel(now = new Date()) {
+  const basis = \`Reviewed snapshot \${publicStatus.generated_at.slice(0, 10)}; age evaluated at render/build \${now.toISOString().slice(0, 10)}\`;
   if (isGeneratedStatusStale(now)) {
-    return \`Stale: older than \${publicStatus.freshness.max_age_hours} hours\`;
+    return \`\${basis}: stale, older than \${publicStatus.freshness.max_age_hours} hours\`;
   }
-  return \`\${publicStatus.freshness.status}: under \${publicStatus.freshness.max_age_hours}-hour freshness window\`;
+  return \`\${basis}: within \${publicStatus.freshness.max_age_hours}-hour snapshot window\`;
 }
 `;
 
-writeFileSync(join(websiteRoot, "src/data/generated/public-status.generated.ts"), tsSource);
-
-console.log(`Generated ${relative(process.cwd(), join(websiteRoot, "public/data/public-status.json"))}`);
-console.log(`Generated ${relative(process.cwd(), join(websiteRoot, "src/data/generated/public-status.generated.ts"))}`);
+const outputs = [
+  [join(websiteRoot, "public/data/public-status.json"), serialized],
+  [join(websiteRoot, "src/data/generated/public-status.generated.ts"), tsSource],
+];
+if (checkMode) {
+  const drift = outputs.filter(([path, content]) => !existsSync(path) || readFileSync(path, "utf8").replace(/\r\n?/g, "\n") !== content);
+  if (drift.length) throw new Error("Generated public status differs from the reviewed source snapshot: " + drift.map(([path]) => relative(websiteRoot, path)).join(", ") + "; regenerate both artifacts and submit them for review.");
+  console.log("Generated public status reproduced exactly without mutation.");
+} else {
+  for (const [path, content] of outputs) writeFileSync(path, content);
+  console.log("Generated reviewed public status JSON and TypeScript pair.");
+}

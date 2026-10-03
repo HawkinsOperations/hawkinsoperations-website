@@ -23,10 +23,24 @@ npm run check:site
 
 ## Failure Model
 
-The generator fails closed. Missing source repos are marked `source_unavailable`. Metrics without a readable public source are rendered unavailable, stale, or unverified instead of being promoted as facts.
+The generator fails closed before writing either artifact when a required sibling checkout, reviewed revision, authoritative blob, or clean source input is missing or invalid. It reports the failing repository and asks for the exact manifest source set. The verifier continues to reject unavailable or nonzero public-safe counts; no missing source is converted into zero. The reviewed snapshot age remains visible through the existing stale-rendering functions.
 
 Runtime, signal, production, customer, public-safe runtime proof, AI approval, analyst approval, and website-as-proof claims remain out of scope.
 
 ## Proof Ceiling
 
 This data plane proves only generated website rendering input, conservative source linkage, freshness marking, and local verification hooks. It does not prove runtime, signal, controlled validation truth, production readiness, customer deployment, public-safe proof, final human approval, merge readiness, or website-as-proof.
+
+## Reviewed source orchestration
+
+`config/public-status-source-manifest-v1.json` selects the exact seven current-main source commits and every consumed authoritative Git blob. Refreshes require a reviewed source change; moving branches and default-branch fallback are rejected. The workflow checks out the complete sibling graph with read-only permission, pinned Actions, no persisted credentials, a timeout, and no automated branch or main writes.
+
+The generator reads committed inputs at those revisions, never dirty worktree content. Website event heads may descend from the content anchor only while its consumed source blob remains identical. `generated_at` comes from the reviewed manifest; the age functions mark an old snapshot stale when evaluated. Static HTML labels show both the reviewed snapshot date and the render/build evaluation date so an old export cannot present an undated freshness claim. A successful weekly reproduction is reproducibility evidence, not a claim of live source freshness.
+
+`npm run public-status:generate:check` reproduces both checked artifacts without modifying them. `npm run public-status:verify` enforces source identity, generator lineage, JSON/TypeScript identity, non-negative bounded counts, zero public-safe count, and nested claim rejection. The source and data hostile suites run through `public-status:checkout-manifest-self-test` and `public-status:self-test`. Missing siblings fail before any artifact is written with the repository and remediation.
+
+To refresh: review current owner commits and consumed blob identities, update the existing manifest, commit repaired generator source before generation when its content changes, run generation and all checks, and submit the pair for human review. Preserve generator commit history when merging so its recorded ancestor remains verifiable. No historical convergence PR stack is required.
+
+The ledger panel consumes the same generated snapshot as the metrics. Its projection contains only six bounded count fields, unique sanitized detection identifiers, and the proof-owned source identity; the full summary and its raw/private boundary records are not copied. Public-safe and closed counts remain zero. Literal ledger numbers in the proof page are rejected to prevent a second authority source.
+
+Rollback restores this focused repair commit set; the previous workflow remains fail-closed but lacks the source graph. This does not authorize public proof promotion, runtime execution, ledger changes, schedule enablement, deployment, disposition, or closure.

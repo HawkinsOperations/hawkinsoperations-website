@@ -1,5 +1,6 @@
 import { blockedClaims, proofCeiling } from "./claims";
 import { externalLinks } from "./navigation";
+import { publicStatus } from "./generated/public-status.generated";
 
 /**
  * proofRecordState values:
@@ -48,15 +49,8 @@ export const lifetimeCaseLedgerV1 = {
   proofCeiling: "SCHEMA_CONTRACT_VERIFIER_EXISTS_ONLY",
   renderBoundary:
     "website is render-only; proof repo owns the summary and proof bundle; badges are workflow-status indicators only; no runtime, signal, public-safe runtime proof, SOCaaS, production, autonomous SOC, disposition, or case-closure claim is made.",
-  counts: {
-    total_ledger_events: 6,
-    total_cases: 6,
-    public_safe_count: 0,
-    closed_case_count: 0,
-    correction_event_count: 0,
-    superseding_event_count: 0,
-  },
-  appendedDetections: ["HO-DET-001", "HO-DET-011", "HO-DET-012"],
+  counts: publicStatus.ledger_snapshot.counts,
+  appendedDetections: publicStatus.ledger_snapshot.appended_detection_ids,
   references: [
     {
       label: "Proof-owned public summary",
