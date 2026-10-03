@@ -17630,6 +17630,8 @@ a.card.group:hover { border-color: rgba(143, 216, 255, 0.45); }
   font-weight: 700;
   color: #f8fbff;
   text-wrap: balance;
+  /* Keep the unbroken brand name inside the column across platform fonts. */
+  overflow-wrap: anywhere;
 }
 .awb__accent {
   background: linear-gradient(90deg, #67e8f9, #60a5fa);
